@@ -1,17 +1,43 @@
-import { createTeam } from '../actions'
+import { notFound } from 'next/navigation'
+import { createClient } from '@/lib/supabase-server'
+import { updateTeam } from '../../actions'
+import Link from 'next/link'
 
-export default function NewTeamPage({
+export default async function TeamSettingsPage({
+  params,
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ error?: string; saved?: string }>
 }) {
-  return (
-    <div className="flex min-h-full flex-col items-center justify-center bg-white px-4">
-      <div className="w-full max-w-sm">
-        <h1 className="mb-2 text-2xl font-bold text-gray-900">Crear equipo</h1>
-        <p className="mb-8 text-sm text-gray-500">Ponle nombre a tu equipo para empezar.</p>
+  const { id: teamId } = await params
+  const supabase = await createClient()
 
-        <form action={createTeam} className="flex flex-col gap-4">
+  const { data: team } = await supabase
+    .from('teams')
+    .select('*')
+    .eq('id', teamId)
+    .single()
+
+  if (!team) notFound()
+
+  const sp = await searchParams
+
+  return (
+    <div className="min-h-full bg-white">
+      <header className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <div>
+          <Link href={`/dashboard/team/${teamId}/players`} className="text-sm text-gray-500 hover:text-gray-900">
+            ← Plantilla
+          </Link>
+          <h1 className="mt-1 text-lg font-bold text-gray-900">Ajustes del equipo</h1>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-md px-4 py-8">
+        <form action={updateTeam} className="flex flex-col gap-4">
+          <input type="hidden" name="team_id" value={teamId} />
+
           <div className="flex flex-col gap-1">
             <label htmlFor="name" className="text-sm font-medium text-gray-700">
               Nombre del equipo
@@ -21,7 +47,7 @@ export default function NewTeamPage({
               name="name"
               type="text"
               required
-              placeholder="ej. CD Ilumberri"
+              defaultValue={team.name}
               className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
             />
           </div>
@@ -33,10 +59,10 @@ export default function NewTeamPage({
             <select
               id="gender"
               name="gender"
-              required
+              defaultValue={team.gender ?? ''}
               className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
             >
-              <option value="">Selecciona...</option>
+              <option value="">Sin especificar</option>
               <option value="Femenino">Femenino</option>
               <option value="Masculino">Masculino</option>
               <option value="Mixto">Mixto</option>
@@ -51,29 +77,26 @@ export default function NewTeamPage({
               id="category"
               name="category"
               type="text"
-              placeholder="ej. Primera Autonómica"
+              defaultValue={team.category ?? ''}
               className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
             />
           </div>
 
-          <ErrorMessage searchParams={searchParams} />
+          {sp.error && (
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{sp.error}</p>
+          )}
+          {sp.saved && (
+            <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">Cambios guardados.</p>
+          )}
 
           <button
             type="submit"
             className="mt-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-700"
           >
-            Crear equipo
+            Guardar cambios
           </button>
         </form>
-      </div>
+      </main>
     </div>
-  )
-}
-
-async function ErrorMessage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const params = await searchParams
-  if (!params.error) return null
-  return (
-    <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{params.error}</p>
   )
 }

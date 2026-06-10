@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import { addPlayer, togglePlayerActive } from '../../actions'
+import { addPlayer, togglePlayerActive, updatePlayer } from '../../actions'
 import Link from 'next/link'
 
 const POSITIONS = ['Portera', 'Defensa', 'Centrocampista', 'Delantera']
@@ -10,7 +10,7 @@ export default async function PlayersPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; edit?: string }>
 }) {
   const { id: teamId } = await params
   const supabase = await createClient()
@@ -32,6 +32,7 @@ export default async function PlayersPage({
   const active = players?.filter(p => p.active) ?? []
   const inactive = players?.filter(p => !p.active) ?? []
   const sp = await searchParams
+  const editingId = sp.edit ?? null
 
   return (
     <div className="min-h-full bg-white">
@@ -39,14 +40,19 @@ export default async function PlayersPage({
         <div>
           <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-900">← Dashboard</Link>
           <h1 className="mt-1 text-lg font-bold text-gray-900">{team.name} — Plantilla</h1>
-          {team.category && <p className="text-sm text-gray-500">{team.category}</p>}
+          <div className="flex items-center gap-2">
+            {team.gender && <span className="text-sm text-gray-500">{team.gender}</span>}
+            {team.category && <span className="text-sm text-gray-500">{team.gender ? '· ' : ''}{team.category}</span>}
+          </div>
         </div>
-        <Link
-          href={`/dashboard/team/${teamId}/seasons`}
-          className="text-sm font-medium text-gray-700 hover:text-gray-900"
-        >
-          Temporadas →
-        </Link>
+        <div className="flex items-center gap-4 text-sm">
+          <Link href={`/dashboard/team/${teamId}/settings`} className="text-gray-500 hover:text-gray-900">
+            Ajustes
+          </Link>
+          <Link href={`/dashboard/team/${teamId}/seasons`} className="font-medium text-gray-700 hover:text-gray-900">
+            Temporadas →
+          </Link>
+        </div>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8">
@@ -78,9 +84,7 @@ export default async function PlayersPage({
                 className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 outline-none focus:border-gray-900"
               >
                 <option value="">Posición (opcional)</option>
-                {POSITIONS.map(p => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
+                {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
               <button
                 type="submit"
@@ -98,33 +102,85 @@ export default async function PlayersPage({
         {/* Jugadoras activas */}
         <section className="mb-8">
           <h2 className="mb-3 text-base font-semibold text-gray-900">
-            Jugadoras activas <span className="text-gray-400 font-normal">({active.length})</span>
+            Jugadoras activas <span className="font-normal text-gray-400">({active.length})</span>
           </h2>
           {active.length === 0 ? (
             <p className="text-sm text-gray-400">Aún no hay jugadoras. Añade la primera arriba.</p>
           ) : (
             <ul className="divide-y divide-gray-100 rounded-xl border border-gray-200">
               {active.map(player => (
-                <li key={player.id} className="flex items-center justify-between px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 text-right text-sm font-mono text-gray-400">
-                      {player.number ?? '—'}
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{player.name}</p>
-                      {player.position && (
-                        <p className="text-xs text-gray-500">{player.position}</p>
-                      )}
+                <li key={player.id}>
+                  {editingId === player.id ? (
+                    <form action={updatePlayer} className="flex flex-col gap-2 px-4 py-3">
+                      <input type="hidden" name="player_id" value={player.id} />
+                      <input type="hidden" name="team_id" value={teamId} />
+                      <div className="flex gap-2">
+                        <input
+                          name="number"
+                          type="number"
+                          min="1"
+                          max="99"
+                          defaultValue={player.number ?? ''}
+                          placeholder="Nº"
+                          className="w-16 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+                        />
+                        <input
+                          name="name"
+                          type="text"
+                          required
+                          defaultValue={player.name}
+                          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-900"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <select
+                          name="position"
+                          defaultValue={player.position ?? ''}
+                          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 outline-none focus:border-gray-900"
+                        >
+                          <option value="">Sin posición</option>
+                          {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
+                        </select>
+                        <button type="submit" className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700">
+                          Guardar
+                        </button>
+                        <Link
+                          href={`/dashboard/team/${teamId}/players`}
+                          className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                        >
+                          Cancelar
+                        </Link>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="flex items-center justify-between px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <span className="w-8 text-right text-sm font-mono text-gray-400">
+                          {player.number ?? '—'}
+                        </span>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{player.name}</p>
+                          {player.position && <p className="text-xs text-gray-500">{player.position}</p>}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs">
+                        <Link
+                          href={`/dashboard/team/${teamId}/players?edit=${player.id}`}
+                          className="text-gray-400 hover:text-gray-900"
+                        >
+                          Editar
+                        </Link>
+                        <form action={togglePlayerActive}>
+                          <input type="hidden" name="player_id" value={player.id} />
+                          <input type="hidden" name="team_id" value={teamId} />
+                          <input type="hidden" name="active" value="true" />
+                          <button type="submit" className="text-gray-400 hover:text-red-500">
+                            Dar de baja
+                          </button>
+                        </form>
+                      </div>
                     </div>
-                  </div>
-                  <form action={togglePlayerActive}>
-                    <input type="hidden" name="player_id" value={player.id} />
-                    <input type="hidden" name="team_id" value={teamId} />
-                    <input type="hidden" name="active" value="true" />
-                    <button type="submit" className="text-xs text-gray-400 hover:text-red-500">
-                      Dar de baja
-                    </button>
-                  </form>
+                  )}
                 </li>
               ))}
             </ul>
@@ -146,9 +202,7 @@ export default async function PlayersPage({
                     </span>
                     <div>
                       <p className="text-sm font-medium text-gray-500 line-through">{player.name}</p>
-                      {player.position && (
-                        <p className="text-xs text-gray-400">{player.position}</p>
-                      )}
+                      {player.position && <p className="text-xs text-gray-400">{player.position}</p>}
                     </div>
                   </div>
                   <form action={togglePlayerActive}>

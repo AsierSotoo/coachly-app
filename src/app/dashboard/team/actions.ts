@@ -14,6 +14,7 @@ export async function createTeam(formData: FormData) {
       user_id: user.id,
       name: formData.get('name') as string,
       category: formData.get('category') as string || null,
+      gender: formData.get('gender') as string || null,
     })
     .select()
     .single()
@@ -21,6 +22,24 @@ export async function createTeam(formData: FormData) {
   if (error) redirect(`/dashboard/team/new?error=${encodeURIComponent(error.message)}`)
 
   redirect(`/dashboard/team/${team.id}/players`)
+}
+
+export async function updateTeam(formData: FormData) {
+  const supabase = await createClient()
+  const teamId = formData.get('team_id') as string
+
+  const { error } = await supabase
+    .from('teams')
+    .update({
+      name: formData.get('name') as string,
+      category: formData.get('category') as string || null,
+      gender: formData.get('gender') as string || null,
+    })
+    .eq('id', teamId)
+
+  if (error) redirect(`/dashboard/team/${teamId}/settings?error=${encodeURIComponent(error.message)}`)
+
+  redirect(`/dashboard/team/${teamId}/settings?saved=1`)
 }
 
 export async function addPlayer(formData: FormData) {
@@ -35,6 +54,25 @@ export async function addPlayer(formData: FormData) {
       number: formData.get('number') ? Number(formData.get('number')) : null,
       position: formData.get('position') as string || null,
     })
+
+  if (error) redirect(`/dashboard/team/${teamId}/players?error=${encodeURIComponent(error.message)}`)
+
+  redirect(`/dashboard/team/${teamId}/players`)
+}
+
+export async function updatePlayer(formData: FormData) {
+  const supabase = await createClient()
+  const playerId = formData.get('player_id') as string
+  const teamId = formData.get('team_id') as string
+
+  const { error } = await supabase
+    .from('players')
+    .update({
+      name: formData.get('name') as string,
+      number: formData.get('number') ? Number(formData.get('number')) : null,
+      position: formData.get('position') as string || null,
+    })
+    .eq('id', playerId)
 
   if (error) redirect(`/dashboard/team/${teamId}/players?error=${encodeURIComponent(error.message)}`)
 
