@@ -21,13 +21,18 @@ export async function login(formData: FormData) {
 export async function register(formData: FormData) {
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   })
 
   if (error) {
     redirect(`/register?error=${encodeURIComponent(error.message)}`)
+  }
+
+  // Sin sesión activa = Supabase está pidiendo confirmación de email
+  if (!data.session) {
+    redirect('/register?message=Revisa+tu+email+para+confirmar+la+cuenta')
   }
 
   redirect('/dashboard')

@@ -4,7 +4,7 @@ import { register } from '@/app/auth/actions'
 export default function RegisterPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; message?: string }>
 }) {
   return (
     <div className="flex min-h-full flex-col items-center justify-center bg-white px-4">
@@ -43,7 +43,7 @@ export default function RegisterPage({
             />
           </div>
 
-          <ErrorMessage searchParams={searchParams} />
+          <Feedback searchParams={searchParams} />
 
           <button
             type="submit"
@@ -64,16 +64,25 @@ export default function RegisterPage({
   )
 }
 
-async function ErrorMessage({
+async function Feedback({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; message?: string }>
 }) {
   const params = await searchParams
-  if (!params.error) return null
-  return (
-    <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-      {params.error}
-    </p>
-  )
+  if (params.error) {
+    return (
+      <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+        {params.error}
+      </p>
+    )
+  }
+  if (params.message) {
+    return (
+      <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700">
+        {params.message}
+      </p>
+    )
+  }
+  return null
 }

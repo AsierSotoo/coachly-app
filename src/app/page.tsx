@@ -1,9 +1,6 @@
-import { supabase } from '@/lib/supabase'
+import Link from 'next/link'
 
-export default async function Home() {
-  const { error } = await supabase.from('teams').select('count').limit(1)
-  const connected = !error
-
+export default function Home() {
   return (
     <div className="flex min-h-full flex-col items-center justify-center bg-white px-4">
       <main className="flex flex-col items-center gap-6 text-center">
@@ -13,11 +10,19 @@ export default async function Home() {
         <p className="max-w-sm text-base text-gray-500">
           Las estadísticas de tu equipo, en un sitio.
         </p>
-        <div className="flex items-center gap-2 text-sm">
-          <span className={`h-2 w-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
-          <span className="text-gray-500">
-            {connected ? 'Supabase conectado' : `Error: ${error?.message}`}
-          </span>
+        <div className="flex gap-3">
+          <Link
+            href="/login"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Entrar
+          </Link>
+          <Link
+            href="/register"
+            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+          >
+            Crear cuenta
+          </Link>
         </div>
       </main>
     </div>
