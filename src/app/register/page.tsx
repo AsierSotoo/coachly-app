@@ -3,7 +3,7 @@ import { register, signInWithGoogle } from '@/app/auth/actions'
 
 export default function RegisterPage({ searchParams }: { searchParams: Promise<{ error?: string; message?: string }> }) {
   return (
-    <div className="flex min-h-full">
+    <div className="flex min-h-screen" style={{ backgroundColor: '#020617' }}>
 
       {/* Panel izquierdo */}
       <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between overflow-hidden"
@@ -46,7 +46,7 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
       </div>
 
       {/* Panel derecho */}
-      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-16">
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-16" style={{ backgroundColor: '#020617' }}>
         <div className="w-full max-w-sm">
 
           <div className="mb-8 lg:hidden text-center">

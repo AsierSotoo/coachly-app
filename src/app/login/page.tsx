@@ -3,7 +3,7 @@ import { login, signInWithGoogle } from '@/app/auth/actions'
 
 export default function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   return (
-    <div className="flex min-h-full">
+    <div className="flex min-h-screen" style={{ backgroundColor: '#020617' }}>
 
       {/* Panel izquierdo — campo de fútbol */}
       <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between overflow-hidden"
@@ -58,7 +58,7 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ er
       </div>
 
       {/* Panel derecho — formulario */}
-      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-16">
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-16" style={{ backgroundColor: '#020617' }}>
         <div className="w-full max-w-sm">
 
           {/* Logo móvil */}
