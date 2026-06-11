@@ -45,6 +45,12 @@ export default async function SeasonPage({
           </Link>
           <h1 className="mt-1 text-lg font-bold text-gray-900">Temporada {season.name}</h1>
         </div>
+        <Link
+          href={`/dashboard/season/${seasonId}/stats`}
+          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Ver estadísticas →
+        </Link>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8">
