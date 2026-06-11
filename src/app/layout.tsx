@@ -1,22 +1,19 @@
 import type { Metadata, Viewport } from 'next'
-import { Geist } from 'next/font/google'
+import { Fira_Code, Fira_Sans } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 
-const geist = Geist({ subsets: ['latin'] })
+const firaCode = Fira_Code({ subsets: ['latin'], variable: '--font-heading', weight: ['400','500','600','700'] })
+const firaSans = Fira_Sans({ subsets: ['latin'], variable: '--font-body', weight: ['300','400','500','600','700'] })
 
 export const metadata: Metadata = {
   title: 'Coachly',
   description: 'Las estadísticas de tu equipo, en un sitio.',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Coachly',
-  },
+  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Coachly' },
 }
 
 export const viewport: Viewport = {
-  themeColor: '#111827',
+  themeColor: '#020617',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -25,11 +22,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${geist.className} h-full antialiased`}>
+    <html lang="es" className={`${firaCode.variable} ${firaSans.variable} h-full`}>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className="min-h-full flex flex-col bg-white">
+      <body className="min-h-full flex flex-col bg-[#020617] text-slate-50 font-[family-name:var(--font-body)] antialiased">
         {children}
         <Script id="sw-register" strategy="afterInteractive">{`
           if ('serviceWorker' in navigator) {
