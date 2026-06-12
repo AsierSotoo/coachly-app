@@ -22,7 +22,7 @@ export function TeamLogo({ name, logoUrl, size = 'md', className }: TeamLogoProp
     <div className={cn(
       'relative flex shrink-0 items-center justify-center overflow-hidden',
       s.wrapper,
-      !logoUrl && 'bg-gradient-to-br from-green-500 to-green-700 shadow-lg shadow-green-500/20',
+      logoUrl ? 'bg-white p-1' : 'bg-gradient-to-br from-green-500 to-green-700 shadow-lg shadow-green-500/20',
       className
     )}>
       {logoUrl ? (

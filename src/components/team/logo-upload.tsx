@@ -84,7 +84,7 @@ export function LogoUpload({ teamId, currentUrl, teamName }: LogoUploadProps) {
           dragging
             ? 'border-green-400 bg-green-500/10 scale-105'
             : url
-            ? 'border-slate-700 hover:border-green-500/50'
+            ? 'border-slate-700 bg-white hover:border-green-500/50'
             : 'border-dashed border-slate-600 bg-slate-800/60 hover:border-green-500/50 hover:bg-slate-800'
         }`}
       >
