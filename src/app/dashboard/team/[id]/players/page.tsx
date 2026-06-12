@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { addPlayer, togglePlayerActive, updatePlayer } from '../../actions'
 import Link from 'next/link'
+import { PageTransition } from '@/components/ui/page-transition'
+import { AnimatedList, AnimatedItem } from '@/components/ui/animated-card'
+import { ChevronLeft, Settings, UserPlus } from 'lucide-react'
 
 const POSITIONS = ['Portera', 'Defensa', 'Centrocampista', 'Delantera']
 
@@ -26,16 +29,21 @@ export default async function PlayersPage({
   const editingId = sp.edit ?? null
 
   return (
+    <PageTransition>
     <main className="mx-auto max-w-2xl px-4 py-6">
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <Link href="/dashboard" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">← Dashboard</Link>
+          <Link href="/dashboard" className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
+            <ChevronLeft className="h-3 w-3" /> Dashboard
+          </Link>
           <h1 className="mt-2 font-[family-name:var(--font-heading)] text-xl font-bold text-white">{team.name}</h1>
           <p className="text-xs text-slate-500">{[team.gender, team.category].filter(Boolean).join(' · ')}</p>
         </div>
         <div className="flex gap-2 mt-1">
-          <Link href={`/dashboard/team/${teamId}/settings`} className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs text-slate-400 hover:bg-slate-800 transition-colors cursor-pointer">Ajustes</Link>
+          <Link href={`/dashboard/team/${teamId}/settings`} className="flex items-center gap-1.5 rounded-lg border border-slate-700 px-3 py-1.5 text-xs text-slate-400 hover:bg-slate-800 transition-colors cursor-pointer">
+            <Settings className="h-3 w-3" /> Ajustes
+          </Link>
           <Link href={`/dashboard/team/${teamId}/seasons`} className="rounded-lg bg-green-500/10 border border-green-500/20 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/20 transition-colors cursor-pointer">Temporadas →</Link>
         </div>
       </div>
@@ -70,9 +78,9 @@ export default async function PlayersPage({
         {active.length === 0 ? (
           <p className="text-sm text-slate-600 py-4 text-center">Añade la primera jugadora arriba.</p>
         ) : (
-          <div className="flex flex-col gap-2">
+          <AnimatedList>
             {active.map(player => (
-              <div key={player.id} className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+              <AnimatedItem key={player.id} className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden hover:border-slate-700 transition-colors">
                 {editingId === player.id ? (
                   <form action={updatePlayer} className="p-4 flex flex-col gap-3">
                     <input type="hidden" name="player_id" value={player.id} />
@@ -112,9 +120,9 @@ export default async function PlayersPage({
                     </div>
                   </div>
                 )}
-              </div>
+              </AnimatedItem>
             ))}
-          </div>
+          </AnimatedList>
         )}
       </section>
 
@@ -146,5 +154,6 @@ export default async function PlayersPage({
         </section>
       )}
     </main>
+    </PageTransition>
   )
 }
