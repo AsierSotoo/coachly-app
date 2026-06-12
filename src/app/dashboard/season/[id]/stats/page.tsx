@@ -1,6 +1,10 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
+import { Target, Zap, Clock, CreditCard, Gamepad2, TrendingUp, ChevronLeft } from 'lucide-react'
+import { PageTransition } from '@/components/ui/page-transition'
+import { AnimatedCard, AnimatedList, AnimatedItem } from '@/components/ui/animated-card'
+import { StatCounter } from '@/components/ui/stat-counter'
 
 const YELLOW_WARNING = 4
 
@@ -55,10 +59,13 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
   const byGames = [...stats].sort((a, b) => b.gamesPlayed - a.gamesPlayed).filter(s => s.gamesPlayed > 0)
 
   return (
+    <PageTransition>
     <main className="mx-auto max-w-2xl px-4 py-6">
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <Link href={`/dashboard/season/${seasonId}`} className="text-xs text-slate-500 hover:text-slate-300 transition-colors">← {season.name}</Link>
+          <Link href={`/dashboard/season/${seasonId}`} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
+            <ChevronLeft className="h-3 w-3" />{season.name}
+          </Link>
           <h1 className="mt-2 font-[family-name:var(--font-heading)] text-xl font-bold text-white">{team.name}</h1>
           <p className="text-xs text-slate-500">Estadísticas · {season.name}</p>
         </div>
@@ -73,7 +80,9 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
 
           {/* Resumen */}
           <section>
-            <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">Resumen de temporada</h2>
+            <h2 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+              <TrendingUp className="h-3.5 w-3.5" /> Resumen de temporada
+            </h2>
             <div className="grid grid-cols-3 gap-2 mb-3">
               <StatCard label="Victorias" value={wins} color="text-green-400" />
               <StatCard label="Empates" value={draws} color="text-slate-400" />
@@ -99,7 +108,9 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
           {/* Goleadoras */}
           {byGoals.length > 0 && (
             <section>
-              <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">Goleadoras</h2>
+              <h2 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+                <Target className="h-3.5 w-3.5" /> Goleadoras
+              </h2>
               <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
                 {byGoals.map((s, i) => (
                   <div key={s.playerId} className="flex items-center justify-between px-4 py-3 border-b border-slate-800 last:border-0">
@@ -129,7 +140,9 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
           {/* Asistencias */}
           {byAssists.length > 0 && (
             <section>
-              <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">Asistencias</h2>
+              <h2 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+                <Zap className="h-3.5 w-3.5" /> Asistencias
+              </h2>
               <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
                 {byAssists.map((s, i) => (
                   <div key={s.playerId} className="flex items-center justify-between px-4 py-3 border-b border-slate-800 last:border-0">
@@ -156,7 +169,9 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
           {/* Minutos */}
           {byMinutes.length > 0 && (
             <section>
-              <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">Reparto de minutos</h2>
+              <h2 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+                <Clock className="h-3.5 w-3.5" /> Reparto de minutos
+              </h2>
               <div className="rounded-2xl border border-slate-800 bg-slate-900 p-4 flex flex-col gap-3">
                 {byMinutes.map((s, i) => {
                   const pct = Math.round((s.minutes / byMinutes[0].minutes) * 100)
@@ -178,7 +193,9 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
           {/* Tarjetas */}
           {byCards.length > 0 && (
             <section>
-              <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">Tarjetas</h2>
+              <h2 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+                <CreditCard className="h-3.5 w-3.5" /> Tarjetas
+              </h2>
               <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
                 {byCards.map(s => (
                   <div key={s.playerId} className="flex items-center justify-between px-4 py-3 border-b border-slate-800 last:border-0">
@@ -211,7 +228,9 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
           {/* Partidos jugados */}
           {byGames.length > 0 && (
             <section>
-              <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">Partidos jugados</h2>
+              <h2 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+                <Gamepad2 className="h-3.5 w-3.5" /> Partidos jugados
+              </h2>
               <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
                 {byGames.map((s, i) => (
                   <div key={s.playerId} className="flex items-center justify-between px-4 py-3 border-b border-slate-800 last:border-0">
@@ -237,6 +256,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
         </div>
       )}
     </main>
+    </PageTransition>
   )
 }
 

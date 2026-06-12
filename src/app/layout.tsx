@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Fira_Code, Fira_Sans } from 'next/font/google'
 import Script from 'next/script'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const firaCode = Fira_Code({ subsets: ['latin'], variable: '--font-heading', weight: ['400','500','600','700'] })
@@ -26,8 +27,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#020617] text-slate-50 font-[family-name:var(--font-body)] antialiased">
+      <body className="min-h-full flex flex-col text-slate-50 font-[family-name:var(--font-body)] antialiased">
         {children}
+        <Toaster
+          theme="dark"
+          position="bottom-center"
+          toastOptions={{
+            style: { background: '#1e293b', border: '1px solid #334155', color: '#f8fafc' },
+          }}
+        />
         <Script id="sw-register" strategy="afterInteractive">{`
           if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js');
