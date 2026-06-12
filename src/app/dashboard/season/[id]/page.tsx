@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ChevronLeft, BarChart3, MapPin, Swords, Plus, X } from 'lucide-react'
 import { PageTransition } from '@/components/ui/page-transition'
 import { AnimatedList, AnimatedItem } from '@/components/ui/animated-card'
+import { TeamLogo } from '@/components/team/team-logo'
 
 function resultBadge(gf: number, ga: number) {
   if (gf > ga) return { text: 'V', cls: 'bg-green-500 text-white shadow-md shadow-green-500/40', score: 'text-green-400' }
@@ -27,7 +28,7 @@ export default async function SeasonPage({
     .from('matches').select('*').eq('season_id', seasonId).order('played_at', { ascending: false })
 
   const sp = await searchParams
-  const team = season.teams as { id: string; name: string }
+  const team = season.teams as { id: string; name: string; logo_url?: string | null }
   const wins = matches?.filter(m => m.goals_for > m.goals_against).length ?? 0
   const draws = matches?.filter(m => m.goals_for === m.goals_against).length ?? 0
   const losses = matches?.filter(m => m.goals_for < m.goals_against).length ?? 0
@@ -41,12 +42,15 @@ export default async function SeasonPage({
           <Link href={`/dashboard/team/${team.id}/seasons`} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
             <ChevronLeft className="h-3 w-3" />{team.name}
           </Link>
-          <div className="mt-2 flex items-end justify-between">
-            <div>
+          <div className="mt-3 flex items-end justify-between">
+            <div className="flex items-center gap-3">
+              <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
+              <div>
               <h1 className="font-[family-name:var(--font-heading)] text-2xl font-black text-white">
                 Temporada {season.name}
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">{matches?.length ?? 0} partidos registrados</p>
+            </div>
             </div>
             <Link
               href={`/dashboard/season/${seasonId}/stats`}

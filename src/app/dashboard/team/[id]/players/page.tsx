@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
 import { AnimatedList, AnimatedItem } from '@/components/ui/animated-card'
 import { ChevronLeft, Settings, UserPlus } from 'lucide-react'
+import { TeamLogo } from '@/components/team/team-logo'
 
 const POSITIONS = ['Portera', 'Defensa', 'Centrocampista', 'Delantera']
 
@@ -37,8 +38,13 @@ export default async function PlayersPage({
           <Link href="/dashboard" className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
             <ChevronLeft className="h-3 w-3" /> Dashboard
           </Link>
-          <h1 className="mt-2 font-[family-name:var(--font-heading)] text-xl font-bold text-white">{team.name}</h1>
-          <p className="text-xs text-slate-500">{[team.gender, team.category].filter(Boolean).join(' · ')}</p>
+          <div className="mt-2 flex items-center gap-3">
+            <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
+            <div>
+              <h1 className="font-[family-name:var(--font-heading)] text-xl font-bold text-white">{team.name}</h1>
+              <p className="text-xs text-slate-500">{[team.gender, team.category].filter(Boolean).join(' · ')}</p>
+            </div>
+          </div>
         </div>
         <div className="flex gap-2 mt-1">
           <Link href={`/dashboard/team/${teamId}/settings`} className="flex items-center gap-1.5 rounded-lg border border-slate-700 px-3 py-1.5 text-xs text-slate-400 hover:bg-slate-800 transition-colors cursor-pointer">

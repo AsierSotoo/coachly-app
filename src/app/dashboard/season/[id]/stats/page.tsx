@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import { ChevronLeft, Target, Zap, Clock, AlertTriangle, Gamepad2, TrendingUp } from 'lucide-react'
 import { PageTransition } from '@/components/ui/page-transition'
+import { TeamLogo } from '@/components/team/team-logo'
 
 const YELLOW_WARNING = 4
 
@@ -20,7 +21,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
   const { data: season } = await supabase.from('seasons').select('*, teams(*)').eq('id', seasonId).single()
   if (!season) notFound()
 
-  const team = season.teams as { id: string; name: string }
+  const team = season.teams as { id: string; name: string; logo_url?: string | null }
 
   const [{ data: matches }, matchIds] = await Promise.all([
     supabase.from('matches').select('*').eq('season_id', seasonId).order('played_at'),
@@ -83,8 +84,13 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-green-500/60 to-transparent" />
 
           <div className="relative">
-            <div className="mb-1 text-xs font-medium uppercase tracking-widest text-green-400/70">{team.name}</div>
-            <h1 className="font-[family-name:var(--font-heading)] text-2xl font-black text-white">Temporada {season.name}</h1>
+            <div className="mb-3 flex items-center gap-3">
+              <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
+              <div>
+                <div className="text-xs font-medium uppercase tracking-widest text-green-400/70">{team.name}</div>
+                <h1 className="font-[family-name:var(--font-heading)] text-2xl font-black text-white">Temporada {season.name}</h1>
+              </div>
+            </div>
 
             {total === 0 ? (
               <p className="mt-4 text-sm text-slate-500">Sin partidos registrados aún.</p>

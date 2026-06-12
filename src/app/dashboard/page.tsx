@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server'
 import { Users, Calendar, Settings, Plus, ChevronRight } from 'lucide-react'
 import { AnimatedList, AnimatedItem } from '@/components/ui/animated-card'
 import { PageTransition } from '@/components/ui/page-transition'
+import { TeamLogo } from '@/components/team/team-logo'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -62,11 +63,7 @@ export default async function DashboardPage() {
                     <div className="flex items-start justify-between mb-5">
                       <div className="flex items-center gap-3">
                         {/* Avatar del equipo */}
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-green-700 shadow-lg shadow-green-500/20">
-                          <span className="font-[family-name:var(--font-heading)] text-lg font-black text-white">
-                            {team.name.charAt(0)}
-                          </span>
-                        </div>
+                        <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
                         <div>
                           <h2 className="font-[family-name:var(--font-heading)] text-base font-bold text-white leading-tight">
                             {team.name}
