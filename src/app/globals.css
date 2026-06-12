@@ -17,6 +17,23 @@ body {
   min-height: 100%;
 }
 
+/* Patrón de puntos sutil en el fondo */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, #1e293b 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#__next, main, [data-nextjs-scroll-focus-boundary] {
+  position: relative;
+  z-index: 1;
+}
+
 /* Input dark base */
 input[type="text"],
 input[type="email"],

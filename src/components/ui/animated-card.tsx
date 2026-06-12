@@ -38,7 +38,7 @@ export function AnimatedList({ children, className }: { children: React.ReactNod
   )
 }
 
-export function AnimatedItem({ children, className }: { children: React.ReactNode; className?: string }) {
+export function AnimatedItem({ children, className, delay }: { children: React.ReactNode; className?: string; delay?: number }) {
   return (
     <motion.div
       variants={{
