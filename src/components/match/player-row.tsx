@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { PlayerAvatar } from '@/components/team/player-avatar'
 
 type Status = 'titular' | 'suplente' | 'no_convocada'
 
@@ -10,6 +11,7 @@ interface Player {
   name: string
   number: number | null
   position: string | null
+  photo_url?: string | null
 }
 
 interface Appearance {
@@ -53,9 +55,10 @@ export function PlayerRow({ player, appearance }: { player: Player; appearance?:
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-800 font-[family-name:var(--font-heading)] text-sm font-bold text-green-400">
-            {player.number ?? '?'}
-          </span>
+          <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position} size="sm" />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 font-[family-name:var(--font-heading)] text-xs font-black text-green-400">
+            {player.number ?? '—'}
+          </div>
           <div>
             <p className="text-sm font-semibold text-white">{player.name}</p>
             {player.position && <p className="text-xs text-slate-500">{player.position}</p>}
