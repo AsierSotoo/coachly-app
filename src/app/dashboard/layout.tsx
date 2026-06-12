@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase-server'
 import { logout } from '@/app/auth/actions'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Home, Users, LogOut, UserCircle } from 'lucide-react'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -8,11 +9,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { data: { user } } = await supabase.auth.getUser()
 
   const { data: profile } = user
-    ? await supabase.from('users').select('name').eq('id', user.id).single()
+    ? await supabase.from('users').select('name, avatar_url').eq('id', user.id).single()
     : { data: null }
 
   const displayName = profile?.name || user?.email?.split('@')[0] || 'Entrenador'
   const initial = displayName.charAt(0).toUpperCase()
+  const avatarUrl = profile?.avatar_url
 
   return (
     <div className="flex min-h-screen flex-col" style={{ backgroundColor: '#020617' }}>
@@ -26,8 +28,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
             href="/dashboard/profile"
             className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-3 py-1.5 hover:border-slate-700 transition-colors cursor-pointer"
           >
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-green-500/20">
-              <span className="font-[family-name:var(--font-heading)] text-[10px] font-black text-green-400">{initial}</span>
+            <div className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-green-500 to-green-700">
+              {avatarUrl
+                ? <Image src={avatarUrl} alt={displayName} fill className="object-cover" unoptimized />
+                : <span className="font-[family-name:var(--font-heading)] text-[10px] font-black text-white">{initial}</span>
+              }
             </div>
             <span className="hidden text-xs font-medium text-slate-300 sm:block max-w-[120px] truncate">{displayName}</span>
           </Link>
