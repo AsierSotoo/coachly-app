@@ -35,6 +35,7 @@ interface Match {
   competition: string | null
   goals_for: number
   goals_against: number
+  notes: string | null
 }
 
 interface MatchFormProps {
@@ -103,6 +104,22 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         </section>
 
       </div>
+
+      {/* Notas del partido */}
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 18 }}>edit_note</span>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Análisis post-partido</h2>
+        </div>
+        <textarea
+          name="notes"
+          rows={3}
+          defaultValue={match.notes ?? ''}
+          placeholder="¿Cómo fue el partido? Pressing, errores defensivos, momentos clave, sensaciones del equipo..."
+          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm resize-none focus:border-green-500/60 focus:outline-none transition-colors leading-relaxed"
+          style={{ color: '#dce1fb', minHeight: 'auto' }}
+        />
+      </section>
 
       {/* Aviso primera vez sin convocatoria */}
       {isFirstEntry && (

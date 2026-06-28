@@ -10,6 +10,7 @@ import {
   type ConvocatoriaStatus,
 } from '@/app/dashboard/season/[id]/convocatorias/actions'
 import { getTeamTerms } from '@/lib/team-terms'
+import { DownloadImageButton } from './download-image-button'
 
 interface Player {
   id: string; name: string; number: number | null
@@ -130,6 +131,10 @@ export function ConvocatoriaEditor({
 
       {/* ── Botones superiores ──────────────────────────────────────── */}
       <div className="flex justify-end gap-3">
+        <DownloadImageButton
+          targetClass="print-convocatoria"
+          filename={`convocatoria-${opponent.toLowerCase().replace(/\s+/g, '-')}`}
+        />
         <button type="button" onClick={() => window.print()}
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold border active:scale-95 transition-all cursor-pointer"
           style={{ backgroundColor: '#23293c', borderColor: '#2e3447', color: '#dce1fb' }}>

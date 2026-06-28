@@ -1,3 +1,4 @@
+'use server'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -5,6 +6,7 @@ import { TeamLogo } from '@/components/team/team-logo'
 import { PlayerAvatar } from '@/components/team/player-avatar'
 import { getTeamTerms } from '@/lib/team-terms'
 import type { Metadata } from 'next'
+import { ShareButton } from '@/components/season/share-button'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -32,6 +34,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
   if (!season) notFound()
 
   const team = season.teams as { id: string; name: string; logo_url?: string | null; gender?: string | null }
+  const shareToken = (season as { share_token?: string | null }).share_token ?? null
   const terms = getTeamTerms(team.gender)
 
   const { data: matches } = await supabase
@@ -150,6 +153,20 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
   const last10       = matchesChron.slice(0, 10)
   const maxGoalsBar  = Math.max(...last10.map(m => Math.max(m.goals_for, m.goals_against)), 1)
 
+  // H2H por rival
+  type H2H = { opponent: string; played: number; W: number; E: number; D: number; gf: number; ga: number; lastResult: 'V' | 'E' | 'D' }
+  const h2hMap = new Map<string, H2H>()
+  for (const m of [...(matches ?? [])].sort((a, b) => a.played_at.localeCompare(b.played_at))) {
+    const key = m.opponent.trim()
+    if (!h2hMap.has(key)) h2hMap.set(key, { opponent: key, played: 0, W: 0, E: 0, D: 0, gf: 0, ga: 0, lastResult: 'E' })
+    const s = h2hMap.get(key)!
+    s.played++; s.gf += m.goals_for; s.ga += m.goals_against
+    const r: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+    if (r === 'V') s.W++; else if (r === 'E') s.E++; else s.D++
+    s.lastResult = r
+  }
+  const h2h = Array.from(h2hMap.values()).filter(r => r.played > 1).sort((a, b) => b.played - a.played)
+
   return (
     <PageTransition>
       <main className="max-w-7xl mx-auto px-4 md:px-10 py-8 pb-32 md:pb-10">
@@ -170,6 +187,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {shareToken && <ShareButton token={shareToken} />}
             <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Temporada:</span>
             <span className="px-4 py-2 rounded-lg border text-sm font-bold" style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}>
               {season.name}
@@ -500,6 +518,53 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                       </div>
                     )
                   })}
+                </div>
+              </section>
+            )}
+
+            {/* ── H2H por rival ──────────────────────────────── */}
+            {h2h.length > 0 && (
+              <section className="mt-8">
+                <h3 className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#adb4ce' }}>
+                  Historial por rival
+                </h3>
+                <div className="overflow-hidden rounded-[20px] border border-[#1e293b]" style={{ backgroundColor: '#0f172a' }}>
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-[#1e293b]" style={{ backgroundColor: '#151b2d' }}>
+                        {['Rival', 'PJ', 'V', 'E', 'D', 'GF', 'GC', 'Últ.'].map((h, i) => (
+                          <th key={h} className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest"
+                            style={{ color: '#adb4ce', textAlign: i === 0 ? 'left' : 'center' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {h2h.map(r => {
+                        const lastColor = r.lastResult === 'V' ? '#4be277' : r.lastResult === 'D' ? '#ffb4ab' : '#94a3b8'
+                        const lastBg = r.lastResult === 'V' ? 'rgba(34,197,94,0.15)' : r.lastResult === 'D' ? 'rgba(255,180,171,0.1)' : 'rgba(148,163,184,0.1)'
+                        return (
+                          <tr key={r.opponent} className="border-b border-[#1e293b] last:border-0 hover:bg-[#23293c]/30 transition-colors">
+                            <td className="px-4 py-3">
+                              <p className="text-sm font-semibold text-white">{r.opponent}</p>
+                            </td>
+                            {[r.played, r.W, r.E, r.D, r.gf, r.ga].map((v, i) => (
+                              <td key={i} className="px-4 py-3 text-center">
+                                <span className="text-sm font-bold" style={{
+                                  color: i === 1 ? '#4be277' : i === 3 ? '#ffb4ab' : '#dce1fb'
+                                }}>{v}</span>
+                              </td>
+                            ))}
+                            <td className="px-4 py-3 text-center">
+                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg text-[11px] font-black"
+                                style={{ backgroundColor: lastBg, color: lastColor }}>
+                                {r.lastResult}
+                              </span>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </section>
             )}

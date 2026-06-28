@@ -378,6 +378,12 @@ export default async function SeasonPage({
                                   {match.home ? 'Local' : 'Visitante'}
                                   {match.competition ? ` · ${match.competition}` : ''}
                                 </p>
+                                {match.notes && (
+                                  <p className="text-[11px] mt-1 flex items-center gap-1 max-w-[200px] truncate" style={{ color: '#64748b' }}>
+                                    <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 12 }}>edit_note</span>
+                                    {match.notes}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           </td>
