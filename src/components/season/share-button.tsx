@@ -7,7 +7,8 @@ export function ShareButton({ token }: { token: string }) {
   const [copied, setCopied] = useState(false)
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/share/${token}`
+    const base = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin
+    const url = `${base}/share/${token}`
     await navigator.clipboard.writeText(url)
     setCopied(true)
     toast.success('Enlace copiado', { description: 'Compártelo con quien quieras — no hace falta login.' })
