@@ -1,4 +1,3 @@
-'use server'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { PageTransition } from '@/components/ui/page-transition'

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
+import { compressImage } from '@/lib/compress-image'
 import { toast } from 'sonner'
 import Image from 'next/image'
 
@@ -21,12 +22,14 @@ export function AvatarUpload({ userId, currentUrl, name, size = 96 }: AvatarUplo
 
   async function upload(file: File) {
     if (!file.type.startsWith('image/')) { toast.error('Solo imágenes'); return }
-    if (file.size > 3 * 1024 * 1024) { toast.error('Máximo 3MB'); return }
 
     setUploading(true)
+    try {
+      file = await compressImage(file, 600, 0.85)
+    } catch { /* si falla la compresión, intentamos con el original */ }
+
     const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const path = `${userId}/avatar.${ext}`
+    const path = `${userId}/avatar.jpg`
 
     const { error: uploadError } = await supabase.storage
       .from('user-avatars').upload(path, file, { upsert: true })
@@ -84,7 +87,7 @@ export function AvatarUpload({ userId, currentUrl, name, size = 96 }: AvatarUplo
         <div className="absolute inset-0 rounded-full ring-2 ring-green-500/0 group-hover:ring-green-500/60 transition-all" />
       </button>
 
-      <p className="text-[10px] text-slate-600">Haz clic para cambiar · PNG, JPG · Máx 3MB</p>
+      <p className="text-[10px] text-slate-600">Haz clic para cambiar · PNG, JPG · Se comprime automáticamente</p>
 
       <input ref={inputRef} type="file" accept="image/*" className="hidden"
         onChange={e => { const f = e.target.files?.[0]; if (f) upload(f) }} />

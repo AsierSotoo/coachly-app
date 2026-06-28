@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
+import { compressImage } from '@/lib/compress-image'
 import { toast } from 'sonner'
 import Image from 'next/image'
 
@@ -25,12 +26,14 @@ export function PlayerPhotoUpload({ playerId, currentUrl, playerName, size = 'lg
 
   async function upload(file: File) {
     if (!file.type.startsWith('image/')) { toast.error('Solo imágenes'); return }
-    if (file.size > 2 * 1024 * 1024) { toast.error('Máximo 2MB'); return }
 
     setUploading(true)
+    try {
+      file = await compressImage(file, 900, 0.82)
+    } catch { /* si falla la compresión, intentamos con el original */ }
+
     const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const path = `${playerId}/photo.${ext}`
+    const path = `${playerId}/photo.jpg`
 
     const { error: uploadError } = await supabase.storage
       .from('player-photos').upload(path, file, { upsert: true })
