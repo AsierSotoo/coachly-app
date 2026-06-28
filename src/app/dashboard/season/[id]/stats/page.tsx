@@ -222,7 +222,8 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                     )}
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-[48px] font-extrabold leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+                    <span className="font-extrabold leading-none"
+                      style={{ color: '#4be277', fontFamily: 'Sora, sans-serif', fontSize: winRate === 100 ? 36 : winRate >= 10 ? 44 : 48 }}>
                       {winRate}%
                     </span>
                     <span className="text-[12px] font-bold uppercase tracking-widest mt-1" style={{ color: '#adb4ce' }}>Victorias</span>

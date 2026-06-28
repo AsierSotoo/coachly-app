@@ -255,15 +255,13 @@ export default async function SeasonPage({
 
               <div className="flex flex-col gap-1.5">
                 <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Resultado (nosotros — rival)</label>
-                <div className="flex items-center gap-3 border rounded-xl px-4 py-2.5"
+                <div className="flex items-center justify-center gap-2 border rounded-xl px-4 py-2"
                   style={{ backgroundColor: '#0c1324', borderColor: '#2e3447' }}>
                   <input name="goals_for" type="number" min="0" defaultValue="0"
-                    className="w-10 bg-transparent text-center text-2xl font-extrabold border-0 outline-none"
-                    style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }} />
-                  <span className="text-lg font-bold" style={{ color: '#2e3447' }}>—</span>
+                    className="score-input" style={{ fontFamily: 'Sora, sans-serif' }} />
+                  <span className="text-xl font-bold select-none" style={{ color: '#3d4a3d' }}>—</span>
                   <input name="goals_against" type="number" min="0" defaultValue="0"
-                    className="w-10 bg-transparent text-center text-2xl font-extrabold border-0 outline-none"
-                    style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }} />
+                    className="score-input" style={{ fontFamily: 'Sora, sans-serif' }} />
                 </div>
               </div>
 
