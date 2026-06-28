@@ -152,6 +152,8 @@ export default async function ConvocatoriaDetailPage({
           playedAt={conv.played_at}
           teamName={team.name}
           teamGender={team.gender}
+          logoUrl={team.logo_url}
+          seasonName={season.name}
           players={players ?? []}
           initial={initial}
           linkedMatchId={conv.match_id ?? null}
