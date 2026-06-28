@@ -468,19 +468,7 @@ export function ConvocatoriaEditor({
         </div>
       </div>
 
-      {/* Leyenda */}
-      {squad.some(p => statuses[p.id] === 'titular') && (
-        <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1rem', fontSize: '0.7rem', color: '#64748b' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ background: '#16a34a', color: 'white', padding: '1px 6px', borderRadius: 4, fontWeight: 700, fontSize: '0.65rem' }}>TIT</span>
-            Titular
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ background: '#e2e8f0', color: '#475569', padding: '1px 6px', borderRadius: 4, fontWeight: 700, fontSize: '0.65rem' }}>SUP</span>
-            Suplente / Convocada
-          </span>
-        </div>
-      )}
+      {/* Sin leyenda — la imagen es solo para compartir con la plantilla */}
 
       {/* Jugadoras por posición */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem 2rem' }}>
@@ -494,22 +482,16 @@ export function ConvocatoriaEditor({
                 {terms.posLabelPlural(pos)} ({group.length})
               </h2>
               <div>
-                {sorted.map(p => {
-                  const isTitular = statuses[p.id] === 'titular'
-                  return (
-                    <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.3rem 0.5rem', marginBottom: 2, borderRadius: 4, background: isTitular ? '#f0fdf4' : 'transparent', borderLeft: isTitular ? '3px solid #16a34a' : '3px solid transparent' }}>
-                      <span style={{ width: 24, textAlign: 'right', fontWeight: 700, color: '#94a3b8', fontSize: '0.8rem', flexShrink: 0 }}>
-                        {p.number !== null ? p.number : '—'}
-                      </span>
-                      <span style={{ flex: 1, fontWeight: isTitular ? 700 : 400, color: '#0f172a', fontSize: '0.875rem' }}>
-                        {p.name}
-                      </span>
-                      <span style={{ fontSize: '0.6rem', fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: isTitular ? '#16a34a' : '#e2e8f0', color: isTitular ? 'white' : '#64748b', flexShrink: 0 }}>
-                        {isTitular ? 'TIT' : 'SUP'}
-                      </span>
-                    </div>
-                  )
-                })}
+                {sorted.map(p => (
+                  <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.3rem 0.5rem', marginBottom: 2 }}>
+                    <span style={{ width: 24, textAlign: 'right', fontWeight: 700, color: '#94a3b8', fontSize: '0.8rem', flexShrink: 0 }}>
+                      {p.number !== null ? p.number : '—'}
+                    </span>
+                    <span style={{ flex: 1, color: '#0f172a', fontSize: '0.875rem' }}>
+                      {p.name}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           )
