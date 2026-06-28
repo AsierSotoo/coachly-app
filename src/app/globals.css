@@ -115,41 +115,38 @@ button, [role="button"], a[href] {
 
 /* ── Impresión de convocatorias ─────────────────────────────────────────────── */
 
-/* La hoja de impresión está siempre en el DOM pero oculta en pantalla */
-.print-convocatoria {
-  display: none;
+/* Oculta en pantalla; solo aparece al imprimir */
+@media screen {
+  .print-convocatoria {
+    display: none;
+  }
 }
 
 @media print {
-  /* Ocultar toda la UI: sidebar, header, nav, botones, contenido de pantalla */
-  body > *,
-  header,
-  aside,
-  nav,
-  .print-convocatoria ~ * {
-    display: none !important;
+  /* Hacer invisibles todos los nodos del body */
+  body * {
+    visibility: hidden;
   }
 
-  /* Ocultar todo lo que sea hermano o ancestro de print-convocatoria */
-  body {
-    background: white !important;
-    color: black !important;
+  /* Restaurar solo la hoja de impresión y sus hijos */
+  .print-convocatoria,
+  .print-convocatoria * {
+    visibility: visible;
   }
 
-  /* Solo mostrar la hoja de impresión */
+  /* Colocar la hoja en el origen de la página */
   .print-convocatoria {
-    display: block !important;
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     background: white;
-    padding: 2rem 2.5rem;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 14px;
     color: #0f172a;
-    z-index: 9999;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
   }
 
-  /* Ocultar el patrón de puntos del body */
+  /* Quitar el patrón de puntos */
   body::before {
     display: none !important;
   }
