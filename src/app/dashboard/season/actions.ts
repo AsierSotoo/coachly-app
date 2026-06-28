@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase-server'
 
 export async function createMatch(formData: FormData) {
@@ -23,6 +24,7 @@ export async function createMatch(formData: FormData) {
 
   if (error) redirect(`/dashboard/season/${seasonId}?error=${encodeURIComponent(error.message)}`)
 
+  revalidatePath(`/dashboard/season/${seasonId}`)
   redirect(`/dashboard/season/${seasonId}/match/${match.id}`)
 }
 
@@ -32,10 +34,14 @@ export async function saveAppearances(formData: FormData) {
   const seasonId = formData.get('season_id') as string
   const playerIds = (formData.get('player_ids') as string).split(',').filter(Boolean)
 
-  // Actualizar resultado del partido
+  // Actualizar datos del partido
   await supabase
     .from('matches')
     .update({
+      opponent: formData.get('opponent') as string,
+      played_at: formData.get('played_at') as string,
+      home: formData.get('home') === 'true',
+      competition: (formData.get('competition') as string) || null,
       goals_for: Number(formData.get('goals_for') ?? 0),
       goals_against: Number(formData.get('goals_against') ?? 0),
     })
@@ -78,6 +84,8 @@ export async function saveAppearances(formData: FormData) {
       .in('player_id', notCalled)
   }
 
+  revalidatePath(`/dashboard/season/${seasonId}`)
+  revalidatePath(`/dashboard/season/${seasonId}/stats`)
   redirect(`/dashboard/season/${seasonId}/match/${matchId}?saved=1`)
 }
 
@@ -88,5 +96,7 @@ export async function deleteMatch(formData: FormData) {
 
   await supabase.from('matches').delete().eq('id', matchId)
 
+  revalidatePath(`/dashboard/season/${seasonId}`)
+  revalidatePath(`/dashboard/season/${seasonId}/stats`)
   redirect(`/dashboard/season/${seasonId}`)
 }

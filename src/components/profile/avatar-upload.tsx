@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { toast } from 'sonner'
-import { Camera, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 
 interface AvatarUploadProps {
@@ -73,9 +72,9 @@ export function AvatarUpload({ userId, currentUrl, name, size = 96 }: AvatarUplo
         {/* Overlay al hover */}
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
           {uploading
-            ? <Loader2 className="h-6 w-6 animate-spin text-white" />
+            ? <span className="material-symbols-outlined animate-spin text-white" style={{ fontSize: 22 }}>progress_activity</span>
             : <>
-                <Camera className="h-5 w-5 text-white" />
+                <span className="material-symbols-outlined text-white" style={{ fontSize: 20 }}>photo_camera</span>
                 <span className="text-[9px] font-bold text-white uppercase tracking-wide">Cambiar</span>
               </>
           }

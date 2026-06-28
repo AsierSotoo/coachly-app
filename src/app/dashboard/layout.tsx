@@ -2,71 +2,100 @@ import { createClient } from '@/lib/supabase-server'
 import { logout } from '@/app/auth/actions'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Home, Users, LogOut, UserCircle } from 'lucide-react'
+import { redirect } from 'next/navigation'
+import { NavBar } from '@/components/ui/nav-bar'
+import { DesktopSidebar } from '@/components/ui/desktop-sidebar'
+import { HeaderSearch } from '@/components/ui/header-search'
+import { HeaderTitle } from '@/components/ui/header-title'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: profile } = user
-    ? await supabase.from('users').select('name, avatar_url').eq('id', user.id).single()
-    : { data: null }
+  if (!user) redirect('/login')
 
-  const displayName = profile?.name || user?.email?.split('@')[0] || 'Entrenador'
+  const [{ data: profile }, { data: teamsRaw }] = await Promise.all([
+    user
+      ? supabase.from('users').select('name, avatar_url').eq('id', user.id).single()
+      : Promise.resolve({ data: null }),
+    user
+      ? supabase.from('teams').select('id, name, seasons(id, created_at)').order('created_at', { ascending: true })
+      : Promise.resolve({ data: null }),
+  ])
+
+  const displayName = (profile as { name?: string; avatar_url?: string } | null)?.name || user?.email?.split('@')[0] || 'Entrenador'
   const initial = displayName.charAt(0).toUpperCase()
-  const avatarUrl = profile?.avatar_url
+  const avatarUrl = (profile as { name?: string; avatar_url?: string } | null)?.avatar_url
+
+  type TeamData = { id: string; name: string; seasons: { id: string; created_at: string }[] }
+  const teams = (teamsRaw ?? []) as TeamData[]
 
   return (
-    <div className="flex min-h-screen flex-col" style={{ backgroundColor: '#020617' }}>
-      {/* Header */}
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-800/80 bg-[#020617]/90 backdrop-blur-md px-4 py-3">
-        <Link href="/dashboard" className="font-[family-name:var(--font-heading)] text-lg font-bold text-green-400 tracking-tight hover:text-green-300 transition-colors">
-          Coachly
-        </Link>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/dashboard/profile"
-            className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-3 py-1.5 hover:border-slate-700 transition-colors cursor-pointer"
-          >
-            <div className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-green-500 to-green-700">
-              {avatarUrl
-                ? <Image src={avatarUrl} alt={displayName} fill className="object-cover" unoptimized />
-                : <span className="font-[family-name:var(--font-heading)] text-[10px] font-black text-white">{initial}</span>
-              }
+    <div className="flex min-h-screen">
+
+      {/* Sidebar desktop — recibe todos los equipos, detecta el activo con usePathname */}
+      <DesktopSidebar teams={teams} displayName={displayName} avatarUrl={avatarUrl} />
+
+      {/* Columna principal */}
+      <div className="flex flex-1 flex-col min-w-0 md:ml-64">
+
+        {/* Header desktop */}
+        <header className="sticky top-0 z-20 hidden md:flex items-center justify-between h-16 px-10 border-b border-[#2e3447]" style={{ backgroundColor: '#0c1324' }}>
+          <HeaderTitle teams={teams} />
+          <div className="flex items-center gap-4">
+            <HeaderSearch teams={teams} />
+            <Link href="/dashboard/profile" className="flex items-center gap-2 cursor-pointer">
+              <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-green-500/20">
+                {avatarUrl
+                  ? <Image src={avatarUrl} alt={displayName} fill className="object-cover" unoptimized />
+                  : <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-green-500 to-green-700">
+                      <span className="text-xs font-black text-white">{initial}</span>
+                    </div>
+                }
+              </div>
+            </Link>
+          </div>
+        </header>
+
+        {/* Header móvil */}
+        <header
+          className="md:hidden sticky top-0 z-20 flex items-center justify-between border-b border-[#2e3447] px-4"
+          style={{ backgroundColor: '#0c1324', height: 56, paddingTop: 'env(safe-area-inset-top, 0px)' }}
+        >
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+              <Image src="/logo.png" alt="Coachly" width={32} height={32} className="w-full h-full object-cover" />
             </div>
-            <span className="hidden text-xs font-medium text-slate-300 sm:block max-w-[120px] truncate">{displayName}</span>
+            <span className="font-extrabold text-lg leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
           </Link>
-          <form action={logout}>
-            <button
-              type="submit"
-              className="flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-800 hover:text-slate-300 transition-colors cursor-pointer"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
-          </form>
-        </div>
-      </header>
 
-      {/* Contenido */}
-      <div className="flex-1 pb-20">
-        {children}
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard/profile"
+              className="flex items-center justify-center rounded-full overflow-hidden border border-[#2e3447] active:opacity-70 transition-opacity"
+              style={{ width: 40, height: 40 }}>
+              {avatarUrl
+                ? <Image src={avatarUrl} alt={displayName} width={40} height={40} className="object-cover" unoptimized />
+                : <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-green-500 to-green-700">
+                    <span className="font-black text-sm text-white">{initial}</span>
+                  </div>
+              }
+            </Link>
+            <form action={logout}>
+              <button type="submit"
+                className="flex items-center justify-center rounded-xl border border-[#2e3447] active:opacity-70 transition-opacity"
+                style={{ width: 40, height: 40, backgroundColor: '#151b2d', color: '#adb4ce' }}
+                aria-label="Cerrar sesión">
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>logout</span>
+              </button>
+            </form>
+          </div>
+        </header>
+
+        <div className="flex-1 pb-24 md:pb-0">{children}</div>
+
+        {/* Nav inferior móvil */}
+        <NavBar teams={teams} />
       </div>
-
-      {/* Nav inferior */}
-      <nav className="fixed bottom-0 left-0 right-0 z-20 flex border-t border-slate-800/80 bg-[#020617]/90 backdrop-blur-md">
-        <Link href="/dashboard" className="flex flex-1 flex-col items-center gap-1 py-3 text-slate-500 hover:text-green-400 transition-colors cursor-pointer group">
-          <Home className="h-5 w-5 transition-transform group-hover:scale-110" />
-          <span className="text-[10px] font-medium">Inicio</span>
-        </Link>
-        <Link href="/dashboard/team/new" className="flex flex-1 flex-col items-center gap-1 py-3 text-slate-500 hover:text-green-400 transition-colors cursor-pointer group">
-          <Users className="h-5 w-5 transition-transform group-hover:scale-110" />
-          <span className="text-[10px] font-medium">Equipo</span>
-        </Link>
-        <Link href="/dashboard/profile" className="flex flex-1 flex-col items-center gap-1 py-3 text-slate-500 hover:text-green-400 transition-colors cursor-pointer group">
-          <UserCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
-          <span className="text-[10px] font-medium">Perfil</span>
-        </Link>
-      </nav>
     </div>
   )
 }

@@ -2,10 +2,10 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 const POSITION_COLORS: Record<string, string> = {
-  Portera: 'bg-amber-500',
+  Portera: 'bg-amber-500', Portero: 'bg-amber-500',
   Defensa: 'bg-blue-500',
   Centrocampista: 'bg-green-500',
-  Delantera: 'bg-red-500',
+  Delantera: 'bg-red-500', Delantero: 'bg-red-500',
 }
 
 interface PlayerAvatarProps {

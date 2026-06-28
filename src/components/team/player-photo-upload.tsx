@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { toast } from 'sonner'
-import { Camera, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 
 interface PlayerPhotoUploadProps {
@@ -11,16 +10,18 @@ interface PlayerPhotoUploadProps {
   currentUrl?: string | null
   playerName: string
   size?: 'sm' | 'lg'
+  circular?: boolean
+  className?: string
+  style?: React.CSSProperties
 }
 
-export function PlayerPhotoUpload({ playerId, currentUrl, playerName, size = 'lg' }: PlayerPhotoUploadProps) {
+export function PlayerPhotoUpload({ playerId, currentUrl, playerName, size = 'lg', circular, className, style }: PlayerPhotoUploadProps) {
   const [url, setUrl] = useState<string | null>(currentUrl ?? null)
   const [uploading, setUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const dim = size === 'sm' ? 'h-10 w-10' : 'h-20 w-20'
-  const round = size === 'sm' ? 'rounded-xl' : 'rounded-2xl'
-  const iconSize = size === 'sm' ? 'h-4 w-4' : 'h-7 w-7'
+  const dim = circular ? 'h-24 w-24' : size === 'sm' ? 'h-10 w-10' : 'h-20 w-20'
+  const round = circular ? 'rounded-full' : size === 'sm' ? 'rounded-xl' : 'rounded-2xl'
 
   async function upload(file: File) {
     if (!file.type.startsWith('image/')) { toast.error('Solo imágenes'); return }
@@ -51,22 +52,23 @@ export function PlayerPhotoUpload({ playerId, currentUrl, playerName, size = 'lg
   return (
     <div
       onClick={() => !uploading && inputRef.current?.click()}
-      className={`relative flex ${dim} ${round} cursor-pointer items-center justify-center overflow-hidden border border-slate-700 bg-slate-800 transition-all hover:border-green-500/50 group`}
+      className={className ?? `relative flex ${dim} ${round} cursor-pointer items-center justify-center overflow-hidden border border-slate-700 bg-slate-800 transition-all hover:border-green-500/50 group`}
+      style={style}
     >
       {uploading ? (
-        <Loader2 className="h-5 w-5 animate-spin text-green-400" />
+        <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: '#4be277' }}>progress_activity</span>
       ) : url ? (
         <>
           <Image src={url} alt={playerName} fill className="object-cover" unoptimized />
           <div className={`absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity ${round}`}>
-            <Camera className={`${iconSize} text-white`} />
+            <span className="material-symbols-outlined text-white" style={{ fontSize: size === 'sm' ? 14 : 24 }}>photo_camera</span>
           </div>
         </>
       ) : (
         <>
           <span className="font-[family-name:var(--font-heading)] text-sm font-black text-slate-400">{initials}</span>
           <div className={`absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity ${round}`}>
-            <Camera className={`${iconSize} text-white`} />
+            <span className="material-symbols-outlined text-white" style={{ fontSize: size === 'sm' ? 14 : 24 }}>photo_camera</span>
           </div>
         </>
       )}

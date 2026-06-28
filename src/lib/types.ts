@@ -10,6 +10,8 @@ export interface Team {
   user_id: string
   name: string
   category: string | null
+  gender: string | null
+  logo_url: string | null
   created_at: string
 }
 
@@ -19,6 +21,7 @@ export interface Player {
   name: string
   number: number | null
   position: string | null
+  bio: string | null
   active: boolean
   created_at: string
 }

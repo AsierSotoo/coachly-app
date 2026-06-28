@@ -1,0 +1,60 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { resolveActiveIds } from './header-title'
+
+type Team = { id: string; name: string; seasons: { id: string; created_at: string }[] }
+
+export function NavBar({ teams }: { teams: Team[] }) {
+  const pathname = usePathname()
+  const { teamId, seasonId } = resolveActiveIds(teams, pathname)
+
+  const items = [
+    { key: 'home',    href: '/dashboard',                                                                          icon: 'home',           label: 'Inicio' },
+    { key: 'season',  href: seasonId ? `/dashboard/season/${seasonId}` : teamId ? `/dashboard/team/${teamId}/seasons` : '/dashboard', icon: 'calendar_today', label: 'Temporada' },
+    { key: 'players', href: teamId ? `/dashboard/team/${teamId}/players` : '/dashboard',                           icon: 'groups',         label: 'Plantilla' },
+    { key: 'stats',   href: seasonId ? `/dashboard/season/${seasonId}/stats` : '/dashboard',                       icon: 'leaderboard',    label: 'Stats' },
+    { key: 'profile', href: '/dashboard/profile',                                                                  icon: 'person',         label: 'Perfil' },
+  ]
+
+  const isActive = (key: string) => {
+    if (key === 'home')    return pathname === '/dashboard'
+    if (key === 'season')  return pathname.startsWith('/dashboard/season') && !pathname.includes('/stats')
+    if (key === 'players') return pathname.startsWith('/dashboard/team')
+    if (key === 'stats')   return pathname.includes('/stats')
+    if (key === 'profile') return pathname.startsWith('/dashboard/profile')
+    return false
+  }
+
+  return (
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 z-20 border-t border-[#2e3447]"
+      style={{
+        backgroundColor: 'rgba(7,13,31,0.97)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      }}
+    >
+      <div className="flex items-center h-16">
+        {items.map(item => {
+          const active = isActive(item.key)
+          return (
+            <Link key={item.key} href={item.href}
+              className="relative flex flex-1 flex-col items-center justify-center gap-0.5 h-full transition-colors"
+              style={{ color: active ? '#4be277' : '#64748b' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 22, fontVariationSettings: active ? "'FILL' 1, 'wght' 500" : "'FILL' 0, 'wght' 400" }}>
+                {item.icon}
+              </span>
+              <span className="text-[10px] font-semibold leading-none">{item.label}</span>
+              {active && (
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full" style={{ backgroundColor: '#4be277' }} />
+              )}
+            </Link>
+          )
+        })}
+      </div>
+    </nav>
+  )
+}

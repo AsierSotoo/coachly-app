@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PlayerAvatar } from '@/components/team/player-avatar'
 
@@ -23,25 +23,46 @@ interface Appearance {
   red_cards: number
 }
 
-const FIELDS = [
-  { key: 'minutes', label: "Min'", max: 120 },
-  { key: 'goals', label: 'Gol', max: undefined },
-  { key: 'assists', label: 'Ast', max: undefined },
-  { key: 'yellow', label: 'Am', max: 2 },
-  { key: 'red', label: 'Rj', max: 1 },
+const STAT_FIELDS = [
+  { key: 'goals',   label: 'Gol', max: undefined, color: 'text-green-400',  focus: 'focus:border-green-500/60' },
+  { key: 'assists', label: 'Ast', max: undefined, color: 'text-blue-400',   focus: 'focus:border-blue-500/60' },
+  { key: 'yellow',  label: 'Am',  max: 2,         color: 'text-yellow-400', focus: 'focus:border-yellow-500/60' },
+  { key: 'red',     label: 'Rj',  max: 1,         color: 'text-red-400',    focus: 'focus:border-red-500/60' },
 ]
 
-export function PlayerRow({ player, appearance }: { player: Player; appearance?: Appearance }) {
+export function PlayerRow({ player, appearance, convocatoriaStatus }: {
+  player: Player
+  appearance?: Appearance
+  convocatoriaStatus?: 'titular' | 'convocada' | 'no_convocada'
+}) {
   const defaultStatus: Status = appearance
-    ? appearance.starter ? 'titular' : 'suplente'
-    : 'no_convocada'
+    ? (appearance.starter ? 'titular' : 'suplente')
+    : convocatoriaStatus === 'titular'      ? 'titular'
+    : convocatoriaStatus === 'no_convocada' ? 'no_convocada'
+    : 'suplente' // 'convocada' o sin convocatoria → suplente por defecto
 
   const [status, setStatus] = useState<Status>(defaultStatus)
+  const [minutes, setMinutes] = useState<number>(() => {
+    if (appearance) return appearance.minutes
+    return defaultStatus === 'titular' ? 90 : 0
+  })
+
+  const prevStatus = useRef<Status>(defaultStatus)
+
+  useEffect(() => {
+    if (!appearance) {
+      if (status === 'titular' && prevStatus.current !== 'titular') {
+        setMinutes(90)
+      } else if (status !== 'titular' && prevStatus.current === 'titular') {
+        setMinutes(0)
+      }
+    }
+    prevStatus.current = status
+  }, [status, appearance])
 
   const getDefault = (key: string) => {
     if (!appearance) return 0
     const map: Record<string, number> = {
-      minutes: appearance.minutes,
       goals: appearance.goals,
       assists: appearance.assists,
       yellow: appearance.yellow_cards,
@@ -86,7 +107,7 @@ export function PlayerRow({ player, appearance }: { player: Player; appearance?:
         </div>
       </div>
 
-      {/* Hidden input para el form */}
+      {/* Hidden inputs */}
       <input type="hidden" name={`status_${player.id}`} value={status} />
 
       {/* Stats — se muestran/ocultan con animación */}
@@ -100,16 +121,31 @@ export function PlayerRow({ player, appearance }: { player: Player; appearance?:
             className="overflow-hidden"
           >
             <div className="mt-3 grid grid-cols-5 gap-2 pt-3 border-t border-slate-800">
-              {FIELDS.map(f => (
+              {/* Minutos — controlado para el auto-90 */}
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] font-medium uppercase tracking-wide text-slate-500">Min&apos;</span>
+                <input
+                  name={`minutes_${player.id}`}
+                  type="number"
+                  min="0"
+                  max={120}
+                  value={minutes}
+                  onChange={e => setMinutes(Number(e.target.value))}
+                  className="h-10 w-full rounded-xl border border-slate-700 bg-slate-800 text-center text-sm font-bold font-sans tabular-nums text-white focus:border-slate-500 focus:outline-none transition-colors"
+                />
+              </div>
+
+              {/* Resto de campos — no controlados */}
+              {STAT_FIELDS.map(f => (
                 <div key={f.key} className="flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-medium uppercase tracking-wide text-slate-500">{f.label}</span>
+                  <span className={`text-[10px] font-bold uppercase tracking-wide ${f.color}`}>{f.label}</span>
                   <input
                     name={`${f.key}_${player.id}`}
                     type="number"
                     min="0"
                     max={f.max}
                     defaultValue={getDefault(f.key)}
-                    className="h-10 w-full rounded-xl border border-slate-700 bg-slate-800 text-center text-sm font-bold text-white focus:border-green-500 focus:outline-none transition-colors"
+                    className={`h-10 w-full rounded-xl border border-slate-700 bg-slate-800 text-center text-sm font-bold font-sans tabular-nums focus:outline-none transition-colors ${f.color} ${f.focus}`}
                   />
                 </div>
               ))}

@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { toast } from 'sonner'
-import { Upload, Loader2, Shield } from 'lucide-react'
 import Image from 'next/image'
 
 interface LogoUploadProps {
@@ -89,17 +88,17 @@ export function LogoUpload({ teamId, currentUrl, teamName }: LogoUploadProps) {
         }`}
       >
         {uploading ? (
-          <Loader2 className="h-8 w-8 animate-spin text-green-400" />
+          <span className="material-symbols-outlined animate-spin" style={{ fontSize: 32, color: '#4be277' }}>progress_activity</span>
         ) : url ? (
           <>
             <Image src={url} alt={`Escudo ${teamName}`} fill className="object-contain p-2" unoptimized />
             <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-3xl">
-              <Upload className="h-6 w-6 text-white" />
+              <span className="material-symbols-outlined text-white" style={{ fontSize: 24 }}>upload</span>
             </div>
           </>
         ) : (
           <div className="flex flex-col items-center gap-2 text-center px-2">
-            <Shield className="h-8 w-8 text-slate-600" />
+            <span className="material-symbols-outlined" style={{ fontSize: 32, color: '#475569' }}>shield</span>
             <span className="text-[10px] text-slate-500 leading-tight">Subir escudo</span>
           </div>
         )}

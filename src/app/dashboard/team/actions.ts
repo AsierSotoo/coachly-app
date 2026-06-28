@@ -1,6 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase-server'
 
 export async function createTeam(formData: FormData) {
@@ -21,6 +22,7 @@ export async function createTeam(formData: FormData) {
 
   if (error) redirect(`/dashboard/team/new?error=${encodeURIComponent(error.message)}`)
 
+  revalidatePath('/dashboard')
   redirect(`/dashboard/team/${team.id}/players`)
 }
 
@@ -39,6 +41,7 @@ export async function updateTeam(formData: FormData) {
 
   if (error) redirect(`/dashboard/team/${teamId}/settings?error=${encodeURIComponent(error.message)}`)
 
+  revalidatePath('/dashboard')
   redirect(`/dashboard/team/${teamId}/settings?saved=1`)
 }
 
@@ -57,6 +60,7 @@ export async function addPlayer(formData: FormData) {
 
   if (error) redirect(`/dashboard/team/${teamId}/players?error=${encodeURIComponent(error.message)}`)
 
+  revalidatePath(`/dashboard/team/${teamId}/players`)
   redirect(`/dashboard/team/${teamId}/players`)
 }
 
@@ -71,12 +75,29 @@ export async function updatePlayer(formData: FormData) {
       name: formData.get('name') as string,
       number: formData.get('number') ? Number(formData.get('number')) : null,
       position: formData.get('position') as string || null,
+      bio: formData.get('bio') as string || null,
     })
     .eq('id', playerId)
 
   if (error) redirect(`/dashboard/team/${teamId}/players?error=${encodeURIComponent(error.message)}`)
 
+  revalidatePath(`/dashboard/team/${teamId}/players`)
   redirect(`/dashboard/team/${teamId}/players`)
+}
+
+export async function updatePlayerBio(formData: FormData) {
+  const supabase = await createClient()
+  const playerId = formData.get('player_id') as string
+  const teamId   = formData.get('team_id') as string
+
+  await supabase
+    .from('players')
+    .update({ bio: formData.get('bio') as string || null })
+    .eq('id', playerId)
+
+  revalidatePath(`/dashboard/team/${teamId}/players/${playerId}`)
+  revalidatePath(`/dashboard/team/${teamId}/players`)
+  redirect(`/dashboard/team/${teamId}/players/${playerId}?saved=1`)
 }
 
 export async function togglePlayerActive(formData: FormData) {
@@ -87,7 +108,18 @@ export async function togglePlayerActive(formData: FormData) {
 
   await supabase.from('players').update({ active: !active }).eq('id', playerId)
 
+  revalidatePath(`/dashboard/team/${teamId}/players`)
   redirect(`/dashboard/team/${teamId}/players`)
+}
+
+export async function deleteSeason(formData: FormData) {
+  const supabase = await createClient()
+  const seasonId = formData.get('season_id') as string
+  const teamId = formData.get('team_id') as string
+  await supabase.from('seasons').delete().eq('id', seasonId)
+  revalidatePath(`/dashboard/team/${teamId}/seasons`)
+  revalidatePath('/dashboard')
+  redirect(`/dashboard/team/${teamId}/seasons`)
 }
 
 export async function createSeason(formData: FormData) {
@@ -96,12 +128,11 @@ export async function createSeason(formData: FormData) {
 
   const { error } = await supabase
     .from('seasons')
-    .insert({
-      team_id: teamId,
-      name: formData.get('name') as string,
-    })
+    .insert({ team_id: teamId, name: formData.get('name') as string })
 
   if (error) redirect(`/dashboard/team/${teamId}/seasons?error=${encodeURIComponent(error.message)}`)
 
+  revalidatePath(`/dashboard/team/${teamId}/seasons`)
+  revalidatePath('/dashboard')
   redirect(`/dashboard/team/${teamId}/seasons`)
 }

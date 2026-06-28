@@ -8,45 +8,53 @@
   --border: #1e293b;
   --muted: #94a3b8;
   --accent: #22c55e;
+  /* Safe area insets for iPhone notch / home indicator */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
 }
 
 html,
 body {
-  background-color: #020617;
-  color: #f8fafc;
+  background-color: #0c1324;
+  color: #dce1fb;
   min-height: 100%;
+  /* Prevents double-tap zoom while allowing pinch zoom */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Patrón de puntos sutil en el fondo */
+/* Patrón de puntos — z-index: -1 para que quede siempre detrás del contenido */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(circle, #1e293b 1px, transparent 1px);
-  background-size: 28px 28px;
-  opacity: 0.35;
+  background-image: radial-gradient(#1e293b 1px, transparent 1px);
+  background-size: 24px 24px;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
 }
 
-#__next, main, [data-nextjs-scroll-focus-boundary] {
-  position: relative;
-  z-index: 1;
-}
-
-/* Input dark base */
+/* ── Inputs / Selects / Textareas ─────────────────────────────────────────── */
 input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="number"],
 input[type="date"],
+input[type="search"],
+input[type="tel"],
 select,
 textarea {
   background-color: #1e293b;
   border-color: #334155;
   color: #f8fafc;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   border-width: 1px;
+  /* Minimum touch target */
+  min-height: 44px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  /* Prevent iOS zoom on focus (font-size must be >= 16px) */
+  font-size: 16px;
 }
 
 input[type="text"]:focus,
@@ -54,6 +62,8 @@ input[type="email"]:focus,
 input[type="password"]:focus,
 input[type="number"]:focus,
 input[type="date"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
 select:focus,
 textarea:focus {
   border-color: #22c55e;
@@ -65,12 +75,40 @@ input::placeholder {
   color: #475569;
 }
 
+select {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
 select option {
   background-color: #1e293b;
   color: #f8fafc;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #020617; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+button, [role="button"], a[href] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* ── Safe area nav bar spacing ─────────────────────────────────────────────── */
+.pb-safe {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+}
+
+.nav-safe-height {
+  /* Nav bar: 64px + safe area */
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ── Mobile content bottom padding ─────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .pb-mobile-nav {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+}

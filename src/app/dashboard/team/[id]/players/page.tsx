@@ -3,214 +3,379 @@ import { createClient } from '@/lib/supabase-server'
 import { addPlayer, togglePlayerActive, updatePlayer } from '../../actions'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
-import { AnimatedList, AnimatedItem } from '@/components/ui/animated-card'
-import { ChevronLeft, Settings, Plus, UserMinus, UserCheck, Pencil, X, Check } from 'lucide-react'
-import { TeamLogo } from '@/components/team/team-logo'
 import { PlayerPhotoUpload } from '@/components/team/player-photo-upload'
 import { PlayerAvatar } from '@/components/team/player-avatar'
+import { getTeamTerms } from '@/lib/team-terms'
+import type { Metadata } from 'next'
 
-const POSITIONS = ['Portera', 'Defensa', 'Centrocampista', 'Delantera']
-const POSITION_BADGES: Record<string, string> = {
-  Portera: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-  Defensa: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-  Centrocampista: 'bg-green-500/15 text-green-400 border-green-500/30',
-  Delantera: 'bg-red-500/15 text-red-400 border-red-500/30',
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const supabase = await createClient()
+  const { data } = await supabase.from('teams').select('name').eq('id', id).single()
+  return { title: data ? `Plantilla · ${data.name}` : 'Plantilla' }
 }
 
 export default async function PlayersPage({
   params, searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ error?: string; edit?: string }>
+  searchParams: Promise<{ error?: string; edit?: string; q?: string }>
 }) {
   const { id: teamId } = await params
   const supabase = await createClient()
   const { data: team } = await supabase.from('teams').select('*').eq('id', teamId).single()
   if (!team) notFound()
 
+  const terms = getTeamTerms(team.gender)
+  const POSITIONS = terms.positions
+
   const { data: players } = await supabase
     .from('players').select('*').eq('team_id', teamId)
     .order('number', { ascending: true, nullsFirst: false })
 
-  const active = players?.filter(p => p.active) ?? []
-  const inactive = players?.filter(p => !p.active) ?? []
-  const sp = await searchParams
+  const sp        = await searchParams
   const editingId = sp.edit ?? null
+  const searchQ   = sp.q?.toLowerCase() ?? ''
+
+  const allActive   = players?.filter(p =>  p.active) ?? []
+  const allInactive = players?.filter(p => !p.active) ?? []
+
+  const active   = searchQ ? allActive.filter(p   => p.name.toLowerCase().includes(searchQ) || String(p.number ?? '').includes(searchQ)) : allActive
+  const inactive = searchQ ? allInactive.filter(p => p.name.toLowerCase().includes(searchQ) || String(p.number ?? '').includes(searchQ)) : allInactive
+
+  // Stats completas por jugadora (participación + goles + tarjetas)
+  const playerIds = players?.map(p => p.id) ?? []
+  type PStat = { games: number; goals: number; assists: number; yellowCards: number; redCards: number }
+  const statsMap: Record<string, PStat> = {}
+  if (playerIds.length > 0) {
+    const { data: appData } = await supabase
+      .from('appearances')
+      .select('player_id, goals, assists, yellow_cards, red_cards, minutes')
+      .in('player_id', playerIds)
+    appData?.forEach(a => {
+      if (!statsMap[a.player_id]) statsMap[a.player_id] = { games: 0, goals: 0, assists: 0, yellowCards: 0, redCards: 0 }
+      if ((a.minutes ?? 0) > 0) statsMap[a.player_id].games++
+      statsMap[a.player_id].goals       += a.goals ?? 0
+      statsMap[a.player_id].assists     += a.assists ?? 0
+      statsMap[a.player_id].yellowCards += a.yellow_cards ?? 0
+      statsMap[a.player_id].redCards    += a.red_cards ?? 0
+    })
+  }
+  const maxGames = Math.max(1, ...Object.values(statsMap).map(s => s.games))
 
   return (
     <PageTransition>
-      <main className="mx-auto max-w-2xl px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 md:px-10 py-8 pb-32 md:pb-10">
 
         {/* Header */}
-        <div className="mb-6">
-          <Link href="/dashboard" className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
-            <ChevronLeft className="h-3 w-3" /> Dashboard
-          </Link>
-          <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
-              <div>
-                <h1 className="font-[family-name:var(--font-heading)] text-xl font-bold text-white">{team.name}</h1>
-                <p className="text-xs text-slate-500">{[team.gender, team.category].filter(Boolean).join(' · ')}</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Link href={`/dashboard/team/${teamId}/settings`} className="flex items-center gap-1.5 rounded-xl border border-slate-700 px-3 py-2 text-xs text-slate-400 hover:bg-slate-800 transition-colors cursor-pointer">
-                <Settings className="h-3.5 w-3.5" /> Ajustes
-              </Link>
-              <Link href={`/dashboard/team/${teamId}/seasons`} className="flex items-center gap-1.5 rounded-xl bg-green-500/10 border border-green-500/20 px-3 py-2 text-xs font-bold text-green-400 hover:bg-green-500/20 transition-colors cursor-pointer">
-                Temporadas →
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Añadir jugadora */}
-        <div className="mb-6 overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur">
-          <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-3">
-            <Plus className="h-3.5 w-3.5 text-green-400" />
-            <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Añadir jugadora</h2>
-          </div>
-          <form action={addPlayer} className="p-4 flex flex-col gap-3">
-            <input type="hidden" name="team_id" value={teamId} />
-            <div className="flex gap-2">
-              <input name="number" type="number" min="1" max="99" placeholder="Nº" className="w-16 h-11 px-3 text-sm text-center" />
-              <input name="name" type="text" required placeholder="Nombre completo" className="flex-1 h-11 px-3 text-sm" />
-            </div>
-            <div className="flex gap-2">
-              <select name="position" className="flex-1 h-11 px-3 text-sm">
-                <option value="">Posición (opcional)</option>
-                {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-              <button type="submit" className="flex items-center gap-1.5 rounded-xl bg-green-500 px-5 h-11 text-sm font-bold text-white hover:bg-green-400 active:scale-95 transition-all cursor-pointer shadow-lg shadow-green-500/20">
-                <Plus className="h-4 w-4" /> Añadir
-              </button>
-            </div>
-            {sp.error && <p className="text-sm text-red-400">{sp.error}</p>}
-          </form>
-        </div>
-
-        {/* Plantilla activa */}
-        <section className="mb-8">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <div>
+            <h2 className="text-[32px] font-extrabold leading-10 tracking-tight text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
               Plantilla
             </h2>
-            <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-bold text-slate-400">
-              {active.length}
+            <p className="flex items-center gap-2 mt-1" style={{ color: '#adb4ce' }}>
+              <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#4be277' }} />
+              {searchQ
+                ? `${active.length} resultado${active.length !== 1 ? 's' : ''} para "${sp.q}"`
+                : `${allActive.length} ${allActive.length !== 1 ? terms.pp : terms.p} ${allActive.length !== 1 ? terms.actives : terms.active} en el sistema`
+              }
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              href={`/dashboard/team/${teamId}/settings`}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-colors hover:bg-[#23293c]"
+              style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}
+            >
+              <span className="material-symbols-outlined text-lg">settings</span>
+              Ajustes del equipo
+            </Link>
+            <Link
+              href={`/dashboard/team/${teamId}/seasons`}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-opacity hover:opacity-90"
+              style={{ backgroundColor: '#22c55e', color: '#003915' }}
+            >
+              <span className="material-symbols-outlined text-lg">calendar_today</span>
+              Temporadas
+            </Link>
+          </div>
+        </div>
+
+        {/* Formulario rápido */}
+        <section
+          className="mb-8 p-6 rounded-[24px] border transition-all duration-200 hover:border-[#22c55e] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
+          style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <span className="material-symbols-outlined" style={{ color: '#4be277' }}>add_circle</span>
+            <h3 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Rápido Registro</h3>
+          </div>
+          <form action={addPlayer} className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <input type="hidden" name="team_id" value={teamId} />
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Nombre Completo</label>
+              <input name="name" type="text" required placeholder={terms.p === 'jugador' ? 'Ej: Carlos García' : 'Ej: María García'}
+                className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[#4be277]"
+                style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Dorsal</label>
+              <input name="number" type="number" min="1" max="99" placeholder="10"
+                className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[#4be277]"
+                style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Posición</label>
+              <select name="position"
+                className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[#4be277] appearance-none"
+                style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}>
+                <option value="">Sin posición</option>
+                {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button type="submit"
+                className="w-full h-[50px] rounded-xl flex items-center justify-center gap-2 text-sm font-bold active:scale-95 transition-transform cursor-pointer"
+                style={{ backgroundColor: '#22c55e', color: '#003915' }}>
+                Confirmar {terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}
+              </button>
+            </div>
+          </form>
+          {sp.error && <p className="mt-3 text-sm" style={{ color: '#ffb4ab' }}>{sp.error}</p>}
+        </section>
+
+        {/* Grid de jugadores/as activos/as */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              {terms.pp.charAt(0).toUpperCase() + terms.pp.slice(1)} {terms.actives.charAt(0).toUpperCase() + terms.actives.slice(1)}
+            </h3>
+            <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border"
+              style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: '#4be277', borderColor: 'rgba(34,197,94,0.2)' }}>
+              Primer Equipo
             </span>
           </div>
 
           {active.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-slate-700 bg-slate-900/40 py-10 text-center">
-              <p className="text-sm text-slate-500">Añade la primera jugadora arriba.</p>
+            <div className="rounded-[24px] border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
+              <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>group_add</span>
+              <p className="text-sm" style={{ color: '#adb4ce' }}>Añade la primera {terms.p} usando el formulario de arriba</p>
             </div>
           ) : (
-            <AnimatedList>
-              {active.map(player => (
-                <AnimatedItem key={player.id}>
-                  {editingId === player.id ? (
-                    /* Formulario de edición */
-                    <div className="rounded-2xl border border-green-500/30 bg-slate-900 p-4">
-                      <form action={updatePlayer} className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {active.map(player => {
+                const badge = player.position ? terms.posBadge(player.position) : null
+                const stat  = statsMap[player.id] ?? { games: 0, goals: 0, assists: 0, yellowCards: 0, redCards: 0 }
+                const participationPct = Math.round((stat.games / maxGames) * 100)
+                const warnYellow = stat.yellowCards >= 4
+
+                if (editingId === player.id) {
+                  return (
+                    <div key={player.id} className="col-span-1 sm:col-span-2 lg:col-span-4 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#4be277' }}>
+                      <form action={updatePlayer} className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <input type="hidden" name="player_id" value={player.id} />
                         <input type="hidden" name="team_id" value={teamId} />
-                        <div className="flex gap-2">
-                          <input name="number" type="number" min="1" max="99" defaultValue={player.number ?? ''} placeholder="Nº" className="w-16 h-11 px-3 text-sm text-center" />
-                          <input name="name" type="text" required defaultValue={player.name} className="flex-1 h-11 px-3 text-sm" />
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Nombre</label>
+                          <input name="name" type="text" required defaultValue={player.name}
+                            className="border rounded-xl px-4 py-3 text-sm outline-none"
+                            style={{ backgroundColor: '#191f31', borderColor: '#4be277', color: '#dce1fb' }} />
                         </div>
-                        <div className="flex gap-2">
-                          <select name="position" defaultValue={player.position ?? ''} className="flex-1 h-11 px-3 text-sm">
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Dorsal</label>
+                          <input name="number" type="number" min="1" max="99" defaultValue={player.number ?? ''}
+                            className="border rounded-xl px-4 py-3 text-sm outline-none"
+                            style={{ backgroundColor: '#191f31', borderColor: '#4be277', color: '#dce1fb' }} />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Posición</label>
+                          <select name="position" defaultValue={player.position ?? ''}
+                            className="border rounded-xl px-4 py-3 text-sm outline-none"
+                            style={{ backgroundColor: '#191f31', borderColor: '#4be277', color: '#dce1fb' }}>
                             <option value="">Sin posición</option>
                             {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
                           </select>
-                          <button type="submit" className="flex items-center gap-1 rounded-xl bg-green-500 px-4 h-11 text-sm font-bold text-white hover:bg-green-400 cursor-pointer">
-                            <Check className="h-4 w-4" />
+                        </div>
+                        <div className="flex items-end gap-2">
+                          <button type="submit" className="flex-1 h-[50px] rounded-xl flex items-center justify-center gap-1 text-sm font-bold cursor-pointer" style={{ backgroundColor: '#22c55e', color: '#003915' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>check</span> Guardar
                           </button>
-                          <Link href={`/dashboard/team/${teamId}/players`} className="flex items-center gap-1 rounded-xl border border-slate-700 px-4 h-11 text-slate-400 hover:bg-slate-800 cursor-pointer">
-                            <X className="h-4 w-4" />
+                          <Link href={`/dashboard/team/${teamId}/players`} className="h-[50px] w-12 rounded-xl flex items-center justify-center border border-[#2e3447] cursor-pointer hover:bg-[#2e3447] transition-colors" style={{ color: '#adb4ce' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
                           </Link>
+                        </div>
+                        <div className="md:col-span-4 flex flex-col gap-2">
+                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Descripción</label>
+                          <textarea
+                            name="bio"
+                            rows={2}
+                            defaultValue={player.bio ?? ''}
+                            placeholder="Breve descripción de esta jugadora: su perfil, sus puntos fuertes..."
+                            className="border rounded-xl px-4 py-3 text-sm outline-none resize-none"
+                            style={{ backgroundColor: '#191f31', borderColor: '#4be277', color: '#dce1fb' }}
+                          />
                         </div>
                       </form>
                     </div>
-                  ) : (
-                    /* Card de jugadora */
-                    <div className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 transition-all hover:border-slate-700">
-                      <div className="flex items-center gap-3 p-3">
-                        {/* Foto con upload inline */}
-                        <PlayerPhotoUpload
-                          playerId={player.id}
-                          currentUrl={player.photo_url}
-                          playerName={player.name}
-                          size="sm"
-                        />
+                  )
+                }
 
-                        {/* Dorsal */}
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-700 bg-slate-800">
-                          <span className="font-[family-name:var(--font-heading)] text-sm font-black text-green-400">
-                            {player.number ?? '—'}
-                          </span>
-                        </div>
-
-                        {/* Nombre y posición */}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-white truncate">{player.name}</p>
-                          {player.position ? (
-                            <span className={`inline-block rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide mt-0.5 ${POSITION_BADGES[player.position] ?? 'bg-slate-700 text-slate-400 border-slate-600'}`}>
-                              {player.position}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-slate-600">Sin posición</span>
-                          )}
-                        </div>
-
-                        {/* Acciones — visibles en hover */}
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Link href={`/dashboard/team/${teamId}/players?edit=${player.id}`}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 text-slate-500 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer">
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Link>
-                          <form action={togglePlayerActive}>
-                            <input type="hidden" name="player_id" value={player.id} />
-                            <input type="hidden" name="team_id" value={teamId} />
-                            <input type="hidden" name="active" value="true" />
-                            <button type="submit" className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 text-slate-500 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 transition-colors cursor-pointer">
-                              <UserMinus className="h-3.5 w-3.5" />
-                            </button>
-                          </form>
-                        </div>
-                      </div>
+                return (
+                  <div key={player.id}
+                    className="relative group overflow-hidden rounded-[24px] border p-6 flex flex-col items-center transition-all duration-200 hover:border-[#22c55e] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
+                    style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}
+                  >
+                    {/* Acciones hover */}
+                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      <Link
+                        href={`/dashboard/team/${teamId}/players?edit=${player.id}`}
+                        className="w-8 h-8 rounded-full flex items-center justify-center border border-[#2e3447] hover:text-[#4be277] transition-colors cursor-pointer"
+                        style={{ backgroundColor: '#23293c', color: '#adb4ce' }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit</span>
+                      </Link>
+                      <form action={togglePlayerActive}>
+                        <input type="hidden" name="player_id" value={player.id} />
+                        <input type="hidden" name="team_id" value={teamId} />
+                        <input type="hidden" name="active" value="true" />
+                        <button type="submit"
+                          className="w-8 h-8 rounded-full flex items-center justify-center border border-[#2e3447] hover:text-[#ffb4ab] transition-colors cursor-pointer"
+                          style={{ backgroundColor: '#23293c', color: '#adb4ce' }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>block</span>
+                        </button>
+                      </form>
                     </div>
-                  )}
-                </AnimatedItem>
-              ))}
-            </AnimatedList>
+
+                    {/* Foto con dorsal */}
+                    <div className="relative mb-4">
+                      <PlayerPhotoUpload
+                        playerId={player.id}
+                        currentUrl={player.photo_url}
+                        playerName={player.name}
+                        circular
+                        style={{ borderColor: '#4be277', filter: 'drop-shadow(0 0 8px rgba(34,197,94,0.3))' }}
+                      />
+                      {player.number !== null && (
+                        <span
+                          className="absolute bottom-0 right-0 w-8 h-8 rounded-full text-sm font-bold flex items-center justify-center border-2"
+                          style={{ backgroundColor: '#22c55e', color: '#003915', borderColor: '#0c1324', fontFamily: 'Sora, sans-serif' }}
+                        >
+                          {player.number}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Nombre */}
+                    <Link
+                      href={`/dashboard/team/${teamId}/players/${player.id}`}
+                      className="text-[20px] font-semibold mb-1 text-center hover:text-[#4be277] transition-colors"
+                      style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}
+                    >
+                      {player.name}
+                    </Link>
+
+                    {/* Badge de posición */}
+                    {badge ? (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border mb-4"
+                        style={{ backgroundColor: badge.bg, color: badge.text, borderColor: badge.border }}>
+                        {terms.posLabel(player.position)}
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border mb-4"
+                        style={{ backgroundColor: '#23293c', color: '#adb4ce', borderColor: '#2e3447' }}>
+                        Sin posición
+                      </span>
+                    )}
+
+                    {/* Descripción */}
+                    {player.bio && (
+                      <p className="text-xs text-center line-clamp-2 mb-3 px-1 leading-relaxed" style={{ color: '#adb4ce' }}>
+                        {player.bio}
+                      </p>
+                    )}
+
+                    {/* Alerta sanción amarillas */}
+                    {warnYellow && (
+                      <div className="mb-2 flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-bold"
+                        style={{ backgroundColor: 'rgba(250,204,21,0.1)', border: '1px solid rgba(250,204,21,0.3)', color: '#facc15' }}>
+                        <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: '#facc15' }} />
+                        {stat.yellowCards} amarillas · Riesgo sanción
+                      </div>
+                    )}
+
+                    {/* Stats en temporada */}
+                    {(stat.goals > 0 || stat.assists > 0) && (
+                      <div className="flex items-center justify-center gap-4 mb-2">
+                        {stat.goals > 0 && (
+                          <span className="flex items-center gap-1 text-[11px] font-bold" style={{ color: '#4be277' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>sports_soccer</span>
+                            {stat.goals}
+                          </span>
+                        )}
+                        {stat.assists > 0 && (
+                          <span className="flex items-center gap-1 text-[11px] font-bold" style={{ color: '#60a5fa' }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>electric_bolt</span>
+                            {stat.assists}
+                          </span>
+                        )}
+                        {stat.redCards > 0 && (
+                          <span className="flex items-center gap-1 text-[11px] font-bold" style={{ color: '#f87171' }}>
+                            <span className="w-2.5 h-3.5 rounded-[2px]" style={{ backgroundColor: '#f87171' }} />
+                            {stat.redCards}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Barra de participación */}
+                    <div className="w-full h-1 rounded-full overflow-hidden mb-1" style={{ backgroundColor: '#23293c' }}>
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${participationPct}%`, backgroundColor: '#22c55e' }} />
+                    </div>
+                    <div className="flex justify-between w-full">
+                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>Partidos jugados</span>
+                      <span className="text-[10px] font-bold" style={{ color: '#4be277' }}>{stat.games}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           )}
         </section>
 
-        {/* Bajas */}
+        {/* Jugadoras inactivas / bajas */}
         {inactive.length > 0 && (
-          <section>
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-600">Bajas</h2>
-              <span className="rounded-full bg-slate-800/60 px-2.5 py-0.5 text-xs text-slate-600">{inactive.length}</span>
+          <section className="mt-12 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                {terms.pp.charAt(0).toUpperCase() + terms.pp.slice(1)} Inactiv{terms.actives.slice(-2)} / Bajas
+              </h3>
+              <span className="text-sm italic" style={{ color: '#adb4ce' }}>Ocultas de la alineación principal</span>
             </div>
-            <div className="flex flex-col gap-2 opacity-50">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {inactive.map(player => (
-                <div key={player.id} className="flex items-center justify-between rounded-2xl border border-slate-800/50 bg-slate-900/40 px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position} size="sm" />
+                <div key={player.id}
+                  className="flex items-center justify-between p-4 rounded-xl border"
+                  style={{ backgroundColor: 'rgba(25,31,49,0.5)', borderColor: '#2e3447' }}>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center border" style={{ backgroundColor: '#23293c', borderColor: '#2e3447' }}>
+                      <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position} size="sm" />
+                    </div>
                     <div>
-                      <p className="text-sm font-medium text-slate-500 line-through">{player.name}</p>
-                      <p className="text-xs text-slate-700">{player.position ?? '—'}</p>
+                      <p className="font-bold" style={{ color: '#dce1fb' }}>{player.name}</p>
+                      <p className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>
+                        {player.position ?? '—'} · Baja
+                      </p>
                     </div>
                   </div>
                   <form action={togglePlayerActive}>
                     <input type="hidden" name="player_id" value={player.id} />
                     <input type="hidden" name="team_id" value={teamId} />
                     <input type="hidden" name="active" value="false" />
-                    <button type="submit" className="flex items-center gap-1.5 rounded-lg border border-slate-700 px-3 py-1.5 text-xs text-slate-600 hover:bg-green-500/10 hover:border-green-500/30 hover:text-green-400 transition-colors cursor-pointer">
-                      <UserCheck className="h-3.5 w-3.5" /> Reactivar
+                    <button type="submit"
+                      className="text-[10px] font-bold uppercase tracking-wider hover:underline cursor-pointer transition-colors"
+                      style={{ color: '#4be277' }}>
+                      Reactivar
                     </button>
                   </form>
                 </div>
