@@ -434,7 +434,7 @@ export function ConvocatoriaEditor({
     </div>
 
     {/* ── HOJA DE IMPRESIÓN ─────────────────────────────────────────────────── */}
-    <div className="print-convocatoria">
+    <div className="print-convocatoria" style={{ padding: '2rem 2.5rem', borderRadius: 16 }}>
       {/* Cabecera */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '3px solid #16a34a' }}>
         {/* Escudo + nombre */}

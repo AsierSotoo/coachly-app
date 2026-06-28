@@ -21,7 +21,7 @@ export function DownloadImageButton({ targetClass, filename }: { targetClass: st
         quality: 1,
         pixelRatio: 2,
         backgroundColor: '#ffffff',
-        style: { fontFamily: 'system-ui, sans-serif' },
+        style: { fontFamily: 'system-ui, sans-serif', borderRadius: '0' },
       })
 
       node.style.display = prevDisplay
