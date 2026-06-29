@@ -16,11 +16,15 @@ export async function login(formData: FormData) {
 
 export async function register(formData: FormData) {
   const supabase = await createClient()
+  const name = (formData.get('name') as string).trim()
   const { data, error } = await supabase.auth.signUp({
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   })
   if (error) redirect(`/register?error=${encodeURIComponent(error.message)}`)
+  if (data.user) {
+    await supabase.from('users').update({ name }).eq('id', data.user.id)
+  }
   if (!data.session) redirect('/register?message=Revisa+tu+email+para+confirmar+la+cuenta')
   redirect('/dashboard')
 }

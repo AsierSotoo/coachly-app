@@ -371,7 +371,14 @@ export default async function SeasonPage({
                           {/* Oponente */}
                           <td className="px-6 py-5">
                             <div className="flex items-center gap-3">
-                              <OpponentInitial name={match.opponent} />
+                              {(match as { rival_logo_url?: string | null }).rival_logo_url ? (
+                                <div className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0 overflow-hidden border border-[#2e3447] bg-white">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={(match as { rival_logo_url: string }).rival_logo_url} alt={match.opponent} className="w-full h-full object-contain p-1" />
+                                </div>
+                              ) : (
+                                <OpponentInitial name={match.opponent} />
+                              )}
                               <div>
                                 <p className="text-sm font-bold text-white">{match.opponent}</p>
                                 <p className="text-[11px] mt-0.5" style={{ color: '#adb4ce' }}>

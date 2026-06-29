@@ -297,10 +297,10 @@ export default async function PlayersPage({
 
                     {/* Alerta sanción amarillas */}
                     {warnYellow && (
-                      <div className="mb-2 flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-bold"
-                        style={{ backgroundColor: 'rgba(250,204,21,0.1)', border: '1px solid rgba(250,204,21,0.3)', color: '#facc15' }}>
-                        <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: '#facc15' }} />
-                        {stat.yellowCards} amarillas · Riesgo sanción
+                      <div className="mb-3 flex items-center gap-2 rounded-xl px-3 py-2 text-[11px] font-bold animate-pulse"
+                        style={{ backgroundColor: 'rgba(250,204,21,0.15)', border: '1.5px solid rgba(250,204,21,0.5)', color: '#facc15' }}>
+                        <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1" }}>warning</span>
+                        <span>{stat.yellowCards} amarillas — <span className="uppercase tracking-wide">riesgo de sanción</span></span>
                       </div>
                     )}
 

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
+import { compressImage } from '@/lib/compress-image'
 import { toast } from 'sonner'
 import Image from 'next/image'
 
@@ -22,15 +23,12 @@ export function LogoUpload({ teamId, currentUrl, teamName }: LogoUploadProps) {
       toast.error('Solo se permiten imágenes')
       return
     }
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Máximo 2MB')
-      return
-    }
 
     setUploading(true)
+    try { file = await compressImage(file, 600, 0.9) } catch { /* usar original */ }
+
     const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const path = `${teamId}/logo.${ext}`
+    const path = `${teamId}/logo.jpg`
 
     const { error: uploadError } = await supabase.storage
       .from('team-logos')
@@ -113,7 +111,7 @@ export function LogoUpload({ teamId, currentUrl, teamName }: LogoUploadProps) {
         >
           {url ? 'Cambiar escudo' : 'Subir escudo'}
         </button>
-        <p className="mt-0.5 text-[10px] text-slate-600">PNG, JPG o SVG · Máx. 2MB</p>
+        <p className="mt-0.5 text-[10px] text-slate-600">PNG, JPG · Se comprime automáticamente</p>
       </div>
 
       <input

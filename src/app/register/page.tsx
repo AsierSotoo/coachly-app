@@ -111,6 +111,14 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
 
           <form action={register} className="flex flex-col gap-3.5">
             <div className="flex flex-col gap-1.5">
+              <label htmlFor="name" className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Tu nombre</label>
+              <input
+                id="name" name="name" type="text" required
+                autoComplete="name" placeholder="Ej: Carlos García"
+                className="h-11 px-4 text-sm"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
               <label htmlFor="email" className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Email</label>
               <input
                 id="email" name="email" type="email" required

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { MatchForm } from '@/components/match/match-form'
+import { RivalLogoUpload } from '@/components/match/rival-logo-upload'
 import { PageTransition } from '@/components/ui/page-transition'
 import Link from 'next/link'
 
@@ -74,7 +75,12 @@ export default async function MatchPage({
                 {dateStr}{match.competition ? ` · ${match.competition}` : ''}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <RivalLogoUpload
+                matchId={matchId}
+                currentUrl={(match as { rival_logo_url?: string | null }).rival_logo_url}
+                opponentName={match.opponent}
+              />
               {convocatoriaId && (
                 <Link
                   href={`/dashboard/season/${seasonId}/convocatorias/${convocatoriaId}`}
