@@ -82,7 +82,8 @@ export async function updatePlayer(formData: FormData) {
   if (error) redirect(`/dashboard/team/${teamId}/players?error=${encodeURIComponent(error.message)}`)
 
   revalidatePath(`/dashboard/team/${teamId}/players`)
-  redirect(`/dashboard/team/${teamId}/players`)
+  revalidatePath(`/dashboard/team/${teamId}/players/${playerId}`)
+  redirect(`/dashboard/team/${teamId}/players/${playerId}?saved=1`)
 }
 
 export async function updatePlayerBio(formData: FormData) {

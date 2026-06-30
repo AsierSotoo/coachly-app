@@ -3,8 +3,9 @@ import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
 import { PlayerAvatar } from '@/components/team/player-avatar'
+import { PlayerPhotoUpload } from '@/components/team/player-photo-upload'
 import { getTeamTerms } from '@/lib/team-terms'
-import { updatePlayerBio } from '@/app/dashboard/team/actions'
+import { updatePlayer } from '@/app/dashboard/team/actions'
 
 export default async function PlayerDetailPage({
   params, searchParams,
@@ -71,68 +72,75 @@ export default async function PlayerDetailPage({
           <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> Plantilla
         </Link>
 
-        {/* ── HERO ─────────────────────────────────────────── */}
-        <div className="relative mb-5 overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-6">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
-
-          <div className="flex items-center gap-4">
-            <PlayerAvatar
-              name={player.name}
-              photoUrl={player.photo_url}
-              position={player.position}
-              size="lg"
-              className="h-16 w-16 rounded-2xl"
-            />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                {player.number !== null && (
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 border border-slate-700 font-[family-name:var(--font-heading)] text-xs font-black text-green-400">
-                    {player.number}
-                  </span>
-                )}
-                {player.position && (
-                  <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${posClass}`}>
-                    {posDisplay}
-                  </span>
-                )}
-              </div>
-              <h1 className="font-[family-name:var(--font-heading)] text-xl font-black text-white leading-tight truncate">
-                {player.name}
-              </h1>
-              <p className="text-xs text-slate-500 mt-0.5">{team.name}</p>
-              {player.bio && (
-                <p className="text-xs mt-2 leading-relaxed" style={{ color: '#94a3b8' }}>{player.bio}</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Bio editable */}
-        <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
-          <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
-            <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 16 }}>edit_note</span>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Descripción</p>
+        {/* ── FICHA EDITABLE ───────────────────────────────── */}
+        <div className="mb-5 overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950">
+          <div className="flex items-center gap-2 border-b border-slate-800 px-5 py-3">
+            <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 16 }}>edit</span>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Ficha del jugador/a</p>
             {sp.saved && (
-              <span className="ml-auto text-[10px] font-bold" style={{ color: '#4be277' }}>Guardado ✓</span>
+              <span className="ml-auto text-[10px] font-bold" style={{ color: '#4be277' }}>✓ Guardado</span>
             )}
           </div>
-          <form action={updatePlayerBio} className="p-3 flex flex-col gap-2">
-            <input type="hidden" name="player_id" value={player.id} />
-            <input type="hidden" name="team_id" value={teamId} />
-            <textarea
-              name="bio"
-              rows={2}
-              defaultValue={player.bio ?? ''}
-              placeholder="Perfil del jugador/a, puntos fuertes, notas del entrenador..."
-              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs resize-none focus:border-green-500/60 focus:outline-none transition-colors"
-              style={{ color: '#dce1fb' }}
-            />
-            <button type="submit"
-              className="self-end px-4 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 cursor-pointer"
-              style={{ backgroundColor: '#22c55e', color: '#003915' }}>
-              Guardar
-            </button>
-          </form>
+
+          <div className="p-5 flex flex-col sm:flex-row gap-5">
+            {/* Foto */}
+            <div className="flex flex-col items-center gap-2 flex-shrink-0">
+              <PlayerPhotoUpload
+                playerId={player.id}
+                currentUrl={player.photo_url}
+                playerName={player.name}
+                circular
+                className="relative flex h-24 w-24 rounded-full cursor-pointer items-center justify-center overflow-hidden border-2 border-slate-700 bg-slate-800 hover:border-green-500/50 transition-all group"
+              />
+              <p className="text-[9px] text-slate-600 text-center">Toca para cambiar foto</p>
+            </div>
+
+            {/* Campos */}
+            <form action={updatePlayer} className="flex-1 flex flex-col gap-3">
+              <input type="hidden" name="player_id" value={player.id} />
+              <input type="hidden" name="team_id" value={teamId} />
+
+              <div className="flex gap-3">
+                <div className="flex-1 flex flex-col gap-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Nombre</label>
+                  <input name="name" type="text" required defaultValue={player.name}
+                    className="h-10 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm focus:border-green-500/60 focus:outline-none transition-colors"
+                    style={{ color: '#dce1fb', minHeight: 'auto', fontSize: 14 }} />
+                </div>
+                <div className="w-20 flex flex-col gap-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Dorsal</label>
+                  <input name="number" type="number" min="1" max="99" defaultValue={player.number ?? ''}
+                    placeholder="—"
+                    className="h-10 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-center focus:border-green-500/60 focus:outline-none transition-colors"
+                    style={{ color: '#dce1fb', minHeight: 'auto', fontSize: 14 }} />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Posición</label>
+                <select name="position" defaultValue={player.position ?? ''}
+                  className="h-10 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm focus:border-green-500/60 focus:outline-none transition-colors appearance-none"
+                  style={{ color: '#dce1fb', minHeight: 'auto', fontSize: 14 }}>
+                  <option value="">Sin posición</option>
+                  {terms.positions.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Descripción / notas</label>
+                <textarea name="bio" rows={2} defaultValue={player.bio ?? ''}
+                  placeholder="Perfil, puntos fuertes, notas del entrenador..."
+                  className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm resize-none focus:border-green-500/60 focus:outline-none transition-colors leading-relaxed"
+                  style={{ color: '#dce1fb', minHeight: 'auto', fontSize: 14 }} />
+              </div>
+
+              <button type="submit"
+                className="self-end px-5 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
+                style={{ backgroundColor: '#22c55e', color: '#003915' }}>
+                Guardar cambios
+              </button>
+            </form>
+          </div>
         </div>
 
         {seasons.length === 0 ? (
