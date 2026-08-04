@@ -113,6 +113,15 @@ export async function togglePlayerActive(formData: FormData) {
   redirect(`/dashboard/team/${teamId}/players`)
 }
 
+export async function deleteTeam(formData: FormData) {
+  const supabase = await createClient()
+  const teamId = formData.get('team_id') as string
+
+  await supabase.from('teams').delete().eq('id', teamId)
+  revalidatePath('/dashboard')
+  redirect('/dashboard')
+}
+
 export async function deletePlayer(formData: FormData) {
   const supabase = await createClient()
   const playerId = formData.get('player_id') as string

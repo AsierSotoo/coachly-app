@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { updateTeam } from '../../actions'
 import { LogoUpload } from '@/components/team/logo-upload'
+import { DeleteTeamButton } from '@/components/team/delete-team-button'
 import { PageTransition } from '@/components/ui/page-transition'
 import Link from 'next/link'
 
@@ -121,6 +122,20 @@ export default async function TeamSettingsPage({
               Guardar cambios
             </button>
           </form>
+        </section>
+
+        {/* Zona de peligro */}
+        <section className="mt-6 rounded-[24px] border p-6" style={{ borderColor: 'rgba(239,68,68,0.2)', backgroundColor: 'rgba(239,68,68,0.03)' }}>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="material-symbols-outlined" style={{ color: '#f87171', fontSize: 20 }}>warning</span>
+            <h2 className="text-[16px] font-semibold" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>
+              Zona de peligro
+            </h2>
+          </div>
+          <p className="text-sm mb-4" style={{ color: '#adb4ce' }}>
+            Eliminar el equipo borrará permanentemente la plantilla, todas las temporadas, partidos y estadísticas asociadas.
+          </p>
+          <DeleteTeamButton teamId={teamId} teamName={team.name} />
         </section>
 
       </main>
