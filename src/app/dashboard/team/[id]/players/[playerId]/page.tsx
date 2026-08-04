@@ -28,7 +28,7 @@ export default async function PlayerDetailPage({
   const terms = getTeamTerms((team as { gender?: string | null }).gender)
 
   const [{ data: appearances }, { data: trainingSessions }] = await Promise.all([
-    supabase.from('appearances').select('*, matches(season_id, seasons(id, name, created_at))').eq('player_id', playerId),
+    supabase.from('appearances').select('*, matches(season_id, mvp_player_id, seasons(id, name, created_at))').eq('player_id', playerId),
     supabase.from('training_sessions').select('id, season_id').eq('team_id', teamId),
   ])
 
@@ -59,15 +59,15 @@ export default async function PlayerDetailPage({
   type SS = {
     seasonId: string; seasonName: string; createdAt: string
     games: number; goals: number; assists: number
-    minutes: number; yellow: number; red: number
+    minutes: number; yellow: number; red: number; mvp: number
   }
 
   const map = new Map<string, SS>()
   for (const app of appearances ?? []) {
-    const m = app.matches as { season_id: string; seasons: { id: string; name: string; created_at: string } }
+    const m = app.matches as { season_id: string; mvp_player_id?: string | null; seasons: { id: string; name: string; created_at: string } }
     if (!m?.seasons) continue
     const { id, name, created_at } = m.seasons
-    if (!map.has(id)) map.set(id, { seasonId: id, seasonName: name, createdAt: created_at, games: 0, goals: 0, assists: 0, minutes: 0, yellow: 0, red: 0 })
+    if (!map.has(id)) map.set(id, { seasonId: id, seasonName: name, createdAt: created_at, games: 0, goals: 0, assists: 0, minutes: 0, yellow: 0, red: 0, mvp: 0 })
     const s = map.get(id)!
     if ((app.minutes ?? 0) > 0) s.games++
     s.goals += app.goals ?? 0
@@ -75,6 +75,7 @@ export default async function PlayerDetailPage({
     s.minutes += app.minutes ?? 0
     s.yellow += app.yellow_cards ?? 0
     s.red += app.red_cards ?? 0
+    if (m.mvp_player_id === playerId) s.mvp++
   }
 
   const seasons = Array.from(map.values()).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -82,8 +83,8 @@ export default async function PlayerDetailPage({
   const rest = seasons.slice(1)
 
   const T = seasons.reduce(
-    (a, s) => ({ games: a.games + s.games, goals: a.goals + s.goals, assists: a.assists + s.assists, minutes: a.minutes + s.minutes, yellow: a.yellow + s.yellow, red: a.red + s.red }),
-    { games: 0, goals: 0, assists: 0, minutes: 0, yellow: 0, red: 0 }
+    (a, s) => ({ games: a.games + s.games, goals: a.goals + s.goals, assists: a.assists + s.assists, minutes: a.minutes + s.minutes, yellow: a.yellow + s.yellow, red: a.red + s.red, mvp: a.mvp + s.mvp }),
+    { games: 0, goals: 0, assists: 0, minutes: 0, yellow: 0, red: 0, mvp: 0 }
   )
 
   const posClass = terms.posBadgeClass(player.position)
@@ -242,7 +243,7 @@ export default async function PlayerDetailPage({
 
 /* ── Componentes locales ───────────────────────────────── */
 
-type StatData = { games: number; goals: number; assists: number; minutes: number; yellow: number; red: number }
+type StatData = { games: number; goals: number; assists: number; minutes: number; yellow: number; red: number; mvp: number }
 type AttendanceData = { attended: number; total: number }
 
 function AttendanceBar({ attended, total }: AttendanceData) {
@@ -338,6 +339,15 @@ function StatGrid({ data, compact, attendance }: { data: StatData; compact?: boo
               <span className="font-[family-name:var(--font-heading)] text-sm font-black text-white">{data.red}</span>
             </div>
           )}
+        </div>
+      )}
+      {data.mvp > 0 && (
+        <div className="flex items-center gap-4 border-t border-slate-800/60 px-5 py-2.5">
+          <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#facc15' }}>star</span>
+          <span className="text-[10px] text-slate-500 uppercase tracking-wide mr-auto">Del partido</span>
+          <span className="text-sm font-bold tabular-nums" style={{ color: '#facc15' }}>
+            {data.mvp} vez{data.mvp !== 1 ? 'es' : ''}
+          </span>
         </div>
       )}
       {attendance && attendance.total > 0 && <AttendanceBar attended={attendance.attended} total={attendance.total} />}

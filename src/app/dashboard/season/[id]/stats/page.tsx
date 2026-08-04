@@ -164,11 +164,22 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
     if ((app.minutes ?? 0) > 0) s.gamesPlayed++
   }
   const stats     = Array.from(statsMap.values())
-  const byGoals   = [...stats].sort((a, b) => b.goals - a.goals).filter(s => s.goals > 0)
-  const byAssists = [...stats].sort((a, b) => b.assists - a.assists).filter(s => s.assists > 0)
-  const byMinutes = [...stats].sort((a, b) => b.minutes - a.minutes).filter(s => s.minutes > 0)
-  const byCards   = [...stats].filter(s => s.yellowCards > 0 || s.redCards > 0).sort((a, b) => (b.yellowCards + b.redCards * 2) - (a.yellowCards + a.redCards * 2))
-  const byGames   = [...stats].sort((a, b) => b.gamesPlayed - a.gamesPlayed).filter(s => s.gamesPlayed > 0)
+  const byGoals        = [...stats].sort((a, b) => b.goals - a.goals).filter(s => s.goals > 0)
+  const byAssists      = [...stats].sort((a, b) => b.assists - a.assists).filter(s => s.assists > 0)
+  const byMinutes      = [...stats].sort((a, b) => b.minutes - a.minutes).filter(s => s.minutes > 0)
+  const byCards        = [...stats].filter(s => s.yellowCards > 0 || s.redCards > 0).sort((a, b) => (b.yellowCards + b.redCards * 2) - (a.yellowCards + a.redCards * 2))
+  const byGames        = [...stats].sort((a, b) => b.gamesPlayed - a.gamesPlayed).filter(s => s.gamesPlayed > 0)
+  const byContribs     = [...stats].filter(s => s.goals + s.assists > 0).sort((a, b) => (b.goals + b.assists) - (a.goals + a.assists))
+
+  // MVP por partido (usa mvp_player_id de matches, disponible tras migración 007)
+  const mvpCounts = new Map<string, number>()
+  for (const m of matches ?? []) {
+    const mvpId = (m as unknown as { mvp_player_id?: string | null }).mvp_player_id
+    if (mvpId) mvpCounts.set(mvpId, (mvpCounts.get(mvpId) ?? 0) + 1)
+  }
+  const byMvp = [...stats]
+    .filter(s => (mvpCounts.get(s.playerId) ?? 0) > 0)
+    .sort((a, b) => (mvpCounts.get(b.playerId) ?? 0) - (mvpCounts.get(a.playerId) ?? 0))
 
   // Desglose por competición
   type CompStat = { name: string; played: number; W: number; E: number; D: number; gf: number; ga: number }
@@ -377,7 +388,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
             <h3 className="text-[20px] font-semibold mb-4 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
               Líderes del Equipo
             </h3>
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
 
               {/* Goles */}
               <RankCard title="Goles" icon="workspace_premium"
@@ -387,6 +398,11 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
               {/* Asistencias */}
               <RankCard title="Asistencias" icon="alt_route"
                 players={byAssists.slice(0, 3).map(s => ({ name: s.name, photoUrl: s.photoUrl, position: s.position, primary: s.assists }))}
+              />
+
+              {/* G+A Contribuciones */}
+              <RankCard title="G+A" icon="bolt"
+                players={byContribs.slice(0, 3).map(s => ({ name: s.name, photoUrl: s.photoUrl, position: s.position, primary: s.goals + s.assists, sublabel: `${s.goals}G · ${s.assists}A` }))}
               />
 
               {/* Minutos */}
@@ -406,10 +422,16 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                 showCards
               />
 
-              {/* Partidos */}
-              <RankCard title="Partidos" icon="stadium"
-                players={byGames.slice(0, 3).map(s => ({ name: s.name, photoUrl: s.photoUrl, position: s.position, primary: s.gamesPlayed }))}
-              />
+              {/* Partidos o MVP si hay datos */}
+              {byMvp.length > 0 ? (
+                <RankCard title="Del Partido ⭐" icon="star"
+                  players={byMvp.slice(0, 3).map(s => ({ name: s.name, photoUrl: s.photoUrl, position: s.position, primary: mvpCounts.get(s.playerId) ?? 0, sublabel: 'veces' }))}
+                />
+              ) : (
+                <RankCard title="Partidos" icon="stadium"
+                  players={byGames.slice(0, 3).map(s => ({ name: s.name, photoUrl: s.photoUrl, position: s.position, primary: s.gamesPlayed }))}
+                />
+              )}
             </section>
 
             {/* Casa vs Fuera */}
@@ -663,6 +685,7 @@ type RankPlayer = {
   photoUrl?: string | null
   position?: string | null
   primary: number
+  sublabel?: string
   yellowCards?: number
   redCards?: number
   warnCards?: boolean
@@ -715,9 +738,14 @@ function RankCard({
                   )}
                 </div>
               ) : (
-                <span className="text-[20px] font-bold flex-shrink-0" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
-                  {fmt(p.primary)}
-                </span>
+                <div className="flex flex-col items-end flex-shrink-0">
+                  <span className="text-[20px] font-bold leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+                    {fmt(p.primary)}
+                  </span>
+                  {p.sublabel && (
+                    <span className="text-[9px] font-bold uppercase mt-0.5" style={{ color: '#4be277', opacity: 0.6 }}>{p.sublabel}</span>
+                  )}
+                </div>
               )}
             </div>
           ))}

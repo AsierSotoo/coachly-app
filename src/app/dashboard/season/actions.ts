@@ -45,6 +45,7 @@ export async function saveAppearances(formData: FormData) {
       goals_for: Number(formData.get('goals_for') ?? 0),
       goals_against: Number(formData.get('goals_against') ?? 0),
       notes: (formData.get('notes') as string) || null,
+      mvp_player_id: (formData.get('mvp_player_id') as string) || null,
     })
     .eq('id', matchId)
 

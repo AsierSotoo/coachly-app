@@ -36,6 +36,7 @@ interface Match {
   goals_for: number
   goals_against: number
   notes: string | null
+  mvp_player_id: string | null
 }
 
 interface MatchFormProps {
@@ -119,6 +120,24 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
           className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm resize-none focus:border-green-500/60 focus:outline-none transition-colors leading-relaxed"
           style={{ color: '#dce1fb', minHeight: 'auto' }}
         />
+      </section>
+
+      {/* Jugadora del partido */}
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="material-symbols-outlined" style={{ color: '#facc15', fontSize: 18 }}>star</span>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Jugadora del partido</h2>
+        </div>
+        <select name="mvp_player_id" defaultValue={match.mvp_player_id ?? ''}
+          className="w-full h-11 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm appearance-none focus:border-green-500/60 focus:outline-none transition-colors"
+          style={{ color: '#dce1fb' }}>
+          <option value="">Sin seleccionar</option>
+          {players.map(p => (
+            <option key={p.id} value={p.id}>
+              {p.number ? `#${p.number} ` : ''}{p.name}
+            </option>
+          ))}
+        </select>
       </section>
 
       {/* Aviso primera vez sin convocatoria */}

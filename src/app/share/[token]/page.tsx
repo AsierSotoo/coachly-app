@@ -76,7 +76,10 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
   const topAssist = [...stats].sort((a, b) => b.assists - a.assists)[0]
   const topMinutes = [...stats].sort((a, b) => b.minutes - a.minutes)[0]
 
-  const byGoals = [...stats].filter(s => s.goals > 0).sort((a, b) => b.goals - a.goals).slice(0, 5)
+  const byGoals   = [...stats].filter(s => s.goals > 0).sort((a, b) => b.goals - a.goals).slice(0, 5)
+  const byAssists = [...stats].filter(s => s.assists > 0).sort((a, b) => b.assists - a.assists).slice(0, 5)
+  const allPlayers = [...stats].filter(s => s.gamesPlayed > 0)
+    .sort((a, b) => (b.goals + b.assists) - (a.goals + a.assists) || b.minutes - a.minutes)
 
   const dateStr = (iso: string) => new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
 
@@ -190,6 +193,72 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                       <span className="text-xs" style={{ color: '#adb4ce' }}>gol{p.goals !== 1 ? 'es' : ''}</span>
                     </div>
                   ))}
+                </div>
+              </section>
+            )}
+
+            {/* Tabla asistencias */}
+            {byAssists.length > 0 && (
+              <section className="rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+                <div className="px-6 py-4 border-b border-[#1e293b]">
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Asistencias</p>
+                </div>
+                <div className="divide-y divide-[#1e293b]">
+                  {byAssists.map((p, i) => (
+                    <div key={p.name + 'a'} className="flex items-center gap-4 px-6 py-3">
+                      <span className="w-5 text-center text-xs font-bold" style={{ color: i === 0 ? '#facc15' : '#adb4ce' }}>{i + 1}</span>
+                      <PlayerAvatar name={p.name} photoUrl={p.photoUrl} position={p.position} size="sm" className="w-8 h-8 rounded-lg flex-shrink-0" />
+                      <span className="flex-1 text-sm font-semibold text-white truncate">{p.name}</span>
+                      <span className="text-xl font-extrabold" style={{ color: '#facc15', fontFamily: 'Sora, sans-serif' }}>{p.assists}</span>
+                      <span className="text-xs" style={{ color: '#adb4ce' }}>ast</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Tabla completa de estadísticas */}
+            {allPlayers.length > 0 && (
+              <section className="rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+                <div className="px-6 py-4 border-b border-[#1e293b]">
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Estadísticas completas</p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="border-b border-[#1e293b]" style={{ backgroundColor: '#151b2d' }}>
+                        {[
+                          { h: terms.p.charAt(0).toUpperCase() + terms.p.slice(1), align: 'left' },
+                          { h: 'PJ', align: 'center' },
+                          { h: 'G', align: 'center' },
+                          { h: 'A', align: 'center' },
+                          { h: 'G+A', align: 'center' },
+                          { h: "Min'", align: 'center' },
+                        ].map(({ h, align }) => (
+                          <th key={h} className="px-3 py-3 text-[10px] font-bold uppercase tracking-widest"
+                            style={{ color: '#adb4ce', textAlign: align as 'left' | 'center' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allPlayers.map((p, i) => (
+                        <tr key={p.name} className="border-b border-[#1e293b] last:border-0"
+                          style={{ backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.4)' }}>
+                          <td className="px-3 py-2.5">
+                            <div className="flex items-center gap-2">
+                              <PlayerAvatar name={p.name} photoUrl={p.photoUrl} position={p.position} size="sm" className="w-7 h-7 rounded-lg flex-shrink-0" />
+                              <span className="text-xs font-semibold text-white truncate max-w-[120px]">{p.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: '#adb4ce' }}>{p.gamesPlayed}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals > 0 ? '#4be277' : '#475569' }}>{p.goals}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.assists > 0 ? '#facc15' : '#475569' }}>{p.assists}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals + p.assists > 0 ? '#dce1fb' : '#475569' }}>{p.goals + p.assists}</td>
+                          <td className="px-3 py-2.5 text-center text-xs" style={{ color: '#adb4ce' }}>{p.minutes}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </section>
             )}
