@@ -41,6 +41,17 @@ export default async function ConvocatoriaDetailPage({
     initial[row.player_id] = row.status as ConvocatoriaStatus
   }
 
+  // Tarjetas amarillas acumuladas en la temporada por jugadora
+  const matchIds = (matches ?? []).map(m => m.id)
+  const { data: cardData } = matchIds.length > 0
+    ? await supabase.from('appearances').select('player_id, yellow_cards').in('match_id', matchIds).gt('yellow_cards', 0)
+    : { data: [] as Array<{ player_id: string; yellow_cards: number }> }
+
+  const yellowCards: Record<string, number> = {}
+  for (const row of cardData ?? []) {
+    yellowCards[row.player_id] = (yellowCards[row.player_id] ?? 0) + (row.yellow_cards ?? 0)
+  }
+
   const availableMatches = (matches ?? []).filter(m => {
     const linked = m.convocatorias as { id: string }[]
     return linked.length === 0 || linked.some(c => c.id === convocatoriaId)
@@ -156,6 +167,7 @@ export default async function ConvocatoriaDetailPage({
           seasonName={season.name}
           players={players ?? []}
           initial={initial}
+          yellowCards={yellowCards}
           linkedMatchId={conv.match_id ?? null}
           availableMatches={availableMatches}
         />

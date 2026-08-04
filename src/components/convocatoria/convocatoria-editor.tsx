@@ -17,6 +17,8 @@ interface Player {
   position: string | null; photo_url?: string | null
 }
 interface AvailableMatch { id: string; opponent: string; played_at: string }
+const YELLOW_WARNING = 4
+
 interface Props {
   convocatoriaId: string; seasonId: string
   opponent: string; playedAt: string; teamName: string
@@ -25,6 +27,7 @@ interface Props {
   seasonName?: string
   players: Player[]
   initial: Record<string, ConvocatoriaStatus>
+  yellowCards?: Record<string, number>
   linkedMatchId: string | null
   availableMatches: AvailableMatch[]
 }
@@ -32,7 +35,7 @@ interface Props {
 export function ConvocatoriaEditor({
   convocatoriaId, seasonId, opponent, playedAt, teamName, teamGender,
   logoUrl, seasonName,
-  players, initial, linkedMatchId, availableMatches,
+  players, initial, yellowCards = {}, linkedMatchId, availableMatches,
 }: Props) {
   const terms = getTeamTerms(teamGender)
   const [statuses, setStatuses] = useState<Record<string, ConvocatoriaStatus>>(() => {
@@ -165,6 +168,26 @@ export function ConvocatoriaEditor({
         </button>
       </div>
 
+      {/* ── Banner sanciones ────────────────────────────────────────── */}
+      {(() => {
+        const atRisk = players.filter(p => isInSquad(p.id) && (yellowCards[p.id] ?? 0) >= YELLOW_WARNING)
+        if (atRisk.length === 0) return null
+        return (
+          <div className="flex items-start gap-3 rounded-xl border px-4 py-3"
+            style={{ backgroundColor: 'rgba(250,204,21,0.05)', borderColor: 'rgba(250,204,21,0.25)' }}>
+            <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#facc15', fontSize: 20 }}>warning</span>
+            <div>
+              <p className="text-sm font-bold" style={{ color: '#facc15' }}>
+                {atRisk.length === 1 ? '1 jugadora en riesgo de sanción' : `${atRisk.length} jugadoras en riesgo de sanción`}
+              </p>
+              <p className="text-xs mt-0.5" style={{ color: '#adb4ce' }}>
+                {atRisk.map(p => `${p.name} (${yellowCards[p.id]}🟨)`).join(' · ')} — acumulan {YELLOW_WARNING}+ tarjetas esta temporada.
+              </p>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* ── Main: 2 columnas ────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
@@ -217,7 +240,15 @@ export function ConvocatoriaEditor({
                             <PlayerAvatar name={p.name} photoUrl={p.photo_url} position={p.position ?? undefined} size="sm" />
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-white">{p.name}</p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="text-sm font-semibold text-white">{p.name}</p>
+                              {(yellowCards[p.id] ?? 0) >= YELLOW_WARNING && (
+                                <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-black flex-shrink-0"
+                                  style={{ backgroundColor: 'rgba(250,204,21,0.15)', color: '#facc15' }}>
+                                  🟨{yellowCards[p.id]}
+                                </span>
+                              )}
+                            </div>
                             {p.number !== null && (
                               <p className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>
                                 Dorsal {p.number}
@@ -293,11 +324,14 @@ export function ConvocatoriaEditor({
             <ul className="p-4 overflow-y-auto space-y-0.5" style={{ maxHeight: 280 }}>
               {sortedSquad.map(p => (
                 <li key={p.id} className="group flex items-center justify-between px-2 py-1.5 rounded-lg transition-colors hover:bg-[#23293c]">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
                     <span className="w-5 text-right text-[11px] font-bold flex-shrink-0" style={{ color: '#adb4ce' }}>
                       {p.number ?? '—'}
                     </span>
-                    <span className="text-sm text-white">{p.name}</span>
+                    <span className="text-sm text-white truncate">{p.name}</span>
+                    {(yellowCards[p.id] ?? 0) >= YELLOW_WARNING && (
+                      <span className="text-[10px] flex-shrink-0" title={`${yellowCards[p.id]} tarjetas`}>🟨</span>
+                    )}
                   </div>
                   <button type="button" onClick={() => remove(p.id)}
                     className="opacity-0 group-hover:opacity-100 transition-opacity material-symbols-outlined cursor-pointer"

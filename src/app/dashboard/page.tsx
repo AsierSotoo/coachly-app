@@ -7,9 +7,11 @@ import { TeamLogo } from '@/components/team/team-logo'
 export default async function DashboardPage() {
   const supabase = await createClient()
 
+  const todayStr = new Date().toISOString().split('T')[0]
+
   const { data: teams } = await supabase
     .from('teams')
-    .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at)), players(id, active)')
+    .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at), training_sessions(id, date, title)), players(id, active)')
     .order('created_at', { ascending: true })
 
   return (
@@ -61,6 +63,7 @@ export default async function DashboardPage() {
                 type SeasonWithMatches = {
                   id: string; name: string; created_at: string
                   matches: { id: string; goals_for: number; goals_against: number; opponent: string; played_at: string }[]
+                  training_sessions: { id: string; date: string; title: string | null }[]
                 }
                 const seasons = (team.seasons ?? []) as SeasonWithMatches[]
                 // Ordenar por fecha de creación DESC para obtener la más reciente
@@ -77,6 +80,10 @@ export default async function DashboardPage() {
                 const goalsAgainst = matches.reduce((s, m) => s + m.goals_against, 0)
                 const playerCount = ((team.players ?? []) as { id: string; active: boolean }[]).filter(p => p.active).length
                 const recentForm  = sorted.slice(0, 5).reverse()
+
+                const nextSession = [...(lastSeason?.training_sessions ?? [])]
+                  .filter(s => s.date >= todayStr)
+                  .sort((a, b) => a.date.localeCompare(b.date))[0] ?? null
 
                 const lastResult = lastMatch
                   ? lastMatch.goals_for > lastMatch.goals_against ? { label: 'V', color: '#4be277' }
@@ -188,6 +195,21 @@ export default async function DashboardPage() {
                               {playerCount}
                             </span>
                           )}
+                        </div>
+                      )}
+
+                      {/* Próximo entrenamiento */}
+                      {nextSession && (
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3"
+                          style={{ backgroundColor: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.12)' }}>
+                          <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#4be277', fontSize: 16 }}>fitness_center</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#4be277' }}>Próximo entrenamiento</p>
+                            <p className="text-[11px] truncate" style={{ color: '#adb4ce' }}>
+                              {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
+                              {nextSession.title ? ` · ${nextSession.title}` : ''}
+                            </p>
+                          </div>
                         </div>
                       )}
 
