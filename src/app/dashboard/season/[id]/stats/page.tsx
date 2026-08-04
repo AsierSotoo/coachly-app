@@ -181,6 +181,23 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
     .filter(s => (mvpCounts.get(s.playerId) ?? 0) > 0)
     .sort((a, b) => (mvpCounts.get(b.playerId) ?? 0) - (mvpCounts.get(a.playerId) ?? 0))
 
+  // Desglose por posición
+  type PosStat = { position: string; goals: number; assists: number; minutes: number; players: Set<string> }
+  const posMap = new Map<string, PosStat>()
+  for (const s of stats) {
+    const pos = s.position ?? 'Sin posición'
+    if (!posMap.has(pos)) posMap.set(pos, { position: pos, goals: 0, assists: 0, minutes: 0, players: new Set() })
+    const p = posMap.get(pos)!
+    p.goals   += s.goals
+    p.assists += s.assists
+    p.minutes += s.minutes
+    p.players.add(s.playerId)
+  }
+  const byPosition = Array.from(posMap.values())
+    .filter(p => p.players.size > 0)
+    .sort((a, b) => b.goals - a.goals)
+  const maxPosGoals = Math.max(...byPosition.map(p => p.goals), 1)
+
   // Desglose por competición
   type CompStat = { name: string; played: number; W: number; E: number; D: number; gf: number; ga: number }
   const compMap = new Map<string, CompStat>()
@@ -617,6 +634,43 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                             style={{ color: textColor }}>
                             {pct}%
                           </span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* ── Rendimiento por posición ──────────────────── */}
+            {byPosition.length >= 2 && (
+              <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+                <h3 className="text-[20px] font-semibold mb-5 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                  Rendimiento por Posición
+                </h3>
+                <div className="flex flex-col gap-3">
+                  {byPosition.map(p => {
+                    const barPct = Math.round((p.goals / maxPosGoals) * 100)
+                    const avgMin = p.players.size > 0 ? Math.round(p.minutes / p.players.size) : 0
+                    return (
+                      <div key={p.position} className="rounded-xl border p-4" style={{ backgroundColor: '#070d1f', borderColor: '#1e293b' }}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-white">{p.position}</span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                              style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#4be277', border: '1px solid rgba(75,226,119,0.15)' }}>
+                              {p.players.size} {terms.pp}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 text-xs" style={{ color: '#adb4ce' }}>
+                            <span><span style={{ color: '#4be277', fontWeight: 700 }}>{p.goals}</span> G</span>
+                            <span><span style={{ color: '#facc15', fontWeight: 700 }}>{p.assists}</span> A</span>
+                            <span className="hidden sm:inline"><span style={{ color: '#60a5fa', fontWeight: 700 }}>{avgMin}&apos;</span> media</span>
+                          </div>
+                        </div>
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                          <div className="h-full rounded-full transition-all duration-500"
+                            style={{ width: `${barPct}%`, backgroundColor: '#22c55e' }} />
                         </div>
                       </div>
                     )

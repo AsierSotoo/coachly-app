@@ -45,7 +45,7 @@ export default async function SeasonPage({
 
   const { data: matchesRaw } = await supabase
     .from('matches')
-    .select('*, convocatorias(id)')
+    .select('*, convocatorias(id), appearances(id)')
     .eq('season_id', seasonId)
     .order('played_at', { ascending: false })
 
@@ -69,6 +69,8 @@ export default async function SeasonPage({
 
   const showForm = sp.new === '1' || !!sp.error || total === 0
   const opponents = [...new Set(matches.map(m => m.opponent))].sort()
+
+  const pendingData = matches.filter(m => (m.appearances as {id: string}[]).length === 0).length
 
   // Forma reciente (últimos 5, más reciente a la derecha)
   const recentForm = [...matches]
@@ -290,6 +292,17 @@ export default async function SeasonPage({
           </section>
         )}
 
+        {/* ── Aviso partidos sin datos ─────────────────────────────────── */}
+        {pendingData > 0 && (
+          <div className="mb-4 flex items-center gap-3 rounded-xl border px-4 py-3"
+            style={{ borderColor: 'rgba(234,179,8,0.2)', backgroundColor: 'rgba(234,179,8,0.04)' }}>
+            <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#facc15', fontSize: 18 }}>pending_actions</span>
+            <p className="text-sm flex-1" style={{ color: '#facc15' }}>
+              {pendingData} partido{pendingData !== 1 ? 's' : ''} sin estadísticas de jugadoras — pulsa ✏️ para rellenarlos
+            </p>
+          </div>
+        )}
+
         {/* ── Tabla de Partidos ────────────────────────────────────────── */}
         <section
           className="rounded-[24px] border border-[#1e293b] overflow-hidden"
@@ -350,6 +363,7 @@ export default async function SeasonPage({
                       const gf = match.goals_for ?? 0
                       const ga = match.goals_against ?? 0
                       const res  = gf > ga ? 'V' : gf < ga ? 'D' : 'E'
+                      const hasData = (match.appearances as {id: string}[]).length > 0
                       const dotStyle = res === 'V'
                         ? { backgroundColor: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,0.5)', color: '#003915' }
                         : res === 'D'
@@ -383,7 +397,15 @@ export default async function SeasonPage({
                                 <OpponentInitial name={match.opponent} />
                               )}
                               <div className="min-w-0">
-                                <p className="text-sm font-bold text-white truncate">{match.opponent}</p>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="text-sm font-bold text-white truncate">{match.opponent}</p>
+                                  {!hasData && (
+                                    <span className="flex-shrink-0 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold"
+                                      style={{ backgroundColor: 'rgba(234,179,8,0.12)', color: '#facc15', border: '1px solid rgba(234,179,8,0.2)' }}>
+                                      Sin datos
+                                    </span>
+                                  )}
+                                </div>
                                 {/* Móvil: resultado + local/vis inline */}
                                 <p className="md:hidden text-[11px] mt-0.5 font-bold tabular-nums" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
                                   {gf}–{ga} · {match.home ? 'Local' : 'Vis.'}

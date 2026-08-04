@@ -28,7 +28,7 @@ export default async function PlayerDetailPage({
   const terms = getTeamTerms((team as { gender?: string | null }).gender)
 
   const [{ data: appearances }, { data: trainingSessions }] = await Promise.all([
-    supabase.from('appearances').select('*, matches(season_id, mvp_player_id, seasons(id, name, created_at))').eq('player_id', playerId),
+    supabase.from('appearances').select('*, matches(season_id, mvp_player_id, goals_against, seasons(id, name, created_at))').eq('player_id', playerId),
     supabase.from('training_sessions').select('id, season_id').eq('team_id', teamId),
   ])
 
@@ -86,6 +86,26 @@ export default async function PlayerDetailPage({
     (a, s) => ({ games: a.games + s.games, goals: a.goals + s.goals, assists: a.assists + s.assists, minutes: a.minutes + s.minutes, yellow: a.yellow + s.yellow, red: a.red + s.red, mvp: a.mvp + s.mvp }),
     { games: 0, goals: 0, assists: 0, minutes: 0, yellow: 0, red: 0, mvp: 0 }
   )
+
+  // Titular vs suplente (global, todas las temporadas)
+  type RoleStats = { games: number; goals: number; assists: number; minutes: number }
+  const starterStats: RoleStats = { games: 0, goals: 0, assists: 0, minutes: 0 }
+  const subStats: RoleStats    = { games: 0, goals: 0, assists: 0, minutes: 0 }
+  let cleanSheets = 0
+  const isGK = player.position === 'Portera' || player.position === 'Portero'
+
+  for (const app of appearances ?? []) {
+    const mins = app.minutes ?? 0
+    const target = app.starter ? starterStats : subStats
+    if (mins > 0) target.games++
+    target.goals   += app.goals        ?? 0
+    target.assists += app.assists      ?? 0
+    target.minutes += mins
+    if (isGK && mins > 0) {
+      const m = app.matches as { goals_against: number }
+      if (m?.goals_against === 0) cleanSheets++
+    }
+  }
 
   const posClass = terms.posBadgeClass(player.position)
   const posDisplay = terms.posLabel(player.position)
@@ -177,6 +197,43 @@ export default async function PlayerDetailPage({
             </form>
           </div>
         </div>
+
+        {/* ── Titular vs Suplente + Portería a cero ─────────────────── */}
+        {T.games > 0 && (
+          <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
+            <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
+              <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 14 }}>switch_access_shortcut</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Uso</p>
+            </div>
+            <div className={`grid divide-x divide-slate-800 ${isGK ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              {[
+                { label: 'Como titular', data: starterStats, icon: 'star', color: '#4be277' },
+                { label: 'Como suplente', data: subStats, icon: 'swap_horiz', color: '#60a5fa' },
+              ].map(({ label, data, icon, color }) => (
+                <div key={label} className="px-4 py-3">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="material-symbols-outlined" style={{ fontSize: 12, color }}>{icon}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: '#adb4ce' }}>{label}</span>
+                  </div>
+                  <p className="text-lg font-black leading-none" style={{ color, fontFamily: 'Sora, sans-serif' }}>{data.games} PJ</p>
+                  <p className="text-[10px] mt-1" style={{ color: '#adb4ce' }}>
+                    {data.goals}G · {data.assists}A · {data.minutes}&apos;
+                  </p>
+                </div>
+              ))}
+              {isGK && (
+                <div className="px-4 py-3">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#a78bfa' }}>security</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: '#adb4ce' }}>Portería a cero</span>
+                  </div>
+                  <p className="text-lg font-black leading-none" style={{ color: '#a78bfa', fontFamily: 'Sora, sans-serif' }}>{cleanSheets}</p>
+                  <p className="text-[10px] mt-1" style={{ color: '#adb4ce' }}>de {T.games} partidos</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {seasons.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-slate-700 bg-slate-900/40 py-14 text-center">
