@@ -93,7 +93,7 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
               key={s}
               type="button"
               onClick={() => setStatus(s)}
-              className={`flex h-9 w-10 items-center justify-center text-xs font-bold transition-all ${
+              className={`flex h-11 w-10 items-center justify-center text-xs font-bold transition-all ${
                 status === s
                   ? s === 'no_convocada'
                     ? 'bg-slate-700 text-slate-300'

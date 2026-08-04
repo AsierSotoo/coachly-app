@@ -137,11 +137,12 @@ input.score-input::-webkit-outer-spin-button {
   margin: 0;
 }
 
-/* ── Impresión de convocatorias ─────────────────────────────────────────────── */
+/* ── Impresión / exportación PNG ────────────────────────────────────────────── */
 
-/* Oculta en pantalla; solo aparece al imprimir */
+/* Ocultos en pantalla; el JS los muestra temporalmente para capturar */
 @media screen {
-  .print-convocatoria {
+  .print-convocatoria,
+  .print-training-month {
     display: none;
   }
 }

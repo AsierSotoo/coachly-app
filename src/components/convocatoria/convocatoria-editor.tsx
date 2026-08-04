@@ -75,6 +75,14 @@ export function ConvocatoriaEditor({
     if (g.length > 0) groupedSquad[pos] = g
   }
 
+  // Lista plana ordenada: GK→DEF→MID→FWD, sin cabeceras de sección
+  const sortedSquad = [
+    ...terms.posOrder.flatMap(pos =>
+      (groupedSquad[pos] ?? []).slice().sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
+    ),
+    ...squad.filter(p => !p.position).sort((a, b) => (a.number ?? 99) - (b.number ?? 99)),
+  ]
+
   const gkCount = squad.filter(p => p.position === 'Portera' || p.position === 'Portero').length
   const dfCount = squad.filter(p => p.position === 'Defensa').length
   const mcCount = squad.filter(p => p.position === 'Centrocampista').length
@@ -282,42 +290,28 @@ export function ConvocatoriaEditor({
               </div>
             </div>
 
-            <div className="p-4 overflow-y-auto space-y-4" style={{ maxHeight: 280 }}>
-              {terms.posOrder.map(pos => {
-                const group = groupedSquad[pos]
-                if (!group?.length) return null
-                return (
-                  <div key={pos}>
-                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] pb-1 mb-2 border-b"
-                      style={{ color: '#adb4ce', borderColor: 'rgba(46,52,71,0.3)' }}>
-                      {terms.posLabelPlural(pos)} ({group.length})
-                    </h4>
-                    <ul className="space-y-1">
-                      {group.map(p => (
-                        <li key={p.id} className="group flex items-center justify-between px-2 py-1.5 rounded-lg transition-colors hover:bg-[#23293c]">
-                          <div className="flex items-center gap-2">
-                            <span className="w-5 text-right text-[11px] font-bold flex-shrink-0" style={{ color: '#adb4ce' }}>
-                              {p.number ?? '—'}
-                            </span>
-                            <span className="text-sm text-white">{p.name}</span>
-                          </div>
-                          <button type="button" onClick={() => remove(p.id)}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity material-symbols-outlined cursor-pointer"
-                            style={{ color: '#ffb4ab', fontSize: 16 }}>
-                            close
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+            <ul className="p-4 overflow-y-auto space-y-0.5" style={{ maxHeight: 280 }}>
+              {sortedSquad.map(p => (
+                <li key={p.id} className="group flex items-center justify-between px-2 py-1.5 rounded-lg transition-colors hover:bg-[#23293c]">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 text-right text-[11px] font-bold flex-shrink-0" style={{ color: '#adb4ce' }}>
+                      {p.number ?? '—'}
+                    </span>
+                    <span className="text-sm text-white">{p.name}</span>
                   </div>
-                )
-              })}
+                  <button type="button" onClick={() => remove(p.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity material-symbols-outlined cursor-pointer"
+                    style={{ color: '#ffb4ab', fontSize: 16 }}>
+                    close
+                  </button>
+                </li>
+              ))}
               {squadCount === 0 && (
-                <p className="text-center text-sm py-4" style={{ color: '#adb4ce' }}>
+                <li className="text-center text-sm py-4 list-none" style={{ color: '#adb4ce' }}>
                   Añade jugadoras desde la tabla
-                </p>
+                </li>
               )}
-            </div>
+            </ul>
           </div>
 
           {/* Mini campo táctico */}
@@ -470,51 +464,18 @@ export function ConvocatoriaEditor({
 
       {/* Sin leyenda — la imagen es solo para compartir con la plantilla */}
 
-      {/* Jugadoras por posición */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem 2rem' }}>
-        {terms.posOrder.map(pos => {
-          const group = groupedSquad[pos]
-          if (!group?.length) return null
-          const sorted = [...group].sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
-          return (
-            <div key={pos}>
-              <h2 style={{ margin: '0 0 0.5rem', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#16a34a', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.3rem' }}>
-                {terms.posLabelPlural(pos)} ({group.length})
-              </h2>
-              <div>
-                {sorted.map(p => (
-                  <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.3rem 0.5rem', marginBottom: 2 }}>
-                    <span style={{ width: 24, textAlign: 'right', fontWeight: 700, color: '#94a3b8', fontSize: '0.8rem', flexShrink: 0 }}>
-                      {p.number !== null ? p.number : '—'}
-                    </span>
-                    <span style={{ flex: 1, color: '#0f172a', fontSize: '0.875rem' }}>
-                      {p.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )
-        })}
-
-        {/* Sin posición */}
-        {(() => {
-          const noPos = squad.filter(p => !p.position).sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
-          if (!noPos.length) return null
-          return (
-            <div key="nopos">
-              <h2 style={{ margin: '0 0 0.5rem', fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#64748b', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.3rem' }}>
-                Sin posición ({noPos.length})
-              </h2>
-              {noPos.map(p => (
-                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.3rem 0.5rem', marginBottom: 2, borderLeft: '3px solid transparent' }}>
-                  <span style={{ width: 24, textAlign: 'right', fontWeight: 700, color: '#94a3b8', fontSize: '0.8rem' }}>{p.number ?? '—'}</span>
-                  <span style={{ flex: 1, color: '#0f172a', fontSize: '0.875rem' }}>{p.name}</span>
-                </div>
-              ))}
-            </div>
-          )
-        })()}
+      {/* Jugadoras — lista plana en 2 columnas, ordenadas GK→DEF→MID→FWD */}
+      <div style={{ columns: 2, gap: '2rem', marginTop: '0.5rem' }}>
+        {sortedSquad.map(p => (
+          <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.3rem 0.5rem', marginBottom: 2, breakInside: 'avoid' }}>
+            <span style={{ width: 24, textAlign: 'right', fontWeight: 700, color: '#94a3b8', fontSize: '0.8rem', flexShrink: 0 }}>
+              {p.number !== null ? p.number : '—'}
+            </span>
+            <span style={{ flex: 1, color: '#0f172a', fontSize: '0.875rem' }}>
+              {p.name}
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* No convocadas */}

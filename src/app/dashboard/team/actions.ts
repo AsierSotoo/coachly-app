@@ -113,6 +113,25 @@ export async function togglePlayerActive(formData: FormData) {
   redirect(`/dashboard/team/${teamId}/players`)
 }
 
+export async function deletePlayer(formData: FormData) {
+  const supabase = await createClient()
+  const playerId = formData.get('player_id') as string
+  const teamId   = formData.get('team_id') as string
+
+  const { count } = await supabase
+    .from('appearances')
+    .select('id', { count: 'exact', head: true })
+    .eq('player_id', playerId)
+
+  if (count && count > 0) {
+    redirect(`/dashboard/team/${teamId}/players/${playerId}?error=has_appearances`)
+  }
+
+  await supabase.from('players').delete().eq('id', playerId)
+  revalidatePath(`/dashboard/team/${teamId}/players`)
+  redirect(`/dashboard/team/${teamId}/players`)
+}
+
 export async function deleteSeason(formData: FormData) {
   const supabase = await createClient()
   const seasonId = formData.get('season_id') as string

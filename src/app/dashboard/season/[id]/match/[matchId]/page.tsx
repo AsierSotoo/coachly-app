@@ -67,11 +67,11 @@ export default async function MatchPage({
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> {season.name}
           </Link>
           <div className="flex items-start justify-between">
-            <div>
-              <h1 className="font-[family-name:var(--font-heading)] text-xl font-bold text-white">
+            <div className="min-w-0">
+              <h1 className="font-[family-name:var(--font-heading)] text-xl font-bold text-white truncate">
                 {match.home ? 'vs' : '@'} {match.opponent}
               </h1>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5 truncate">
                 {dateStr}{match.competition ? ` · ${match.competition}` : ''}
               </p>
             </div>

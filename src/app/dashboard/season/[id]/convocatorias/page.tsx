@@ -311,9 +311,7 @@ export default async function ConvocatoriasPage({
                                 Gestionar Lista
                               </Link>
                             )}
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                              <DeleteConvocatoriaButton id={c.id} seasonId={seasonId} />
-                            </div>
+                            <DeleteConvocatoriaButton id={c.id} seasonId={seasonId} />
                           </div>
                         </td>
                       </tr>

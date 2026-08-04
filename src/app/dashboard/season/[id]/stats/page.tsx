@@ -36,13 +36,49 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
   const shareToken = (season as { share_token?: string | null }).share_token ?? null
   const terms = getTeamTerms(team.gender)
 
-  const { data: matches } = await supabase
-    .from('matches').select('*').eq('season_id', seasonId).order('played_at')
+  const [{ data: matches }, { data: trainingSessions }] = await Promise.all([
+    supabase.from('matches').select('*').eq('season_id', seasonId).order('played_at'),
+    supabase.from('training_sessions').select('id').eq('season_id', seasonId),
+  ])
 
   const matchIdsList = matches?.map(m => m.id) ?? []
+  const sessionIds   = trainingSessions?.map(s => s.id) ?? []
+
   const { data: appearances } = matchIdsList.length
     ? await supabase.from('appearances').select('*, players(name, number, position, photo_url)').in('match_id', matchIdsList)
     : { data: [] }
+
+  type AttRow = { session_id: string; player_id: string; attended: boolean }
+  type AttPlayer = { id: string; name: string; number: number | null; position: string | null; photo_url: string | null }
+  let attendanceRecords: AttRow[]    = []
+  let teamPlayersForAtt: AttPlayer[] = []
+
+  if (sessionIds.length > 0) {
+    const [{ data: att }, { data: tPlayers }] = await Promise.all([
+      supabase.from('training_attendance').select('session_id, player_id, attended').in('session_id', sessionIds),
+      supabase.from('players').select('id, name, number, position, photo_url').eq('team_id', team.id).order('name'),
+    ])
+    attendanceRecords  = (att ?? []) as AttRow[]
+    teamPlayersForAtt  = (tPlayers ?? []) as AttPlayer[]
+  }
+
+  type AttStat = { playerId: string; name: string; number: number | null; position: string | null; photoUrl: string | null; attended: number; total: number }
+  const attMap = new Map<string, AttStat>()
+  const recordedPlayers = new Set(attendanceRecords.map(r => r.player_id))
+  for (const p of teamPlayersForAtt) {
+    if (!recordedPlayers.has(p.id)) continue
+    attMap.set(p.id, { playerId: p.id, name: p.name, number: p.number, position: p.position, photoUrl: p.photo_url, attended: 0, total: 0 })
+  }
+  for (const r of attendanceRecords) {
+    const s = attMap.get(r.player_id)
+    if (!s) continue
+    s.total++
+    if (r.attended) s.attended++
+  }
+  const attStats = Array.from(attMap.values()).filter(s => s.total > 0).sort((a, b) => (b.attended / b.total) - (a.attended / a.total))
+  const totalAttended = attStats.reduce((s, a) => s + a.attended, 0)
+  const totalRecorded = attStats.reduce((s, a) => s + a.total, 0)
+  const avgAttPct     = totalRecorded > 0 ? Math.round((totalAttended / totalRecorded) * 100) : 0
 
   const wins         = matches?.filter(m => m.goals_for > m.goals_against).length ?? 0
   const draws        = matches?.filter(m => m.goals_for === m.goals_against).length ?? 0
@@ -513,6 +549,52 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                         <div className="flex justify-between text-[11px]" style={{ color: '#adb4ce' }}>
                           <span>GF <span style={{ color: '#4be277' }}>{c.gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{c.ga}</span></span>
                           <span style={{ color: rate >= 50 ? '#4be277' : '#adb4ce' }}>{rate}% vic.</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* ── Asistencia a Entrenamientos ── */}
+            {attStats.length > 0 && (
+              <section className="mt-8">
+                <h3 className="text-[20px] font-semibold mb-1 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                  Asistencia a Entrenamientos
+                </h3>
+                <p className="text-sm mb-4 ml-4" style={{ color: '#adb4ce' }}>
+                  {sessionIds.length} sesión{sessionIds.length !== 1 ? 'es' : ''} · {avgAttPct}% asistencia media del equipo
+                </p>
+                <div className="overflow-hidden rounded-[20px] border" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+                  {attStats.map((s, i) => {
+                    const pct = Math.round((s.attended / s.total) * 100)
+                    const barColor  = pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : '#ef4444'
+                    const textColor = pct >= 80 ? '#4be277' : pct >= 60 ? '#facc15' : '#f87171'
+                    return (
+                      <div key={s.playerId}
+                        className="flex items-center gap-3 px-4 py-3 border-b last:border-0"
+                        style={{ borderColor: '#1e293b' }}>
+                        <span className="w-5 text-center text-[11px] font-black flex-shrink-0"
+                          style={{ color: i === 0 ? '#4be277' : i < 3 ? '#adb4ce' : '#475569' }}>
+                          {i + 1}
+                        </span>
+                        <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" />
+                        <p className="flex-1 min-w-0 truncate text-sm font-semibold text-white">
+                          {shortName(s.name)}
+                        </p>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="w-16 sm:w-28 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                            <div className="h-full rounded-full transition-all"
+                              style={{ width: `${pct}%`, backgroundColor: barColor }} />
+                          </div>
+                          <span className="text-xs font-bold tabular-nums" style={{ color: textColor }}>
+                            {s.attended}/{s.total}
+                          </span>
+                          <span className="text-xs font-black tabular-nums w-10 text-right"
+                            style={{ color: textColor }}>
+                            {pct}%
+                          </span>
                         </div>
                       </div>
                     )

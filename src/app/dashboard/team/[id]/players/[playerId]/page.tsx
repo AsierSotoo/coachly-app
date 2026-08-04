@@ -6,12 +6,13 @@ import { PlayerAvatar } from '@/components/team/player-avatar'
 import { PlayerPhotoUpload } from '@/components/team/player-photo-upload'
 import { getTeamTerms } from '@/lib/team-terms'
 import { updatePlayer } from '@/app/dashboard/team/actions'
+import { DeletePlayerButton } from '@/components/team/delete-player-button'
 
 export default async function PlayerDetailPage({
   params, searchParams,
 }: {
   params: Promise<{ id: string; playerId: string }>
-  searchParams: Promise<{ saved?: string }>
+  searchParams: Promise<{ saved?: string; error?: string }>
 }) {
   const { id: teamId, playerId } = await params
   const sp = await searchParams
@@ -26,10 +27,34 @@ export default async function PlayerDetailPage({
 
   const terms = getTeamTerms((team as { gender?: string | null }).gender)
 
-  const { data: appearances } = await supabase
-    .from('appearances')
-    .select('*, matches(season_id, seasons(id, name, created_at))')
-    .eq('player_id', playerId)
+  const [{ data: appearances }, { data: trainingSessions }] = await Promise.all([
+    supabase.from('appearances').select('*, matches(season_id, seasons(id, name, created_at))').eq('player_id', playerId),
+    supabase.from('training_sessions').select('id, season_id').eq('team_id', teamId),
+  ])
+
+  const sessionIds = trainingSessions?.map(s => s.id) ?? []
+  const { data: playerAttendance } = sessionIds.length > 0
+    ? await supabase.from('training_attendance').select('session_id, attended').eq('player_id', playerId).in('session_id', sessionIds)
+    : { data: [] as Array<{ session_id: string; attended: boolean }> }
+
+  const sessionSeasonMap = new Map<string, string>()
+  for (const ts of trainingSessions ?? []) sessionSeasonMap.set(ts.id, ts.season_id)
+
+  const trainingAttBySeason = new Map<string, { attended: number; total: number }>()
+  for (const a of playerAttendance ?? []) {
+    const sid = sessionSeasonMap.get(a.session_id)
+    if (!sid) continue
+    if (!trainingAttBySeason.has(sid)) trainingAttBySeason.set(sid, { attended: 0, total: 0 })
+    const st = trainingAttBySeason.get(sid)!
+    st.total++
+    if (a.attended) st.attended++
+  }
+
+  const totalAtt = { attended: 0, total: 0 }
+  for (const v of trainingAttBySeason.values()) {
+    totalAtt.attended += v.attended
+    totalAtt.total    += v.total
+  }
 
   type SS = {
     seasonId: string; seasonName: string; createdAt: string
@@ -71,6 +96,12 @@ export default async function PlayerDetailPage({
         <Link href={`/dashboard/team/${teamId}/players`} className="mb-5 flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
           <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> Plantilla
         </Link>
+
+        {sp.error === 'has_appearances' && (
+          <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm" style={{ color: '#f87171' }}>
+            Esta jugadora tiene partidos registrados. Para retirarla de la plantilla sin perder su historial, usa el botón <strong>Inactiva</strong> en la lista de jugadoras.
+          </div>
+        )}
 
         {/* ── FICHA EDITABLE ───────────────────────────────── */}
         <div className="mb-5 overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950">
@@ -134,11 +165,14 @@ export default async function PlayerDetailPage({
                   style={{ color: '#dce1fb', minHeight: 'auto', fontSize: 14 }} />
               </div>
 
-              <button type="submit"
-                className="self-end px-5 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
-                style={{ backgroundColor: '#22c55e', color: '#003915' }}>
-                Guardar cambios
-              </button>
+              <div className="flex items-center justify-between">
+                <DeletePlayerButton playerId={player.id} teamId={teamId} />
+                <button type="submit"
+                  className="px-5 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
+                  style={{ backgroundColor: '#22c55e', color: '#003915' }}>
+                  Guardar cambios
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -157,6 +191,7 @@ export default async function PlayerDetailPage({
                 seasonId={current.seasonId}
                 data={current}
                 highlight
+                attendance={trainingAttBySeason.get(current.seasonId)}
               />
             )}
 
@@ -168,7 +203,7 @@ export default async function PlayerDetailPage({
                   <h2 className="text-xs font-bold uppercase tracking-widest text-slate-300">Total carrera</h2>
                   <span className="ml-auto text-[10px] text-slate-600">{seasons.length} temporadas</span>
                 </div>
-                <StatGrid data={T} />
+                <StatGrid data={T} attendance={totalAtt.total > 0 ? totalAtt : undefined} />
               </div>
             )}
 
@@ -191,7 +226,7 @@ export default async function PlayerDetailPage({
                           Ver stats →
                         </Link>
                       </div>
-                      <StatGrid data={s} compact />
+                      <StatGrid data={s} compact attendance={trainingAttBySeason.get(s.seasonId)} />
                     </div>
                   ))}
                 </div>
@@ -208,8 +243,27 @@ export default async function PlayerDetailPage({
 /* ── Componentes locales ───────────────────────────────── */
 
 type StatData = { games: number; goals: number; assists: number; minutes: number; yellow: number; red: number }
+type AttendanceData = { attended: number; total: number }
 
-function StatCard({ title, seasonId, data, highlight }: { title: string; seasonId: string; data: StatData; highlight?: boolean }) {
+function AttendanceBar({ attended, total }: AttendanceData) {
+  const pct = Math.round((attended / total) * 100)
+  const barColor  = pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : '#ef4444'
+  const textColor = pct >= 80 ? '#4be277' : pct >= 60 ? '#facc15' : '#f87171'
+  return (
+    <div className="flex items-center gap-3 border-t border-slate-800/60 px-5 py-2.5">
+      <span className="material-symbols-outlined text-slate-700" style={{ fontSize: 12 }}>fitness_center</span>
+      <span className="text-[10px] text-slate-700 uppercase tracking-wide mr-auto">Entrenos</span>
+      <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
+      </div>
+      <span className="text-[11px] font-bold tabular-nums" style={{ color: textColor }}>
+        {attended}/{total} ({pct}%)
+      </span>
+    </div>
+  )
+}
+
+function StatCard({ title, seasonId, data, highlight, attendance }: { title: string; seasonId: string; data: StatData; highlight?: boolean; attendance?: AttendanceData }) {
   return (
     <div className={`overflow-hidden rounded-3xl border bg-slate-900/80 backdrop-blur ${highlight ? 'border-green-500/20' : 'border-slate-800'}`}>
       <div className={`flex items-center justify-between border-b px-4 py-3 ${highlight ? 'border-green-500/10 bg-green-500/5' : 'border-slate-800'}`}>
@@ -224,12 +278,12 @@ function StatCard({ title, seasonId, data, highlight }: { title: string; seasonI
           Ver stats →
         </Link>
       </div>
-      <StatGrid data={data} />
+      <StatGrid data={data} attendance={attendance} />
     </div>
   )
 }
 
-function StatGrid({ data, compact }: { data: StatData; compact?: boolean }) {
+function StatGrid({ data, compact, attendance }: { data: StatData; compact?: boolean; attendance?: AttendanceData }) {
   const sz = compact ? 'text-2xl' : 'text-3xl'
   const py = compact ? 'py-3' : 'py-4'
 
@@ -286,6 +340,7 @@ function StatGrid({ data, compact }: { data: StatData; compact?: boolean }) {
           )}
         </div>
       )}
+      {attendance && attendance.total > 0 && <AttendanceBar attended={attendance.attended} total={attendance.total} />}
     </>
   )
 }

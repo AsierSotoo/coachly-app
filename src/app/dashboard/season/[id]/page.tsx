@@ -186,6 +186,14 @@ export default async function SeasonPage({
               <span className="material-symbols-outlined text-lg">person_pin</span>
               Gestionar Plantilla
             </Link>
+            <Link
+              href={`/dashboard/season/${seasonId}/trainings`}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm border active:scale-95 transition-all hover:bg-[#23293c]"
+              style={{ backgroundColor: '#2e3447', borderColor: '#3d4a3d', color: '#dce1fb' }}
+            >
+              <span className="material-symbols-outlined text-lg">fitness_center</span>
+              Entrenamientos
+            </Link>
           </div>
 
           {/* Buscador */}
@@ -292,13 +300,13 @@ export default async function SeasonPage({
             className="flex items-center justify-between px-6 py-4 border-b border-[#1e293b]"
             style={{ backgroundColor: '#191f31' }}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 min-w-0">
               <TeamLogo name={team.name} logoUrl={team.logo_url} size="sm" />
-              <h3 className="text-[20px] font-semibold" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
-                Calendario y Resultados
+              <h3 className="text-base md:text-[20px] font-semibold truncate" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+                Resultados
               </h3>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-shrink-0">
               <Link
                 href={`/dashboard/season/${seasonId}/stats`}
                 className="px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider border transition-colors hover:border-[#4be277]/50"
@@ -330,13 +338,11 @@ export default async function SeasonPage({
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-[#1e293b]" style={{ backgroundColor: '#151b2d' }}>
-                      {['Est.', 'Oponente', 'Fecha', 'Convocatoria', 'Acciones'].map((h, i) => (
-                        <th key={h}
-                          className="px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
-                          style={{ color: '#adb4ce', textAlign: i === 4 ? 'right' : 'left' }}>
-                          {h}
-                        </th>
-                      ))}
+                      <th className="px-3 md:px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: '#adb4ce' }}>Est.</th>
+                      <th className="px-3 md:px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: '#adb4ce' }}>Oponente</th>
+                      <th className="hidden md:table-cell px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: '#adb4ce' }}>Fecha</th>
+                      <th className="hidden lg:table-cell px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: '#adb4ce' }}>Convocatoria</th>
+                      <th className="px-3 md:px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-right" style={{ color: '#adb4ce' }}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -359,34 +365,35 @@ export default async function SeasonPage({
                           onMouseEnter={undefined}
                         >
                           {/* Est. */}
-                          <td className="px-6 py-5">
-                            <div
-                              className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black"
-                              style={dotStyle}
-                            >
+                          <td className="px-3 md:px-6 py-3 md:py-5">
+                            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs font-black" style={dotStyle}>
                               {res}
                             </div>
                           </td>
 
                           {/* Oponente */}
-                          <td className="px-6 py-5">
-                            <div className="flex items-center gap-3">
+                          <td className="px-3 md:px-6 py-3 md:py-5 max-w-0">
+                            <div className="flex items-center gap-2 md:gap-3">
                               {(match as { rival_logo_url?: string | null }).rival_logo_url ? (
-                                <div className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0 overflow-hidden border border-[#2e3447] bg-white">
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded flex items-center justify-center flex-shrink-0 overflow-hidden border border-[#2e3447] bg-white">
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img src={(match as { rival_logo_url: string }).rival_logo_url} alt={match.opponent} className="w-full h-full object-contain p-1" />
                                 </div>
                               ) : (
                                 <OpponentInitial name={match.opponent} />
                               )}
-                              <div>
-                                <p className="text-sm font-bold text-white">{match.opponent}</p>
-                                <p className="text-[11px] mt-0.5" style={{ color: '#adb4ce' }}>
-                                  {match.home ? 'Local' : 'Visitante'}
-                                  {match.competition ? ` · ${match.competition}` : ''}
+                              <div className="min-w-0">
+                                <p className="text-sm font-bold text-white truncate">{match.opponent}</p>
+                                {/* Móvil: resultado + local/vis inline */}
+                                <p className="md:hidden text-[11px] mt-0.5 font-bold tabular-nums" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+                                  {gf}–{ga} · {match.home ? 'Local' : 'Vis.'}
+                                </p>
+                                {/* Desktop: local/vis + competición */}
+                                <p className="hidden md:block text-[11px] mt-0.5 truncate" style={{ color: '#adb4ce' }}>
+                                  {match.home ? 'Local' : 'Visitante'}{match.competition ? ` · ${match.competition}` : ''}
                                 </p>
                                 {match.notes && (
-                                  <p className="text-[11px] mt-1 flex items-center gap-1 max-w-[200px] truncate" style={{ color: '#64748b' }}>
+                                  <p className="hidden md:flex text-[11px] mt-1 items-center gap-1 max-w-[200px] truncate" style={{ color: '#64748b' }}>
                                     <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 12 }}>edit_note</span>
                                     {match.notes}
                                   </p>
@@ -395,16 +402,16 @@ export default async function SeasonPage({
                             </div>
                           </td>
 
-                          {/* Fecha */}
-                          <td className="px-6 py-5">
+                          {/* Fecha — oculta en móvil */}
+                          <td className="hidden md:table-cell px-6 py-5">
                             <p className="text-sm font-medium text-white">{dateStr(match.played_at)}</p>
                             <p className="text-[11px] mt-0.5 font-bold tabular-nums" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
                               {gf}–{ga}
                             </p>
                           </td>
 
-                          {/* Convocatoria */}
-                          <td className="px-6 py-5">
+                          {/* Convocatoria — oculta hasta lg */}
+                          <td className="hidden lg:table-cell px-6 py-5">
                             {hasConvocatoria ? (
                               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold border"
                                 style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.2)', color: '#4be277' }}>
@@ -421,12 +428,12 @@ export default async function SeasonPage({
                           </td>
 
                           {/* Acciones */}
-                          <td className="px-6 py-5">
-                            <div className="flex items-center justify-end gap-2">
+                          <td className="px-3 md:px-6 py-3 md:py-5">
+                            <div className="flex items-center justify-end gap-1 md:gap-2">
                               {!hasConvocatoria && (
                                 <Link
                                   href={`/dashboard/season/${seasonId}/convocatorias`}
-                                  className="px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-colors hover:bg-[#22c55e]/10"
+                                  className="hidden md:inline-flex px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-colors hover:bg-[#22c55e]/10"
                                   style={{ backgroundColor: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.2)', color: '#4be277' }}
                                 >
                                   Convocatoria
@@ -434,15 +441,13 @@ export default async function SeasonPage({
                               )}
                               <Link
                                 href={`/dashboard/season/${seasonId}/match/${match.id}`}
-                                className="p-2 rounded transition-colors hover:bg-[#23293c]"
+                                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors hover:bg-[#23293c]"
                                 style={{ color: '#adb4ce' }}
                                 title="Editar partido"
                               >
                                 <span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span>
                               </Link>
-                              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <DeleteMatchButton matchId={match.id} seasonId={seasonId} />
-                              </div>
+                              <DeleteMatchButton matchId={match.id} seasonId={seasonId} />
                             </div>
                           </td>
                         </tr>
