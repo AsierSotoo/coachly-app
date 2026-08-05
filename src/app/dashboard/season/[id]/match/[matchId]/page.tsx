@@ -21,7 +21,7 @@ export default async function MatchPage({
   const season = match.seasons as { id: string; name: string; teams: { id: string; name: string; gender?: string | null } }
   const team = season.teams
 
-  const [{ data: players }, { data: appearances }, { data: convocatoria }] = await Promise.all([
+  const [{ data: players }, { data: appearances }, { data: convocatoria }, { data: allMatches }] = await Promise.all([
     supabase.from('players').select('*').eq('team_id', team.id).eq('active', true)
       .order('number', { ascending: true, nullsFirst: false }),
     supabase.from('appearances').select('*').eq('match_id', matchId),
@@ -29,7 +29,15 @@ export default async function MatchPage({
       .select('id, convocatoria_players(player_id, status)')
       .eq('match_id', matchId)
       .maybeSingle(),
+    supabase.from('matches')
+      .select('id, opponent, played_at')
+      .eq('season_id', seasonId)
+      .order('played_at', { ascending: true }),
   ])
+
+  const matchIndex = allMatches?.findIndex(m => m.id === matchId) ?? -1
+  const prevMatch  = matchIndex > 0 ? allMatches![matchIndex - 1] : null
+  const nextMatch  = matchIndex < (allMatches?.length ?? 0) - 1 ? allMatches![matchIndex + 1] : null
 
   const convocatoriaStatuses: Record<string, 'titular' | 'convocada' | 'no_convocada'> = {}
   const convocatoriaId = (convocatoria as { id?: string } | null)?.id ?? null
@@ -60,12 +68,49 @@ export default async function MatchPage({
       <main className="mx-auto max-w-5xl px-4 py-6">
         {/* Header */}
         <div className="mb-6">
-          <Link
-            href={`/dashboard/season/${seasonId}`}
-            className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors mb-3"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> {season.name}
-          </Link>
+          <div className="flex items-center justify-between mb-3">
+            <Link
+              href={`/dashboard/season/${seasonId}`}
+              className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> {season.name}
+            </Link>
+            {allMatches && allMatches.length > 1 && (
+              <div className="flex items-center gap-1">
+                {prevMatch ? (
+                  <Link href={`/dashboard/season/${seasonId}/match/${prevMatch.id}`}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
+                    style={{ borderColor: '#2e3447', color: '#adb4ce' }}
+                    title={`Anterior: ${prevMatch.opponent}`}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
+                    <span className="hidden sm:inline max-w-[80px] truncate">{prevMatch.opponent}</span>
+                  </Link>
+                ) : (
+                  <span className="flex items-center px-2.5 py-1 rounded-lg border opacity-25 text-[11px]"
+                    style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
+                  </span>
+                )}
+                <span className="text-[10px] px-1.5 tabular-nums" style={{ color: '#475569' }}>
+                  {matchIndex + 1}/{allMatches.length}
+                </span>
+                {nextMatch ? (
+                  <Link href={`/dashboard/season/${seasonId}/match/${nextMatch.id}`}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
+                    style={{ borderColor: '#2e3447', color: '#adb4ce' }}
+                    title={`Siguiente: ${nextMatch.opponent}`}>
+                    <span className="hidden sm:inline max-w-[80px] truncate">{nextMatch.opponent}</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
+                  </Link>
+                ) : (
+                  <span className="flex items-center px-2.5 py-1 rounded-lg border opacity-25 text-[11px]"
+                    style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
           <div className="flex items-start justify-between">
             <div className="min-w-0">
               <h1 className="font-[family-name:var(--font-heading)] text-xl font-bold text-white truncate">

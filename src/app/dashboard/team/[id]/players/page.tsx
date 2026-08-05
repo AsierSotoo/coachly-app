@@ -81,14 +81,33 @@ export default async function PlayersPage({
               }
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            {/* Buscador */}
+            <form method="get" action={`/dashboard/team/${teamId}/players`}
+              className="flex items-center gap-2 rounded-xl border px-3 py-2 focus-within:border-[#4be277] transition-colors"
+              style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}>
+              <span className="material-symbols-outlined" style={{ color: '#adb4ce', fontSize: 18 }}>search</span>
+              <input
+                name="q"
+                type="text"
+                placeholder="Buscar jugadora..."
+                defaultValue={sp.q ?? ''}
+                className="bg-transparent border-none outline-none text-sm w-36"
+                style={{ color: '#dce1fb' }}
+              />
+              {sp.q && (
+                <Link href={`/dashboard/team/${teamId}/players`} style={{ color: '#adb4ce' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
+                </Link>
+              )}
+            </form>
             <Link
               href={`/dashboard/team/${teamId}/settings`}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-colors hover:bg-[#23293c]"
               style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}
             >
               <span className="material-symbols-outlined text-lg">settings</span>
-              Ajustes del equipo
+              Ajustes
             </Link>
             <Link
               href={`/dashboard/team/${teamId}/seasons`}
