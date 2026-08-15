@@ -6,6 +6,11 @@ import { PlayerAvatar } from '@/components/team/player-avatar'
 import { getTeamTerms } from '@/lib/team-terms'
 import type { Metadata } from 'next'
 import { ShareButton } from '@/components/season/share-button'
+import { DownloadStatsCsv } from '@/components/season/download-stats-csv'
+import { EvolutionChart } from '@/components/season/evolution-chart'
+import type { ChartMatch } from '@/components/season/evolution-chart'
+import { PlayerCompare } from '@/components/season/player-compare'
+import type { CompareStat } from '@/components/season/player-compare'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -212,6 +217,22 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
   }
   const competitions = Array.from(compMap.values()).sort((a, b) => b.played - a.played)
 
+  // Gráfico de evolución de puntos
+  const matchesChrono = [...(matches ?? [])].sort((a, b) => a.played_at.localeCompare(b.played_at))
+  let cumPts = 0
+  const chartPoints: ChartMatch[] = matchesChrono.map(m => {
+    const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+    cumPts += res === 'V' ? 3 : res === 'E' ? 1 : 0
+    return { opponent: m.opponent, result: res, gf: m.goals_for, ga: m.goals_against, cumPoints: cumPts, date: m.played_at }
+  })
+
+  // Datos para comparar jugadoras
+  const compareStats: CompareStat[] = stats.map(s => ({
+    playerId: s.playerId, name: s.name, photoUrl: s.photoUrl, position: s.position,
+    goals: s.goals, assists: s.assists, minutes: s.minutes,
+    yellowCards: s.yellowCards, redCards: s.redCards, gamesPlayed: s.gamesPlayed,
+  }))
+
   // Bar chart: last 10 matches, newest first
   const last10       = matchesChron.slice(0, 10)
   const maxGoalsBar  = Math.max(...last10.map(m => Math.max(m.goals_for, m.goals_against)), 1)
@@ -250,6 +271,16 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {stats.length > 0 && (
+              <DownloadStatsCsv
+                stats={stats.map(s => ({
+                  name: s.name, number: s.number, position: s.position,
+                  gamesPlayed: s.gamesPlayed, goals: s.goals, assists: s.assists,
+                  minutes: s.minutes, yellowCards: s.yellowCards, redCards: s.redCards,
+                }))}
+                seasonName={season.name}
+              />
+            )}
             {shareToken && <ShareButton token={shareToken} />}
             <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Temporada:</span>
             <span className="px-4 py-2 rounded-lg border text-sm font-bold" style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}>
@@ -558,6 +589,37 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
               </section>
             )}
 
+            {/* Gráfico de evolución de puntos */}
+            {chartPoints.length >= 2 && (
+              <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+                <div className="flex items-start justify-between mb-6 gap-4">
+                  <div>
+                    <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                      Evolución de Puntos
+                    </h4>
+                    <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>
+                      Puntos acumulados partido a partido · {cumPts} pts totales
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>Victoria</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
+                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>Empate</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#f87171' }} />
+                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>Derrota</span>
+                    </div>
+                  </div>
+                </div>
+                <EvolutionChart points={chartPoints} />
+              </section>
+            )}
+
             {/* Desglose por competición */}
             {competitions.length >= 2 && (
               <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
@@ -723,6 +785,18 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                     </tbody>
                   </table>
                 </div>
+              </section>
+            )}
+            {/* Comparar jugadoras */}
+            {compareStats.length >= 2 && (
+              <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+                <h3 className="text-[20px] font-semibold mb-1 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                  Comparar Jugadoras
+                </h3>
+                <p className="text-sm mb-6 ml-4" style={{ color: '#adb4ce' }}>
+                  Selecciona dos jugadoras para ver sus estadísticas cara a cara
+                </p>
+                <PlayerCompare players={compareStats} />
               </section>
             )}
           </>

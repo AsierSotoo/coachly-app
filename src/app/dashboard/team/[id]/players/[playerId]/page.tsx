@@ -18,12 +18,17 @@ export default async function PlayerDetailPage({
   const sp = await searchParams
   const supabase = await createClient()
 
-  const [{ data: player }, { data: team }] = await Promise.all([
+  const [{ data: player }, { data: team }, { data: allPlayers }] = await Promise.all([
     supabase.from('players').select('*').eq('id', playerId).single(),
     supabase.from('teams').select('id, name, gender').eq('id', teamId).single(),
+    supabase.from('players').select('id, name, number').eq('team_id', teamId).eq('active', true).order('number', { ascending: true, nullsFirst: false }),
   ])
 
   if (!player || !team) notFound()
+
+  const playerIdx  = allPlayers?.findIndex(p => p.id === playerId) ?? -1
+  const prevPlayer = playerIdx > 0 ? allPlayers![playerIdx - 1] : null
+  const nextPlayer = playerIdx < (allPlayers?.length ?? 0) - 1 ? allPlayers![playerIdx + 1] : null
 
   const terms = getTeamTerms((team as { gender?: string | null }).gender)
 
@@ -141,6 +146,11 @@ export default async function PlayerDetailPage({
     .sort((a, b) => ((a.matches as MatchExt | null)?.played_at ?? '').localeCompare((b.matches as MatchExt | null)?.played_at ?? ''))
     .slice(-5)
 
+  // Historial de tarjetas
+  const cardHistory = (appearances ?? [])
+    .filter(a => (a.yellow_cards ?? 0) > 0 || (a.red_cards ?? 0) > 0)
+    .sort((a, b) => ((a.matches as MatchExt | null)?.played_at ?? '').localeCompare((b.matches as MatchExt | null)?.played_at ?? ''))
+
   // Seguimiento de sanciones: amarillas efectivas en el ciclo actual
   const cyclesServed = (player as { yellow_card_cycles_served?: number }).yellow_card_cycles_served ?? 0
   const totalYellow  = T.yellow
@@ -152,9 +162,44 @@ export default async function PlayerDetailPage({
     <PageTransition>
       <main className="mx-auto max-w-2xl px-4 py-6 pb-10">
 
-        <Link href={`/dashboard/team/${teamId}/players`} className="mb-5 flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
-          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> Plantilla
-        </Link>
+        <div className="mb-5 flex items-center justify-between">
+          <Link href={`/dashboard/team/${teamId}/players`} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> Plantilla
+          </Link>
+          {allPlayers && allPlayers.length > 1 && (
+            <div className="flex items-center gap-1">
+              {prevPlayer ? (
+                <Link href={`/dashboard/team/${teamId}/players/${prevPlayer.id}`}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
+                  style={{ borderColor: '#2e3447', color: '#adb4ce' }} title={prevPlayer.name}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
+                  <span className="hidden sm:inline max-w-[80px] truncate">{prevPlayer.name.split(' ')[0]}</span>
+                </Link>
+              ) : (
+                <span className="flex items-center px-2.5 py-1 rounded-lg border opacity-25 text-[11px]"
+                  style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
+                </span>
+              )}
+              <span className="text-[10px] px-1.5 tabular-nums" style={{ color: '#475569' }}>
+                {playerIdx + 1}/{allPlayers.length}
+              </span>
+              {nextPlayer ? (
+                <Link href={`/dashboard/team/${teamId}/players/${nextPlayer.id}`}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
+                  style={{ borderColor: '#2e3447', color: '#adb4ce' }} title={nextPlayer.name}>
+                  <span className="hidden sm:inline max-w-[80px] truncate">{nextPlayer.name.split(' ')[0]}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
+                </Link>
+              ) : (
+                <span className="flex items-center px-2.5 py-1 rounded-lg border opacity-25 text-[11px]"
+                  style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
+                </span>
+              )}
+            </div>
+          )}
+        </div>
 
         {sp.error === 'has_appearances' && (
           <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm" style={{ color: '#f87171' }}>
@@ -408,6 +453,43 @@ export default async function PlayerDetailPage({
               </div>
             )}
 
+          </div>
+        )}
+
+        {/* ── Historial de tarjetas ─────────────────────────── */}
+        {cardHistory.length > 0 && (
+          <div className="mt-5 overflow-hidden rounded-3xl border border-slate-800" style={{ backgroundColor: '#0c1324' }}>
+            <div className="flex items-center gap-2 border-b border-slate-800 px-5 py-3">
+              <span className="material-symbols-outlined text-slate-500" style={{ fontSize: 16 }}>style</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Historial de tarjetas</p>
+              <span className="ml-auto text-[10px]" style={{ color: '#334155' }}>{cardHistory.length} partidos</span>
+            </div>
+            <div className="divide-y divide-slate-800/40">
+              {cardHistory.map((app, i) => {
+                const m = app.matches as MatchExt | null
+                const date = m?.played_at
+                  ? new Date(m.played_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: '2-digit' })
+                  : '?'
+                const season = m?.seasons?.name ?? ''
+                return (
+                  <div key={i} className="flex items-center gap-3 px-5 py-2.5">
+                    <span className="text-[11px] tabular-nums flex-shrink-0 w-16" style={{ color: '#475569' }}>{date}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-slate-400 truncate">vs {m?.opponent ?? '?'}</p>
+                      {season && <p className="text-[10px]" style={{ color: '#334155' }}>{season}</p>}
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {Array.from({ length: app.yellow_cards ?? 0 }).map((_, j) => (
+                        <span key={`y${j}`} className="w-3 h-4 rounded-[2px]" style={{ backgroundColor: '#facc15' }} />
+                      ))}
+                      {Array.from({ length: app.red_cards ?? 0 }).map((_, j) => (
+                        <span key={`r${j}`} className="w-3 h-4 rounded-[2px]" style={{ backgroundColor: '#ef4444' }} />
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         )}
 
