@@ -5,7 +5,7 @@ import { PageTransition } from '@/components/ui/page-transition'
 import { PlayerAvatar } from '@/components/team/player-avatar'
 import { PlayerPhotoUpload } from '@/components/team/player-photo-upload'
 import { getTeamTerms } from '@/lib/team-terms'
-import { updatePlayer } from '@/app/dashboard/team/actions'
+import { updatePlayer, serveYellowCycle } from '@/app/dashboard/team/actions'
 import { DeletePlayerButton } from '@/components/team/delete-player-button'
 
 export default async function PlayerDetailPage({
@@ -28,7 +28,7 @@ export default async function PlayerDetailPage({
   const terms = getTeamTerms((team as { gender?: string | null }).gender)
 
   const [{ data: appearances }, { data: trainingSessions }] = await Promise.all([
-    supabase.from('appearances').select('*, matches(season_id, mvp_player_id, goals_against, seasons(id, name, created_at))').eq('player_id', playerId),
+    supabase.from('appearances').select('*, matches(season_id, mvp_player_id, goals_against, played_at, opponent, seasons(id, name, created_at))').eq('player_id', playerId),
     supabase.from('training_sessions').select('id, season_id').eq('team_id', teamId),
   ])
 
@@ -109,6 +109,44 @@ export default async function PlayerDetailPage({
 
   const posClass = terms.posBadgeClass(player.position)
   const posDisplay = terms.posLabel(player.position)
+
+  // Ranking en plantilla (temporada actual)
+  let goalsRank = 0, assistsRank = 0, minutesRank = 0, rankTotal = 0
+  if (current?.seasonId) {
+    const { data: smIds } = await supabase.from('matches').select('id').eq('season_id', current.seasonId)
+    const mIds = smIds?.map(m => m.id) ?? []
+    if (mIds.length > 0) {
+      const { data: tApps } = await supabase.from('appearances')
+        .select('player_id, goals, assists, minutes').in('match_id', mIds).gt('minutes', 0)
+      const pMap = new Map<string, { g: number; a: number; m: number }>()
+      for (const app of tApps ?? []) {
+        if (!pMap.has(app.player_id)) pMap.set(app.player_id, { g: 0, a: 0, m: 0 })
+        const p = pMap.get(app.player_id)!
+        p.g += app.goals ?? 0
+        p.a += app.assists ?? 0
+        p.m += app.minutes ?? 0
+      }
+      rankTotal = pMap.size
+      const sortBy = (k: 'g' | 'a' | 'm') => [...pMap].sort((a, b) => b[1][k] - a[1][k])
+      goalsRank   = sortBy('g').findIndex(([id]) => id === playerId) + 1
+      assistsRank = sortBy('a').findIndex(([id]) => id === playerId) + 1
+      minutesRank = sortBy('m').findIndex(([id]) => id === playerId) + 1
+    }
+  }
+
+  // Últimos 5 partidos en la temporada actual
+  type MatchExt = { season_id: string; mvp_player_id?: string | null; goals_against: number; played_at: string; opponent: string; seasons: { id: string; name: string; created_at: string } }
+  const last5 = (appearances ?? [])
+    .filter(a => (a.matches as MatchExt | null)?.season_id === current?.seasonId)
+    .sort((a, b) => ((a.matches as MatchExt | null)?.played_at ?? '').localeCompare((b.matches as MatchExt | null)?.played_at ?? ''))
+    .slice(-5)
+
+  // Seguimiento de sanciones: amarillas efectivas en el ciclo actual
+  const cyclesServed = (player as { yellow_card_cycles_served?: number }).yellow_card_cycles_served ?? 0
+  const totalYellow  = T.yellow
+  const effectiveYellow = totalYellow - cyclesServed * 4
+  const warnSanction = effectiveYellow >= 4
+  const SANCTION_THRESHOLD = 4
 
   return (
     <PageTransition>
@@ -197,6 +235,85 @@ export default async function PlayerDetailPage({
             </form>
           </div>
         </div>
+
+        {/* ── Ranking en plantilla ─────────────────────────────────── */}
+        {rankTotal > 1 && current && (
+          <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
+            <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
+              <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 14 }}>leaderboard</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Ranking en plantilla · {current.seasonName}</p>
+              <span className="ml-auto text-[10px]" style={{ color: '#334155' }}>{rankTotal} jugadoras</span>
+            </div>
+            <div className="grid grid-cols-3 divide-x divide-slate-800">
+              {[
+                { label: 'Goles',       rank: goalsRank,   icon: 'sports_soccer', color: '#4be277' },
+                { label: 'Asistencias', rank: assistsRank, icon: 'electric_bolt', color: '#facc15' },
+                { label: 'Minutos',     rank: minutesRank, icon: 'schedule',       color: '#60a5fa' },
+              ].map(({ label, rank, icon, color }) => {
+                const isTop = rank <= 3 && rank > 0
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : null
+                return (
+                  <div key={label} className="flex flex-col items-center gap-1 py-3">
+                    <span className="material-symbols-outlined" style={{ fontSize: 13, color: isTop ? color : '#475569' }}>{icon}</span>
+                    <p className="text-xl font-black leading-none tabular-nums" style={{ color: isTop ? color : '#64748b', fontFamily: 'Sora, sans-serif' }}>
+                      {medal ?? `${rank}ª`}
+                    </p>
+                    <p className="text-[9px] uppercase tracking-wide" style={{ color: '#475569' }}>{label}</p>
+                    <p className="text-[9px]" style={{ color: '#1e3a4c' }}>de {rankTotal}</p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── Racha reciente ────────────────────────────────────────── */}
+        {last5.length > 0 && (
+          <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
+            <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
+              <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 14 }}>trending_up</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Últimos partidos</p>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-3">
+              {last5.map((app, i) => {
+                const m = app.matches as MatchExt | null
+                const played  = (app.minutes ?? 0) > 0
+                const scored  = (app.goals ?? 0) > 0
+                const yellow  = (app.yellow_cards ?? 0) > 0
+                const red     = (app.red_cards ?? 0) > 0
+                const opp     = m?.opponent?.slice(0, 4)?.toUpperCase() ?? '?'
+                const dot  = scored ? '#4be277' : played ? '#3b82f6' : '#334155'
+                const text = scored ? '#4be277' : played ? '#60a5fa' : '#475569'
+                return (
+                  <div key={i} className="flex flex-col items-center gap-1 flex-1">
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2"
+                      style={{ borderColor: dot, backgroundColor: played ? `${dot}18` : 'transparent', color: text }}>
+                      {scored ? '⚽' : played ? '●' : '○'}
+                    </div>
+                    <p className="text-[8px] uppercase tracking-wide truncate max-w-[36px] text-center" style={{ color: '#475569' }}>{opp}</p>
+                    {(yellow || red) && (
+                      <div className="w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: red ? '#ef4444' : '#facc15' }} />
+                    )}
+                  </div>
+                )
+              })}
+              <div className="ml-auto flex flex-col gap-1 pl-2">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#4be277' }} />
+                  <span className="text-[8px]" style={{ color: '#475569' }}>Con gol</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#3b82f6' }} />
+                  <span className="text-[8px]" style={{ color: '#475569' }}>Jugó</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full border" style={{ borderColor: '#334155' }} />
+                  <span className="text-[8px]" style={{ color: '#475569' }}>No jugó</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── Titular vs Suplente + Portería a cero ─────────────────── */}
         {T.games > 0 && (
@@ -293,6 +410,52 @@ export default async function PlayerDetailPage({
 
           </div>
         )}
+
+        {/* ── SEGUIMIENTO DE SANCIONES ──────────────────────── */}
+        {totalYellow > 0 && (
+          <div className={`mt-5 overflow-hidden rounded-3xl border ${warnSanction ? 'border-yellow-500/40' : 'border-slate-800'}`}
+            style={{ backgroundColor: warnSanction ? 'rgba(234,179,8,0.04)' : '#0c1324' }}>
+            <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: warnSanction ? 'rgba(234,179,8,0.15)' : '#1e293b' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16, color: warnSanction ? '#facc15' : '#475569' }}>gavel</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: warnSanction ? '#facc15' : '#475569' }}>
+                Seguimiento de sanciones
+              </p>
+            </div>
+            <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="text-2xl font-extrabold tabular-nums" style={{ color: warnSanction ? '#facc15' : '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
+                    {effectiveYellow}/{SANCTION_THRESHOLD}
+                  </span>
+                  <span className="text-xs" style={{ color: '#64748b' }}>amarillas en el ciclo actual</span>
+                </div>
+                <div className="w-full h-1.5 rounded-full overflow-hidden mb-2" style={{ backgroundColor: '#1e293b' }}>
+                  <div className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min((effectiveYellow / SANCTION_THRESHOLD) * 100, 100)}%`, backgroundColor: warnSanction ? '#facc15' : '#22c55e' }} />
+                </div>
+                <p className="text-xs" style={{ color: '#475569' }}>
+                  {cyclesServed > 0 ? `${cyclesServed} sanción${cyclesServed !== 1 ? 'es' : ''} cumplida${cyclesServed !== 1 ? 's' : ''} · ` : ''}
+                  {warnSanction
+                    ? '⚠️ Sanción activa — marca como cumplida tras el partido de suspensión'
+                    : `Le faltan ${SANCTION_THRESHOLD - effectiveYellow} amarilla${SANCTION_THRESHOLD - effectiveYellow !== 1 ? 's' : ''} para sanción`}
+                </p>
+              </div>
+              {warnSanction && (
+                <form action={serveYellowCycle}>
+                  <input type="hidden" name="player_id" value={player.id} />
+                  <input type="hidden" name="team_id" value={teamId} />
+                  <button type="submit"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border cursor-pointer transition-all active:scale-95 whitespace-nowrap"
+                    style={{ backgroundColor: 'rgba(234,179,8,0.1)', borderColor: 'rgba(234,179,8,0.3)', color: '#facc15' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check_circle</span>
+                    Sanción cumplida
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+
       </main>
     </PageTransition>
   )
