@@ -19,7 +19,7 @@ export default async function PlayersPage({
   params, searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ error?: string; edit?: string; q?: string }>
+  searchParams: Promise<{ error?: string; edit?: string; q?: string; sort?: string; pos?: string }>
 }) {
   const { id: teamId } = await params
   const supabase = await createClient()
@@ -30,18 +30,18 @@ export default async function PlayersPage({
   const POSITIONS = terms.positions
 
   const { data: players } = await supabase
-    .from('players').select('*').eq('team_id', teamId)
+    .from('players').select('*, yellow_card_cycles_served')
+    .eq('team_id', teamId)
     .order('number', { ascending: true, nullsFirst: false })
 
   const sp        = await searchParams
   const editingId = sp.edit ?? null
   const searchQ   = sp.q?.toLowerCase() ?? ''
+  const sortBy    = sp.sort ?? 'dorsal'
+  const filterPos = sp.pos ?? ''
 
   const allActive   = players?.filter(p =>  p.active) ?? []
   const allInactive = players?.filter(p => !p.active) ?? []
-
-  const active   = searchQ ? allActive.filter(p   => p.name.toLowerCase().includes(searchQ) || String(p.number ?? '').includes(searchQ)) : allActive
-  const inactive = searchQ ? allInactive.filter(p => p.name.toLowerCase().includes(searchQ) || String(p.number ?? '').includes(searchQ)) : allInactive
 
   // Stats completas por jugadora (participación + goles + tarjetas)
   const playerIds = players?.map(p => p.id) ?? []
@@ -62,6 +62,26 @@ export default async function PlayersPage({
     })
   }
   const maxGames = Math.max(1, ...Object.values(statsMap).map(s => s.games))
+
+  const sortedActive = [...allActive].sort((a, b) => {
+    const sa = statsMap[a.id] ?? { games: 0, goals: 0, assists: 0 }
+    const sb = statsMap[b.id] ?? { games: 0, goals: 0, assists: 0 }
+    if (sortBy === 'goals')   return sb.goals - sa.goals || sb.assists - sa.assists
+    if (sortBy === 'assists') return sb.assists - sa.assists || sb.goals - sa.goals
+    if (sortBy === 'games')   return sb.games - sa.games
+    return (a.number ?? 99) - (b.number ?? 99)
+  })
+
+  const filterFn = (p: typeof sortedActive[0]) => {
+    if (searchQ && !p.name.toLowerCase().includes(searchQ) && !String(p.number ?? '').includes(searchQ)) return false
+    if (filterPos && p.position !== filterPos) return false
+    return true
+  }
+  const active   = sortedActive.filter(filterFn)
+  const inactive = allInactive.filter(filterFn)
+
+  // Posiciones presentes en la plantilla (para mostrar solo las relevantes)
+  const presentPositions = [...new Set(allActive.map(p => p.position).filter(Boolean))] as string[]
 
   return (
     <PageTransition>
@@ -165,14 +185,56 @@ export default async function PlayersPage({
 
         {/* Grid de jugadores/as activos/as */}
         <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
             <h3 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
               {terms.pp.charAt(0).toUpperCase() + terms.pp.slice(1)} {terms.actives.charAt(0).toUpperCase() + terms.actives.slice(1)}
             </h3>
-            <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border"
-              style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: '#4be277', borderColor: 'rgba(34,197,94,0.2)' }}>
-              Primer Equipo
-            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-bold uppercase tracking-wider mr-1" style={{ color: '#475569' }}>Ordenar</span>
+              {([
+                { key: 'dorsal', label: 'Dorsal' },
+                { key: 'goals', label: 'Goles' },
+                { key: 'assists', label: 'Asist.' },
+                { key: 'games', label: 'PJ' },
+              ] as const).map(opt => {
+                const isActive = sortBy === opt.key
+                const href = `/dashboard/team/${teamId}/players?${sp.q ? `q=${encodeURIComponent(sp.q)}&` : ''}sort=${opt.key}`
+                return (
+                  <Link key={opt.key} href={href}
+                    className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border transition-colors"
+                    style={isActive
+                      ? { backgroundColor: 'rgba(34,197,94,0.15)', color: '#4be277', borderColor: 'rgba(34,197,94,0.3)' }
+                      : { backgroundColor: 'transparent', color: '#64748b', borderColor: '#2e3447' }
+                    }>
+                    {opt.label}
+                  </Link>
+                )
+              })}
+            </div>
+            {/* Filtro por posición */}
+            {presentPositions.length >= 2 && (
+              <div className="flex items-center gap-1.5 flex-wrap mt-3">
+                <span className="text-[10px] font-bold uppercase tracking-wider mr-1" style={{ color: '#475569' }}>Posición</span>
+                <Link href={`/dashboard/team/${teamId}/players?${sp.q ? `q=${encodeURIComponent(sp.q)}&` : ''}${sp.sort ? `sort=${sp.sort}&` : ''}` }
+                  className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border transition-colors"
+                  style={!filterPos
+                    ? { backgroundColor: 'rgba(96,165,250,0.15)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.3)' }
+                    : { backgroundColor: 'transparent', color: '#64748b', borderColor: '#2e3447' }
+                  }>Todas</Link>
+                {presentPositions.map(pos => {
+                  const isActive = filterPos === pos
+                  const href = `/dashboard/team/${teamId}/players?${sp.q ? `q=${encodeURIComponent(sp.q)}&` : ''}${sp.sort ? `sort=${sp.sort}&` : ''}pos=${encodeURIComponent(pos)}`
+                  return (
+                    <Link key={pos} href={href}
+                      className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border transition-colors"
+                      style={isActive
+                        ? { backgroundColor: 'rgba(96,165,250,0.15)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.3)' }
+                        : { backgroundColor: 'transparent', color: '#64748b', borderColor: '#2e3447' }
+                      }>{pos}</Link>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           {active.length === 0 ? (
@@ -186,7 +248,9 @@ export default async function PlayersPage({
                 const badge = player.position ? terms.posBadge(player.position) : null
                 const stat  = statsMap[player.id] ?? { games: 0, goals: 0, assists: 0, yellowCards: 0, redCards: 0 }
                 const participationPct = Math.round((stat.games / maxGames) * 100)
-                const warnYellow = stat.yellowCards >= 4
+                const cyclesServed = (player as { yellow_card_cycles_served?: number }).yellow_card_cycles_served ?? 0
+                const effectiveYellow = stat.yellowCards - cyclesServed * 4
+                const warnYellow = effectiveYellow >= 4
 
                 if (editingId === player.id) {
                   return (
