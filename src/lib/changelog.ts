@@ -21,6 +21,11 @@ export const CHANGELOG: ChangeEntry[] = [
         text: 'Tabla completa de rendimiento con Goles/90 min',
         detail: 'En las estadísticas de temporada aparece ahora una tabla con todas las jugadoras: PJ, minutos, goles, goles por 90 minutos, asistencias, G+A y tarjetas. La columna G/90 permite comparar la eficiencia real sin importar los minutos jugados.',
       },
+      {
+        icon: 'share',
+        text: 'Tarjeta de resultado compartible por WhatsApp',
+        detail: 'En la ficha de cada partido, cuando hay goles o datos registrados, aparece una sección "Compartir resultado". Genera una imagen con el marcador, goleadoras y MVP lista para guardar y enviar por WhatsApp al equipo o a la familia.',
+      },
     ],
   },
   {

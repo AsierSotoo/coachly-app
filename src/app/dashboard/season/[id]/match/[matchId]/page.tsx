@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { MatchForm } from '@/components/match/match-form'
 import { RivalLogoUpload } from '@/components/match/rival-logo-upload'
+import { MatchShareCard } from '@/components/match/match-share-card'
 import { PageTransition } from '@/components/ui/page-transition'
 import Link from 'next/link'
 
@@ -58,6 +59,14 @@ export default async function MatchPage({
   })
 
   const sp = await searchParams
+
+  const playerMap = new Map((players ?? []).map(p => [p.id, p] as [string, typeof p]))
+  const scorerApps = (appearances ?? []).filter(a => (a.goals ?? 0) > 0).sort((a, b) => (b.goals ?? 0) - (a.goals ?? 0))
+  const yellowApps = (appearances ?? []).filter(a => (a.yellow_cards ?? 0) > 0)
+  const redApps    = (appearances ?? []).filter(a => (a.red_cards ?? 0) > 0)
+  const mvpId      = (match as { mvp_player_id?: string | null }).mvp_player_id
+  const mvpPlayer  = mvpId ? playerMap.get(mvpId) : null
+  const hasSummary = scorerApps.length > 0 || yellowApps.length > 0 || redApps.length > 0 || !!mvpPlayer
 
   const dateStr = new Date(match.played_at).toLocaleDateString('es-ES', {
     weekday: 'long', day: 'numeric', month: 'long',
@@ -142,6 +151,49 @@ export default async function MatchPage({
           </div>
         </div>
 
+        {/* Resumen del partido */}
+        {hasSummary && (
+          <div className="mb-6 flex flex-wrap gap-x-6 gap-y-2 rounded-xl border px-4 py-3"
+            style={{ borderColor: '#2e3447', backgroundColor: '#151b2d' }}>
+            {scorerApps.length > 0 && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 15, color: '#4be277' }}>sports_soccer</span>
+                <span style={{ color: '#dce1fb' }}>
+                  {scorerApps.map(a => {
+                    const first = playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?'
+                    return (a.goals ?? 0) > 1 ? `${first} ×${a.goals}` : first
+                  }).join(' · ')}
+                </span>
+              </div>
+            )}
+            {yellowApps.length > 0 && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: '#facc15' }} />
+                <span style={{ color: '#dce1fb' }}>
+                  {yellowApps.map(a => {
+                    const first = playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?'
+                    return (a.yellow_cards ?? 0) > 1 ? `${first} ×${a.yellow_cards}` : first
+                  }).join(' · ')}
+                </span>
+              </div>
+            )}
+            {redApps.length > 0 && (
+              <div className="flex items-center gap-2 text-sm">
+                <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: '#f87171' }} />
+                <span style={{ color: '#dce1fb' }}>
+                  {redApps.map(a => playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?').join(' · ')}
+                </span>
+              </div>
+            )}
+            {mvpPlayer && (
+              <div className="flex items-center gap-1.5 text-sm">
+                <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 15, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>star</span>
+                <span style={{ color: '#fbbf24' }}>{mvpPlayer.name.split(' ')[0]}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         <MatchForm
           match={match}
           players={sortedPlayers}
@@ -152,6 +204,30 @@ export default async function MatchPage({
           saved={!!sp.saved}
           convocatoriaStatuses={Object.keys(convocatoriaStatuses).length > 0 ? convocatoriaStatuses : undefined}
         />
+
+        {/* Tarjeta compartible — solo si hay datos del partido */}
+        {hasSummary && (
+          <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+            <h3 className="text-[16px] font-semibold text-white mb-4" style={{ fontFamily: 'Sora, sans-serif' }}>
+              Compartir resultado
+            </h3>
+            <MatchShareCard
+              teamName={team.name}
+              logoUrl={(season as unknown as { teams: { logo_url?: string | null } }).teams.logo_url}
+              opponent={match.opponent}
+              goalsFor={match.goals_for}
+              goalsAgainst={match.goals_against}
+              playedAt={match.played_at}
+              home={match.home}
+              competition={(match as { competition?: string | null }).competition}
+              scorers={scorerApps.map(a => ({
+                name: playerMap.get(a.player_id)?.name ?? '?',
+                goals: a.goals ?? 0,
+              }))}
+              mvpName={mvpPlayer?.name ?? null}
+            />
+          </section>
+        )}
       </main>
     </PageTransition>
   )
