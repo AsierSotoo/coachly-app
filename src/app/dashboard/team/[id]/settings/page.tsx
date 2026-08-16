@@ -14,9 +14,25 @@ export default async function TeamSettingsPage({
 }) {
   const { id: teamId } = await params
   const supabase = await createClient()
-  const { data: team } = await supabase.from('teams').select('*').eq('id', teamId).single()
+
+  const [{ data: team }, { data: seasons }, { count: playerCount }] = await Promise.all([
+    supabase.from('teams').select('*').eq('id', teamId).single(),
+    supabase.from('seasons').select('id, name, created_at, matches(id, goals_for, goals_against)').eq('team_id', teamId).order('created_at', { ascending: false }),
+    supabase.from('players').select('id', { count: 'exact', head: true }).eq('team_id', teamId),
+  ])
   if (!team) notFound()
   const sp = await searchParams
+
+  type SeasonWithMatches = { id: string; name: string; created_at: string; matches: { id: string; goals_for: number; goals_against: number }[] }
+  const seasonsTyped = (seasons ?? []) as SeasonWithMatches[]
+  const allMatches   = seasonsTyped.flatMap(s => s.matches)
+  const totalW  = allMatches.filter(m => m.goals_for > m.goals_against).length
+  const totalE  = allMatches.filter(m => m.goals_for === m.goals_against).length
+  const totalD  = allMatches.filter(m => m.goals_for < m.goals_against).length
+  const totalGF = allMatches.reduce((s, m) => s + m.goals_for, 0)
+  const totalGA = allMatches.reduce((s, m) => s + m.goals_against, 0)
+  const totalPts = totalW * 3 + totalE
+  const winPct  = allMatches.length > 0 ? Math.round((totalW / allMatches.length) * 100) : 0
 
   return (
     <PageTransition>
@@ -46,6 +62,80 @@ export default async function TeamSettingsPage({
           </div>
           <LogoUpload teamId={teamId} currentUrl={team.logo_url} teamName={team.name} />
         </section>
+
+        {/* Historial global del equipo */}
+        {allMatches.length > 0 && (
+          <section className="mb-6 rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e293b]">
+              <span className="material-symbols-outlined" style={{ color: '#4be277' }}>history</span>
+              <h2 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Historial del equipo</h2>
+              <span className="ml-auto text-[11px]" style={{ color: '#475569' }}>
+                {seasonsTyped.length} temp. · {playerCount ?? 0} jugadoras
+              </span>
+            </div>
+            {/* Grid de métricas */}
+            <div className="grid grid-cols-3 divide-x divide-[#1e293b] border-b border-[#1e293b]">
+              {[
+                { label: 'Partidos', value: allMatches.length, color: '#dce1fb' },
+                { label: 'Victorias', value: `${totalW} (${winPct}%)`, color: '#4be277' },
+                { label: 'Puntos', value: totalPts, color: '#4be277' },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="flex flex-col items-center py-4">
+                  <p className="text-[26px] font-extrabold leading-none" style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest mt-1" style={{ color: '#475569' }}>{label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-4 divide-x divide-[#1e293b]">
+              {[
+                { label: 'V', value: totalW,  color: '#4be277' },
+                { label: 'E', value: totalE,  color: '#adb4ce' },
+                { label: 'D', value: totalD,  color: '#ffb4ab' },
+                { label: 'GD', value: (totalGF - totalGA) >= 0 ? `+${totalGF - totalGA}` : String(totalGF - totalGA), color: (totalGF - totalGA) >= 0 ? '#4be277' : '#ffb4ab' },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="flex flex-col items-center py-3">
+                  <p className="text-lg font-black" style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5" style={{ color: '#334155' }}>{label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-center gap-6 px-6 py-3 border-t border-[#1e293b]">
+              <span className="text-xs" style={{ color: '#475569' }}>
+                GF <span style={{ color: '#4be277', fontWeight: 700 }}>{totalGF}</span>
+                {' · '}
+                GC <span style={{ color: '#ffb4ab', fontWeight: 700 }}>{totalGA}</span>
+                {' · '}
+                Media <span style={{ color: '#dce1fb', fontWeight: 700 }}>{allMatches.length > 0 ? (totalGF / allMatches.length).toFixed(1) : '0.0'}</span> goles/partido
+              </span>
+            </div>
+            {/* Temporadas */}
+            {seasonsTyped.length > 0 && (
+              <div className="border-t border-[#1e293b] px-6 py-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#475569' }}>Temporadas</p>
+                <div className="flex flex-col gap-2">
+                  {seasonsTyped.map(s => {
+                    const w = s.matches.filter(m => m.goals_for > m.goals_against).length
+                    const e = s.matches.filter(m => m.goals_for === m.goals_against).length
+                    const d = s.matches.filter(m => m.goals_for < m.goals_against).length
+                    return (
+                      <Link key={s.id} href={`/dashboard/season/${s.id}`}
+                        className="flex items-center gap-3 px-3 py-2 rounded-xl transition-colors hover:bg-[#151b2d]">
+                        <p className="text-sm font-semibold text-white flex-1">{s.name}</p>
+                        <div className="flex items-center gap-2 text-[11px]" style={{ color: '#adb4ce' }}>
+                          <span style={{ color: '#4be277' }}>{w}V</span>
+                          <span>{e}E</span>
+                          <span style={{ color: '#ffb4ab' }}>{d}D</span>
+                          <span className="ml-1" style={{ color: '#475569' }}>{s.matches.length} PJ</span>
+                        </div>
+                        <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#334155' }}>chevron_right</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Datos del equipo */}
         <section className="rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
