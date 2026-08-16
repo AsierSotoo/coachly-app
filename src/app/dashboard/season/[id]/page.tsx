@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import { createMatch, updateSeasonLeague } from '../actions'
+import { createMatch } from '../actions'
 import Link from 'next/link'
 import { DeleteMatchButton } from '@/components/match/delete-match-button'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -51,8 +51,6 @@ export default async function SeasonPage({
 
   const sp = await searchParams
   const team = season.teams as { id: string; name: string; logo_url?: string | null }
-  const leaguePos   = (season as { league_position?: number | null }).league_position ?? null
-  const leagueTotal = (season as { league_total_teams?: number | null }).league_total_teams ?? null
 
   const matches = matchesRaw ?? []
   const searchQ = sp.q?.toLowerCase() ?? ''
@@ -171,36 +169,6 @@ export default async function SeasonPage({
             </span>
           </div>
         )}
-
-        {/* ── Posición en liga ────────────────────────────────────────── */}
-        <div className="flex items-center gap-4 mb-6 px-1 flex-wrap">
-          {leaguePos && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border"
-              style={{ borderColor: 'rgba(75,226,119,0.2)', backgroundColor: 'rgba(75,226,119,0.06)' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#4be277' }}>social_leaderboard</span>
-              <span className="text-sm font-bold" style={{ color: '#4be277' }}>
-                {leaguePos}ª{leagueTotal ? ` de ${leagueTotal}` : ''} en liga
-              </span>
-            </div>
-          )}
-          <form action={updateSeasonLeague} className="flex items-center gap-2">
-            <input type="hidden" name="season_id" value={seasonId} />
-            <input name="league_position" type="number" min="1" max="30"
-              defaultValue={leaguePos ?? ''} placeholder="Pos."
-              className="w-14 h-8 rounded-lg border px-2 text-sm text-center focus:border-green-500/60 focus:outline-none"
-              style={{ backgroundColor: '#151b2d', borderColor: '#2e3447', color: '#dce1fb' }} />
-            <span className="text-xs" style={{ color: '#475569' }}>de</span>
-            <input name="league_total_teams" type="number" min="2" max="30"
-              defaultValue={leagueTotal ?? ''} placeholder="Eq."
-              className="w-14 h-8 rounded-lg border px-2 text-sm text-center focus:border-green-500/60 focus:outline-none"
-              style={{ backgroundColor: '#151b2d', borderColor: '#2e3447', color: '#dce1fb' }} />
-            <button type="submit"
-              className="h-8 px-3 rounded-lg text-[11px] font-bold border transition-colors hover:bg-slate-800 cursor-pointer"
-              style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
-              Guardar
-            </button>
-          </form>
-        </div>
 
         {/* ── Barra de acciones ────────────────────────────────────────── */}
         <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
