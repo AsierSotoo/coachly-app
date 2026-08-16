@@ -7,6 +7,33 @@ export type ChangeEntry = {
 
 export const CHANGELOG: ChangeEntry[] = [
   {
+    version: 'v11',
+    date: '16 agosto 2025',
+    title: '¡Nueva tanda de mejoras!',
+    changes: [
+      {
+        icon: 'social_leaderboard',
+        text: 'Posición en la liga: marca dónde estás en la clasificación',
+        detail: 'En la pantalla de la temporada hay un formulario rápido para apuntar tu posición en la liga (ej. "3 de 12"). Se guarda y aparece como un badge verde en la cabecera.',
+      },
+      {
+        icon: 'moving',
+        text: 'Carrera goleadora: gráfico de líneas con las top 5 goleadoras',
+        detail: 'En las estadísticas de temporada hay un nuevo gráfico que muestra cómo cada una de las 5 máximas goleadoras ha ido acumulando goles partido a partido. Pasa el dedo o el ratón por encima para ver el detalle.',
+      },
+      {
+        icon: 'filter_list',
+        text: 'Filtro por posición en la plantilla',
+        detail: 'En la pantalla de Plantilla puedes filtrar las jugadoras por posición (Portera, Defensa, Centrocampista, Delantera) además de ordenarlas. Los filtros solo aparecen si hay jugadoras en esa posición.',
+      },
+      {
+        icon: 'history',
+        text: 'Historial global del equipo en Ajustes',
+        detail: 'En la página de Ajustes del equipo aparece ahora un resumen de toda la historia: partidos totales, victorias, puntos acumulados, diferencia de goles y el desglose por temporadas con un enlace directo a cada una.',
+      },
+    ],
+  },
+  {
     version: 'v10',
     date: '15 agosto 2025',
     title: '¡Muchas novedades!',
@@ -104,4 +131,4 @@ export const CHANGELOG: ChangeEntry[] = [
   },
 ]
 
-export const CURRENT_VERSION = 'v10'
+export const CURRENT_VERSION = 'v11'
