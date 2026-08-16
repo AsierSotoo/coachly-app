@@ -91,6 +91,19 @@ export async function saveAppearances(formData: FormData) {
   redirect(`/dashboard/season/${seasonId}/match/${matchId}?saved=1`)
 }
 
+export async function updateSeasonLeague(formData: FormData) {
+  const supabase = await createClient()
+  const seasonId = formData.get('season_id') as string
+  const pos   = formData.get('league_position')   ? Number(formData.get('league_position'))   : null
+  const total = formData.get('league_total_teams') ? Number(formData.get('league_total_teams')) : null
+
+  await supabase.from('seasons').update({ league_position: pos, league_total_teams: total }).eq('id', seasonId)
+
+  revalidatePath(`/dashboard/season/${seasonId}`)
+  revalidatePath('/dashboard')
+  redirect(`/dashboard/season/${seasonId}`)
+}
+
 export async function deleteMatch(formData: FormData) {
   const supabase = await createClient()
   const matchId = formData.get('match_id') as string

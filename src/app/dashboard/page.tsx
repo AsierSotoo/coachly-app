@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server'
 import { AnimatedList, AnimatedItem } from '@/components/ui/animated-card'
 import { PageTransition } from '@/components/ui/page-transition'
 import { TeamLogo } from '@/components/team/team-logo'
+import { OnboardingGuide } from '@/components/ui/onboarding-guide'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -42,6 +43,27 @@ export default async function DashboardPage() {
           </div>
         </section>
 
+        {/* Onboarding */}
+        {(() => {
+          const firstTeam = teams?.[0]
+          const seasons = (firstTeam?.seasons ?? []) as { id: string; matches: { id: string }[] }[]
+          const firstSeason = seasons[0]
+          const hasTeam    = (teams?.length ?? 0) > 0
+          const hasPlayers = ((firstTeam?.players ?? []) as { active: boolean }[]).some(p => p.active)
+          const hasSeason  = seasons.length > 0
+          const hasMatches = (firstSeason?.matches?.length ?? 0) > 0
+          return (
+            <OnboardingGuide
+              hasTeam={hasTeam}
+              hasPlayers={hasPlayers}
+              hasSeason={hasSeason}
+              hasMatches={hasMatches}
+              teamId={firstTeam?.id}
+              seasonId={firstSeason?.id}
+            />
+          )
+        })()}
+
         {!teams?.length ? (
           <div className="border-2 border-dashed border-[#2e3447]/50 rounded-[24px] p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500/50 hover:bg-[#191f31]/20 transition-all min-h-[340px]">
             <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: '#23293c' }}>
@@ -80,6 +102,7 @@ export default async function DashboardPage() {
                 const goalsAgainst = matches.reduce((s, m) => s + m.goals_against, 0)
                 const playerCount = ((team.players ?? []) as { id: string; active: boolean }[]).filter(p => p.active).length
                 const recentForm  = sorted.slice(0, 5).reverse()
+                const points      = wins * 3 + draws
 
                 const nextSession = [...(lastSeason?.training_sessions ?? [])]
                   .filter(s => s.date >= todayStr)
@@ -145,12 +168,19 @@ export default async function DashboardPage() {
                       )}
 
                       {matches.length > 0 && (
-                        <p className="text-[11px] text-center mt-1" style={{ color: '#adb4ce' }}>
-                          GF&nbsp;<span style={{ color: '#4be277' }}>{goalsFor}</span>
-                          &nbsp;·&nbsp;
-                          GC&nbsp;<span style={{ color: '#ffb4ab' }}>{goalsAgainst}</span>
-                          &nbsp;·&nbsp;{matches.length}&nbsp;partido{matches.length !== 1 ? 's' : ''}
-                        </p>
+                        <div className="flex items-center justify-between mt-2 px-1">
+                          <p className="text-[11px]" style={{ color: '#adb4ce' }}>
+                            GF&nbsp;<span style={{ color: '#4be277' }}>{goalsFor}</span>
+                            &nbsp;·&nbsp;
+                            GC&nbsp;<span style={{ color: '#ffb4ab' }}>{goalsAgainst}</span>
+                            &nbsp;·&nbsp;{matches.length}&nbsp;PJ
+                          </p>
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg"
+                            style={{ backgroundColor: 'rgba(75,226,119,0.08)', border: '1px solid rgba(75,226,119,0.15)' }}>
+                            <span className="text-[13px] font-black tabular-nums" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{points}</span>
+                            <span className="text-[9px] font-bold uppercase" style={{ color: '#4be277' }}>pts</span>
+                          </div>
+                        </div>
                       )}
 
                       {seasons.length === 0 && (

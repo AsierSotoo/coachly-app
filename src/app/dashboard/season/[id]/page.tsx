@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import { createMatch } from '../actions'
+import { createMatch, updateSeasonLeague } from '../actions'
 import Link from 'next/link'
 import { DeleteMatchButton } from '@/components/match/delete-match-button'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -45,12 +45,14 @@ export default async function SeasonPage({
 
   const { data: matchesRaw } = await supabase
     .from('matches')
-    .select('*, convocatorias(id), appearances(id)')
+    .select('*, convocatorias(id), appearances(id, goals, player_id, players(name))')
     .eq('season_id', seasonId)
     .order('played_at', { ascending: false })
 
   const sp = await searchParams
   const team = season.teams as { id: string; name: string; logo_url?: string | null }
+  const leaguePos   = (season as { league_position?: number | null }).league_position ?? null
+  const leagueTotal = (season as { league_total_teams?: number | null }).league_total_teams ?? null
 
   const matches = matchesRaw ?? []
   const searchQ = sp.q?.toLowerCase() ?? ''
@@ -70,7 +72,8 @@ export default async function SeasonPage({
   const showForm = sp.new === '1' || !!sp.error || total === 0
   const opponents = [...new Set(matches.map(m => m.opponent))].sort()
 
-  const pendingData = matches.filter(m => (m.appearances as {id: string}[]).length === 0).length
+  type AppRow = { id: string; goals: number | null; player_id: string; players: { name: string } | null }
+  const pendingData = matches.filter(m => (m.appearances as AppRow[]).length === 0).length
 
   // Forma reciente (últimos 5, más reciente a la derecha)
   const recentForm = [...matches]
@@ -168,6 +171,36 @@ export default async function SeasonPage({
             </span>
           </div>
         )}
+
+        {/* ── Posición en liga ────────────────────────────────────────── */}
+        <div className="flex items-center gap-4 mb-6 px-1 flex-wrap">
+          {leaguePos && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border"
+              style={{ borderColor: 'rgba(75,226,119,0.2)', backgroundColor: 'rgba(75,226,119,0.06)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#4be277' }}>social_leaderboard</span>
+              <span className="text-sm font-bold" style={{ color: '#4be277' }}>
+                {leaguePos}ª{leagueTotal ? ` de ${leagueTotal}` : ''} en liga
+              </span>
+            </div>
+          )}
+          <form action={updateSeasonLeague} className="flex items-center gap-2">
+            <input type="hidden" name="season_id" value={seasonId} />
+            <input name="league_position" type="number" min="1" max="30"
+              defaultValue={leaguePos ?? ''} placeholder="Pos."
+              className="w-14 h-8 rounded-lg border px-2 text-sm text-center focus:border-green-500/60 focus:outline-none"
+              style={{ backgroundColor: '#151b2d', borderColor: '#2e3447', color: '#dce1fb' }} />
+            <span className="text-xs" style={{ color: '#475569' }}>de</span>
+            <input name="league_total_teams" type="number" min="2" max="30"
+              defaultValue={leagueTotal ?? ''} placeholder="Eq."
+              className="w-14 h-8 rounded-lg border px-2 text-sm text-center focus:border-green-500/60 focus:outline-none"
+              style={{ backgroundColor: '#151b2d', borderColor: '#2e3447', color: '#dce1fb' }} />
+            <button type="submit"
+              className="h-8 px-3 rounded-lg text-[11px] font-bold border transition-colors hover:bg-slate-800 cursor-pointer"
+              style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
+              Guardar
+            </button>
+          </form>
+        </div>
 
         {/* ── Barra de acciones ────────────────────────────────────────── */}
         <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -363,7 +396,15 @@ export default async function SeasonPage({
                       const gf = match.goals_for ?? 0
                       const ga = match.goals_against ?? 0
                       const res  = gf > ga ? 'V' : gf < ga ? 'D' : 'E'
-                      const hasData = (match.appearances as {id: string}[]).length > 0
+                      const apps = match.appearances as AppRow[]
+                      const hasData = apps.length > 0
+                      const scorers = apps
+                        .filter(a => (a.goals ?? 0) > 0)
+                        .sort((a, b) => (b.goals ?? 0) - (a.goals ?? 0))
+                        .map(a => {
+                          const first = a.players?.name?.split(' ')[0] ?? '?'
+                          return (a.goals ?? 0) > 1 ? `${first} ×${a.goals}` : first
+                        })
                       const dotStyle = res === 'V'
                         ? { backgroundColor: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,0.5)', color: '#003915' }
                         : res === 'D'
@@ -414,6 +455,13 @@ export default async function SeasonPage({
                                 <p className="hidden md:block text-[11px] mt-0.5 truncate" style={{ color: '#adb4ce' }}>
                                   {match.home ? 'Local' : 'Visitante'}{match.competition ? ` · ${match.competition}` : ''}
                                 </p>
+                                {/* Goleadoras */}
+                                {scorers.length > 0 && (
+                                  <p className="text-[10px] mt-0.5 flex items-center gap-1 truncate" style={{ color: '#4be277' }}>
+                                    <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 11 }}>sports_soccer</span>
+                                    {scorers.join(' · ')}
+                                  </p>
+                                )}
                                 {match.notes && (
                                   <p className="hidden md:flex text-[11px] mt-1 items-center gap-1 max-w-[200px] truncate" style={{ color: '#64748b' }}>
                                     <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 12 }}>edit_note</span>

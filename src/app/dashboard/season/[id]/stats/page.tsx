@@ -8,6 +8,8 @@ import type { Metadata } from 'next'
 import { ShareButton } from '@/components/season/share-button'
 import { DownloadStatsCsv } from '@/components/season/download-stats-csv'
 import { EvolutionChart } from '@/components/season/evolution-chart'
+import { GoalRaceChart } from '@/components/season/goal-race-chart'
+import type { GoalRaceLine } from '@/components/season/goal-race-chart'
 import type { ChartMatch } from '@/components/season/evolution-chart'
 import { PlayerCompare } from '@/components/season/player-compare'
 import type { CompareStat } from '@/components/season/player-compare'
@@ -225,6 +227,22 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
     cumPts += res === 'V' ? 3 : res === 'E' ? 1 : 0
     return { opponent: m.opponent, result: res, gf: m.goals_for, ga: m.goals_against, cumPoints: cumPts, date: m.played_at }
   })
+
+  // Carrera goleadora — top 5 con goles acumulados partido a partido
+  const RACE_COLORS = ['#4be277', '#60a5fa', '#facc15', '#f472b6', '#a78bfa']
+  const top5Scorers = byGoals.slice(0, 5)
+  const goalRacePlayers: GoalRaceLine[] = top5Scorers.map((scorer, i) => {
+    let cum = 0
+    const cumGoals = matchesChrono.map(m => {
+      const app = (appearances ?? []).find(
+        a => a.player_id === scorer.playerId && (a as { match_id: string }).match_id === m.id
+      )
+      cum += app?.goals ?? 0
+      return cum
+    })
+    return { name: scorer.name, color: RACE_COLORS[i], cumGoals }
+  })
+  const raceMatchLabels = matchesChrono.map(m => m.opponent)
 
   // Datos para comparar jugadoras
   const compareStats: CompareStat[] = stats.map(s => ({
@@ -617,6 +635,33 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                   </div>
                 </div>
                 <EvolutionChart points={chartPoints} />
+              </section>
+            )}
+
+            {/* Carrera goleadora */}
+            {goalRacePlayers.length >= 2 && raceMatchLabels.length >= 2 && (
+              <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-6 gap-4">
+                  <div>
+                    <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                      Carrera Goleadora
+                    </h4>
+                    <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>
+                      Goles acumulados partido a partido · Top {goalRacePlayers.length} goleadoras
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                    {goalRacePlayers.map(p => (
+                      <div key={p.name} className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
+                        <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>
+                          {p.name.split(' ')[0]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <GoalRaceChart players={goalRacePlayers} matchLabels={raceMatchLabels} />
               </section>
             )}
 
