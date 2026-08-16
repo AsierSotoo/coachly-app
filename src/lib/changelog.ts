@@ -7,6 +7,23 @@ export type ChangeEntry = {
 
 export const CHANGELOG: ChangeEntry[] = [
   {
+    version: 'v12',
+    date: '16 agosto 2025',
+    title: 'Convocatorias y estadísticas completas',
+    changes: [
+      {
+        icon: 'groups',
+        text: 'Convocatorias: gestiona el roster antes del partido',
+        detail: 'En la página de cada temporada hay un nuevo botón "Convocatorias". Desde ahí puedes crear la lista de convocadas para cada partido, marcando quién es titular, quién va convocada y quién no. La lista se refleja en el formulario del partido y ordena automáticamente a las jugadoras.',
+      },
+      {
+        icon: 'table_chart',
+        text: 'Tabla completa de rendimiento con Goles/90 min',
+        detail: 'En las estadísticas de temporada aparece ahora una tabla con todas las jugadoras: PJ, minutos, goles, goles por 90 minutos, asistencias, G+A y tarjetas. La columna G/90 permite comparar la eficiencia real sin importar los minutos jugados.',
+      },
+    ],
+  },
+  {
     version: 'v11',
     date: '16 agosto 2025',
     title: '¡Nueva tanda de mejoras!',
@@ -131,4 +148,4 @@ export const CHANGELOG: ChangeEntry[] = [
   },
 ]
 
-export const CURRENT_VERSION = 'v11'
+export const CURRENT_VERSION = 'v12'

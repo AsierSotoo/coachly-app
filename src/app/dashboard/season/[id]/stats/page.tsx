@@ -832,6 +832,92 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                 </div>
               </section>
             )}
+            {/* ── Tabla completa de estadísticas ── */}
+            {stats.filter(s => s.gamesPlayed > 0).length > 0 && (
+              <section className="mt-8 rounded-[24px] border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+                <div className="px-6 py-4 border-b border-[#1e293b]">
+                  <h3 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    Tabla de rendimiento
+                  </h3>
+                  <p className="text-sm mt-0.5" style={{ color: '#adb4ce' }}>
+                    G/90 solo para {terms.pp} con más de 45 min jugados
+                  </p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left" style={{ minWidth: 640 }}>
+                    <thead>
+                      <tr className="border-b border-[#1e293b]" style={{ backgroundColor: '#151b2d' }}>
+                        {[
+                          { h: '#', align: 'center' as const },
+                          { h: terms.p.charAt(0).toUpperCase() + terms.p.slice(1), align: 'left' as const },
+                          { h: 'Pos', align: 'center' as const },
+                          { h: 'PJ', align: 'center' as const },
+                          { h: "Min'", align: 'center' as const },
+                          { h: 'G', align: 'center' as const },
+                          { h: 'G/90', align: 'center' as const },
+                          { h: 'A', align: 'center' as const },
+                          { h: 'G+A', align: 'center' as const },
+                          { h: '🟨', align: 'center' as const },
+                          { h: '🟥', align: 'center' as const },
+                        ].map(({ h, align }) => (
+                          <th key={h} className="px-3 py-3 text-[10px] font-bold uppercase tracking-widest"
+                            style={{ color: '#adb4ce', textAlign: align }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...stats]
+                        .filter(s => s.gamesPlayed > 0)
+                        .sort((a, b) => b.goals - a.goals || b.assists - a.assists || b.gamesPlayed - a.gamesPlayed)
+                        .map((s, i) => {
+                          const g90 = s.minutes >= 45 ? ((s.goals / s.minutes) * 90).toFixed(1) : '—'
+                          const posShort = s.position ? s.position.slice(0, 3) : '—'
+                          return (
+                            <tr key={s.playerId} className="border-b border-[#1e293b] last:border-0"
+                              style={{ backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.4)' }}>
+                              <td className="px-3 py-2.5 text-center">
+                                <span className="text-[11px] font-black"
+                                  style={{ color: i === 0 ? '#4be277' : i === 1 ? '#adb4ce' : i === 2 ? '#9d8050' : '#334155' }}>
+                                  {i + 1}
+                                </span>
+                              </td>
+                              <td className="px-3 py-2.5">
+                                <div className="flex items-center gap-2">
+                                  <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" className="w-7 h-7 rounded-lg flex-shrink-0" />
+                                  <span className="text-xs font-semibold text-white truncate" style={{ maxWidth: 130 }}>{s.name}</span>
+                                </div>
+                              </td>
+                              <td className="px-3 py-2.5 text-center">
+                                <span className="text-[10px] font-bold uppercase" style={{ color: '#475569' }}>{posShort}</span>
+                              </td>
+                              <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: '#adb4ce' }}>{s.gamesPlayed}</td>
+                              <td className="px-3 py-2.5 text-center text-xs" style={{ color: '#64748b' }}>{s.minutes}</td>
+                              <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.goals > 0 ? '#4be277' : '#334155' }}>{s.goals}</td>
+                              <td className="px-3 py-2.5 text-center text-xs font-bold"
+                                style={{ color: s.goals > 0 && s.minutes >= 45 ? '#a3e635' : '#334155' }}>{g90}</td>
+                              <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.assists > 0 ? '#facc15' : '#334155' }}>{s.assists}</td>
+                              <td className="px-3 py-2.5 text-center text-xs font-bold"
+                                style={{ color: s.goals + s.assists > 0 ? '#dce1fb' : '#334155' }}>{s.goals + s.assists}</td>
+                              <td className="px-3 py-2.5 text-center">
+                                {s.yellowCards > 0
+                                  ? <span className="text-xs font-bold"
+                                      style={{ color: s.yellowCards >= YELLOW_WARNING ? '#facc15' : '#adb4ce' }}>{s.yellowCards}</span>
+                                  : <span style={{ color: '#1e293b' }}>—</span>}
+                              </td>
+                              <td className="px-3 py-2.5 text-center">
+                                {s.redCards > 0
+                                  ? <span className="text-xs font-bold" style={{ color: '#f87171' }}>{s.redCards}</span>
+                                  : <span style={{ color: '#1e293b' }}>—</span>}
+                              </td>
+                            </tr>
+                          )
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            )}
+
             {/* Comparar jugadoras */}
             {compareStats.length >= 2 && (
               <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>

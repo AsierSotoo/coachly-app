@@ -197,6 +197,14 @@ export default async function SeasonPage({
               <span className="material-symbols-outlined text-lg">fitness_center</span>
               Entrenamientos
             </Link>
+            <Link
+              href={`/dashboard/season/${seasonId}/convocatorias`}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm border active:scale-95 transition-all hover:bg-[#23293c]"
+              style={{ backgroundColor: '#2e3447', borderColor: '#3d4a3d', color: '#dce1fb' }}
+            >
+              <span className="material-symbols-outlined text-lg">groups</span>
+              Convocatorias
+            </Link>
           </div>
 
           {/* Buscador */}
