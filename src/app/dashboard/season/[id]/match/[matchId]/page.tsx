@@ -205,9 +205,8 @@ export default async function MatchPage({
           convocatoriaStatuses={Object.keys(convocatoriaStatuses).length > 0 ? convocatoriaStatuses : undefined}
         />
 
-        {/* Tarjeta compartible — solo si hay datos del partido */}
-        {hasSummary && (
-          <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+        {/* Tarjeta compartible */}
+        <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
             <h3 className="text-[16px] font-semibold text-white mb-4" style={{ fontFamily: 'Sora, sans-serif' }}>
               Compartir resultado
             </h3>
@@ -227,7 +226,6 @@ export default async function MatchPage({
               mvpName={mvpPlayer?.name ?? null}
             />
           </section>
-        )}
       </main>
     </PageTransition>
   )
