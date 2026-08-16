@@ -12,11 +12,6 @@ export const CHANGELOG: ChangeEntry[] = [
     title: '¡Nueva tanda de mejoras!',
     changes: [
       {
-        icon: 'social_leaderboard',
-        text: 'Posición en la liga: marca dónde estás en la clasificación',
-        detail: 'En la pantalla de la temporada hay un formulario rápido para apuntar tu posición en la liga (ej. "3 de 12"). Se guarda y aparece como un badge verde en la cabecera.',
-      },
-      {
         icon: 'moving',
         text: 'Carrera goleadora: gráfico de líneas con las top 5 goleadoras',
         detail: 'En las estadísticas de temporada hay un nuevo gráfico que muestra cómo cada una de las 5 máximas goleadoras ha ido acumulando goles partido a partido. Pasa el dedo o el ratón por encima para ver el detalle.',
@@ -30,6 +25,11 @@ export const CHANGELOG: ChangeEntry[] = [
         icon: 'history',
         text: 'Historial global del equipo en Ajustes',
         detail: 'En la página de Ajustes del equipo aparece ahora un resumen de toda la historia: partidos totales, victorias, puntos acumulados, diferencia de goles y el desglose por temporadas con un enlace directo a cada una.',
+      },
+      {
+        icon: 'sports_score',
+        text: 'Puntos acumulados visibles en el dashboard',
+        detail: 'La tarjeta de cada equipo en el dashboard ahora muestra los puntos totales de la temporada activa (3 por victoria, 1 por empate) en un badge verde, junto con los goles a favor y en contra.',
       },
     ],
   },

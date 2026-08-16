@@ -6,6 +6,7 @@ import { PageTransition } from '@/components/ui/page-transition'
 import { PlayerPhotoUpload } from '@/components/team/player-photo-upload'
 import { PlayerAvatar } from '@/components/team/player-avatar'
 import { getTeamTerms } from '@/lib/team-terms'
+import { DownloadPlayersCsv } from '@/components/team/download-players-csv'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -121,6 +122,13 @@ export default async function PlayersPage({
                 </Link>
               )}
             </form>
+            <DownloadPlayersCsv
+              teamName={team.name}
+              players={allActive.map(p => {
+                const s = statsMap[p.id] ?? { games: 0, goals: 0, assists: 0, yellowCards: 0, redCards: 0 }
+                return { name: p.name, number: p.number, position: p.position, ...s }
+              })}
+            />
             <Link
               href={`/dashboard/team/${teamId}/settings`}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-colors hover:bg-[#23293c]"
