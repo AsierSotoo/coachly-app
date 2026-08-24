@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { createAdminClient } from '@/lib/supabase-admin'
 import { setPublicAvailabilityForm } from '@/lib/public-availability-actions'
 import Image from 'next/image'
@@ -6,25 +6,17 @@ import Image from 'next/image'
 export const dynamic = 'force-dynamic'
 
 const STATUS_CONFIG = {
-  available:   { label: 'Voy',      icon: 'check_circle', color: '#4be277', bg: 'rgba(75,226,119,0.15)',   border: 'rgba(75,226,119,0.4)' },
-  doubt:       { label: 'Duda',     icon: 'help',         color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',   border: 'rgba(251,191,36,0.4)' },
+  available:   { label: 'Voy',      icon: 'check_circle', color: '#4be277', bg: 'rgba(75,226,119,0.15)',  border: 'rgba(75,226,119,0.4)' },
+  doubt:       { label: 'Duda',     icon: 'help',         color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.4)' },
   unavailable: { label: 'No puedo', icon: 'cancel',       color: '#f87171', bg: 'rgba(248,113,113,0.15)', border: 'rgba(248,113,113,0.4)' },
 } as const
 
-export default async function PublicAvailabilityPage({
-  params,
-}: {
-  params: Promise<{ token: string }>
-}) {
-  const { token } = await params
+type EventInfo =
+  | { type: 'match';    id: string; title: string; date: string; subtitle: string; teamId: string; teamName: string; teamLogo: string | null; rivalLogo: string | null }
+  | { type: 'training'; id: string; title: string; date: string; subtitle: string; teamId: string; teamName: string; teamLogo: string | null; rivalLogo: null }
+
+async function resolveEvent(token: string): Promise<EventInfo | null> {
   const supabase = createAdminClient()
-
-  // Buscar primero en partidos, luego en entrenamientos
-  type EventInfo =
-    | { type: 'match'; id: string; title: string; date: string; subtitle: string; teamId: string; teamName: string; teamLogo: string | null; rivalLogo: string | null }
-    | { type: 'training'; id: string; title: string; date: string; subtitle: string; teamId: string; teamName: string; teamLogo: string | null; rivalLogo: null }
-
-  let eventInfo: EventInfo | null = null
 
   // Buscar en partidos
   const { data: match } = await (supabase.from('matches') as any)
@@ -33,46 +25,94 @@ export default async function PublicAvailabilityPage({
     .maybeSingle()
 
   if (match) {
-    const season = match.seasons as { team_id: string; teams: { id: string; name: string; logo_url: string | null; availability_enabled: boolean } }
-    const team = season.teams
-    if (!team.availability_enabled) notFound()
+    const team = (match.seasons as any).teams as { id: string; name: string; logo_url: string | null; availability_enabled: boolean }
+    if (!team.availability_enabled) return null
     const d = new Date(match.played_at)
-    const dateStr = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
-    const timeStr = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
-    eventInfo = {
+    return {
       type: 'match', id: match.id,
       title: `vs ${match.opponent}`,
-      date: dateStr,
-      subtitle: `${timeStr}${match.venue ? ` · ${match.venue}` : ''}`,
+      date: d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }),
+      subtitle: `${d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}${match.venue ? ` · ${match.venue}` : ''}`,
       teamId: team.id, teamName: team.name, teamLogo: team.logo_url,
       rivalLogo: match.rival_logo_url,
     }
   }
 
-  // Buscar en entrenamientos si no encontrado
-  if (!eventInfo) {
-    const { data: session } = await (supabase.from('training_sessions') as any)
-      .select('id, date, title, notes, teams(id, name, logo_url, availability_enabled)')
-      .eq('availability_token', token)
-      .maybeSingle()
+  // Buscar en entrenamientos
+  const { data: session } = await (supabase.from('training_sessions') as any)
+    .select('id, date, title, notes, teams(id, name, logo_url, availability_enabled)')
+    .eq('availability_token', token)
+    .maybeSingle()
 
-    if (session) {
-      const team = session.teams as { id: string; name: string; logo_url: string | null; availability_enabled: boolean }
-      if (!team.availability_enabled) notFound()
-      const d = new Date(session.date)
-      const dateStr = d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
-      eventInfo = {
-        type: 'training', id: session.id,
-        title: session.title || 'Entrenamiento',
-        date: dateStr,
-        subtitle: session.notes ? session.notes.slice(0, 60) : '',
-        teamId: team.id, teamName: team.name, teamLogo: team.logo_url,
-        rivalLogo: null,
-      }
+  if (session) {
+    const team = session.teams as { id: string; name: string; logo_url: string | null; availability_enabled: boolean }
+    if (!team.availability_enabled) return null
+    const d = new Date(session.date)
+    return {
+      type: 'training', id: session.id,
+      title: session.title || 'Entrenamiento',
+      date: d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }),
+      subtitle: session.notes ? (session.notes as string).slice(0, 80) : '',
+      teamId: team.id, teamName: team.name, teamLogo: team.logo_url,
+      rivalLogo: null,
     }
   }
 
-  if (!eventInfo) notFound()
+  return null
+}
+
+// Open Graph metadata para WhatsApp y otras apps
+export async function generateMetadata({ params }: { params: Promise<{ token: string }> }): Promise<Metadata> {
+  const { token } = await params
+  const ev = await resolveEvent(token)
+
+  if (!ev) {
+    return { title: 'Disponibilidad · Coachly' }
+  }
+
+  const emoji = ev.type === 'match' ? '⚽' : '🏃'
+  const title = `${emoji} ${ev.title} · ${ev.date}`
+  const description = `${ev.teamName} · Confirma si puedes asistir`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      siteName: 'Coachly',
+      type: 'website',
+    },
+    twitter: { card: 'summary', title, description },
+  }
+}
+
+export default async function PublicAvailabilityPage({
+  params,
+}: {
+  params: Promise<{ token: string }>
+}) {
+  const { token } = await params
+  const eventInfo = await resolveEvent(token)
+
+  // Enlace inválido o feature desactivada — página amigable sin redirect
+  if (!eventInfo) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-4"
+        style={{ backgroundColor: '#080d1e', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+          style={{ backgroundColor: '#1e293b' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 32, color: '#475569' }}>link_off</span>
+        </div>
+        <h1 className="text-lg font-bold text-white mb-2 text-center">Enlace no válido</h1>
+        <p className="text-sm text-center leading-relaxed" style={{ color: '#64748b', maxWidth: 280 }}>
+          Este enlace no existe o la confirmación de asistencia está desactivada para este equipo.
+        </p>
+      </div>
+    )
+  }
+
+  const supabase = createAdminClient()
 
   // Jugadoras activas del equipo
   const { data: players } = await supabase
@@ -94,12 +134,11 @@ export default async function PublicAvailabilityPage({
     availRows = data ?? []
   }
 
-  const availMap = new Map(availRows.map(r => [r.player_id, r.status as keyof typeof STATUS_CONFIG]))
-  const nAvail   = availRows.filter(r => r.status === 'available').length
-  const nDoubt   = availRows.filter(r => r.status === 'doubt').length
-  const nUnavail = availRows.filter(r => r.status === 'unavailable').length
-
-  const isMatch = eventInfo.type === 'match'
+  const availMap  = new Map(availRows.map(r => [r.player_id, r.status as keyof typeof STATUS_CONFIG]))
+  const nAvail    = availRows.filter(r => r.status === 'available').length
+  const nDoubt    = availRows.filter(r => r.status === 'doubt').length
+  const nUnavail  = availRows.filter(r => r.status === 'unavailable').length
+  const isMatch   = eventInfo.type === 'match'
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#080d1e', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -130,7 +169,6 @@ export default async function PublicAvailabilityPage({
       {/* Cabecera del evento */}
       <div className="px-4 pt-6 pb-4">
         {isMatch ? (
-          /* Partido: logos enfrentados */
           <div className="flex items-center justify-center gap-6">
             <div className="flex flex-col items-center gap-1.5">
               {eventInfo.teamLogo
@@ -155,7 +193,6 @@ export default async function PublicAvailabilityPage({
             </div>
           </div>
         ) : (
-          /* Entrenamiento: icono central */
           <div className="flex flex-col items-center gap-3">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
               style={{ backgroundColor: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)' }}>
@@ -175,7 +212,6 @@ export default async function PublicAvailabilityPage({
         </div>
       </div>
 
-      {/* Instrucción */}
       <div className="px-4 pb-3">
         <p className="text-center text-sm" style={{ color: '#64748b' }}>Pulsa tu nombre y confirma si vas</p>
       </div>
