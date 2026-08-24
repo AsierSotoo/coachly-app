@@ -32,16 +32,27 @@ export function MatchShareCard({
   const resultColor = result === 'V' ? '#4be277' : result === 'D' ? '#ffb4ab' : '#adb4ce'
   const dateLabel = new Date(playedAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
 
-  async function download() {
+  async function share() {
     const el = document.getElementById('match-share-card')
     if (!el) return
     setLoading(true)
     try {
       const dataUrl = await toPng(el, { pixelRatio: 2, backgroundColor: '#0f172a' })
-      const a = document.createElement('a')
-      a.download = `${teamName.replace(/\s+/g, '_')}_vs_${opponent.replace(/\s+/g, '_')}.png`
-      a.href = dataUrl
-      a.click()
+      const filename = `${teamName.replace(/\s+/g, '_')}_vs_${opponent.replace(/\s+/g, '_')}.png`
+      const blob = await (await fetch(dataUrl)).blob()
+      const file = new File([blob], filename, { type: 'image/png' })
+
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          title: `${teamName} ${goalsFor}–${goalsAgainst} ${opponent}`,
+          files: [file],
+        })
+      } else {
+        const a = document.createElement('a')
+        a.download = filename
+        a.href = dataUrl
+        a.click()
+      }
     } catch {
       alert('No se pudo generar la imagen. Usa una captura de pantalla.')
     } finally {
@@ -151,7 +162,7 @@ export function MatchShareCard({
 
       {/* Botón de descarga */}
       <button
-        onClick={download}
+        onClick={share}
         disabled={loading}
         className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all active:scale-95 cursor-pointer disabled:opacity-50"
         style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: '#4be277', width: 'fit-content' }}

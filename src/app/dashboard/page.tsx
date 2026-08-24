@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 
   const { data: teams } = await supabase
     .from('teams')
-    .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at), training_sessions(id, date, title)), players(id, active)')
+    .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at, status), training_sessions(id, date, title)), players(id, active)')
     .order('created_at', { ascending: true })
 
   return (
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
               {teams.map((team, idx) => {
                 type SeasonWithMatches = {
                   id: string; name: string; created_at: string
-                  matches: { id: string; goals_for: number; goals_against: number; opponent: string; played_at: string }[]
+                  matches: { id: string; goals_for: number; goals_against: number; opponent: string; played_at: string; status?: string }[]
                   training_sessions: { id: string; date: string; title: string | null }[]
                 }
                 const seasons = (team.seasons ?? []) as SeasonWithMatches[]
@@ -92,9 +92,14 @@ export default async function DashboardPage() {
                 const lastSeason = [...seasons].sort((a, b) =>
                   new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
                 )[0]
-                const matches = lastSeason?.matches ?? []
+                // Solo partidos finalizados para estadísticas
+                const allMatches = lastSeason?.matches ?? []
+                const finishedMatches = allMatches.filter(m => m.status !== 'scheduled')
+                // Competitivos (liga + copa) para V/E/D. Solo liga para puntos.
+                const matches = finishedMatches.filter(m => ((m as { status?: string; competition_type?: string }).competition_type ?? 'liga') !== 'amistoso')
+                const ligaOnly = matches.filter(m => ((m as { competition_type?: string }).competition_type ?? 'liga') === 'liga')
                 const sorted = [...matches].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
-                const lastMatch = sorted[0]
+                const lastMatch = finishedMatches.sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())[0]
                 const wins        = matches.filter(m => m.goals_for > m.goals_against).length
                 const draws       = matches.filter(m => m.goals_for === m.goals_against).length
                 const losses      = matches.filter(m => m.goals_for < m.goals_against).length
@@ -102,7 +107,22 @@ export default async function DashboardPage() {
                 const goalsAgainst = matches.reduce((s, m) => s + m.goals_against, 0)
                 const playerCount = ((team.players ?? []) as { id: string; active: boolean }[]).filter(p => p.active).length
                 const recentForm  = sorted.slice(0, 5).reverse()
-                const points      = wins * 3 + draws
+                const points      = ligaOnly.filter(m => m.goals_for > m.goals_against).length * 3 +
+                                    ligaOnly.filter(m => m.goals_for === m.goals_against).length
+
+                // Racha actual
+                let streakCount = 0; let streakType: 'V' | 'D' | 'E' | null = null
+                for (const m of sorted) {
+                  const r: 'V' | 'D' | 'E' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+                  if (streakType === null) { streakType = r; streakCount = 1 }
+                  else if (r === streakType) streakCount++
+                  else break
+                }
+                const streakLabel = streakCount >= 3 ? (
+                  streakType === 'V' ? `${streakCount} victorias` :
+                  streakType === 'D' ? `${streakCount} derrotas` : `${streakCount} empates`
+                ) : null
+                const streakColor = streakType === 'V' ? '#4be277' : streakType === 'D' ? '#f87171' : '#fbbf24'
 
                 const nextSession = [...(lastSeason?.training_sessions ?? [])]
                   .filter(s => s.date >= todayStr)
@@ -110,9 +130,13 @@ export default async function DashboardPage() {
 
                 const lastResult = lastMatch
                   ? lastMatch.goals_for > lastMatch.goals_against ? { label: 'V', color: '#4be277' }
-                    : lastMatch.goals_for < lastMatch.goals_against ? { label: 'D', color: '#ffb4ab' }
-                    : { label: 'E', color: '#adb4ce' }
+                    : lastMatch.goals_for < lastMatch.goals_against ? { label: 'D', color: '#f87171' }
+                    : { label: 'E', color: '#fbbf24' }
                   : null
+
+                const nextMatch = allMatches
+                  .filter(m => (m as { status?: string }).status === 'scheduled')
+                  .sort((a, b) => a.played_at.localeCompare(b.played_at))[0] ?? null
 
                 return (
                   <AnimatedItem key={team.id} delay={idx * 0.05}>
@@ -159,9 +183,9 @@ export default async function DashboardPage() {
                               <span className="block text-[24px] font-bold leading-6 tabular-nums" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{draws}</span>
                               <span className="text-[10px] font-bold uppercase mt-1 block" style={{ color: '#adb4ce' }}>Empates</span>
                             </div>
-                            <div className="flex-1 rounded-lg p-2 text-center border border-[#ffb4ab]/20" style={{ backgroundColor: 'rgba(255,180,171,0.05)' }}>
-                              <span className="block text-[24px] font-bold leading-6 tabular-nums" style={{ color: '#ffb4ab', fontFamily: 'Sora, sans-serif' }}>{losses}</span>
-                              <span className="text-[10px] font-bold uppercase mt-1 block" style={{ color: '#ffb4ab' }}>Derrotas</span>
+                            <div className="flex-1 rounded-lg p-2 text-center border border-[#f87171]/20" style={{ backgroundColor: 'rgba(248,113,113,0.05)' }}>
+                              <span className="block text-[24px] font-bold leading-6 tabular-nums" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{losses}</span>
+                              <span className="text-[10px] font-bold uppercase mt-1 block" style={{ color: '#f87171' }}>Derrotas</span>
                             </div>
                           </div>
                         </div>
@@ -210,22 +234,44 @@ export default async function DashboardPage() {
                               return (
                                 <div key={i} className="w-5 h-5 rounded flex items-center justify-center text-[8px] font-black"
                                   style={{
-                                    backgroundColor: res === 'V' ? 'rgba(34,197,94,0.2)' : res === 'D' ? 'rgba(255,180,171,0.15)' : 'rgba(148,163,184,0.15)',
-                                    color: res === 'V' ? '#4be277' : res === 'D' ? '#ffb4ab' : '#94a3b8',
-                                    border: `1px solid ${res === 'V' ? 'rgba(34,197,94,0.3)' : res === 'D' ? 'rgba(255,180,171,0.3)' : 'rgba(148,163,184,0.3)'}`,
+                                    backgroundColor: res === 'V' ? 'rgba(75,226,119,0.15)' : res === 'D' ? 'rgba(248,113,113,0.12)' : 'rgba(251,191,36,0.1)',
+                                    color: res === 'V' ? '#4be277' : res === 'D' ? '#f87171' : '#fbbf24',
+                                    border: `1px solid ${res === 'V' ? 'rgba(75,226,119,0.3)' : res === 'D' ? 'rgba(248,113,113,0.3)' : 'rgba(251,191,36,0.25)'}`,
                                   }}>
                                   {res}
                                 </div>
                               )
                             })}
                           </div>
-                          {playerCount > 0 && (
+                          {streakLabel ? (
+                            <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                              style={{ color: streakColor, backgroundColor: `${streakColor}15`, border: `1px solid ${streakColor}30` }}>
+                              {streakLabel}
+                            </span>
+                          ) : playerCount > 0 && (
                             <span className="ml-auto flex items-center gap-1 text-[10px]" style={{ color: '#adb4ce' }}>
                               <span className="material-symbols-outlined" style={{ fontSize: 13 }}>group</span>
                               {playerCount}
                             </span>
                           )}
                         </div>
+                      )}
+
+                      {/* Próximo partido */}
+                      {nextMatch && (
+                        <Link
+                          href={`/dashboard/season/${lastSeason.id}/match/${nextMatch.id}`}
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 transition-colors hover:opacity-80"
+                          style={{ backgroundColor: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.18)' }}>
+                          <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#fbbf24', fontSize: 16 }}>sports_soccer</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#fbbf24' }}>Próximo partido</p>
+                            <p className="text-[11px] truncate" style={{ color: '#adb4ce' }}>
+                              vs {nextMatch.opponent} · {new Date(nextMatch.played_at + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
+                            </p>
+                          </div>
+                          <span className="material-symbols-outlined flex-shrink-0 opacity-40" style={{ fontSize: 14, color: '#fbbf24' }}>chevron_right</span>
+                        </Link>
                       )}
 
                       {/* Próximo entrenamiento */}

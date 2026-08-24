@@ -7,6 +7,9 @@ import { NavBar } from '@/components/ui/nav-bar'
 import { DesktopSidebar } from '@/components/ui/desktop-sidebar'
 import { HeaderSearch } from '@/components/ui/header-search'
 import { HeaderTitle } from '@/components/ui/header-title'
+import { WhatsNewModal } from '@/components/ui/whats-new-modal'
+import { PwaInstallButton } from '@/components/ui/pwa-install-button'
+import { ScrollToTop } from '@/components/ui/scroll-to-top'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -60,7 +63,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* Header móvil */}
         <header
           className="md:hidden sticky top-0 z-20 flex items-center justify-between border-b border-[#2e3447] px-4"
-          style={{ backgroundColor: '#0c1324', height: 56, paddingTop: 'env(safe-area-inset-top, 0px)' }}
+          style={{ backgroundColor: '#0c1324', height: 'calc(56px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}
         >
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
@@ -70,6 +73,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </Link>
 
           <div className="flex items-center gap-2">
+            <PwaInstallButton compact />
             <Link href="/dashboard/profile"
               className="flex items-center justify-center rounded-full overflow-hidden border border-[#2e3447] active:opacity-70 transition-opacity"
               style={{ width: 40, height: 40 }}>
@@ -92,6 +96,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </header>
 
         <div className="flex-1 pb-24 md:pb-0">{children}</div>
+        <WhatsNewModal />
+        <ScrollToTop />
 
         {/* Nav inferior móvil */}
         <NavBar teams={teams} />

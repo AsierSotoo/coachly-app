@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PlayerAvatar } from '@/components/team/player-avatar'
+import { StarRating } from './star-rating'
 
 type Status = 'titular' | 'suplente' | 'no_convocada'
 
@@ -21,6 +22,7 @@ interface Appearance {
   assists: number
   yellow_cards: number
   red_cards: number
+  rating?: number | null
 }
 
 const STAT_FIELDS = [
@@ -149,6 +151,12 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
                   />
                 </div>
               ))}
+            </div>
+
+            {/* Valoración */}
+            <div className="mt-3 pt-3 border-t border-slate-800 flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Valoración</span>
+              <StarRating name={`rating_${player.id}`} defaultValue={appearance?.rating} />
             </div>
           </motion.div>
         )}

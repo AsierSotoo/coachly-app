@@ -13,6 +13,7 @@ import type { GoalRaceLine } from '@/components/season/goal-race-chart'
 import type { ChartMatch } from '@/components/season/evolution-chart'
 import { PlayerCompare } from '@/components/season/player-compare'
 import type { CompareStat } from '@/components/season/player-compare'
+import { SortableStatsTable } from '@/components/season/sortable-stats-table'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -32,8 +33,14 @@ function shortName(name: string): string {
   return `${parts[0][0]}. ${parts.slice(1).join(' ')}`
 }
 
-export default async function StatsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function StatsPage({
+  params, searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ ct?: string }>
+}) {
   const { id: seasonId } = await params
+  const { ct: ctParam = 'all' } = await searchParams
   const supabase = await createClient()
 
   const { data: season } = await supabase.from('seasons').select('*, teams(*)').eq('id', seasonId).single()
@@ -43,17 +50,44 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
   const shareToken = (season as { share_token?: string | null }).share_token ?? null
   const terms = getTeamTerms(team.gender)
 
-  const [{ data: matches }, { data: trainingSessions }] = await Promise.all([
+  const [{ data: allMatchesRaw }, { data: trainingSessions }] = await Promise.all([
     supabase.from('matches').select('*').eq('season_id', seasonId).order('played_at'),
     supabase.from('training_sessions').select('id').eq('season_id', seasonId),
   ])
 
-  const matchIdsList = matches?.map(m => m.id) ?? []
-  const sessionIds   = trainingSessions?.map(s => s.id) ?? []
+  // Solo partidos finalizados (excluir programados)
+  type MatchRaw = NonNullable<typeof allMatchesRaw>[0]
+  const finishedMatches = (allMatchesRaw ?? []).filter(m => (m as MatchRaw & { status?: string }).status !== 'scheduled')
 
-  const { data: appearances } = matchIdsList.length
-    ? await supabase.from('appearances').select('*, players(name, number, position, photo_url)').in('match_id', matchIdsList)
+  const ligaFinished  = finishedMatches.filter(m => ((m as MatchRaw & { competition_type?: string }).competition_type ?? 'liga') === 'liga')
+  const copaFinished  = finishedMatches.filter(m => ((m as MatchRaw & { competition_type?: string }).competition_type ?? 'liga') === 'copa')
+  const hasCopaInStats = copaFinished.length > 0
+  const ligaPts = ligaFinished.reduce((s, m) => s + (m.goals_for > m.goals_against ? 3 : m.goals_for === m.goals_against ? 1 : 0), 0)
+
+  const amistososFinished = finishedMatches.filter(m => ((m as MatchRaw & { competition_type?: string }).competition_type ?? 'liga') === 'amistoso')
+  const hasAmistosos = amistososFinished.length > 0
+  const competitiveFinished = finishedMatches.filter(m => ((m as MatchRaw & { competition_type?: string }).competition_type ?? 'liga') !== 'amistoso')
+
+  const filteredForStats: MatchRaw[] =
+    ctParam === 'liga'        ? ligaFinished :
+    ctParam === 'copa'        ? copaFinished :
+    ctParam === 'competitive' ? competitiveFinished :
+    finishedMatches  // default 'todos': todos los partidos finalizados
+
+  // Alias para mantener compatibilidad con el resto del código
+  const matches = filteredForStats
+
+  // Appearances: fetch from ALL finished matches so charts always have full data
+  const allFinishedIds = finishedMatches.map(m => m.id)
+  const { data: allAppearances } = allFinishedIds.length
+    ? await supabase.from('appearances').select('*, players(name, number, position, photo_url)').in('match_id', allFinishedIds)
     : { data: [] }
+  // For rankings: filter to CT-filtered matches only
+  const filteredMatchIdSet = new Set(filteredForStats.map(m => m.id))
+  const appearances = (allAppearances ?? []).filter(a => filteredMatchIdSet.has((a as { match_id: string }).match_id))
+
+  const matchIdsList = filteredForStats.map(m => m.id)
+  const sessionIds   = trainingSessions?.map(s => s.id) ?? []
 
   type AttRow = { session_id: string; player_id: string; attended: boolean }
   type AttPlayer = { id: string; name: string; number: number | null; position: string | null; photo_url: string | null }
@@ -143,7 +177,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                     : currentStreakType === 'loss' ? `${currentStreakCount} derrotas seguidas`
                     : currentStreakCount > 1       ? `${currentStreakCount} empates seguidos`
                     : null
-  const streakColor = currentStreakType === 'win' ? '#4be277' : currentStreakType === 'loss' ? '#ffb4ab' : '#adb4ce'
+  const streakColor = currentStreakType === 'win' ? '#4be277' : currentStreakType === 'loss' ? '#f87171' : '#fbbf24'
 
   // Racha invicta (sin perder consecutivos, puede mezclar V y E)
   let unbeatenRun = 0
@@ -177,6 +211,25 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
   const byCards        = [...stats].filter(s => s.yellowCards > 0 || s.redCards > 0).sort((a, b) => (b.yellowCards + b.redCards * 2) - (a.yellowCards + a.redCards * 2))
   const byGames        = [...stats].sort((a, b) => b.gamesPlayed - a.gamesPlayed).filter(s => s.gamesPlayed > 0)
   const byContribs     = [...stats].filter(s => s.goals + s.assists > 0).sort((a, b) => (b.goals + b.assists) - (a.goals + a.assists))
+
+  // Valoraciones del entrenador por jugadora
+  const ratingAccum = new Map<string, { sum: number; count: number }>()
+  for (const app of appearances ?? []) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = (app as any).rating as number | null
+    if (r && r > 0) {
+      const prev = ratingAccum.get(app.player_id) ?? { sum: 0, count: 0 }
+      ratingAccum.set(app.player_id, { sum: prev.sum + r, count: prev.count + 1 })
+    }
+  }
+  const byRating = [...stats]
+    .filter(s => ratingAccum.has(s.playerId))
+    .map(s => ({
+      ...s,
+      avgRating: ratingAccum.get(s.playerId)!.sum / ratingAccum.get(s.playerId)!.count,
+      ratingCount: ratingAccum.get(s.playerId)!.count,
+    }))
+    .sort((a, b) => b.avgRating - a.avgRating)
 
   // MVP por partido (usa mvp_player_id de matches, disponible tras migración 007)
   const mvpCounts = new Map<string, number>()
@@ -219,22 +272,26 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
   }
   const competitions = Array.from(compMap.values()).sort((a, b) => b.played - a.played)
 
-  // Gráfico de evolución de puntos
+  // matchesChrono: partidos filtrados (para last10, H2H, etc.)
   const matchesChrono = [...(matches ?? [])].sort((a, b) => a.played_at.localeCompare(b.played_at))
+
+  // Gráfico de evolución de puntos — siempre usa solo Liga (los amistosos y copa no dan puntos)
+  const ligaMatchesChrono = [...ligaFinished].sort((a, b) => a.played_at.localeCompare(b.played_at))
   let cumPts = 0
-  const chartPoints: ChartMatch[] = matchesChrono.map(m => {
+  const chartPoints: ChartMatch[] = ligaMatchesChrono.map(m => {
     const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
     cumPts += res === 'V' ? 3 : res === 'E' ? 1 : 0
     return { opponent: m.opponent, result: res, gf: m.goals_for, ga: m.goals_against, cumPoints: cumPts, date: m.played_at }
   })
 
-  // Carrera goleadora — top 5 con goles acumulados partido a partido
+  // Carrera goleadora — siempre usa Liga + Copa (no amistosos); top 5 goles acumulados partido a partido
+  const competitiveMatchesChrono = [...competitiveFinished].sort((a, b) => a.played_at.localeCompare(b.played_at))
   const RACE_COLORS = ['#4be277', '#60a5fa', '#facc15', '#f472b6', '#a78bfa']
   const top5Scorers = byGoals.slice(0, 5)
   const goalRacePlayers: GoalRaceLine[] = top5Scorers.map((scorer, i) => {
     let cum = 0
-    const cumGoals = matchesChrono.map(m => {
-      const app = (appearances ?? []).find(
+    const cumGoals = competitiveMatchesChrono.map(m => {
+      const app = (allAppearances ?? []).find(
         a => a.player_id === scorer.playerId && (a as { match_id: string }).match_id === m.id
       )
       cum += app?.goals ?? 0
@@ -242,7 +299,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
     })
     return { name: scorer.name, color: RACE_COLORS[i], cumGoals }
   })
-  const raceMatchLabels = matchesChrono.map(m => m.opponent)
+  const raceMatchLabels = competitiveMatchesChrono.map(m => m.opponent)
 
   // Datos para comparar jugadoras
   const compareStats: CompareStat[] = stats.map(s => ({
@@ -307,6 +364,37 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
           </div>
         </header>
 
+        {/* Filtro por tipo de competición — solo si hay mezcla */}
+        {(hasCopaInStats || hasAmistosos) && (
+          <div className="flex items-center gap-2 mb-6 flex-wrap">
+            {([
+              { label: 'Todos', ct: '' },
+              { label: 'Competitivos', ct: 'competitive' },
+              { label: 'Liga', ct: 'liga' },
+              ...(hasCopaInStats ? [{ label: 'Copa', ct: 'copa' }] : []),
+            ] as { label: string; ct: string }[]).map(({ label, ct }) => {
+              const active = ctParam === ct || (!ctParam && ct === '')
+              const color = '#a78bfa'
+              return (
+                <a key={ct}
+                  href={`/dashboard/season/${seasonId}/stats${ct ? `?ct=${ct}` : ''}`}
+                  className="px-4 py-2 rounded-xl text-[11px] font-bold border transition-all"
+                  style={{
+                    backgroundColor: active ? `${color}15` : 'transparent',
+                    borderColor: active ? `${color}40` : '#2e3447',
+                    color: active ? color : '#64748b',
+                  }}>
+                  {label}
+                </a>
+              )
+            })}
+            <span className="text-[10px]" style={{ color: '#334155' }}>
+              {total} partido{total !== 1 ? 's' : ''}
+              {ctParam === 'copa' ? ' de copa' : ctParam === 'liga' ? ' de liga' : ctParam === 'competitive' ? ' competitivos' : ''}
+            </span>
+          </div>
+        )}
+
         {total === 0 ? (
           <div className="rounded-[24px] border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
             <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>leaderboard</span>
@@ -338,14 +426,14 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                     )}
                     {/* Empates */}
                     {drawPct > 0 && (
-                      <circle cx="96" cy="96" r="80" fill="transparent" stroke="#94a3b8"
+                      <circle cx="96" cy="96" r="80" fill="transparent" stroke="#fbbf24"
                         strokeDasharray={CIRCUM} strokeDashoffset={drawOffset}
                         strokeWidth="16"
                         transform={`rotate(${drawRotation} 96 96)`} />
                     )}
                     {/* Derrotas */}
                     {lossPct > 0 && (
-                      <circle cx="96" cy="96" r="80" fill="transparent" stroke="#ffb4ab"
+                      <circle cx="96" cy="96" r="80" fill="transparent" stroke="#f87171"
                         strokeDasharray={CIRCUM} strokeDashoffset={lossOffset}
                         strokeWidth="16"
                         transform={`rotate(${lossRotation} 96 96)`} />
@@ -361,9 +449,16 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                 </div>
                 <div className="flex gap-4 mt-4">
                   <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-green-500" /><span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>V</span></div>
-                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-slate-400" /><span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>E</span></div>
-                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ffb4ab' }} /><span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>D</span></div>
+                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#fbbf24' }} /><span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>E</span></div>
+                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#f87171' }} /><span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>D</span></div>
                 </div>
+                {ligaFinished.length > 0 && (
+                  <div className="mt-3 flex items-center gap-2 px-3 py-1.5 rounded-lg border" style={{ borderColor: 'rgba(75,226,119,0.2)', backgroundColor: 'rgba(75,226,119,0.06)' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 13, color: '#4be277' }}>emoji_events</span>
+                    <span className="text-[10px] font-bold tabular-nums" style={{ color: '#4be277' }}>{ligaPts} pts</span>
+                    <span className="text-[9px]" style={{ color: '#334155' }}>liga</span>
+                  </div>
+                )}
               </div>
 
               {/* 4 métricas */}
@@ -372,7 +467,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                   { label: 'Total Victorias', value: wins,         icon: 'trending_up',   sub: `${winRate}% partidos`,    subColor: '#4be277' },
                   { label: 'Goles a Favor',   value: goalsFor,     icon: 'sports_soccer', sub: `${avgFor} p/partido`,      subColor: '#4be277' },
                   { label: 'Goles en Contra', value: goalsAgainst, icon: 'security',      sub: `${avgAgainst} p/partido`, subColor: '#adb4ce' },
-                  { label: 'Diferencia',       value: goalDiff > 0 ? `+${goalDiff}` : String(goalDiff), icon: goalDiff >= 0 ? 'add_circle' : 'remove_circle', sub: `${cleanSheets} portería${cleanSheets !== 1 ? 's' : ''} a cero`, subColor: goalDiff > 0 ? '#4be277' : goalDiff < 0 ? '#ffb4ab' : '#adb4ce' },
+                  { label: 'Diferencia',       value: goalDiff > 0 ? `+${goalDiff}` : String(goalDiff), icon: goalDiff >= 0 ? 'add_circle' : 'remove_circle', sub: `${cleanSheets} portería${cleanSheets !== 1 ? 's' : ''} a cero`, subColor: goalDiff > 0 ? '#4be277' : goalDiff < 0 ? '#f87171' : '#adb4ce' },
                 ] as const).map(({ label, value, icon, sub, subColor }) => (
                   <div key={label} className="p-4 rounded-lg border"
                     style={{ backgroundColor: 'rgba(7,13,31,0.5)', borderColor: 'rgba(61,74,61,0.3)' }}>
@@ -397,9 +492,9 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                       <div key={i}
                         className="w-10 h-10 flex items-center justify-center font-bold rounded-lg text-sm border"
                         style={{
-                          backgroundColor: s.win ? 'rgba(34,197,94,0.2)' : s.draw ? 'rgba(148,163,184,0.2)' : 'rgba(255,180,171,0.2)',
-                          borderColor:     s.win ? '#22c55e' : s.draw ? '#94a3b8' : '#ffb4ab',
-                          color:           s.win ? '#4be277' : s.draw ? '#94a3b8' : '#ffb4ab',
+                          backgroundColor: s.win ? 'rgba(75,226,119,0.12)' : s.draw ? 'rgba(251,191,36,0.08)' : 'rgba(248,113,113,0.1)',
+                          borderColor:     s.win ? '#22c55e' : s.draw ? 'rgba(251,191,36,0.4)' : 'rgba(248,113,113,0.4)',
+                          color:           s.win ? '#4be277' : s.draw ? '#fbbf24' : '#f87171',
                           boxShadow: s.win && i === 0 ? '0 0 10px rgba(34,197,94,0.3)' : 'none',
                         }}
                       >
@@ -498,6 +593,18 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                   players={byGames.slice(0, 3).map(s => ({ name: s.name, photoUrl: s.photoUrl, position: s.position, primary: s.gamesPlayed }))}
                 />
               )}
+
+              {/* Valoración del entrenador — solo si hay datos */}
+              {byRating.length > 0 && (
+                <RankCard title="Valoración ★" icon="grade"
+                  players={byRating.slice(0, 3).map(s => ({
+                    name: s.name, photoUrl: s.photoUrl, position: s.position,
+                    primary: Math.round(s.avgRating * 10),
+                    sublabel: `${s.ratingCount} valoraciones`,
+                  }))}
+                  formatValue={(v) => (v / 10).toFixed(1) + '★'}
+                />
+              )}
             </section>
 
             {/* Casa vs Fuera */}
@@ -528,9 +635,9 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                           <>
                             <div className="flex gap-2 mb-3">
                               {[
-                                { v: w, label: 'V', color: '#4be277', bg: 'rgba(34,197,94,0.1)', border: 'rgba(34,197,94,0.2)' },
-                                { v: d, label: 'E', color: '#adb4ce', bg: 'rgba(46,52,71,0.3)',  border: '#2e3447' },
-                                { v: l, label: 'D', color: '#ffb4ab', bg: 'rgba(255,180,171,0.05)', border: 'rgba(255,180,171,0.2)' },
+                                { v: w, label: 'V', color: '#4be277', bg: 'rgba(75,226,119,0.08)',  border: 'rgba(75,226,119,0.2)' },
+                                { v: d, label: 'E', color: '#fbbf24', bg: 'rgba(251,191,36,0.07)', border: 'rgba(251,191,36,0.2)' },
+                                { v: l, label: 'D', color: '#f87171', bg: 'rgba(248,113,113,0.05)', border: 'rgba(248,113,113,0.2)' },
                               ].map(({ v, label: lbl, color, bg, border }) => (
                                 <div key={lbl} className="flex-1 text-center rounded-lg border py-1.5" style={{ backgroundColor: bg, borderColor: border }}>
                                   <p className="text-lg font-extrabold" style={{ color, fontFamily: 'Sora, sans-serif' }}>{v}</p>
@@ -617,6 +724,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                     </h4>
                     <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>
                       Puntos acumulados partido a partido · {cumPts} pts totales
+                      <span className="ml-2 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ backgroundColor: '#1e293b', color: '#64748b' }}>Solo Liga</span>
                     </p>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
@@ -648,6 +756,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                     </h4>
                     <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>
                       Goles acumulados partido a partido · Top {goalRacePlayers.length} goleadoras
+                      <span className="ml-2 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ backgroundColor: '#1e293b', color: '#64748b' }}>Liga + Copa</span>
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1.5">
@@ -682,9 +791,9 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                         </div>
                         <div className="flex gap-2 mb-2">
                           {[
-                            { v: c.W, lbl: 'V', color: '#4be277',  bg: 'rgba(34,197,94,0.1)',      border: 'rgba(34,197,94,0.2)' },
-                            { v: c.E, lbl: 'E', color: '#adb4ce',  bg: 'rgba(46,52,71,0.3)',        border: '#2e3447' },
-                            { v: c.D, lbl: 'D', color: '#ffb4ab',  bg: 'rgba(255,180,171,0.05)',    border: 'rgba(255,180,171,0.2)' },
+                            { v: c.W, lbl: 'V', color: '#4be277',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
+                            { v: c.E, lbl: 'E', color: '#fbbf24',  bg: 'rgba(251,191,36,0.07)',    border: 'rgba(251,191,36,0.2)' },
+                            { v: c.D, lbl: 'D', color: '#f87171',  bg: 'rgba(248,113,113,0.05)',   border: 'rgba(248,113,113,0.2)' },
                           ].map(({ v, lbl, color, bg, border }) => (
                             <div key={lbl} className="flex-1 text-center rounded-lg border py-1.5" style={{ backgroundColor: bg, borderColor: border }}>
                               <p className="text-base font-extrabold" style={{ color, fontFamily: 'Sora, sans-serif' }}>{v}</p>
@@ -695,52 +804,6 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                         <div className="flex justify-between text-[11px]" style={{ color: '#adb4ce' }}>
                           <span>GF <span style={{ color: '#4be277' }}>{c.gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{c.ga}</span></span>
                           <span style={{ color: rate >= 50 ? '#4be277' : '#adb4ce' }}>{rate}% vic.</span>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </section>
-            )}
-
-            {/* ── Asistencia a Entrenamientos ── */}
-            {attStats.length > 0 && (
-              <section className="mt-8">
-                <h3 className="text-[20px] font-semibold mb-1 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
-                  Asistencia a Entrenamientos
-                </h3>
-                <p className="text-sm mb-4 ml-4" style={{ color: '#adb4ce' }}>
-                  {sessionIds.length} sesión{sessionIds.length !== 1 ? 'es' : ''} · {avgAttPct}% asistencia media del equipo
-                </p>
-                <div className="overflow-hidden rounded-[20px] border" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-                  {attStats.map((s, i) => {
-                    const pct = Math.round((s.attended / s.total) * 100)
-                    const barColor  = pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : '#ef4444'
-                    const textColor = pct >= 80 ? '#4be277' : pct >= 60 ? '#facc15' : '#f87171'
-                    return (
-                      <div key={s.playerId}
-                        className="flex items-center gap-3 px-4 py-3 border-b last:border-0"
-                        style={{ borderColor: '#1e293b' }}>
-                        <span className="w-5 text-center text-[11px] font-black flex-shrink-0"
-                          style={{ color: i === 0 ? '#4be277' : i < 3 ? '#adb4ce' : '#475569' }}>
-                          {i + 1}
-                        </span>
-                        <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" />
-                        <p className="flex-1 min-w-0 truncate text-sm font-semibold text-white">
-                          {shortName(s.name)}
-                        </p>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          <div className="w-16 sm:w-28 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
-                            <div className="h-full rounded-full transition-all"
-                              style={{ width: `${pct}%`, backgroundColor: barColor }} />
-                          </div>
-                          <span className="text-xs font-bold tabular-nums" style={{ color: textColor }}>
-                            {s.attended}/{s.total}
-                          </span>
-                          <span className="text-xs font-black tabular-nums w-10 text-right"
-                            style={{ color: textColor }}>
-                            {pct}%
-                          </span>
                         </div>
                       </div>
                     )
@@ -804,8 +867,8 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                     </thead>
                     <tbody>
                       {h2h.map(r => {
-                        const lastColor = r.lastResult === 'V' ? '#4be277' : r.lastResult === 'D' ? '#ffb4ab' : '#94a3b8'
-                        const lastBg = r.lastResult === 'V' ? 'rgba(34,197,94,0.15)' : r.lastResult === 'D' ? 'rgba(255,180,171,0.1)' : 'rgba(148,163,184,0.1)'
+                        const lastColor = r.lastResult === 'V' ? '#4be277' : r.lastResult === 'D' ? '#f87171' : '#fbbf24'
+                        const lastBg = r.lastResult === 'V' ? 'rgba(75,226,119,0.12)' : r.lastResult === 'D' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.08)'
                         return (
                           <tr key={r.opponent} className="border-b border-[#1e293b] last:border-0 hover:bg-[#23293c]/30 transition-colors">
                             <td className="px-4 py-3">
@@ -814,7 +877,7 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                             {[r.played, r.W, r.E, r.D, r.gf, r.ga].map((v, i) => (
                               <td key={i} className="px-4 py-3 text-center">
                                 <span className="text-sm font-bold" style={{
-                                  color: i === 1 ? '#4be277' : i === 3 ? '#ffb4ab' : '#dce1fb'
+                                  color: i === 1 ? '#4be277' : i === 2 ? '#fbbf24' : i === 3 ? '#f87171' : '#dce1fb'
                                 }}>{v}</span>
                               </td>
                             ))}
@@ -840,81 +903,14 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
                     Tabla de rendimiento
                   </h3>
                   <p className="text-sm mt-0.5" style={{ color: '#adb4ce' }}>
-                    G/90 solo para {terms.pp} con más de 45 min jugados
+                    Haz clic en una columna para ordenar · G/90 para {terms.pp} con más de 45 min
                   </p>
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left" style={{ minWidth: 640 }}>
-                    <thead>
-                      <tr className="border-b border-[#1e293b]" style={{ backgroundColor: '#151b2d' }}>
-                        {[
-                          { h: '#', align: 'center' as const },
-                          { h: terms.p.charAt(0).toUpperCase() + terms.p.slice(1), align: 'left' as const },
-                          { h: 'Pos', align: 'center' as const },
-                          { h: 'PJ', align: 'center' as const },
-                          { h: "Min'", align: 'center' as const },
-                          { h: 'G', align: 'center' as const },
-                          { h: 'G/90', align: 'center' as const },
-                          { h: 'A', align: 'center' as const },
-                          { h: 'G+A', align: 'center' as const },
-                          { h: '🟨', align: 'center' as const },
-                          { h: '🟥', align: 'center' as const },
-                        ].map(({ h, align }) => (
-                          <th key={h} className="px-3 py-3 text-[10px] font-bold uppercase tracking-widest"
-                            style={{ color: '#adb4ce', textAlign: align }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[...stats]
-                        .filter(s => s.gamesPlayed > 0)
-                        .sort((a, b) => b.goals - a.goals || b.assists - a.assists || b.gamesPlayed - a.gamesPlayed)
-                        .map((s, i) => {
-                          const g90 = s.minutes >= 45 ? ((s.goals / s.minutes) * 90).toFixed(1) : '—'
-                          const posShort = s.position ? s.position.slice(0, 3) : '—'
-                          return (
-                            <tr key={s.playerId} className="border-b border-[#1e293b] last:border-0"
-                              style={{ backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.4)' }}>
-                              <td className="px-3 py-2.5 text-center">
-                                <span className="text-[11px] font-black"
-                                  style={{ color: i === 0 ? '#4be277' : i === 1 ? '#adb4ce' : i === 2 ? '#9d8050' : '#334155' }}>
-                                  {i + 1}
-                                </span>
-                              </td>
-                              <td className="px-3 py-2.5">
-                                <div className="flex items-center gap-2">
-                                  <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" className="w-7 h-7 rounded-lg flex-shrink-0" />
-                                  <span className="text-xs font-semibold text-white truncate" style={{ maxWidth: 130 }}>{s.name}</span>
-                                </div>
-                              </td>
-                              <td className="px-3 py-2.5 text-center">
-                                <span className="text-[10px] font-bold uppercase" style={{ color: '#475569' }}>{posShort}</span>
-                              </td>
-                              <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: '#adb4ce' }}>{s.gamesPlayed}</td>
-                              <td className="px-3 py-2.5 text-center text-xs" style={{ color: '#64748b' }}>{s.minutes}</td>
-                              <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.goals > 0 ? '#4be277' : '#334155' }}>{s.goals}</td>
-                              <td className="px-3 py-2.5 text-center text-xs font-bold"
-                                style={{ color: s.goals > 0 && s.minutes >= 45 ? '#a3e635' : '#334155' }}>{g90}</td>
-                              <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.assists > 0 ? '#facc15' : '#334155' }}>{s.assists}</td>
-                              <td className="px-3 py-2.5 text-center text-xs font-bold"
-                                style={{ color: s.goals + s.assists > 0 ? '#dce1fb' : '#334155' }}>{s.goals + s.assists}</td>
-                              <td className="px-3 py-2.5 text-center">
-                                {s.yellowCards > 0
-                                  ? <span className="text-xs font-bold"
-                                      style={{ color: s.yellowCards >= YELLOW_WARNING ? '#facc15' : '#adb4ce' }}>{s.yellowCards}</span>
-                                  : <span style={{ color: '#1e293b' }}>—</span>}
-                              </td>
-                              <td className="px-3 py-2.5 text-center">
-                                {s.redCards > 0
-                                  ? <span className="text-xs font-bold" style={{ color: '#f87171' }}>{s.redCards}</span>
-                                  : <span style={{ color: '#1e293b' }}>—</span>}
-                              </td>
-                            </tr>
-                          )
-                        })}
-                    </tbody>
-                  </table>
-                </div>
+                <SortableStatsTable
+                  stats={stats}
+                  playerLabel={terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}
+                  teamId={team.id}
+                />
               </section>
             )}
 
@@ -931,6 +927,52 @@ export default async function StatsPage({ params }: { params: Promise<{ id: stri
               </section>
             )}
           </>
+        )}
+
+        {/* ── Asistencia a Entrenamientos — independiente del filtro de partidos ── */}
+        {attStats.length > 0 && (
+          <section className="mt-8">
+            <h3 className="text-[20px] font-semibold mb-1 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              Asistencia a Entrenamientos
+            </h3>
+            <p className="text-sm mb-4 ml-4" style={{ color: '#adb4ce' }}>
+              {sessionIds.length} sesión{sessionIds.length !== 1 ? 'es' : ''} · {avgAttPct}% asistencia media del equipo
+            </p>
+            <div className="overflow-hidden rounded-[20px] border" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              {attStats.map((s, i) => {
+                const pct = Math.round((s.attended / s.total) * 100)
+                const barColor  = pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : '#ef4444'
+                const textColor = pct >= 80 ? '#4be277' : pct >= 60 ? '#facc15' : '#f87171'
+                return (
+                  <div key={s.playerId}
+                    className="flex items-center gap-3 px-4 py-3 border-b last:border-0"
+                    style={{ borderColor: '#1e293b' }}>
+                    <span className="w-5 text-center text-[11px] font-black flex-shrink-0"
+                      style={{ color: i === 0 ? '#4be277' : i < 3 ? '#adb4ce' : '#475569' }}>
+                      {i + 1}
+                    </span>
+                    <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" />
+                    <p className="flex-1 min-w-0 truncate text-sm font-semibold text-white">
+                      {shortName(s.name)}
+                    </p>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="w-16 sm:w-28 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                        <div className="h-full rounded-full transition-all"
+                          style={{ width: `${pct}%`, backgroundColor: barColor }} />
+                      </div>
+                      <span className="text-xs font-bold tabular-nums" style={{ color: textColor }}>
+                        {s.attended}/{s.total}
+                      </span>
+                      <span className="text-xs font-black tabular-nums w-10 text-right"
+                        style={{ color: textColor }}>
+                        {pct}%
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
         )}
       </main>
     </PageTransition>

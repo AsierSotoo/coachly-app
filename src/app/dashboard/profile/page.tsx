@@ -3,6 +3,7 @@ import { updateProfile } from './actions'
 import { logout } from '@/app/auth/actions'
 import { PageTransition } from '@/components/ui/page-transition'
 import { AvatarUpload } from '@/components/profile/avatar-upload'
+import { PwaInstallButton } from '@/components/ui/pwa-install-button'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
@@ -253,6 +254,24 @@ export default async function ProfilePage({
               <div className="relative w-11 h-6 rounded-full cursor-not-allowed" style={{ backgroundColor: '#2e3447' }}>
                 <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white/30" />
               </div>
+            </div>
+          </div>
+
+          {/* Instalar app */}
+          <div className="rounded-[24px] border border-[#1e293b] p-8 space-y-4" style={{ backgroundColor: '#0f172a' }}>
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined" style={{ color: '#4be277' }}>install_mobile</span>
+              <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Instalar Coachly</h4>
+            </div>
+            <p className="text-sm" style={{ color: '#adb4ce' }}>
+              Añade Coachly a la pantalla de inicio de tu móvil para acceder más rápido, como si fuera una app nativa.
+            </p>
+            <PwaInstallButton />
+            <div className="rounded-xl border border-[#2e3447] p-4 space-y-2" style={{ backgroundColor: '#151b2d' }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>En iPhone / Safari</p>
+              <p className="text-xs" style={{ color: '#64748b' }}>
+                Toca el botón <strong style={{ color: '#adb4ce' }}>Compartir</strong> de Safari → <strong style={{ color: '#adb4ce' }}>Añadir a pantalla de inicio</strong>
+              </p>
             </div>
           </div>
 

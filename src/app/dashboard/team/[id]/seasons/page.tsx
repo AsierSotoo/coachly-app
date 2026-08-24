@@ -125,9 +125,9 @@ export default async function SeasonsPage({
                       <>
                         <div className="grid grid-cols-3 gap-2">
                           {[
-                            { label: 'Victorias', value: wins,   color: '#4be277',  bg: 'rgba(34,197,94,0.08)',  border: 'rgba(34,197,94,0.2)' },
-                            { label: 'Empates',   value: draws,  color: '#adb4ce',  bg: 'rgba(46,52,71,0.3)',   border: '#2e3447' },
-                            { label: 'Derrotas',  value: losses, color: '#ffb4ab',  bg: 'rgba(255,180,171,0.05)', border: 'rgba(255,180,171,0.2)' },
+                            { label: 'Victorias', value: wins,   color: '#4be277',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
+                            { label: 'Empates',   value: draws,  color: '#fbbf24',  bg: 'rgba(251,191,36,0.07)',    border: 'rgba(251,191,36,0.2)' },
+                            { label: 'Derrotas',  value: losses, color: '#f87171',  bg: 'rgba(248,113,113,0.05)',   border: 'rgba(248,113,113,0.2)' },
                           ].map(({ label, value, color, bg, border }) => (
                             <div key={label} className="flex items-center justify-center gap-2 rounded-xl border py-2.5"
                               style={{ backgroundColor: bg, borderColor: border }}>

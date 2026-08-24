@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import { updateTeam } from '../../actions'
+import { updateTeam, toggleAvailabilityEnabled } from '../../actions'
 import { LogoUpload } from '@/components/team/logo-upload'
 import { DeleteTeamButton } from '@/components/team/delete-team-button'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -212,6 +212,51 @@ export default async function TeamSettingsPage({
               Guardar cambios
             </button>
           </form>
+        </section>
+
+        {/* Funcionalidades opcionales */}
+        <section className="mt-6 rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+          <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e293b]">
+            <span className="material-symbols-outlined" style={{ color: '#a78bfa' }}>tune</span>
+            <h2 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Funcionalidades opcionales</h2>
+          </div>
+
+          <div className="px-6 py-5">
+            <div className="flex items-start gap-4">
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-white">Confirmación de disponibilidad</p>
+                <p className="text-xs mt-1 leading-relaxed" style={{ color: '#64748b' }}>
+                  Genera un enlace por partido y compártelo con el grupo.
+                  Las jugadoras confirman si van a jugar sin necesitar cuenta.
+                </p>
+              </div>
+              <form action={toggleAvailabilityEnabled} className="flex-shrink-0 mt-0.5">
+                <input type="hidden" name="team_id" value={teamId} />
+                <input type="hidden" name="enabled" value={String(!(team as { availability_enabled?: boolean }).availability_enabled)} />
+                <button type="submit"
+                  className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none"
+                  style={{
+                    backgroundColor: (team as { availability_enabled?: boolean }).availability_enabled ? '#a78bfa' : '#1e293b',
+                    border: `1px solid ${(team as { availability_enabled?: boolean }).availability_enabled ? '#a78bfa' : '#2e3447'}`,
+                  }}>
+                  <span
+                    className="inline-block h-4 w-4 rounded-full bg-white transition-transform duration-200"
+                    style={{ transform: `translateX(${(team as { availability_enabled?: boolean }).availability_enabled ? '20px' : '4px'})` }}
+                  />
+                </button>
+              </form>
+            </div>
+            {(team as { availability_enabled?: boolean }).availability_enabled && (
+              <div className="mt-3">
+                <a href={`/dashboard/team/${teamId}/disponibilidad`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
+                  style={{ color: '#a78bfa' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>event_available</span>
+                  Ver disponibilidad
+                </a>
+              </div>
+            )}
+          </div>
         </section>
 
         {/* Zona de peligro */}

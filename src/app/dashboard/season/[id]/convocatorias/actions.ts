@@ -67,6 +67,21 @@ export async function updateConvocatoriaDetails(formData: FormData) {
   revalidatePath(`/dashboard/season/${seasonId}/convocatorias/${id}`)
 }
 
+export async function saveConvocatoriaMetadata(
+  convocatoriaId: string,
+  meetingTime: string | null,
+  location: string | null,
+  seasonId: string
+) {
+  const supabase = await createClient()
+  const updateData: Record<string, string | null> = {
+    meeting_time: meetingTime || null,
+    location: location || null,
+  }
+  await (supabase.from('convocatorias') as any).update(updateData).eq('id', convocatoriaId)
+  revalidatePath(`/dashboard/season/${seasonId}/convocatorias/${convocatoriaId}`)
+}
+
 export async function deleteConvocatoria(formData: FormData) {
   const supabase = await createClient()
   const id = formData.get('id') as string

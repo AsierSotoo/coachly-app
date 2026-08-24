@@ -127,7 +127,7 @@ export default async function ConvocatoriaDetailPage({
           </div>
 
           {/* Match metadata */}
-          <div className="flex gap-8 pr-10">
+          <div className="flex flex-wrap gap-6 pr-10">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 20 }}>calendar_month</span>
               <div>
@@ -137,6 +137,24 @@ export default async function ConvocatoriaDetailPage({
                 </p>
               </div>
             </div>
+            {(conv as any).meeting_time && (
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 20 }}>schedule</span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Convocatoria</p>
+                  <p className="text-sm font-semibold text-white">{(conv as any).meeting_time} h</p>
+                </div>
+              </div>
+            )}
+            {(conv as any).location && (
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 20 }}>location_on</span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Lugar</p>
+                  <p className="text-sm font-semibold text-white">{(conv as any).location}</p>
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 20 }}>sports_soccer</span>
               <div>
@@ -170,6 +188,8 @@ export default async function ConvocatoriaDetailPage({
           yellowCards={yellowCards}
           linkedMatchId={conv.match_id ?? null}
           availableMatches={availableMatches}
+          meetingTime={(conv as any).meeting_time ?? null}
+          location={(conv as any).location ?? null}
         />
 
       </main>

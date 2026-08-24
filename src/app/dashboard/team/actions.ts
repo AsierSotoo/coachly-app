@@ -165,3 +165,35 @@ export async function createSeason(formData: FormData) {
   revalidatePath('/dashboard')
   redirect(`/dashboard/team/${teamId}/seasons`)
 }
+
+export async function toggleAvailabilityEnabled(formData: FormData) {
+  const supabase = await createClient()
+  const teamId = formData.get('team_id') as string
+  const enabled = formData.get('enabled') === 'true'
+  await supabase.from('teams').update({ availability_enabled: enabled } as Record<string, unknown>).eq('id', teamId)
+  revalidatePath(`/dashboard/team/${teamId}/settings`)
+  revalidatePath(`/dashboard/team/${teamId}/disponibilidad`)
+}
+
+export async function serveYellowCycle(formData: FormData) {
+  const supabase = await createClient()
+  const playerId = formData.get('player_id') as string
+  const teamId   = formData.get('team_id') as string
+
+  const { data: player } = await supabase
+    .from('players')
+    .select('yellow_card_cycles_served')
+    .eq('id', playerId)
+    .single()
+
+  if (!player) return
+
+  const current = (player as { yellow_card_cycles_served: number }).yellow_card_cycles_served ?? 0
+  await supabase
+    .from('players')
+    .update({ yellow_card_cycles_served: current + 1 })
+    .eq('id', playerId)
+
+  revalidatePath(`/dashboard/team/${teamId}/players/${playerId}`)
+  revalidatePath(`/dashboard/team/${teamId}/players`)
+}

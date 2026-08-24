@@ -3,8 +3,18 @@ import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
 import { TrainingCalendar } from '@/components/training/training-calendar'
+import type { Metadata } from 'next'
 
-export default async function TrainingsPage({
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const supabase = await createClient()
+  const { data } = await supabase.from('seasons').select('name, teams(name)').eq('id', id).single()
+  if (!data) return { title: 'Calendario' }
+  const team = Array.isArray(data.teams) ? data.teams[0] : data.teams as { name: string } | null
+  return { title: `Calendario${team ? ` · ${team.name}` : ''}` }
+}
+
+export default async function CalendarPage({
   params,
 }: {
   params: Promise<{ id: string }>
@@ -42,7 +52,7 @@ export default async function TrainingsPage({
             {season.name}
           </Link>
           <h1 className="text-2xl font-black text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
-            Planificación
+            Calendario
           </h1>
           <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>{team.name} · {season.name}</p>
         </div>
@@ -53,7 +63,7 @@ export default async function TrainingsPage({
           teamLogo={team.logo_url ?? null}
           seasonName={season.name}
           sessions={sessions ?? []}
-          matches={matches ?? []}
+          matches={(matches ?? []) as Parameters<typeof TrainingCalendar>[0]['matches']}
         />
       </main>
     </PageTransition>

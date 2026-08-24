@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { PlayerAvatar } from '@/components/team/player-avatar'
+import { StarRating } from './star-rating'
 
 type Status = 'titular' | 'suplente' | 'no_convocada'
 
@@ -13,6 +14,7 @@ interface Player {
 interface Appearance {
   starter: boolean; minutes: number; goals: number
   assists: number; yellow_cards: number; red_cards: number
+  rating?: number | null
 }
 
 interface Props {
@@ -67,7 +69,7 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
   const posColor = player.position ? (POSITION_COLORS[player.position] ?? 'text-slate-400') : 'text-slate-400'
 
   return (
-    <div className={`grid grid-cols-[2.5rem_1fr_6rem_4.5rem_3.5rem_3.5rem_3.5rem_3.5rem] items-center gap-2 px-4 py-2.5 transition-colors ${isOut ? 'opacity-40' : 'hover:bg-slate-800/40'} ${!isLast ? 'border-b border-slate-800/60' : ''}`}>
+    <div className={`grid grid-cols-[2.5rem_1fr_6rem_4.5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 px-4 py-2.5 transition-colors ${isOut ? 'opacity-40' : 'hover:bg-slate-800/40'} ${!isLast ? 'border-b border-slate-800/60' : ''}`}>
 
       <input type="hidden" name={`status_${player.id}`} value={status} />
 
@@ -127,6 +129,15 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
           className={`h-9 w-full rounded-lg border border-slate-700 bg-slate-800 text-center text-sm font-bold font-sans tabular-nums focus:outline-none disabled:opacity-30 ${color} ${focus}`}
         />
       ))}
+
+      {/* Valoración */}
+      <div className="flex justify-center">
+        <StarRating
+          name={`rating_${player.id}`}
+          defaultValue={appearance?.rating}
+          disabled={isOut}
+        />
+      </div>
     </div>
   )
 }

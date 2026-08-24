@@ -8,7 +8,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4" style={{ backgroundColor: '#020617' }}>
       <div className="text-center max-w-sm">
-        <span className="material-symbols-outlined block mb-4" style={{ color: '#ffb4ab', fontSize: 52 }}>
+        <span className="material-symbols-outlined block mb-4" style={{ color: '#f87171', fontSize: 52 }}>
           error
         </span>
         <h1 className="text-xl font-bold text-white mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>

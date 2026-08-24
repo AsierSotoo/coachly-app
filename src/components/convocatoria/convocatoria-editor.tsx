@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { PlayerAvatar } from '@/components/team/player-avatar'
 import {
   saveConvocatoriaPlayers,
+  saveConvocatoriaMetadata,
   linkMatchToConvocatoria,
   unlinkMatchFromConvocatoria,
   type ConvocatoriaStatus,
@@ -30,14 +31,19 @@ interface Props {
   yellowCards?: Record<string, number>
   linkedMatchId: string | null
   availableMatches: AvailableMatch[]
+  meetingTime?: string | null
+  location?: string | null
 }
 
 export function ConvocatoriaEditor({
   convocatoriaId, seasonId, opponent, playedAt, teamName, teamGender,
   logoUrl, seasonName,
   players, initial, yellowCards = {}, linkedMatchId, availableMatches,
+  meetingTime: initialMeetingTime, location: initialLocation,
 }: Props) {
   const terms = getTeamTerms(teamGender)
+  const [localMeetingTime, setLocalMeetingTime] = useState(initialMeetingTime ?? '')
+  const [localLocation, setLocalLocation] = useState(initialLocation ?? '')
   const [statuses, setStatuses] = useState<Record<string, ConvocatoriaStatus>>(() => {
     const map: Record<string, ConvocatoriaStatus> = {}
     players.forEach(p => { map[p.id] = initial[p.id] ?? 'convocada' })
@@ -93,10 +99,18 @@ export function ConvocatoriaEditor({
 
   const handleSave = () => {
     startSave(async () => {
-      await saveConvocatoriaPlayers(
-        convocatoriaId, seasonId,
-        players.map(p => ({ playerId: p.id, status: statuses[p.id] }))
-      )
+      await Promise.all([
+        saveConvocatoriaPlayers(
+          convocatoriaId, seasonId,
+          players.map(p => ({ playerId: p.id, status: statuses[p.id] }))
+        ),
+        saveConvocatoriaMetadata(
+          convocatoriaId,
+          localMeetingTime || null,
+          localLocation || null,
+          seasonId
+        ),
+      ])
       toast.success('Convocatoria guardada')
     })
   }
@@ -124,7 +138,10 @@ export function ConvocatoriaEditor({
     const lines = [
       '📋 CONVOCATORIA',
       `${teamName} vs ${opponent}`,
-      `${date.charAt(0).toUpperCase() + date.slice(1)}`, '',
+      `${date.charAt(0).toUpperCase() + date.slice(1)}`,
+      ...(localMeetingTime ? [`⏰ Hora de convocatoria: ${localMeetingTime}`] : []),
+      ...(localLocation ? [`📍 Lugar: ${localLocation}`] : []),
+      '',
       `✅ ${terms.calleds.toUpperCase()} (${squadCount}):`,
       ...squad.map(fmt),
       ...(fuera.length > 0 ? ['', `❌ NO ${terms.calleds.toUpperCase()} (${fuera.length}):`, ...fuera.map(fmt)] : []),
@@ -166,6 +183,41 @@ export function ConvocatoriaEditor({
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
           {savePending ? 'Guardando…' : 'Guardar Convocatoria'}
         </button>
+      </div>
+
+      {/* ── Hora y lugar ────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>
+            Hora de convocatoria
+          </label>
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#adb4ce', fontSize: 16 }}>schedule</span>
+            <input
+              type="time"
+              value={localMeetingTime}
+              onChange={e => setLocalMeetingTime(e.target.value)}
+              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[#4be277] transition-colors"
+              style={{ backgroundColor: '#151b2d', borderColor: '#2e3447', color: '#dce1fb' }}
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>
+            Lugar
+          </label>
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#adb4ce', fontSize: 16 }}>location_on</span>
+            <input
+              type="text"
+              value={localLocation}
+              onChange={e => setLocalLocation(e.target.value)}
+              placeholder="Campo Municipal de Pamplona…"
+              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[#4be277] transition-colors"
+              style={{ backgroundColor: '#151b2d', borderColor: '#2e3447', color: '#dce1fb' }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* ── Banner sanciones ────────────────────────────────────────── */}
@@ -490,6 +542,16 @@ export function ConvocatoriaEditor({
           <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#475569' }}>
             {new Date(playedAt).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
+          {localMeetingTime && (
+            <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#0f172a', fontWeight: 600 }}>
+              ⏰ Convocatoria: {localMeetingTime} h
+            </p>
+          )}
+          {localLocation && (
+            <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#475569' }}>
+              📍 {localLocation}
+            </p>
+          )}
           <p style={{ margin: '6px 0 0', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>
             {squadCount} {terms.calleds}
           </p>

@@ -10,7 +10,6 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-body', weight: ['400
 export const metadata: Metadata = {
   title: { default: 'Coachly', template: '%s · Coachly' },
   description: 'Las estadísticas de tu equipo de fútbol, en un sitio. Goleadoras, minutos, tarjetas y más.',
-  manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Coachly' },
   icons: {
     icon: '/logo.png',

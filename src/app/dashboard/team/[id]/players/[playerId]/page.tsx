@@ -83,6 +83,23 @@ export default async function PlayerDetailPage({
     if (m.mvp_player_id === playerId) s.mvp++
   }
 
+  // Rating global y por temporada
+  const ratingBySeason = new Map<string, { sum: number; count: number }>()
+  let ratingSum = 0, ratingCount = 0
+  for (const app of appearances ?? []) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = (app as any).rating as number | null
+    if (r && r >= 1) {
+      ratingSum += r; ratingCount++
+      const m = app.matches as { season_id: string } | null
+      if (m?.season_id) {
+        const prev = ratingBySeason.get(m.season_id) ?? { sum: 0, count: 0 }
+        ratingBySeason.set(m.season_id, { sum: prev.sum + r, count: prev.count + 1 })
+      }
+    }
+  }
+  const avgRating = ratingCount > 0 ? Math.round((ratingSum / ratingCount) * 10) / 10 : null
+
   const seasons = Array.from(map.values()).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   const current = seasons[0]
   const rest = seasons.slice(1)
@@ -312,6 +329,28 @@ export default async function PlayerDetailPage({
           </div>
         )}
 
+        {/* ── Valoración media ─────────────────────────────────────── */}
+        {avgRating !== null && (
+          <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
+            <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
+              <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>star</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Valoración del entrenador</p>
+              <span className="ml-auto text-[10px]" style={{ color: '#334155' }}>{ratingCount} partido{ratingCount !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="px-4 py-3 flex items-center gap-4">
+              <p className="text-[40px] font-extrabold leading-none tabular-nums" style={{ color: '#fbbf24', fontFamily: 'Sora, sans-serif' }}>{avgRating.toFixed(1)}</p>
+              <div>
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span key={i} className="material-symbols-outlined" style={{ fontSize: 20, color: '#fbbf24', fontVariationSettings: `'FILL' ${i < Math.round(avgRating) ? 1 : 0}` }}>star</span>
+                  ))}
+                </div>
+                <p className="text-[10px] mt-1" style={{ color: '#475569' }}>valoración media de {ratingCount} partido{ratingCount !== 1 ? 's' : ''}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Racha reciente ────────────────────────────────────────── */}
         {last5.length > 0 && (
           <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
@@ -409,7 +448,11 @@ export default async function PlayerDetailPage({
               <StatCard
                 title={`Temporada ${current.seasonName}`}
                 seasonId={current.seasonId}
-                data={current}
+                data={{
+                  ...current,
+                  avgRating: ratingBySeason.has(current.seasonId) ? Math.round(ratingBySeason.get(current.seasonId)!.sum / ratingBySeason.get(current.seasonId)!.count * 10) / 10 : undefined,
+                  ratingCount: ratingBySeason.get(current.seasonId)?.count,
+                }}
                 highlight
                 attendance={trainingAttBySeason.get(current.seasonId)}
               />
@@ -446,7 +489,15 @@ export default async function PlayerDetailPage({
                           Ver stats →
                         </Link>
                       </div>
-                      <StatGrid data={s} compact attendance={trainingAttBySeason.get(s.seasonId)} />
+                      <StatGrid
+                        data={{
+                          ...s,
+                          avgRating: ratingBySeason.has(s.seasonId) ? Math.round(ratingBySeason.get(s.seasonId)!.sum / ratingBySeason.get(s.seasonId)!.count * 10) / 10 : undefined,
+                          ratingCount: ratingBySeason.get(s.seasonId)?.count,
+                        }}
+                        compact
+                        attendance={trainingAttBySeason.get(s.seasonId)}
+                      />
                     </div>
                   ))}
                 </div>
@@ -545,7 +596,7 @@ export default async function PlayerDetailPage({
 
 /* ── Componentes locales ───────────────────────────────── */
 
-type StatData = { games: number; goals: number; assists: number; minutes: number; yellow: number; red: number; mvp: number }
+type StatData = { games: number; goals: number; assists: number; minutes: number; yellow: number; red: number; mvp: number; avgRating?: number; ratingCount?: number }
 type AttendanceData = { attended: number; total: number }
 
 function AttendanceBar({ attended, total }: AttendanceData) {
@@ -650,6 +701,15 @@ function StatGrid({ data, compact, attendance }: { data: StatData; compact?: boo
           <span className="text-sm font-bold tabular-nums" style={{ color: '#facc15' }}>
             {data.mvp} vez{data.mvp !== 1 ? 'es' : ''}
           </span>
+        </div>
+      )}
+      {data.avgRating != null && (
+        <div className="flex items-center gap-3 border-t border-slate-800/60 px-5 py-2.5">
+          <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>star</span>
+          <span className="text-[10px] text-slate-500 uppercase tracking-wide mr-auto">Valoración</span>
+          <span className="text-sm font-bold tabular-nums" style={{ color: '#fbbf24' }}>{data.avgRating.toFixed(1)}</span>
+          <span className="text-[10px] text-slate-600">/ 5</span>
+          {data.ratingCount != null && <span className="text-[9px] text-slate-700">({data.ratingCount} PJ)</span>}
         </div>
       )}
       {attendance && attendance.total > 0 && <AttendanceBar attended={attendance.attended} total={attendance.total} />}

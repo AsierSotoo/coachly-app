@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase-admin'
 import { TeamLogo } from '@/components/team/team-logo'
 import { PlayerAvatar } from '@/components/team/player-avatar'
 import { getTeamTerms } from '@/lib/team-terms'
+import { DownloadImageButton } from '@/components/share/download-image-button'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
@@ -101,12 +102,15 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
               <p className="text-xs" style={{ color: '#adb4ce' }}>{season.name}</p>
             </div>
           </div>
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg overflow-hidden">
-              <Image src="/logo.png" alt="Coachly" width={32} height={32} className="w-full h-full object-cover" />
-            </div>
-            <span className="text-sm font-bold group-hover:underline" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <DownloadImageButton targetId="stats-share-card" filename={`${team.name}-${season.name}`} />
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-8 h-8 rounded-lg overflow-hidden">
+                <Image src="/logo.png" alt="Coachly" width={32} height={32} className="w-full h-full object-cover" />
+              </div>
+              <span className="text-sm font-bold group-hover:underline" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
+            </Link>
+          </div>
         </div>
 
         {total === 0 ? (
@@ -153,6 +157,71 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                 </div>
               )}
             </section>
+
+            {/* Tarjeta para compartir como imagen */}
+            <div id="stats-share-card" style={{ backgroundColor: '#0f172a', borderRadius: 20, padding: 28, width: '100%', fontFamily: 'system-ui, sans-serif' }}>
+              {/* Header de la tarjeta */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: '#191f31', border: '1px solid #2e3447', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
+                  </div>
+                  <div>
+                    <p style={{ color: '#ffffff', fontWeight: 800, fontSize: 16, margin: 0 }}>{team.name}</p>
+                    <p style={{ color: '#adb4ce', fontSize: 11, margin: 0 }}>{season.name}</p>
+                  </div>
+                </div>
+                <p style={{ color: '#4be277', fontWeight: 800, fontSize: 13 }}>Coachly</p>
+              </div>
+
+              {/* Resultado */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                {[
+                  { label: 'V', value: wins, color: '#4be277', bg: 'rgba(34,197,94,0.12)' },
+                  { label: 'E', value: draws, color: '#adb4ce', bg: 'rgba(46,52,71,0.4)' },
+                  { label: 'D', value: losses, color: '#f87171', bg: 'rgba(248,113,113,0.08)' },
+                  { label: 'GF', value: gf, color: '#4be277', bg: 'rgba(34,197,94,0.08)' },
+                  { label: 'GC', value: ga, color: '#f87171', bg: 'rgba(248,113,113,0.08)' },
+                ].map(({ label, value, color, bg }) => (
+                  <div key={label} style={{ flex: 1, backgroundColor: bg, borderRadius: 10, padding: '10px 4px', textAlign: 'center' }}>
+                    <p style={{ color, fontWeight: 800, fontSize: 22, margin: 0 }}>{value}</p>
+                    <p style={{ color: '#64748b', fontSize: 9, fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>{label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Top goleadoras */}
+              {byGoals.slice(0, 3).length > 0 && (
+                <div style={{ marginBottom: 14 }}>
+                  <p style={{ color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Goleadoras</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {byGoals.slice(0, 3).map((p, i) => (
+                      <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ color: i === 0 ? '#4be277' : '#475569', fontSize: 11, fontWeight: 700, width: 14 }}>{i + 1}</span>
+                        <span style={{ color: '#dce1fb', fontSize: 13, fontWeight: 600, flex: 1 }}>{p.name}</span>
+                        <span style={{ color: '#4be277', fontSize: 16, fontWeight: 800 }}>{p.goals}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Forma reciente */}
+              {recentForm.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 12, borderTop: '1px solid #1e293b' }}>
+                  <p style={{ color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Forma</p>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {recentForm.map((r, i) => (
+                      <div key={i} style={{
+                        width: 24, height: 24, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800,
+                        backgroundColor: r === 'V' ? 'rgba(34,197,94,0.2)' : r === 'D' ? 'rgba(248,113,113,0.15)' : 'rgba(148,163,184,0.15)',
+                        color: r === 'V' ? '#4be277' : r === 'D' ? '#f87171' : '#94a3b8',
+                      }}>{r}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Líderes */}
             {(topScorer || topAssist || topMinutes) && (

@@ -11,19 +11,19 @@ export function NavBar({ teams }: { teams: Team[] }) {
   const { teamId, seasonId } = resolveActiveIds(teams, pathname)
 
   const items = [
-    { key: 'home',    href: '/dashboard',                                                                          icon: 'home',           label: 'Inicio' },
-    { key: 'season',  href: seasonId ? `/dashboard/season/${seasonId}` : teamId ? `/dashboard/team/${teamId}/seasons` : '/dashboard', icon: 'calendar_today', label: 'Temporada' },
-    { key: 'players', href: teamId ? `/dashboard/team/${teamId}/players` : '/dashboard',                           icon: 'groups',         label: 'Plantilla' },
-    { key: 'stats',   href: seasonId ? `/dashboard/season/${seasonId}/stats` : '/dashboard',                       icon: 'leaderboard',    label: 'Stats' },
-    { key: 'profile', href: '/dashboard/profile',                                                                  icon: 'person',         label: 'Perfil' },
+    { key: 'home',          href: '/dashboard',                                                                                    icon: 'home',            label: 'Inicio' },
+    { key: 'season',        href: seasonId ? `/dashboard/season/${seasonId}` : teamId ? `/dashboard/team/${teamId}/seasons` : '/dashboard', icon: 'calendar_today',  label: 'Temporada' },
+    { key: 'stats',         href: seasonId ? `/dashboard/season/${seasonId}/stats` : '/dashboard',                              icon: 'leaderboard',     label: 'Stats' },
+    { key: 'disponibilidad',href: teamId ? `/dashboard/team/${teamId}/disponibilidad` : '/dashboard',                           icon: 'event_available', label: 'Disponib.' },
+    { key: 'profile',       href: '/dashboard/profile',                                                                         icon: 'person',          label: 'Perfil' },
   ]
 
   const isActive = (key: string) => {
-    if (key === 'home')    return pathname === '/dashboard'
-    if (key === 'season')  return pathname.startsWith('/dashboard/season') && !pathname.includes('/stats')
-    if (key === 'players') return pathname.startsWith('/dashboard/team')
-    if (key === 'stats')   return pathname.includes('/stats')
-    if (key === 'profile') return pathname.startsWith('/dashboard/profile')
+    if (key === 'home')          return pathname === '/dashboard'
+    if (key === 'season')        return pathname.startsWith('/dashboard/season') && !pathname.includes('/stats') && !pathname.includes('/calendar')
+    if (key === 'stats')         return pathname.includes('/stats')
+    if (key === 'disponibilidad')return pathname.includes('/disponibilidad')
+    if (key === 'profile')       return pathname.startsWith('/dashboard/profile')
     return false
   }
 
@@ -42,7 +42,7 @@ export function NavBar({ teams }: { teams: Team[] }) {
           const active = isActive(item.key)
           return (
             <Link key={item.key} href={item.href}
-              className="relative flex flex-1 flex-col items-center justify-center gap-0.5 h-full transition-colors"
+              className="relative flex flex-1 flex-col items-center justify-center gap-0.5 h-full transition-all active:scale-90 active:opacity-70"
               style={{ color: active ? '#4be277' : '#64748b' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 22, fontVariationSettings: active ? "'FILL' 1, 'wght' 500" : "'FILL' 0, 'wght' 400" }}>
                 {item.icon}

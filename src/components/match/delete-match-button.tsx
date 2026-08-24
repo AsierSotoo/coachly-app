@@ -16,7 +16,7 @@ export function DeleteMatchButton({ matchId, seasonId }: { matchId: string; seas
       <input type="hidden" name="season_id" value={seasonId} />
       <button
         type="submit"
-        className="rounded-lg border border-slate-700 p-1.5 text-slate-600 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400 transition-colors cursor-pointer"
+        className="rounded-lg border border-slate-700 p-1.5 text-slate-600 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400 transition-all active:scale-90 cursor-pointer"
       >
         <span className="material-symbols-outlined" style={{ fontSize: 14 }}>close</span>
       </button>

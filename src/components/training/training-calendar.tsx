@@ -12,6 +12,7 @@ interface Session {
 interface Match {
   id: string; opponent: string; played_at: string
   goals_for: number | null; goals_against: number | null; home: boolean
+  status?: string
 }
 interface Props {
   seasonId: string; teamName: string; teamLogo: string | null
@@ -254,27 +255,38 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                   {sortedM.map(m => {
                     const d = isoDate(m.played_at)
                     const dayStr = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
-                    const played = m.goals_for !== null
-                    const won    = played && m.goals_for! > m.goals_against!
-                    const lost   = played && m.goals_for! < m.goals_against!
+                    const isScheduled = m.status === 'scheduled'
+                    const played = !isScheduled
+                    const won    = played && (m.goals_for ?? 0) > (m.goals_against ?? 0)
+                    const lost   = played && (m.goals_for ?? 0) < (m.goals_against ?? 0)
                     return (
-                      <li key={m.id} className="flex items-center gap-3 px-5 py-3.5">
-                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#f59e0b' }} />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-sm font-bold text-white">{m.home ? 'vs' : '@'} {m.opponent}</p>
-                            {played && (
-                              <span className="text-[10px] font-black px-2 py-0.5 rounded-full"
-                                style={{
-                                  backgroundColor: won ? 'rgba(34,197,94,0.15)' : lost ? 'rgba(248,113,113,0.15)' : 'rgba(148,163,184,0.15)',
-                                  color: won ? '#4be277' : lost ? '#f87171' : '#94a3b8',
-                                }}>
-                                {m.goals_for}-{m.goals_against}
-                              </span>
-                            )}
+                      <li key={m.id}>
+                        <Link href={`/dashboard/season/${seasonId}/match/${m.id}`}
+                          className="flex items-center gap-3 px-5 py-3.5 hover:bg-[#151b2d] transition-colors group">
+                          <span className="w-2 h-2 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: isScheduled ? '#f59e0b' : won ? '#4be277' : lost ? '#f87171' : '#94a3b8' }} />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="text-sm font-bold text-white">{m.home ? 'vs' : '@'} {m.opponent}</p>
+                              {isScheduled ? (
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                  style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>
+                                  Programado
+                                </span>
+                              ) : (
+                                <span className="text-[10px] font-black px-2 py-0.5 rounded-full"
+                                  style={{
+                                    backgroundColor: won ? 'rgba(34,197,94,0.15)' : lost ? 'rgba(248,113,113,0.15)' : 'rgba(148,163,184,0.15)',
+                                    color: won ? '#4be277' : lost ? '#f87171' : '#94a3b8',
+                                  }}>
+                                  {m.goals_for}-{m.goals_against}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs capitalize mt-0.5" style={{ color: '#475569' }}>{dayStr}</p>
                           </div>
-                          <p className="text-xs capitalize mt-0.5" style={{ color: '#475569' }}>{dayStr}</p>
-                        </div>
+                          <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#475569', fontSize: 16 }}>chevron_right</span>
+                        </Link>
                       </li>
                     )
                   })}

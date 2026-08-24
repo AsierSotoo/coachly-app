@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { resolveActiveIds } from './header-title'
+import { PwaInstallButton } from './pwa-install-button'
 
 type Team = { id: string; name: string; seasons: { id: string; created_at: string }[] }
 
@@ -14,11 +15,13 @@ interface Props {
 }
 
 const NAV = [
-  { label: 'Inicio',        icon: 'dashboard',      key: 'home' },
-  { label: 'Temporada',     icon: 'calendar_today', key: 'season' },
-  { label: 'Plantilla',     icon: 'groups',         key: 'players' },
-  { label: 'Estadísticas',  icon: 'leaderboard',    key: 'stats' },
-  { label: 'Perfil',        icon: 'person',         key: 'profile' },
+  { label: 'Inicio',          icon: 'dashboard',       key: 'home' },
+  { label: 'Temporada',       icon: 'calendar_today',  key: 'season' },
+  { label: 'Calendario',      icon: 'calendar_month',  key: 'calendar' },
+  { label: 'Plantilla',       icon: 'groups',          key: 'players' },
+  { label: 'Estadísticas',    icon: 'leaderboard',     key: 'stats' },
+  { label: 'Disponibilidad',  icon: 'event_available', key: 'disponibilidad' },
+  { label: 'Perfil',          icon: 'person',          key: 'profile' },
 ]
 
 export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
@@ -29,20 +32,24 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
   const href = (key: string) => {
     switch (key) {
       case 'home':    return '/dashboard'
-      case 'season':  return seasonId ? `/dashboard/season/${seasonId}` : teamId ? `/dashboard/team/${teamId}/seasons` : '/dashboard'
-      case 'players': return teamId ? `/dashboard/team/${teamId}/players` : '/dashboard'
-      case 'stats':   return seasonId ? `/dashboard/season/${seasonId}/stats` : '/dashboard'
-      case 'profile': return '/dashboard/profile'
+      case 'season':          return seasonId ? `/dashboard/season/${seasonId}` : teamId ? `/dashboard/team/${teamId}/seasons` : '/dashboard'
+      case 'calendar':        return seasonId ? `/dashboard/season/${seasonId}/calendar` : '/dashboard'
+      case 'players':         return teamId ? `/dashboard/team/${teamId}/players` : '/dashboard'
+      case 'stats':           return seasonId ? `/dashboard/season/${seasonId}/stats` : '/dashboard'
+      case 'disponibilidad':  return teamId ? `/dashboard/team/${teamId}/disponibilidad` : '/dashboard'
+      case 'profile':         return '/dashboard/profile'
       default:        return '/dashboard'
     }
   }
 
   const isActive = (key: string) => {
     if (key === 'home')    return pathname === '/dashboard'
-    if (key === 'season')  return pathname.startsWith('/dashboard/season') && !pathname.includes('/stats') && !pathname.includes('/convocatoria')
-    if (key === 'players') return pathname.startsWith('/dashboard/team')
-    if (key === 'stats')   return pathname.includes('/stats')
-    if (key === 'profile') return pathname.startsWith('/dashboard/profile')
+    if (key === 'season')          return pathname.startsWith('/dashboard/season') && !pathname.includes('/stats') && !pathname.includes('/convocatoria') && !pathname.includes('/calendar')
+    if (key === 'calendar')        return pathname.includes('/calendar')
+    if (key === 'players')         return pathname.startsWith('/dashboard/team') && !pathname.includes('/disponibilidad')
+    if (key === 'stats')           return pathname.includes('/stats')
+    if (key === 'disponibilidad')  return pathname.includes('/disponibilidad')
+    if (key === 'profile')         return pathname.startsWith('/dashboard/profile')
     return false
   }
 
@@ -66,12 +73,14 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
           const active = isActive(key)
           return (
             <Link key={key} href={href(key)}
-              className="flex items-center gap-3 px-4 py-3 rounded-none transition-all duration-200 cursor-pointer"
+              className="flex items-center gap-3 px-4 py-3 rounded-none transition-all duration-200 cursor-pointer group"
               style={{
                 color: active ? '#4be277' : '#adb4ce',
-                backgroundColor: active ? 'rgba(0,75,30,0.1)' : 'transparent',
+                backgroundColor: active ? 'rgba(75,226,119,0.07)' : 'transparent',
                 borderRight: active ? '2px solid #4be277' : '2px solid transparent',
-              }}>
+              }}
+              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.03)' }}
+              onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 22 }}>{icon}</span>
               <span className="text-[12px] font-semibold uppercase tracking-[0.05em]">{label}</span>
             </Link>
@@ -79,8 +88,13 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
         })}
       </nav>
 
+      {/* PWA install */}
+      <div className="px-4 pb-3">
+        <PwaInstallButton />
+      </div>
+
       {/* Profile */}
-      <div className="mt-auto px-4 pt-6 border-t border-[#2e3447]/50">
+      <div className="px-4 pt-4 border-t border-[#2e3447]/50">
         <Link href="/dashboard/profile"
           className="flex items-center gap-3 p-2 rounded-xl transition-colors cursor-pointer active:scale-95"
           style={{ backgroundColor: '#23293c' }}>

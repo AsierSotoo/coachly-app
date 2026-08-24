@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase-server'
 import { MatchForm } from '@/components/match/match-form'
 import { RivalLogoUpload } from '@/components/match/rival-logo-upload'
 import { MatchShareCard } from '@/components/match/match-share-card'
+import { DeleteMatchButton } from '@/components/match/delete-match-button'
+import { AvailabilityPicker } from '@/components/match/availability-picker'
 import { PageTransition } from '@/components/ui/page-transition'
 import Link from 'next/link'
 
@@ -22,7 +24,9 @@ export default async function MatchPage({
   const season = match.seasons as { id: string; name: string; teams: { id: string; name: string; gender?: string | null } }
   const team = season.teams
 
-  const [{ data: players }, { data: appearances }, { data: convocatoria }, { data: allMatches }] = await Promise.all([
+  const isScheduledEarly = (match as { status?: string }).status === 'scheduled'
+
+  const [{ data: players }, { data: appearances }, { data: convocatoria }, { data: allMatches }, { data: availRows }] = await Promise.all([
     supabase.from('players').select('*').eq('team_id', team.id).eq('active', true)
       .order('number', { ascending: true, nullsFirst: false }),
     supabase.from('appearances').select('*').eq('match_id', matchId),
@@ -34,6 +38,10 @@ export default async function MatchPage({
       .select('id, opponent, played_at')
       .eq('season_id', seasonId)
       .order('played_at', { ascending: true }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    isScheduledEarly
+      ? (supabase.from('match_availability') as any).select('player_id, status').eq('match_id', matchId)
+      : Promise.resolve({ data: [] }),
   ])
 
   const matchIndex = allMatches?.findIndex(m => m.id === matchId) ?? -1
@@ -59,6 +67,12 @@ export default async function MatchPage({
   })
 
   const sp = await searchParams
+  const isScheduled = isScheduledEarly
+
+  const initialAvailability: Record<string, 'available' | 'unavailable' | 'doubt' | null> = {}
+  for (const row of (availRows as { player_id: string; status: string }[] | null) ?? []) {
+    initialAvailability[row.player_id] = row.status as 'available' | 'unavailable' | 'doubt'
+  }
 
   const playerMap = new Map((players ?? []).map(p => [p.id, p] as [string, typeof p]))
   const scorerApps = (appearances ?? []).filter(a => (a.goals ?? 0) > 0).sort((a, b) => (b.goals ?? 0) - (a.goals ?? 0))
@@ -66,7 +80,39 @@ export default async function MatchPage({
   const redApps    = (appearances ?? []).filter(a => (a.red_cards ?? 0) > 0)
   const mvpId      = (match as { mvp_player_id?: string | null }).mvp_player_id
   const mvpPlayer  = mvpId ? playerMap.get(mvpId) : null
+  const matchNotes = (match as { notes?: string | null }).notes ?? null
   const hasSummary = scorerApps.length > 0 || yellowApps.length > 0 || redApps.length > 0 || !!mvpPlayer
+
+  // Once inicial: agrupa titulares por línea táctica según su posición
+  type StarterInfo = { id: string; name: string; number: number | null; position: string | null; goals: number; yellow: number; red: number; isMvp: boolean }
+  function posLine(pos: string | null): 'gk' | 'def' | 'mid' | 'fwd' {
+    const p = (pos ?? '').toLowerCase()
+    if (p.includes('port')) return 'gk'
+    if (p.includes('def')) return 'def'
+    if (p.includes('centro') || p.includes('medio') || p.includes('campist') || p.includes('mid')) return 'mid'
+    return 'fwd'
+  }
+  const starterList: StarterInfo[] = (appearances ?? [])
+    .filter(a => a.starter && (a.minutes ?? 0) > 0)
+    .map(a => {
+      const p = playerMap.get(a.player_id)
+      if (!p) return null
+      return { id: p.id, name: p.name, number: p.number, position: p.position, goals: a.goals ?? 0, yellow: a.yellow_cards ?? 0, red: a.red_cards ?? 0, isMvp: p.id === mvpId }
+    })
+    .filter((x): x is StarterInfo => x !== null)
+  const subList: StarterInfo[] = (appearances ?? [])
+    .filter(a => !a.starter && (a.minutes ?? 0) > 0)
+    .map(a => {
+      const p = playerMap.get(a.player_id)
+      if (!p) return null
+      return { id: p.id, name: p.name, number: p.number, position: p.position, goals: a.goals ?? 0, yellow: a.yellow_cards ?? 0, red: a.red_cards ?? 0, isMvp: p.id === mvpId }
+    })
+    .filter((x): x is StarterInfo => x !== null)
+  const gkLine  = starterList.filter(p => posLine(p.position) === 'gk')
+  const defLine = starterList.filter(p => posLine(p.position) === 'def')
+  const midLine = starterList.filter(p => posLine(p.position) === 'mid')
+  const fwdLine = starterList.filter(p => posLine(p.position) === 'fwd')
+  const showLineup = !isScheduled && starterList.length > 0
 
   const dateStr = new Date(match.played_at).toLocaleDateString('es-ES', {
     weekday: 'long', day: 'numeric', month: 'long',
@@ -135,6 +181,7 @@ export default async function MatchPage({
                 currentUrl={(match as { rival_logo_url?: string | null }).rival_logo_url}
                 opponentName={match.opponent}
               />
+              <DeleteMatchButton matchId={matchId} seasonId={seasonId} />
               {convocatoriaId && (
                 <Link
                   href={`/dashboard/season/${seasonId}/convocatorias/${convocatoriaId}`}
@@ -144,15 +191,23 @@ export default async function MatchPage({
                   <span className="material-symbols-outlined" style={{ fontSize: 16 }}>groups</span>
                 </Link>
               )}
-              <div className="flex h-10 items-center justify-center rounded-xl border border-slate-700 px-3 font-[family-name:var(--font-heading)] text-lg font-bold text-white">
-                {match.goals_for}–{match.goals_against}
-              </div>
+              {isScheduled ? (
+                <div className="flex h-10 items-center justify-center gap-1.5 rounded-xl border px-3"
+                  style={{ borderColor: 'rgba(251,191,36,0.3)', backgroundColor: 'rgba(251,191,36,0.08)' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#fbbf24' }}>schedule</span>
+                  <span className="text-xs font-bold" style={{ color: '#fbbf24' }}>Programado</span>
+                </div>
+              ) : (
+                <div className="flex h-10 items-center justify-center rounded-xl border border-slate-700 px-3 font-[family-name:var(--font-heading)] text-lg font-bold text-white">
+                  {match.goals_for}–{match.goals_against}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Resumen del partido */}
-        {hasSummary && (
+        {/* Resumen del partido — solo si está finalizado */}
+        {!isScheduled && hasSummary && (
           <div className="mb-6 flex flex-wrap gap-x-6 gap-y-2 rounded-xl border px-4 py-3"
             style={{ borderColor: '#2e3447', backgroundColor: '#151b2d' }}>
             {scorerApps.length > 0 && (
@@ -194,8 +249,100 @@ export default async function MatchPage({
           </div>
         )}
 
+        {/* Notas del partido */}
+        {!isScheduled && matchNotes && (
+          <div className="mb-6 rounded-xl border px-4 py-3 text-sm leading-relaxed"
+            style={{ borderColor: '#2e3447', backgroundColor: '#151b2d', color: '#adb4ce', whiteSpace: 'pre-line' }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: '#475569' }}>
+              Análisis post-partido
+            </p>
+            {matchNotes}
+          </div>
+        )}
+
+        {isScheduled && players && players.length > 0 && (
+          <div className="mb-6">
+            <AvailabilityPicker
+              matchId={matchId}
+              seasonId={seasonId}
+              players={sortedPlayers}
+              initialAvailability={initialAvailability}
+            />
+          </div>
+        )}
+
+        {/* ── Once inicial visual ────────────────────────────────── */}
+        {showLineup && (
+          <div className="mb-6 overflow-hidden rounded-2xl border border-slate-800">
+            <div className="flex items-center gap-2 px-4 py-2.5 border-b border-slate-800" style={{ backgroundColor: '#151b2d' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#4be277' }}>sports_soccer</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Once inicial · {starterList.length} titulares{subList.length > 0 ? ` · ${subList.length} suplentes` : ''}</p>
+            </div>
+            {/* Campo de fútbol */}
+            <div className="relative select-none" style={{ backgroundColor: '#1a5232', minHeight: 260 }}>
+              {/* Marcas del campo */}
+              <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.15 }}>
+                <div className="absolute left-0 right-0" style={{ top: '50%', height: 1, backgroundColor: 'white' }} />
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white" style={{ width: 70, height: 70 }} />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 border-t border-l border-r border-white" style={{ width: '55%', height: '20%' }} />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 border-b border-l border-r border-white" style={{ width: '55%', height: '20%' }} />
+              </div>
+              {/* Líneas del campo */}
+              <div className="absolute inset-0 flex flex-col justify-between py-4 px-2">
+                {/* Delantera */}
+                {fwdLine.length > 0 && (
+                  <div className="flex justify-evenly">
+                    {fwdLine.map(p => <PitchPlayer key={p.id} p={p} />)}
+                  </div>
+                )}
+                {/* Centrocampistas */}
+                {midLine.length > 0 && (
+                  <div className="flex justify-evenly">
+                    {midLine.map(p => <PitchPlayer key={p.id} p={p} />)}
+                  </div>
+                )}
+                {/* Defensas */}
+                {defLine.length > 0 && (
+                  <div className="flex justify-evenly">
+                    {defLine.map(p => <PitchPlayer key={p.id} p={p} />)}
+                  </div>
+                )}
+                {/* Portera */}
+                {gkLine.length > 0 && (
+                  <div className="flex justify-center">
+                    {gkLine.map(p => <PitchPlayer key={p.id} p={p} />)}
+                  </div>
+                )}
+                {/* Si no hay categorías, mostrar en grid simple */}
+                {fwdLine.length === 0 && midLine.length === 0 && defLine.length === 0 && gkLine.length === 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 my-auto">
+                    {starterList.map(p => <PitchPlayer key={p.id} p={p} />)}
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Suplentes */}
+            {subList.length > 0 && (
+              <div className="px-4 py-3 border-t border-slate-800" style={{ backgroundColor: '#0f1629' }}>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mb-2">Suplentes</p>
+                <div className="flex flex-wrap gap-2">
+                  {subList.map(p => (
+                    <span key={p.id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] border border-slate-700 font-medium" style={{ color: '#adb4ce', backgroundColor: '#191f31' }}>
+                      {p.number != null && <span className="text-[9px] text-slate-600">#{p.number}</span>}
+                      {p.name.split(' ')[0]}
+                      {p.goals > 0 && <span className="text-[10px]" style={{ color: '#4be277' }}>⚽{p.goals > 1 ? `×${p.goals}` : ''}</span>}
+                      {p.yellow > 0 && <span className="inline-block w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: '#facc15' }} />}
+                      {p.red > 0 && <span className="inline-block w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: '#f87171' }} />}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <MatchForm
-          match={match}
+          match={{ ...match, competition_type: (match as { competition_type?: string | null }).competition_type ?? null }}
           players={sortedPlayers}
           appearances={appearances ?? []}
           seasonId={seasonId}
@@ -203,10 +350,11 @@ export default async function MatchPage({
           teamGender={team.gender}
           saved={!!sp.saved}
           convocatoriaStatuses={Object.keys(convocatoriaStatuses).length > 0 ? convocatoriaStatuses : undefined}
+          isScheduled={isScheduled}
         />
 
-        {/* Tarjeta compartible */}
-        <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+        {/* Tarjeta compartible — solo si está finalizado */}
+        {!isScheduled && <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
             <h3 className="text-[16px] font-semibold text-white mb-4" style={{ fontFamily: 'Sora, sans-serif' }}>
               Compartir resultado
             </h3>
@@ -225,8 +373,28 @@ export default async function MatchPage({
               }))}
               mvpName={mvpPlayer?.name ?? null}
             />
-          </section>
+          </section>}
       </main>
     </PageTransition>
+  )
+}
+
+function PitchPlayer({ p }: { p: { name: string; number: number | null; goals: number; yellow: number; red: number; isMvp: boolean } }) {
+  return (
+    <div className="flex flex-col items-center gap-0.5 min-w-[44px]">
+      <div className="relative w-9 h-9 rounded-full border-2 flex items-center justify-center text-[11px] font-black"
+        style={{ borderColor: p.isMvp ? '#fbbf24' : '#4be277', backgroundColor: p.isMvp ? 'rgba(251,191,36,0.2)' : 'rgba(75,226,119,0.15)', color: 'white' }}>
+        {p.number ?? '?'}
+        {p.isMvp && (
+          <span className="absolute -top-1.5 -right-1.5 text-[10px]">★</span>
+        )}
+      </div>
+      <p className="text-[9px] font-semibold text-white text-center leading-tight max-w-[50px] truncate">{p.name.split(' ')[0]}</p>
+      <div className="flex items-center gap-0.5">
+        {p.goals > 0 && <span className="text-[9px]" style={{ color: '#4be277' }}>⚽{p.goals > 1 ? `×${p.goals}` : ''}</span>}
+        {p.yellow > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px]" style={{ backgroundColor: '#facc15' }} />}
+        {p.red > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px]" style={{ backgroundColor: '#f87171' }} />}
+      </div>
+    </div>
   )
 }
