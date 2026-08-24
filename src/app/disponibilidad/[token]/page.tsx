@@ -1,7 +1,15 @@
 import type { Metadata } from 'next'
-import { createAdminClient } from '@/lib/supabase-admin'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { setPublicAvailabilityForm } from '@/lib/public-availability-actions'
 import Image from 'next/image'
+
+// Cliente anónimo — usa las RLS públicas, no necesita service role key
+function createPublicClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  )
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -16,7 +24,7 @@ type EventInfo =
   | { type: 'training'; id: string; title: string; date: string; subtitle: string; teamId: string; teamName: string; teamLogo: string | null; rivalLogo: null }
 
 async function resolveEvent(token: string): Promise<EventInfo | null> {
-  const supabase = createAdminClient()
+  const supabase = createPublicClient()
 
   // Buscar en partidos
   const { data: match } = await (supabase.from('matches') as any)
@@ -82,8 +90,9 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
       description,
       siteName: 'Coachly',
       type: 'website',
+      images: [{ url: 'https://coachly-inicio.vercel.app/logo.png', width: 512, height: 512 }],
     },
-    twitter: { card: 'summary', title, description },
+    twitter: { card: 'summary', title, description, images: ['https://coachly-inicio.vercel.app/logo.png'] },
   }
 }
 
@@ -112,7 +121,7 @@ export default async function PublicAvailabilityPage({
     )
   }
 
-  const supabase = createAdminClient()
+  const supabase = createPublicClient()
 
   // Jugadoras activas del equipo
   const { data: players } = await supabase
