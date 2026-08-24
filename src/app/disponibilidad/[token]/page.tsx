@@ -90,9 +90,9 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
       description,
       siteName: 'Coachly',
       type: 'website',
-      images: [{ url: 'https://coachly-inicio.vercel.app/logo.png', width: 512, height: 512 }],
+      images: [{ url: 'https://coachly-inicio.vercel.app/icons/icon-512.png', width: 512, height: 512 }],
     },
-    twitter: { card: 'summary', title, description, images: ['https://coachly-inicio.vercel.app/logo.png'] },
+    twitter: { card: 'summary', title, description, images: ['https://coachly-inicio.vercel.app/icons/icon-512.png'] },
   }
 }
 

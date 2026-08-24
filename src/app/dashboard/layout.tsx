@@ -22,7 +22,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       ? supabase.from('users').select('name, avatar_url').eq('id', user.id).single()
       : Promise.resolve({ data: null }),
     user
-      ? supabase.from('teams').select('id, name, seasons(id, created_at)').order('created_at', { ascending: true })
+      ? (supabase.from('teams') as any).select('id, name, availability_enabled, seasons(id, created_at)').order('created_at', { ascending: true })
       : Promise.resolve({ data: null }),
   ])
 
@@ -30,7 +30,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const initial = displayName.charAt(0).toUpperCase()
   const avatarUrl = (profile as { name?: string; avatar_url?: string } | null)?.avatar_url
 
-  type TeamData = { id: string; name: string; seasons: { id: string; created_at: string }[] }
+  type TeamData = { id: string; name: string; availability_enabled: boolean; seasons: { id: string; created_at: string }[] }
   const teams = (teamsRaw ?? []) as TeamData[]
 
   return (

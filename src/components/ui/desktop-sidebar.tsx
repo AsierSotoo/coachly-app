@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { resolveActiveIds } from './header-title'
 import { PwaInstallButton } from './pwa-install-button'
 
-type Team = { id: string; name: string; seasons: { id: string; created_at: string }[] }
+type Team = { id: string; name: string; availability_enabled?: boolean; seasons: { id: string; created_at: string }[] }
 
 interface Props {
   teams: Team[]
@@ -14,20 +14,24 @@ interface Props {
   avatarUrl?: string | null
 }
 
-const NAV = [
-  { label: 'Inicio',          icon: 'dashboard',       key: 'home' },
-  { label: 'Temporada',       icon: 'calendar_today',  key: 'season' },
-  { label: 'Calendario',      icon: 'calendar_month',  key: 'calendar' },
-  { label: 'Plantilla',       icon: 'groups',          key: 'players' },
-  { label: 'Estadísticas',    icon: 'leaderboard',     key: 'stats' },
-  { label: 'Disponibilidad',  icon: 'event_available', key: 'disponibilidad' },
-  { label: 'Perfil',          icon: 'person',          key: 'profile' },
+const BASE_NAV = [
+  { label: 'Inicio',         icon: 'dashboard',       key: 'home' },
+  { label: 'Temporada',      icon: 'calendar_today',  key: 'season' },
+  { label: 'Calendario',     icon: 'calendar_month',  key: 'calendar' },
+  { label: 'Plantilla',      icon: 'groups',          key: 'players' },
+  { label: 'Estadísticas',   icon: 'leaderboard',     key: 'stats' },
+  { label: 'Disponibilidad', icon: 'event_available', key: 'disponibilidad' },
+  { label: 'Perfil',         icon: 'person',          key: 'profile' },
 ]
 
 export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
   const pathname = usePathname()
   const { teamId, seasonId } = resolveActiveIds(teams, pathname)
   const initial = displayName.charAt(0).toUpperCase()
+
+  const currentTeam = teams.find(t => t.id === teamId)
+  const availEnabled = currentTeam?.availability_enabled ?? false
+  const NAV = BASE_NAV.filter(item => item.key !== 'disponibilidad' || availEnabled)
 
   const href = (key: string) => {
     switch (key) {

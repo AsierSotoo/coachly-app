@@ -4,19 +4,23 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { resolveActiveIds } from './header-title'
 
-type Team = { id: string; name: string; seasons: { id: string; created_at: string }[] }
+type Team = { id: string; name: string; availability_enabled?: boolean; seasons: { id: string; created_at: string }[] }
 
 export function NavBar({ teams }: { teams: Team[] }) {
   const pathname = usePathname()
   const { teamId, seasonId } = resolveActiveIds(teams, pathname)
 
-  const items = [
-    { key: 'home',          href: '/dashboard',                                                                                    icon: 'home',            label: 'Inicio' },
-    { key: 'season',        href: seasonId ? `/dashboard/season/${seasonId}` : teamId ? `/dashboard/team/${teamId}/seasons` : '/dashboard', icon: 'calendar_today',  label: 'Temporada' },
-    { key: 'stats',         href: seasonId ? `/dashboard/season/${seasonId}/stats` : '/dashboard',                              icon: 'leaderboard',     label: 'Stats' },
-    { key: 'disponibilidad',href: teamId ? `/dashboard/team/${teamId}/disponibilidad` : '/dashboard',                           icon: 'event_available', label: 'Disponib.' },
-    { key: 'profile',       href: '/dashboard/profile',                                                                         icon: 'person',          label: 'Perfil' },
+  const currentTeam = teams.find(t => t.id === teamId)
+  const availEnabled = currentTeam?.availability_enabled ?? false
+
+  const allItems = [
+    { key: 'home',           href: '/dashboard',                                                                                    icon: 'home',            label: 'Inicio' },
+    { key: 'season',         href: seasonId ? `/dashboard/season/${seasonId}` : teamId ? `/dashboard/team/${teamId}/seasons` : '/dashboard', icon: 'calendar_today',  label: 'Temporada' },
+    { key: 'stats',          href: seasonId ? `/dashboard/season/${seasonId}/stats` : '/dashboard',                              icon: 'leaderboard',     label: 'Stats' },
+    { key: 'disponibilidad', href: teamId ? `/dashboard/team/${teamId}/disponibilidad` : '/dashboard',                           icon: 'event_available', label: 'Disponib.' },
+    { key: 'profile',        href: '/dashboard/profile',                                                                         icon: 'person',          label: 'Perfil' },
   ]
+  const items = allItems.filter(item => item.key !== 'disponibilidad' || availEnabled)
 
   const isActive = (key: string) => {
     if (key === 'home')          return pathname === '/dashboard'
