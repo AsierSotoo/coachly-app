@@ -50,7 +50,7 @@ export async function saveAppearances(formData: FormData) {
     match_id: string; player_id: string; starter: boolean
     minutes: number; goals: number; assists: number
     yellow_cards: number; red_cards: number; rating: number | null
-    pitch_position: string | null
+    pitch_position?: string | null
   }
   const appearances: Appearance[] = playerIds.flatMap(playerId => {
     const status = formData.get(`status_${playerId}`) as string
@@ -66,7 +66,8 @@ export async function saveAppearances(formData: FormData) {
       yellow_cards: Number(formData.get(`yellow_${playerId}`) ?? 0),
       red_cards: Number(formData.get(`red_${playerId}`) ?? 0),
       rating: ratingVal > 0 ? ratingVal : null,
-      pitch_position: pitchPositions[playerId] ?? null,
+      // solo si hay formación seleccionada — evita error si la columna aún no existe
+      ...(formation ? { pitch_position: pitchPositions[playerId] ?? null } : {}),
     }]
   })
 
@@ -89,7 +90,8 @@ export async function saveAppearances(formData: FormData) {
     goals_against: Number(formData.get('goals_against') ?? 0),
     notes: (formData.get('notes') as string) || null,
     mvp_player_id: (formData.get('mvp_player_id') as string) || null,
-    formation,
+    // solo si hay formación seleccionada — evita error si la columna aún no existe
+    ...(formation ? { formation } : {}),
     ...(newStatus === 'finished' ? { status: 'finished' } : {}),
   }
   const { error: matchError } = await supabase.from('matches').update(updateData).eq('id', matchId)
