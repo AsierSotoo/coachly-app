@@ -199,7 +199,9 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         for (const a of appearances) {
           if (a.pitch_position) defaultPositions[a.pitch_position] = a.player_id
         }
-        const activePlayers = players.filter(p => p.active)
+        const activePlayers = players.filter(p => p.active).map(p => ({
+          id: p.id, name: p.name, number: p.number, position: p.position,
+        }))
         return (
           <FormationEditor
             players={activePlayers}
