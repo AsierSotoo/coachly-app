@@ -121,20 +121,9 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
               {line.map(slot => {
                 const pid = positions[slot.id] ?? ''
                 const isAssigned = !!pid
-
-                // Separar jugadoras por si encajan en la posición o no
                 const suggested = players.filter(p => matchesSlot(p.position, slot.id))
                 const others    = players.filter(p => !matchesSlot(p.position, slot.id))
-
-                function renderOption(p: Player) {
-                  const isElsewhere = assignedSlots.has(p.id) && assignedSlots.get(p.id) !== slot.id
-                  const label = `${p.number != null ? `#${p.number} ` : ''}${p.name.split(' ')[0]}`
-                  return (
-                    <option key={p.id} value={p.id} disabled={isElsewhere}>
-                      {isElsewhere ? `↳ ${label}` : label}
-                    </option>
-                  )
-                }
+                const hasBothGroups = suggested.length > 0 && others.length > 0
 
                 return (
                   <div key={slot.id} className="flex-1 min-w-0 flex flex-col gap-1">
@@ -157,17 +146,17 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
                       }}
                     >
                       <option value="">—</option>
-                      {suggested.length > 0 && others.length > 0 ? (
+                      {hasBothGroups ? (
                         <>
                           <optgroup label="Sugeridas">
-                            {suggested.map(renderOption)}
+                            {suggested.map(p => <PlayerOption key={p.id} p={p} slotId={slot.id} assignedSlots={assignedSlots} />)}
                           </optgroup>
                           <optgroup label="Otras">
-                            {others.map(renderOption)}
+                            {others.map(p => <PlayerOption key={p.id} p={p} slotId={slot.id} assignedSlots={assignedSlots} />)}
                           </optgroup>
                         </>
                       ) : (
-                        players.map(renderOption)
+                        players.map(p => <PlayerOption key={p.id} p={p} slotId={slot.id} assignedSlots={assignedSlots} />)
                       )}
                     </select>
                   </div>
@@ -182,5 +171,21 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
         </div>
       )}
     </section>
+  )
+}
+
+function PlayerOption({
+  p, slotId, assignedSlots,
+}: {
+  p: Player
+  slotId: string
+  assignedSlots: Map<string, string>
+}) {
+  const isElsewhere = assignedSlots.has(p.id) && assignedSlots.get(p.id) !== slotId
+  const label = `${p.number != null ? `#${p.number} ` : ''}${p.name.split(' ')[0]}`
+  return (
+    <option value={p.id} disabled={isElsewhere}>
+      {isElsewhere ? `↳ ${label}` : label}
+    </option>
   )
 }
