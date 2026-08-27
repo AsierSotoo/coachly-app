@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase-server'
+import { getFormationSlots } from '@/lib/formations'
 
 export async function createMatch(formData: FormData) {
   const supabase = await createClient()
@@ -34,11 +35,22 @@ export async function saveAppearances(formData: FormData) {
   const seasonId = formData.get('season_id') as string
   const playerIds = (formData.get('player_ids') as string).split(',').filter(Boolean)
 
+  // Formación táctica y asignación de posiciones
+  const formation = (formData.get('formation') as string) || null
+  const pitchPositions: Record<string, string> = {} // playerId → slotId
+  if (formation) {
+    for (const slot of getFormationSlots(formation)) {
+      const pid = formData.get(`pos_${slot.id}`) as string
+      if (pid) pitchPositions[pid] = slot.id
+    }
+  }
+
   // Upsert appearances por cada jugadora
   type Appearance = {
     match_id: string; player_id: string; starter: boolean
     minutes: number; goals: number; assists: number
     yellow_cards: number; red_cards: number; rating: number | null
+    pitch_position: string | null
   }
   const appearances: Appearance[] = playerIds.flatMap(playerId => {
     const status = formData.get(`status_${playerId}`) as string
@@ -54,6 +66,7 @@ export async function saveAppearances(formData: FormData) {
       yellow_cards: Number(formData.get(`yellow_${playerId}`) ?? 0),
       red_cards: Number(formData.get(`red_${playerId}`) ?? 0),
       rating: ratingVal > 0 ? ratingVal : null,
+      pitch_position: pitchPositions[playerId] ?? null,
     }]
   })
 
@@ -76,14 +89,23 @@ export async function saveAppearances(formData: FormData) {
     goals_against: Number(formData.get('goals_against') ?? 0),
     notes: (formData.get('notes') as string) || null,
     mvp_player_id: (formData.get('mvp_player_id') as string) || null,
+    formation,
     ...(newStatus === 'finished' ? { status: 'finished' } : {}),
   }
-  await supabase.from('matches').update(updateData).eq('id', matchId)
+  const { error: matchError } = await supabase.from('matches').update(updateData).eq('id', matchId)
+  if (matchError) {
+    console.error('[saveAppearances] match update error:', matchError)
+    redirect(`/dashboard/season/${seasonId}/match/${matchId}?error=${encodeURIComponent(matchError.message)}`)
+  }
 
   if (appearances.length > 0) {
-    await supabase
+    const { error: upsertError } = await supabase
       .from('appearances')
       .upsert(appearances, { onConflict: 'match_id,player_id' })
+    if (upsertError) {
+      console.error('[saveAppearances] appearances upsert error:', upsertError)
+      redirect(`/dashboard/season/${seasonId}/match/${matchId}?error=${encodeURIComponent(upsertError.message)}`)
+    }
   }
 
   // Borrar apariciones de jugadoras marcadas como no convocadas
@@ -97,6 +119,7 @@ export async function saveAppearances(formData: FormData) {
   }
 
   revalidatePath(`/dashboard/season/${seasonId}`)
+  revalidatePath(`/dashboard/season/${seasonId}/match/${matchId}`)
   revalidatePath(`/dashboard/season/${seasonId}/stats`)
   redirect(`/dashboard/season/${seasonId}/match/${matchId}?saved=1`)
 }

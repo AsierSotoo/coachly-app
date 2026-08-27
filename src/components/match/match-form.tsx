@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { PlayerRow } from './player-row'
 import { PlayerRowDesktop } from './player-row-desktop'
+import { FormationEditor } from './formation-editor'
 import { saveAppearances } from '@/app/dashboard/season/actions'
 import { motion } from 'framer-motion'
 import { getTeamTerms } from '@/lib/team-terms'
@@ -26,6 +27,7 @@ interface Appearance {
   yellow_cards: number
   red_cards: number
   rating?: number | null
+  pitch_position?: string | null
 }
 
 interface Match {
@@ -39,6 +41,7 @@ interface Match {
   goals_against: number
   notes: string | null
   mvp_player_id: string | null
+  formation?: string | null
 }
 
 interface MatchFormProps {
@@ -56,10 +59,20 @@ interface MatchFormProps {
 export function MatchForm({ match, players, appearances, seasonId, teamName, teamGender, saved, convocatoriaStatuses, isScheduled }: MatchFormProps) {
   const appearanceMap = new Map(appearances.map(a => [a.player_id, a]))
   const terms = getTeamTerms(teamGender)
-  const isFirstEntry = !convocatoriaStatuses && appearances.length === 0
+  const isFirstEntry = !isScheduled && !convocatoriaStatuses && appearances.length === 0
 
   const formRef = useRef<HTMLFormElement>(null)
   const [liveGoals, setLiveGoals] = useState(() => appearances.reduce((s, a) => s + a.goals, 0))
+
+  // Determinar viewport para evitar inputs duplicados en el formulario
+  // (desktop y móvil usan el mismo nombre de campo — solo uno debe estar en el DOM)
+  const [isMobile, setIsMobile] = useState<boolean | null>(null)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   function recalcGoals() {
     if (!formRef.current) return
@@ -166,7 +179,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
         <div className="flex items-center gap-2 mb-3">
           <span className="material-symbols-outlined" style={{ color: '#facc15', fontSize: 18 }}>star</span>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Jugadora del partido</h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)} del partido</h2>
         </div>
         <select name="mvp_player_id" defaultValue={match.mvp_player_id ?? ''}
           className="w-full h-11 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm appearance-none focus:border-green-500/60 focus:outline-none transition-colors"
@@ -180,6 +193,22 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         </select>
       </section>
 
+      {/* Táctica / Alineación */}
+      {!isScheduled && (() => {
+        const defaultPositions: Record<string, string> = {}
+        for (const a of appearances) {
+          if (a.pitch_position) defaultPositions[a.pitch_position] = a.player_id
+        }
+        const activePlayers = players.filter(p => p.active)
+        return (
+          <FormationEditor
+            players={activePlayers}
+            defaultFormation={match.formation}
+            defaultPositions={defaultPositions}
+          />
+        )
+      })()}
+
       {/* Aviso primera vez sin convocatoria */}
       {isFirstEntry && (
         <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 px-4 py-3 flex items-start gap-3">
@@ -192,52 +221,58 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       )}
 
       {/* ── TABLA DESKTOP ─────────────────────────────────── */}
-      <section className="hidden lg:block">
-        <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-          {/* Cabecera tabla */}
-          <div className="grid grid-cols-[2.5rem_1fr_6rem_4.5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 border-b border-slate-800 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest">
-            <span className="text-slate-600">#</span>
-            <span className="text-slate-600">{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}</span>
-            <span className="text-center text-slate-600">Estado</span>
-            <span className="text-center text-slate-500">Min</span>
-            <span className="text-center text-green-500/70">G</span>
-            <span className="text-center text-blue-400/70">Ast</span>
-            <span className="text-center text-yellow-400/70">Am</span>
-            <span className="text-center text-red-400/70">Rj</span>
-            <span className="text-center text-amber-400/70">Val</span>
+      {/* Solo se renderiza en desktop para evitar inputs duplicados con nombres iguales */}
+      {(isMobile === null || !isMobile) && (
+        <section className="hidden lg:block">
+          <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+            {/* Cabecera tabla */}
+            <div className="grid grid-cols-[2.5rem_1fr_6rem_4.5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 border-b border-slate-800 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest">
+              <span className="text-slate-600">#</span>
+              <span className="text-slate-600">{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}</span>
+              <span className="text-center text-slate-600">Estado</span>
+              <span className="text-center text-slate-500">Min</span>
+              <span className="text-center text-green-500/70">G</span>
+              <span className="text-center text-blue-400/70">Ast</span>
+              <span className="text-center text-yellow-400/70">Am</span>
+              <span className="text-center text-red-400/70">Rj</span>
+              <span className="text-center text-amber-400/70">Val</span>
+            </div>
+            <div>
+              {players.map((player, i) => (
+                <PlayerRowDesktop
+                  key={player.id}
+                  player={player}
+                  appearance={appearanceMap.get(player.id)}
+                  convocatoriaStatus={convocatoriaStatuses?.[player.id]}
+                  isLast={i === players.length - 1}
+                />
+              ))}
+            </div>
           </div>
-          <div>
-            {players.map((player, i) => (
-              <PlayerRowDesktop
-                key={player.id}
-                player={player}
-                appearance={appearanceMap.get(player.id)}
-                convocatoriaStatus={convocatoriaStatuses?.[player.id]}
-                isLast={i === players.length - 1}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── CARDS MÓVIL ───────────────────────────────────── */}
-      <section className="lg:hidden">
-        <div className="flex items-center gap-4 text-xs text-slate-500 px-1 mb-3">
-          {[['T','Titular','bg-green-500'],['S','Suplente','bg-slate-500'],['–',`No ${terms.called}`,'bg-slate-700']].map(([k,l,c]) => (
-            <span key={k} className="flex items-center gap-1.5">
-              <span className={`flex h-5 w-6 items-center justify-center rounded ${c} text-[10px] font-bold text-white`}>{k}</span>{l}
-            </span>
-          ))}
-        </div>
-        <motion.div className="flex flex-col gap-3" initial="hidden" animate="show"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04 } } }}>
-          {players.map((player) => (
-            <motion.div key={player.id} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.25, ease: 'easeOut' } } }}>
-              <PlayerRow player={player} appearance={appearanceMap.get(player.id)} convocatoriaStatus={convocatoriaStatuses?.[player.id]} />
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+      {/* Solo se renderiza en móvil para evitar inputs duplicados con nombres iguales */}
+      {(isMobile === null || isMobile) && (
+        <section className="lg:hidden">
+          <div className="flex items-center gap-4 text-xs text-slate-500 px-1 mb-3">
+            {[['T','Titular','bg-green-500'],['S','Suplente','bg-slate-500'],['–',`No ${terms.called}`,'bg-slate-700']].map(([k,l,c]) => (
+              <span key={k} className="flex items-center gap-1.5">
+                <span className={`flex h-5 w-6 items-center justify-center rounded ${c} text-[10px] font-bold text-white`}>{k}</span>{l}
+              </span>
+            ))}
+          </div>
+          <motion.div className="flex flex-col gap-3" initial="hidden" animate="show"
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04 } } }}>
+            {players.map((player) => (
+              <motion.div key={player.id} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.25, ease: 'easeOut' } } }}>
+                <PlayerRow player={player} appearance={appearanceMap.get(player.id)} convocatoriaStatus={convocatoriaStatuses?.[player.id]} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+      )}
 
       {/* Guardar / Finalizar */}
       <button type="submit"

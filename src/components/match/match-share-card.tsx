@@ -5,6 +5,12 @@ import { toPng } from 'html-to-image'
 
 type Scorer = { name: string; goals: number }
 
+type LineupSlot = { label: string; player: { name: string; number: number | null } | null }
+type LineupData = {
+  formation: string
+  lines: LineupSlot[][]
+}
+
 type Props = {
   teamName: string
   logoUrl?: string | null
@@ -16,6 +22,7 @@ type Props = {
   scorers: Scorer[]
   mvpName?: string | null
   competition?: string | null
+  lineupData?: LineupData | null
 }
 
 function teamInitials(name: string) {
@@ -24,13 +31,14 @@ function teamInitials(name: string) {
 
 export function MatchShareCard({
   teamName, logoUrl, opponent, goalsFor, goalsAgainst,
-  playedAt, home, scorers, mvpName, competition,
+  playedAt, home, scorers, mvpName, competition, lineupData,
 }: Props) {
   const [loading, setLoading] = useState(false)
+  const [showLineup, setShowLineup] = useState(false)
 
   const result = goalsFor > goalsAgainst ? 'V' : goalsFor < goalsAgainst ? 'D' : 'E'
   const resultColor = result === 'V' ? '#4be277' : result === 'D' ? '#ffb4ab' : '#adb4ce'
-  const dateLabel = new Date(playedAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  const dateLabel = new Date(playedAt + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
 
   async function share() {
     const el = document.getElementById('match-share-card')
@@ -62,6 +70,32 @@ export function MatchShareCard({
 
   return (
     <div className="flex flex-col gap-3">
+      {/* Toggle alineación — solo si hay datos */}
+      {lineupData && (
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowLineup(v => !v)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all active:scale-95"
+            style={{
+              backgroundColor: showLineup ? 'rgba(75,226,119,0.1)' : 'transparent',
+              borderColor: showLineup ? 'rgba(75,226,119,0.4)' : '#2e3447',
+              color: showLineup ? '#4be277' : '#64748b',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: showLineup ? "'FILL' 1" : "'FILL' 0" }}>
+              sports
+            </span>
+            {showLineup ? 'Alineación incluida' : 'Incluir alineación'}
+          </button>
+          {showLineup && (
+            <span className="text-[10px]" style={{ color: '#475569' }}>
+              {lineupData.formation}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Tarjeta */}
       <div
         id="match-share-card"
@@ -148,6 +182,47 @@ export function MatchShareCard({
           <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 14 }}>⭐</span>
             <span style={{ color: '#fbbf24', fontSize: 12, fontWeight: 700 }}>MVP: {mvpName.split(' ')[0]}</span>
+          </div>
+        )}
+
+        {/* Alineación (opcional) */}
+        {showLineup && lineupData && (
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ height: 1, backgroundColor: '#1e293b', marginBottom: 14 }} />
+            <p style={{ color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 10px' }}>
+              Alineación · {lineupData.formation}
+            </p>
+            {/* Campo mini */}
+            <div style={{
+              backgroundColor: '#1a5232', borderRadius: 10, padding: '10px 8px',
+              display: 'flex', flexDirection: 'column', gap: 8,
+            }}>
+              {lineupData.lines.map((line, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-evenly', gap: 4 }}>
+                  {line.map((slot, j) => (
+                    <div key={j} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, minWidth: 36, maxWidth: 52, flex: 1 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: '50%',
+                        border: slot.player ? '1.5px solid rgba(75,226,119,0.5)' : '1.5px dashed rgba(75,226,119,0.2)',
+                        backgroundColor: slot.player ? 'rgba(75,226,119,0.12)' : 'rgba(75,226,119,0.03)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 9, fontWeight: 800, color: slot.player ? 'white' : 'rgba(75,226,119,0.3)',
+                      }}>
+                        {slot.player ? (slot.player.number ?? slot.label) : slot.label}
+                      </div>
+                      <span style={{
+                        color: slot.player ? '#adb4ce' : 'rgba(255,255,255,0.15)',
+                        fontSize: 8, textAlign: 'center',
+                        overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+                        maxWidth: 44,
+                      }}>
+                        {slot.player ? slot.player.name.split(' ')[0] : '—'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

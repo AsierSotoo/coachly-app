@@ -5,14 +5,16 @@ import { RivalLogoUpload } from '@/components/match/rival-logo-upload'
 import { MatchShareCard } from '@/components/match/match-share-card'
 import { DeleteMatchButton } from '@/components/match/delete-match-button'
 import { AvailabilityPicker } from '@/components/match/availability-picker'
+import { AvailabilityCoachCard } from '@/components/disponibilidad/availability-coach-card'
 import { PageTransition } from '@/components/ui/page-transition'
+import { getFormation } from '@/lib/formations'
 import Link from 'next/link'
 
 export default async function MatchPage({
   params, searchParams,
 }: {
   params: Promise<{ id: string; matchId: string }>
-  searchParams: Promise<{ saved?: string }>
+  searchParams: Promise<{ saved?: string; error?: string }>
 }) {
   const { id: seasonId, matchId } = await params
   const supabase = await createClient()
@@ -21,7 +23,7 @@ export default async function MatchPage({
     .from('matches').select('*, seasons(*, teams(*))').eq('id', matchId).single()
   if (!match) notFound()
 
-  const season = match.seasons as { id: string; name: string; teams: { id: string; name: string; gender?: string | null } }
+  const season = match.seasons as { id: string; name: string; teams: { id: string; name: string; gender?: string | null; availability_enabled?: boolean } }
   const team = season.teams
 
   const isScheduledEarly = (match as { status?: string }).status === 'scheduled'
@@ -39,9 +41,7 @@ export default async function MatchPage({
       .eq('season_id', seasonId)
       .order('played_at', { ascending: true }),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    isScheduledEarly
-      ? (supabase.from('match_availability') as any).select('player_id, status').eq('match_id', matchId)
-      : Promise.resolve({ data: [] }),
+    (supabase.from('match_availability') as any).select('player_id, status').eq('match_id', matchId),
   ])
 
   const matchIndex = allMatches?.findIndex(m => m.id === matchId) ?? -1
@@ -114,13 +114,51 @@ export default async function MatchPage({
   const fwdLine = starterList.filter(p => posLine(p.position) === 'fwd')
   const showLineup = !isScheduled && starterList.length > 0
 
-  const dateStr = new Date(match.played_at).toLocaleDateString('es-ES', {
+  // Visualización táctica con formación
+  const matchFormation = (match as unknown as { formation?: string | null }).formation ?? null
+  const formationDef = matchFormation ? getFormation(matchFormation) : null
+  type FormationLine = (StarterInfo | null)[]
+  let formationLines: FormationLine[] | null = null
+  if (formationDef && showLineup) {
+    // Mapa: slotId → StarterInfo
+    const pitchMap = new Map<string, StarterInfo>(
+      (appearances ?? [])
+        .map(a => {
+          const slot = (a as unknown as { pitch_position?: string | null }).pitch_position
+          if (!slot) return null
+          const p = playerMap.get(a.player_id)
+          if (!p) return null
+          return [slot, {
+            id: p.id, name: p.name, number: p.number, position: p.position,
+            goals: a.goals ?? 0, yellow: a.yellow_cards ?? 0, red: a.red_cards ?? 0, isMvp: p.id === mvpId,
+          } as StarterInfo] as [string, StarterInfo]
+        })
+        .filter((x): x is [string, StarterInfo] => x !== null)
+    )
+    // Construir líneas si al menos hay 1 posición asignada
+    if (pitchMap.size > 0) {
+      formationLines = formationDef.lines.map(line =>
+        line.map(slot => pitchMap.get(slot.id) ?? null)
+      )
+    }
+  }
+
+  const dateStr = new Date(match.played_at + 'T12:00:00').toLocaleDateString('es-ES', {
     weekday: 'long', day: 'numeric', month: 'long',
   })
 
   return (
     <PageTransition>
       <main className="mx-auto max-w-5xl px-4 py-6">
+        {sp.error && (
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 flex items-start gap-3">
+            <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ fontSize: 18, color: '#f87171' }}>error</span>
+            <div>
+              <p className="text-sm font-bold" style={{ color: '#f87171' }}>Error al guardar las estadísticas</p>
+              <p className="text-xs mt-0.5" style={{ color: '#fca5a5' }}>{sp.error}</p>
+            </div>
+          </div>
+        )}
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
@@ -260,6 +298,7 @@ export default async function MatchPage({
           </div>
         )}
 
+        {/* Picker siempre visible en partidos programados — el entrenador lo rellena él mismo */}
         {isScheduled && players && players.length > 0 && (
           <div className="mb-6">
             <AvailabilityPicker
@@ -271,12 +310,27 @@ export default async function MatchPage({
           </div>
         )}
 
+        {/* Respuestas del enlace público — solo si la feature está activa y hay datos */}
+        {!isScheduled && team.availability_enabled && !!((availRows as { player_id: string; status: string }[] | null)?.length) && players && players.length > 0 && (
+          <div className="mb-6">
+            <AvailabilityCoachCard
+              players={sortedPlayers}
+              responses={(availRows as { player_id: string; status: string }[]).map(r => ({
+                player_id: r.player_id,
+                status: r.status as 'available' | 'unavailable' | 'doubt',
+              }))}
+            />
+          </div>
+        )}
+
         {/* ── Once inicial visual ────────────────────────────────── */}
         {showLineup && (
           <div className="mb-6 overflow-hidden rounded-2xl border border-slate-800">
             <div className="flex items-center gap-2 px-4 py-2.5 border-b border-slate-800" style={{ backgroundColor: '#151b2d' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#4be277' }}>sports_soccer</span>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Once inicial · {starterList.length} titulares{subList.length > 0 ? ` · ${subList.length} suplentes` : ''}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                {matchFormation ? `${matchFormation} · ` : ''}Once inicial · {starterList.length} titulares{subList.length > 0 ? ` · ${subList.length} suplentes` : ''}
+              </p>
             </div>
             {/* Campo de fútbol */}
             <div className="relative select-none" style={{ backgroundColor: '#1a5232', minHeight: 260 }}>
@@ -289,35 +343,48 @@ export default async function MatchPage({
               </div>
               {/* Líneas del campo */}
               <div className="absolute inset-0 flex flex-col justify-between py-4 px-2">
-                {/* Delantera */}
-                {fwdLine.length > 0 && (
-                  <div className="flex justify-evenly">
-                    {fwdLine.map(p => <PitchPlayer key={p.id} p={p} />)}
-                  </div>
-                )}
-                {/* Centrocampistas */}
-                {midLine.length > 0 && (
-                  <div className="flex justify-evenly">
-                    {midLine.map(p => <PitchPlayer key={p.id} p={p} />)}
-                  </div>
-                )}
-                {/* Defensas */}
-                {defLine.length > 0 && (
-                  <div className="flex justify-evenly">
-                    {defLine.map(p => <PitchPlayer key={p.id} p={p} />)}
-                  </div>
-                )}
-                {/* Portera */}
-                {gkLine.length > 0 && (
-                  <div className="flex justify-center">
-                    {gkLine.map(p => <PitchPlayer key={p.id} p={p} />)}
-                  </div>
-                )}
-                {/* Si no hay categorías, mostrar en grid simple */}
-                {fwdLine.length === 0 && midLine.length === 0 && defLine.length === 0 && gkLine.length === 0 && (
-                  <div className="flex flex-wrap justify-center gap-2 my-auto">
-                    {starterList.map(p => <PitchPlayer key={p.id} p={p} />)}
-                  </div>
+                {formationLines ? (
+                  // Vista táctica con formación asignada
+                  formationLines.map((line, i) => (
+                    <div key={i} className="flex justify-evenly">
+                      {line.map((p, j) =>
+                        p ? (
+                          <PitchPlayer key={p.id} p={p} />
+                        ) : (
+                          <PitchPlayerEmpty key={`empty-${i}-${j}`} label={formationDef!.lines[i][j].label} />
+                        )
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  // Vista por posición (sin formación asignada)
+                  <>
+                    {fwdLine.length > 0 && (
+                      <div className="flex justify-evenly">
+                        {fwdLine.map(p => <PitchPlayer key={p.id} p={p} />)}
+                      </div>
+                    )}
+                    {midLine.length > 0 && (
+                      <div className="flex justify-evenly">
+                        {midLine.map(p => <PitchPlayer key={p.id} p={p} />)}
+                      </div>
+                    )}
+                    {defLine.length > 0 && (
+                      <div className="flex justify-evenly">
+                        {defLine.map(p => <PitchPlayer key={p.id} p={p} />)}
+                      </div>
+                    )}
+                    {gkLine.length > 0 && (
+                      <div className="flex justify-center">
+                        {gkLine.map(p => <PitchPlayer key={p.id} p={p} />)}
+                      </div>
+                    )}
+                    {fwdLine.length === 0 && midLine.length === 0 && defLine.length === 0 && gkLine.length === 0 && (
+                      <div className="flex flex-wrap justify-center gap-2 my-auto">
+                        {starterList.map(p => <PitchPlayer key={p.id} p={p} />)}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -342,7 +409,11 @@ export default async function MatchPage({
         )}
 
         <MatchForm
-          match={{ ...match, competition_type: (match as { competition_type?: string | null }).competition_type ?? null }}
+          match={{
+            ...match,
+            competition_type: (match as { competition_type?: string | null }).competition_type ?? null,
+            formation: matchFormation,
+          }}
           players={sortedPlayers}
           appearances={appearances ?? []}
           seasonId={seasonId}
@@ -372,6 +443,15 @@ export default async function MatchPage({
                 goals: a.goals ?? 0,
               }))}
               mvpName={mvpPlayer?.name ?? null}
+              lineupData={formationLines && formationDef ? {
+                formation: matchFormation!,
+                lines: formationLines.map((line, i) =>
+                  line.map((p, j) => ({
+                    label: formationDef!.lines[i][j].label,
+                    player: p ? { name: p.name, number: p.number } : null,
+                  }))
+                ),
+              } : null}
             />
           </section>}
       </main>
@@ -395,6 +475,18 @@ function PitchPlayer({ p }: { p: { name: string; number: number | null; goals: n
         {p.yellow > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px]" style={{ backgroundColor: '#facc15' }} />}
         {p.red > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px]" style={{ backgroundColor: '#f87171' }} />}
       </div>
+    </div>
+  )
+}
+
+function PitchPlayerEmpty({ label }: { label: string }) {
+  return (
+    <div className="flex flex-col items-center gap-0.5 min-w-[44px]">
+      <div className="w-9 h-9 rounded-full border-2 border-dashed flex items-center justify-center text-[8px] font-bold"
+        style={{ borderColor: 'rgba(75,226,119,0.2)', backgroundColor: 'rgba(75,226,119,0.04)', color: 'rgba(75,226,119,0.35)' }}>
+        {label}
+      </div>
+      <p className="text-[9px] text-center leading-tight" style={{ color: 'rgba(255,255,255,0.15)' }}>—</p>
     </div>
   )
 }
