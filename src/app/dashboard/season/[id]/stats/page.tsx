@@ -561,7 +561,7 @@ export default async function StatsPage({
                       <div key={s.playerId} className="flex items-center gap-3">
                         <span className="w-4 text-center text-[11px] font-black flex-shrink-0 tabular-nums" style={{ color: medal }}>{i + 1}</span>
                         <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" className="w-7 h-7 flex-shrink-0" />
-                        <span className="text-[12px] font-semibold text-white truncate" style={{ minWidth: 80, maxWidth: 120 }}>{shortName(s.name)}</span>
+                        <span className="text-[12px] font-semibold text-white truncate flex-shrink-0" style={{ width: 'clamp(64px, 25%, 130px)' }}>{shortName(s.name)}</span>
                         <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
                           <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: barColor }} />
                         </div>
