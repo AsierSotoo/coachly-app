@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 function dateStr(iso: string) {
-  return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+  return new Date(iso + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function OpponentInitial({ name }: { name: string }) {
@@ -39,15 +39,14 @@ export default async function SeasonPage({
   const { id: seasonId } = await params
   const supabase = await createClient()
 
-  const { data: season } = await supabase
-    .from('seasons').select('*, teams(*)').eq('id', seasonId).single()
+  const [{ data: season }, { data: matchesRaw }] = await Promise.all([
+    supabase.from('seasons').select('*, teams(*)').eq('id', seasonId).single(),
+    supabase.from('matches')
+      .select('*, convocatorias(id), appearances(id, goals, player_id, players(name))')
+      .eq('season_id', seasonId)
+      .order('played_at', { ascending: false }),
+  ])
   if (!season) notFound()
-
-  const { data: matchesRaw } = await supabase
-    .from('matches')
-    .select('*, convocatorias(id), appearances(id, goals, player_id, players(name))')
-    .eq('season_id', seasonId)
-    .order('played_at', { ascending: false })
 
   const sp = await searchParams
   const team = season.teams as { id: string; name: string; logo_url?: string | null }
@@ -112,6 +111,10 @@ export default async function SeasonPage({
   const winRate   = total > 0 ? Math.round((wins   / total) * 100) : 0
   const drawRate  = total > 0 ? Math.round((draws  / total) * 100) : 0
   const lossRate  = total > 0 ? Math.round((losses / total) * 100) : 0
+  const ligaPts   = ligaMatches.filter(m => m.goals_for > m.goals_against).length * 3 +
+                    ligaMatches.filter(m => m.goals_for === m.goals_against).length
+  const goalsFor  = matches.reduce((s, m) => s + (m.goals_for ?? 0), 0)
+  const goalsAgainst = matches.reduce((s, m) => s + (m.goals_against ?? 0), 0)
 
   const showForm = sp.new === '1' || !!sp.error || (total === 0 && scheduledMatches.length === 0)
   const opponents = [...new Set(allMatches.map(m => m.opponent))].sort()
@@ -134,7 +137,6 @@ export default async function SeasonPage({
 
   // Forma reciente: solo partidos competitivos (liga + copa), sin amistosos
   const sortedCompetitive = [...competitiveMatches].sort((a, b) => new Date(a.played_at).getTime() - new Date(b.played_at).getTime())
-  const sortedByDate = [...matches].sort((a, b) => new Date(a.played_at).getTime() - new Date(b.played_at).getTime())
   const recentForm = sortedCompetitive.slice(-5).map(m => m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E')
 
   // Racha actual — solo competitivos
@@ -158,64 +160,108 @@ export default async function SeasonPage({
     <PageTransition>
       <main className="max-w-7xl mx-auto px-4 md:px-10 py-6 md:py-8 pb-32 md:pb-10">
 
+        {/* ── Page header ──────────────────────────────────────────────── */}
+        <div className="flex items-center gap-4 mb-7">
+          <div className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden border" style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}>
+            <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" className="w-full h-full" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-semibold mb-0.5 truncate" style={{ color: '#475569' }}>
+              {(season as unknown as { name: string }).name}
+            </p>
+            <h1 className="text-[20px] md:text-[22px] font-black leading-tight truncate" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
+              {team.name}
+            </h1>
+          </div>
+          {total > 0 && (
+            <div className="hidden sm:flex items-center divide-x divide-[#1e293b] rounded-xl border overflow-hidden flex-shrink-0"
+              style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <div className="px-4 py-2.5 text-center">
+                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>PJ</p>
+                <p className="text-[18px] font-black tabular-nums leading-tight" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{total}</p>
+              </div>
+              <div className="px-4 py-2.5 text-center">
+                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>GF</p>
+                <p className="text-[18px] font-black tabular-nums leading-tight" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{goalsFor}</p>
+              </div>
+              <div className="px-4 py-2.5 text-center">
+                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>GC</p>
+                <p className="text-[18px] font-black tabular-nums leading-tight" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{goalsAgainst}</p>
+              </div>
+              {ligaMatches.length > 0 && (
+                <div className="px-4 py-2.5 text-center">
+                  <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>PTS</p>
+                  <p className="text-[18px] font-black tabular-nums leading-tight" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{ligaPts}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* ── Stats Cards ─────────────────────────────────────────────── */}
         <section className="grid grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
 
           {/* Victorias */}
           <div
-            className="relative overflow-hidden rounded-xl border p-3 md:p-6 group hover:border-[#22c55e]/50 transition-colors"
+            className="relative overflow-hidden rounded-xl border p-3 md:p-6 hover:border-[#22c55e]/40 transition-colors"
             style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}
           >
-            <div className="absolute top-0 right-0 p-2 md:p-4 opacity-10 select-none pointer-events-none">
-              <span className="material-symbols-outlined text-[40px] md:text-[64px]" style={{ fontVariationSettings: "'FILL' 1" }}>trophy</span>
-            </div>
-            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-1 md:mb-2" style={{ color: '#adb4ce' }}>Victorias</p>
-            <div className="flex items-end gap-1 md:gap-2">
-              <span className="text-[32px] md:text-[48px] font-extrabold leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{wins}</span>
+            <p className="text-[11px] font-bold uppercase tracking-wide mb-1 md:mb-2" style={{ color: '#64748b' }}>Victorias</p>
+            <div className="flex items-end gap-2 mb-3">
+              <span className="text-[32px] md:text-[44px] font-extrabold leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{wins}</span>
               {total > 0 && (
-                <span className="mb-1 text-[10px] md:text-xs font-bold hidden sm:flex items-center" style={{ color: '#4be277' }}>
+                <span className="mb-1 text-[11px] font-bold" style={{ color: '#4be27799' }}>
                   {winRate}%
                 </span>
               )}
             </div>
+            {total > 0 && (
+              <div className="h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                <div className="h-full rounded-full" style={{ width: `${winRate}%`, backgroundColor: '#4be277' }} />
+              </div>
+            )}
           </div>
 
           {/* Empates */}
           <div
-            className="relative overflow-hidden rounded-xl border p-3 md:p-6 group hover:border-[#adb4ce]/30 transition-colors"
+            className="relative overflow-hidden rounded-xl border p-3 md:p-6 hover:border-[#adb4ce]/20 transition-colors"
             style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}
           >
-            <div className="absolute top-0 right-0 p-2 md:p-4 opacity-10 select-none pointer-events-none">
-              <span className="material-symbols-outlined text-[40px] md:text-[64px]" style={{ fontVariationSettings: "'FILL' 1" }}>drag_handle</span>
-            </div>
-            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-1 md:mb-2" style={{ color: '#adb4ce' }}>Empates</p>
-            <div className="flex items-end gap-1 md:gap-2">
-              <span className="text-[32px] md:text-[48px] font-extrabold leading-none" style={{ color: '#fbbf24', fontFamily: 'Sora, sans-serif' }}>{draws}</span>
+            <p className="text-[11px] font-bold uppercase tracking-wide mb-1 md:mb-2" style={{ color: '#64748b' }}>Empates</p>
+            <div className="flex items-end gap-2 mb-3">
+              <span className="text-[32px] md:text-[44px] font-extrabold leading-none" style={{ color: '#fbbf24', fontFamily: 'Sora, sans-serif' }}>{draws}</span>
               {total > 0 && (
-                <span className="mb-1 text-[10px] md:text-xs font-bold hidden sm:flex items-center" style={{ color: '#adb4ce' }}>
+                <span className="mb-1 text-[11px] font-bold" style={{ color: '#fbbf2499' }}>
                   {drawRate}%
                 </span>
               )}
             </div>
+            {total > 0 && (
+              <div className="h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                <div className="h-full rounded-full" style={{ width: `${drawRate}%`, backgroundColor: '#fbbf24' }} />
+              </div>
+            )}
           </div>
 
           {/* Derrotas */}
           <div
-            className="relative overflow-hidden rounded-xl border p-3 md:p-6 group hover:border-[#f87171]/30 transition-colors"
+            className="relative overflow-hidden rounded-xl border p-3 md:p-6 hover:border-[#f87171]/20 transition-colors"
             style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}
           >
-            <div className="absolute top-0 right-0 p-2 md:p-4 opacity-10 select-none pointer-events-none">
-              <span className="material-symbols-outlined text-[40px] md:text-[64px]" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
-            </div>
-            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-1 md:mb-2" style={{ color: '#adb4ce' }}>Derrotas</p>
-            <div className="flex items-end gap-1 md:gap-2">
-              <span className="text-[32px] md:text-[48px] font-extrabold leading-none" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{losses}</span>
+            <p className="text-[11px] font-bold uppercase tracking-wide mb-1 md:mb-2" style={{ color: '#64748b' }}>Derrotas</p>
+            <div className="flex items-end gap-2 mb-3">
+              <span className="text-[32px] md:text-[44px] font-extrabold leading-none" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{losses}</span>
               {total > 0 && (
-                <span className="mb-1 text-[10px] md:text-xs font-bold hidden sm:flex items-center" style={{ color: '#f87171' }}>
+                <span className="mb-1 text-[11px] font-bold" style={{ color: '#f8717199' }}>
                   {lossRate}%
                 </span>
               )}
             </div>
+            {total > 0 && (
+              <div className="h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                <div className="h-full rounded-full" style={{ width: `${lossRate}%`, backgroundColor: '#f87171' }} />
+              </div>
+            )}
           </div>
         </section>
 
@@ -298,8 +344,8 @@ export default async function SeasonPage({
                   borderColor: i === 0 ? 'rgba(75,226,119,0.2)' : '#2e3447',
                   color: i === 0 ? '#4be277' : '#adb4ce',
                 }}>
-                <span className="font-black" style={{ fontSize: 10, color: i === 0 ? '#4be277' : i === 1 ? '#adb4ce' : '#9d8050' }}>
-                  {i === 0 ? '⚽' : `${i + 1}`}
+                <span className="font-black text-[9px]" style={{ color: i === 0 ? '#f59e0b' : i === 1 ? '#94a3b8' : '#b45309' }}>
+                  {i + 1}
                 </span>
                 <span className="font-semibold">{s.name.split(' ')[0]}</span>
                 <span className="font-black">{s.goals}</span>
@@ -437,7 +483,7 @@ export default async function SeasonPage({
         {/* ── Formulario Nuevo Partido ─────────────────────────────────── */}
         {showForm && (
           <section
-            className="mb-8 rounded-[24px] border border-[#1e293b] overflow-hidden"
+            className="mb-8 rounded-2xl border border-[#1e293b] overflow-hidden"
             style={{ backgroundColor: '#0f172a' }}
           >
             <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e293b]">
@@ -463,10 +509,16 @@ export default async function SeasonPage({
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Fecha</label>
-                <input name="played_at" type="date" required defaultValue={new Date().toISOString().split('T')[0]}
-                  className="border rounded-xl px-4 py-3 text-sm outline-none focus:border-[#4be277] transition-all"
-                  style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }} />
+                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Fecha y hora</label>
+                <div className="flex gap-2">
+                  <input name="played_at" type="date" required defaultValue={new Date().toISOString().split('T')[0]}
+                    className="flex-1 border rounded-xl px-4 py-3 text-sm outline-none focus:border-[#4be277] transition-all"
+                    style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }} />
+                  <input name="match_time" type="time"
+                    className="w-28 border rounded-xl px-3 py-3 text-sm outline-none focus:border-[#4be277] transition-all"
+                    style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }}
+                    title="Hora del partido (opcional)" />
+                </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -516,7 +568,7 @@ export default async function SeasonPage({
 
         {/* ── Próximos partidos (programados) ─────────────────────────── */}
         {scheduledMatches.length > 0 && (
-          <section className="mb-6 rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#070d1f' }}>
+          <section className="mb-6 rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#070d1f' }}>
             <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-[#1e293b]" style={{ backgroundColor: '#191f31' }}>
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined" style={{ color: '#adb4ce', fontSize: 18 }}>calendar_month</span>
@@ -549,6 +601,12 @@ export default async function SeasonPage({
                         style={{ backgroundColor: m.home ? 'rgba(75,226,119,0.1)' : 'rgba(173,180,206,0.08)', color: m.home ? '#4be277' : '#adb4ce' }}>
                         {m.home ? 'Local' : 'Visit.'}
                       </span>
+                      {(m as { match_time?: string | null }).match_time && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded flex-shrink-0"
+                          style={{ backgroundColor: 'rgba(99,102,241,0.12)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)' }}>
+                          {(m as { match_time?: string | null }).match_time!.slice(0, 5)}h
+                        </span>
+                      )}
                     </div>
                     {m.competition && (
                       <p className="text-[11px] truncate mt-0.5" style={{ color: '#4b5563' }}>{m.competition}</p>
@@ -600,7 +658,7 @@ export default async function SeasonPage({
 
         {/* ── Tabla de Partidos ────────────────────────────────────────── */}
         <section
-          className="rounded-[24px] border border-[#1e293b] overflow-hidden"
+          className="rounded-2xl border border-[#1e293b] overflow-hidden"
           style={{ backgroundColor: '#070d1f' }}
         >
           {/* Cabecera de la tabla */}
@@ -610,7 +668,7 @@ export default async function SeasonPage({
           >
             <div className="flex items-center gap-3 min-w-0">
               <TeamLogo name={team.name} logoUrl={team.logo_url} size="sm" />
-              <h3 className="text-base md:text-[20px] font-semibold truncate" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+              <h3 className="text-[13px] font-bold uppercase tracking-wide" style={{ color: '#475569' }}>
                 Resultados
               </h3>
             </div>
@@ -649,188 +707,112 @@ export default async function SeasonPage({
             </div>
           ) : (
             <>
-              {/* Columnas */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-[#1e293b]" style={{ backgroundColor: '#151b2d' }}>
-                      <th className="px-3 md:px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: '#adb4ce' }}>Est.</th>
-                      <th className="px-3 md:px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: '#adb4ce' }}>Oponente</th>
-                      <th className="hidden md:table-cell px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: '#adb4ce' }}>Fecha</th>
-                      <th className="hidden lg:table-cell px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: '#adb4ce' }}>Convocatoria</th>
-                      <th className="px-3 md:px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-right" style={{ color: '#adb4ce' }}>Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map(match => {
-                      const gf = match.goals_for ?? 0
-                      const ga = match.goals_against ?? 0
-                      const res  = gf > ga ? 'V' : gf < ga ? 'D' : 'E'
-                      const scoreColor = res === 'V' ? '#4be277' : res === 'D' ? '#f87171' : '#fbbf24'
-                      const apps = match.appearances as AppRow[]
-                      const hasData = apps.length > 0
-                      const scorers = apps
-                        .filter(a => (a.goals ?? 0) > 0)
-                        .sort((a, b) => (b.goals ?? 0) - (a.goals ?? 0))
-                        .map(a => {
-                          const first = a.players?.name?.split(' ')[0] ?? '?'
-                          return (a.goals ?? 0) > 1 ? `${first} ×${a.goals}` : first
-                        })
-                      const dotStyle = res === 'V'
-                        ? { backgroundColor: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,0.5)', color: '#003915' }
-                        : res === 'D'
-                          ? { backgroundColor: 'rgba(248,113,113,0.12)', boxShadow: '0 0 8px rgba(248,113,113,0.15)', color: '#f87171', border: '1px solid rgba(248,113,113,0.4)' }
-                          : { backgroundColor: 'rgba(251,191,36,0.1)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.3)' }
+              {filtered.map(match => {
+                const gf = match.goals_for ?? 0
+                const ga = match.goals_against ?? 0
+                const res = gf > ga ? 'V' : gf < ga ? 'D' : 'E'
+                const resColor = res === 'V' ? '#22c55e' : res === 'D' ? '#ef4444' : '#f59e0b'
+                const apps = match.appearances as AppRow[]
+                const hasData = apps.length > 0
+                const scorers = apps
+                  .filter(a => (a.goals ?? 0) > 0)
+                  .sort((a, b) => (b.goals ?? 0) - (a.goals ?? 0))
+                  .map(a => {
+                    const first = a.players?.name?.split(' ')[0] ?? '?'
+                    return (a.goals ?? 0) > 1 ? `${first} ×${a.goals}` : first
+                  })
+                const hasConvocatoria = (match.convocatorias as { id: string }[])?.length > 0
+                const ct = (match as MatchWithType).competition_type ?? 'liga'
+                const matchDate = new Date(match.played_at + 'T12:00:00')
 
-                      const hasConvocatoria = (match.convocatorias as { id: string }[])?.length > 0
+                return (
+                  <div key={match.id}
+                    className="flex items-center border-b border-[#1e293b] last:border-0 hover:bg-[#0a1020] transition-colors group"
+                    style={{ borderLeft: `3px solid ${resColor}` }}>
 
-                      return (
-                        <tr key={match.id}
-                          className="border-b border-[#1e293b] last:border-0 group transition-colors"
-                          style={{ backgroundColor: 'transparent' }}
-                          onMouseEnter={undefined}
-                        >
-                          {/* Est. */}
-                          <td className="px-3 md:px-6 py-3 md:py-5">
-                            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs font-black" style={dotStyle}>
-                              {res}
-                            </div>
-                          </td>
+                    {/* Fecha */}
+                    <div className="flex-shrink-0 w-12 md:w-14 text-center py-4 pl-3">
+                      <div className="text-[10px] font-bold uppercase leading-none" style={{ color: '#475569', letterSpacing: '0.06em' }}>
+                        {matchDate.toLocaleDateString('es-ES', { month: 'short' })}
+                      </div>
+                      <div className="text-xl md:text-[22px] font-black leading-snug" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
+                        {matchDate.getDate()}
+                      </div>
+                    </div>
 
-                          {/* Oponente */}
-                          <td className="px-3 md:px-6 py-3 md:py-5 max-w-0">
-                            <div className="flex items-center gap-2 md:gap-3">
-                              {(match as { rival_logo_url?: string | null }).rival_logo_url ? (
-                                <div className="w-8 h-8 md:w-10 md:h-10 rounded flex items-center justify-center flex-shrink-0 overflow-hidden border border-[#2e3447] bg-white">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img src={(match as { rival_logo_url: string }).rival_logo_url} alt={match.opponent} className="w-full h-full object-contain p-1" />
-                                </div>
-                              ) : (
-                                <OpponentInitial name={match.opponent} />
-                              )}
-                              <div className="min-w-0">
-                                {(() => {
-                                  const ct = (match as MatchWithType).competition_type ?? 'liga'
-                                  const ctBadge = ct === 'copa'
-                                    ? <span className="flex-shrink-0 inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ backgroundColor: 'rgba(96,165,250,0.12)', color: '#60a5fa', border: '1px solid rgba(96,165,250,0.2)' }}>Copa</span>
-                                    : ct === 'amistoso'
-                                    ? <span className="flex-shrink-0 inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ backgroundColor: 'rgba(148,163,184,0.1)', color: '#94a3b8', border: '1px solid rgba(148,163,184,0.2)' }}>Amistoso</span>
-                                    : null
-                                  return (
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                      <p className="text-sm font-bold text-white truncate">{match.opponent}</p>
-                                      {ctBadge}
-                                      {!hasData && (
-                                        <span className="flex-shrink-0 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold"
-                                          style={{ backgroundColor: 'rgba(234,179,8,0.12)', color: '#facc15', border: '1px solid rgba(234,179,8,0.2)' }}>
-                                          Sin datos
-                                        </span>
-                                      )}
-                                    </div>
-                                  )
-                                })()}
-                                {/* Móvil: resultado + local/vis inline */}
-                                <p className="md:hidden text-[11px] mt-0.5 font-bold tabular-nums" style={{ color: scoreColor, fontFamily: 'Sora, sans-serif' }}>
-                                  {gf}–{ga} · {match.home ? 'Local' : 'Vis.'}
-                                </p>
-                                {/* Desktop: local/vis + competición */}
-                                <p className="hidden md:block text-[11px] mt-0.5 truncate" style={{ color: '#adb4ce' }}>
-                                  {match.home ? 'Local' : 'Visitante'}{match.competition ? ` · ${match.competition}` : ''}
-                                </p>
-                                {/* Goleadoras */}
-                                {scorers.length > 0 && (
-                                  <p className="text-[10px] mt-0.5 flex items-center gap-1 truncate" style={{ color: '#4be277' }}>
-                                    <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 11 }}>sports_soccer</span>
-                                    {scorers.join(' · ')}
-                                  </p>
-                                )}
-                                {match.notes && (
-                                  <p className="hidden md:flex text-[11px] mt-1 items-center gap-1 max-w-[200px] truncate" style={{ color: '#64748b' }}>
-                                    <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 12 }}>edit_note</span>
-                                    {match.notes}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </td>
+                    {/* Rival + info */}
+                    <div className="flex-1 min-w-0 py-4 px-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {(match as { rival_logo_url?: string | null }).rival_logo_url && (
+                          <div className="w-5 h-5 flex-shrink-0 overflow-hidden rounded bg-white border border-[#2e3447]">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={(match as { rival_logo_url: string }).rival_logo_url} alt="" className="w-full h-full object-contain" />
+                          </div>
+                        )}
+                        <p className="text-[15px] font-semibold text-white truncate leading-tight">{match.opponent}</p>
+                        {ct === 'copa' && (
+                          <span className="flex-shrink-0 text-[10px] font-bold" style={{ color: '#60a5fa' }}>Copa</span>
+                        )}
+                        {ct === 'amistoso' && (
+                          <span className="flex-shrink-0 text-[10px] font-bold" style={{ color: '#475569' }}>Amistoso</span>
+                        )}
+                      </div>
+                      <p className="text-[11px] mt-0.5 truncate" style={{ color: '#334155' }}>
+                        {match.home ? 'Local' : 'Visitante'}
+                        {scorers.length > 0 && <span style={{ color: '#334155' }}> · {scorers.slice(0, 3).join(' · ')}</span>}
+                        {!hasData && <span style={{ color: '#92400e' }}> · sin datos</span>}
+                      </p>
+                    </div>
 
-                          {/* Fecha — oculta en móvil */}
-                          <td className="hidden md:table-cell px-6 py-5">
-                            <p className="text-sm font-medium text-white">{dateStr(match.played_at)}</p>
-                            <p className="text-[11px] mt-0.5 font-bold tabular-nums" style={{ color: scoreColor, fontFamily: 'Sora, sans-serif' }}>
-                              {gf}–{ga}
-                            </p>
-                          </td>
+                    {/* Marcador */}
+                    <div className="flex-shrink-0 flex items-center gap-1.5 py-4 px-2 md:px-3">
+                      {hasConvocatoria && (
+                        <span className="material-symbols-outlined hidden md:block" style={{ fontSize: 13, color: '#166534' }}
+                          title="Convocatoria realizada">check_circle</span>
+                      )}
+                      <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg"
+                        style={{ backgroundColor: `${resColor}0d`, border: `1px solid ${resColor}22` }}>
+                        <span className="text-[20px] md:text-[24px] font-black tabular-nums leading-none"
+                          style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{gf}</span>
+                        <span className="text-xs font-bold" style={{ color: `${resColor}80` }}>–</span>
+                        <span className="text-[20px] md:text-[24px] font-black tabular-nums leading-none"
+                          style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{ga}</span>
+                      </div>
+                    </div>
 
-                          {/* Convocatoria — oculta hasta lg */}
-                          <td className="hidden lg:table-cell px-6 py-5">
-                            {hasConvocatoria ? (
-                              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold border"
-                                style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.2)', color: '#4be277' }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                                Completada
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold border"
-                                style={{ backgroundColor: 'rgba(234,179,8,0.1)', borderColor: 'rgba(234,179,8,0.2)', color: '#facc15' }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>pending</span>
-                                Pendiente
-                              </span>
-                            )}
-                          </td>
+                    {/* Acciones */}
+                    <div className="flex-shrink-0 flex items-center py-2 pr-2 md:pr-4 gap-0.5">
+                      <Link
+                        href={`/dashboard/season/${seasonId}/match/${match.id}`}
+                        className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors hover:bg-[#191f31]"
+                        title="Ver partido"
+                        style={{ color: '#334155' }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>chevron_right</span>
+                      </Link>
+                      <DeleteMatchButton matchId={match.id} seasonId={seasonId} />
+                    </div>
+                  </div>
+                )
+              })}
 
-                          {/* Acciones */}
-                          <td className="px-3 md:px-6 py-3 md:py-5">
-                            <div className="flex items-center justify-end gap-1 md:gap-2">
-                              {!hasConvocatoria && (
-                                <Link
-                                  href={`/dashboard/season/${seasonId}/convocatorias`}
-                                  className="hidden md:inline-flex px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-colors hover:bg-[#22c55e]/10"
-                                  style={{ backgroundColor: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.2)', color: '#4be277' }}
-                                >
-                                  Convocatoria
-                                </Link>
-                              )}
-                              <Link
-                                href={`/dashboard/season/${seasonId}/match/${match.id}`}
-                                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors hover:bg-[#23293c]"
-                                style={{ color: '#adb4ce' }}
-                                title="Editar partido"
-                              >
-                                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span>
-                              </Link>
-                              <DeleteMatchButton matchId={match.id} seasonId={seasonId} />
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Footer de la tabla */}
-              <div
-                className="flex items-center justify-center px-6 py-4 border-t border-[#1e293b]"
-                style={{ backgroundColor: '#0f172a' }}
-              >
-                <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>
-                  {filtered.length} partido{filtered.length !== 1 ? 's' : ''} registrado{filtered.length !== 1 ? 's' : ''}
+              <div className="flex items-center justify-between px-5 py-3 border-t border-[#1e293b]">
+                <p className="text-[11px]" style={{ color: '#334155' }}>
+                  {filtered.length} partido{filtered.length !== 1 ? 's' : ''}
                 </p>
+                <div className="flex items-center gap-3 text-[11px] font-bold tabular-nums">
+                  {wins > 0 && <span style={{ color: '#22c55e' }}>{wins}V</span>}
+                  {draws > 0 && <span style={{ color: '#f59e0b' }}>{draws}E</span>}
+                  {losses > 0 && <span style={{ color: '#ef4444' }}>{losses}D</span>}
+                </div>
               </div>
             </>
           )}
         </section>
 
         {/* ── Footer ───────────────────────────────────────────────────── */}
-        <footer className="mt-8 flex items-center justify-between" style={{ color: '#adb4ce' }}>
+        <footer className="mt-8" style={{ color: '#334155' }}>
           <p className="text-[11px]">© {new Date().getFullYear()} Coachly · {team.name}</p>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#4be277' }} />
-              Sistema Online
-            </span>
-          </div>
         </footer>
 
       </main>

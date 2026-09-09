@@ -43,7 +43,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <div className="flex flex-1 flex-col min-w-0 md:ml-64">
 
         {/* Header desktop */}
-        <header className="sticky top-0 z-20 hidden md:flex items-center justify-between h-16 px-10 border-b border-[#2e3447]" style={{ backgroundColor: '#0c1324' }}>
+        <header className="sticky top-0 z-20 hidden md:flex items-center justify-between h-14 px-10 border-b border-[#1e293b]" style={{ backgroundColor: 'rgba(12,19,36,0.95)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
           <HeaderTitle teams={teams} />
           <div className="flex items-center gap-4">
             <HeaderSearch teams={teams} />
@@ -69,7 +69,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
               <Image src="/logo.png" alt="Coachly" width={32} height={32} className="w-full h-full object-cover" />
             </div>
-            <span className="font-extrabold text-lg leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
+            <span className="font-extrabold text-[17px] leading-none" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
+              Coach<span style={{ color: '#4be277' }}>ly</span>
+            </span>
           </Link>
 
           <div className="flex items-center gap-2">

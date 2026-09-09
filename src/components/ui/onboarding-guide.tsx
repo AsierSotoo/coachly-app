@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 
@@ -63,7 +63,7 @@ export function OnboardingGuide({ hasTeam, hasPlayers, hasSeason, hasMatches, te
   const nextStep  = steps.find(s => !s.done)
 
   return (
-    <section className="mb-8 rounded-[24px] border p-6 relative overflow-hidden"
+    <section className="mb-8 rounded-2xl border p-6 relative overflow-hidden"
       style={{ backgroundColor: '#0f172a', borderColor: 'rgba(34,197,94,0.2)' }}>
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-green-500/40 to-transparent" />
       <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none select-none">

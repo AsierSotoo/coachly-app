@@ -18,7 +18,7 @@ export default async function SeasonsPage({
   if (!team) notFound()
 
   const { data: seasons } = await supabase
-    .from('seasons').select('*, matches(id, goals_for, goals_against)').eq('team_id', teamId).order('created_at', { ascending: false })
+    .from('seasons').select('*, matches(id, goals_for, goals_against, status)').eq('team_id', teamId).order('created_at', { ascending: false })
 
   const sp = await searchParams
 
@@ -48,7 +48,7 @@ export default async function SeasonsPage({
 
         {/* Nueva temporada */}
         <section
-          className="mb-8 rounded-[24px] border border-[#1e293b] overflow-hidden"
+          className="mb-8 rounded-2xl border border-[#1e293b] overflow-hidden"
           style={{ backgroundColor: '#0f172a' }}
         >
           <div className="flex items-center gap-3 px-5 py-4 border-b border-[#1e293b]">
@@ -60,8 +60,8 @@ export default async function SeasonsPage({
             <input
               name="name" type="text" required
               placeholder="ej. 2025/26"
-              className="flex-1"
-              style={{ minHeight: 44 }}
+              className="flex-1 rounded-xl px-4 text-sm focus:outline-none placeholder:text-slate-600"
+              style={{ minHeight: 44, backgroundColor: '#0f172a', border: '1px solid #2e3447', color: '#dce1fb' }}
             />
             <button
               type="submit"
@@ -77,26 +77,27 @@ export default async function SeasonsPage({
 
         {/* Lista de temporadas */}
         {!seasons?.length ? (
-          <div className="rounded-[24px] border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
+          <div className="rounded-2xl border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
             <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>calendar_today</span>
             <p className="text-sm" style={{ color: '#adb4ce' }}>Crea la primera temporada para empezar.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
             {seasons.map((season) => {
-              const matches    = season.matches as { id: string; goals_for: number; goals_against: number }[]
-              const total      = matches?.length ?? 0
-              const wins       = matches?.filter(m => m.goals_for > m.goals_against).length ?? 0
-              const draws      = matches?.filter(m => m.goals_for === m.goals_against).length ?? 0
-              const losses     = matches?.filter(m => m.goals_for < m.goals_against).length ?? 0
-              const goalsFor   = matches?.reduce((s, m) => s + m.goals_for, 0) ?? 0
-              const goalsAgainst = matches?.reduce((s, m) => s + m.goals_against, 0) ?? 0
+              const allSeasonMatches = season.matches as { id: string; goals_for: number; goals_against: number; status?: string }[]
+              const matches    = allSeasonMatches?.filter(m => m.status !== 'scheduled') ?? []
+              const total      = matches.length
+              const wins       = matches.filter(m => m.goals_for > m.goals_against).length
+              const draws      = matches.filter(m => m.goals_for === m.goals_against).length
+              const losses     = matches.filter(m => m.goals_for < m.goals_against).length
+              const goalsFor   = matches.reduce((s, m) => s + m.goals_for, 0)
+              const goalsAgainst = matches.reduce((s, m) => s + m.goals_against, 0)
               const diff       = goalsFor - goalsAgainst
 
               return (
                 <div
                   key={season.id}
-                  className="group relative overflow-hidden rounded-[24px] border border-[#1e293b] transition-all hover:border-[#22c55e]/30 hover:shadow-lg"
+                  className="group relative overflow-hidden rounded-2xl border border-[#1e293b] transition-all hover:border-[#22c55e]/30 hover:shadow-lg"
                   style={{ backgroundColor: '#0f172a' }}
                 >
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent" />
@@ -144,6 +145,9 @@ export default async function SeasonsPage({
                           <span style={{ color: diff > 0 ? '#4be277' : diff < 0 ? '#ffb4ab' : '#adb4ce' }}>
                             {diff > 0 ? `+${diff}` : diff}
                           </span>
+                        </p>
+                        <p className="text-[10px] text-center mt-0.5" style={{ color: '#475569' }}>
+                          {allSeasonMatches.length - total > 0 ? `${allSeasonMatches.length - total} pendiente${allSeasonMatches.length - total !== 1 ? 's' : ''}` : ''}
                         </p>
                       </>
                     ) : (

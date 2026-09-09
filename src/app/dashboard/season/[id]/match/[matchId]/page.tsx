@@ -19,18 +19,17 @@ export default async function MatchPage({
   const { id: seasonId, matchId } = await params
   const supabase = await createClient()
 
-  const { data: match } = await supabase
-    .from('matches').select('*, seasons(*, teams(*))').eq('id', matchId).single()
-  if (!match) notFound()
-
-  const season = match.seasons as { id: string; name: string; teams: { id: string; name: string; gender?: string | null; availability_enabled?: boolean } }
-  const team = season.teams
-
-  const isScheduledEarly = (match as { status?: string }).status === 'scheduled'
-
-  const [{ data: players }, { data: appearances }, { data: convocatoria }, { data: allMatches }, { data: availRows }] = await Promise.all([
-    supabase.from('players').select('*').eq('team_id', team.id).eq('active', true)
-      .order('number', { ascending: true, nullsFirst: false }),
+  // Primera ronda: todo lo que no depende de team.id en paralelo
+  const [
+    { data: match },
+    { data: season },
+    { data: appearances },
+    { data: convocatoria },
+    { data: allMatches },
+    { data: availRows },
+  ] = await Promise.all([
+    supabase.from('matches').select('*').eq('id', matchId).single(),
+    supabase.from('seasons').select('*, teams(*)').eq('id', seasonId).single(),
     supabase.from('appearances').select('*').eq('match_id', matchId),
     supabase.from('convocatorias')
       .select('id, convocatoria_players(player_id, status)')
@@ -43,6 +42,15 @@ export default async function MatchPage({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (supabase.from('match_availability') as any).select('player_id, status').eq('match_id', matchId),
   ])
+  if (!match || !season) notFound()
+
+  const team = season.teams as { id: string; name: string; gender?: string | null; availability_enabled?: boolean; logo_url?: string | null }
+
+  const isScheduledEarly = (match as { status?: string }).status === 'scheduled'
+
+  // Segunda ronda: players necesita team.id
+  const { data: players } = await supabase.from('players').select('*').eq('team_id', team.id).eq('active', true)
+    .order('number', { ascending: true, nullsFirst: false })
 
   const matchIndex = allMatches?.findIndex(m => m.id === matchId) ?? -1
   const prevMatch  = matchIndex > 0 ? allMatches![matchIndex - 1] : null
@@ -114,6 +122,22 @@ export default async function MatchPage({
   const fwdLine = starterList.filter(p => posLine(p.position) === 'fwd')
   const showLineup = !isScheduled && starterList.length > 0
 
+  // Sustituciones: emparejar por minuto (titular que sale ↔ suplente que entra)
+  type SubEvent = { minute: number; out: string | null; in: string | null }
+  const subMap = new Map<number, SubEvent>()
+  for (const a of appearances ?? []) {
+    const subMin = (a as unknown as { sub_minute?: number | null }).sub_minute
+    if (!subMin) continue
+    const p = playerMap.get(a.player_id)
+    if (!p) continue
+    const firstName = p.name.split(' ')[0]
+    const ev = subMap.get(subMin) ?? { minute: subMin, out: null, in: null }
+    if (a.starter) ev.out = firstName
+    else ev.in = firstName
+    subMap.set(subMin, ev)
+  }
+  const subEvents = [...subMap.values()].sort((a, b) => a.minute - b.minute)
+
   // Visualización táctica con formación
   const matchFormation = (match as unknown as { formation?: string | null }).formation ?? null
   const formationDef = matchFormation ? getFormation(matchFormation) : null
@@ -146,6 +170,7 @@ export default async function MatchPage({
   const dateStr = new Date(match.played_at + 'T12:00:00').toLocaleDateString('es-ES', {
     weekday: 'long', day: 'numeric', month: 'long',
   })
+  const matchTimeStr = (match as { match_time?: string | null }).match_time?.slice(0, 5) ?? null
 
   return (
     <PageTransition>
@@ -160,87 +185,146 @@ export default async function MatchPage({
           </div>
         )}
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <Link
-              href={`/dashboard/season/${seasonId}`}
-              className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> {season.name}
+        <div className="mb-6 rounded-2xl border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+
+          {/* Barra superior: breadcrumb + nav entre partidos */}
+          <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: '#1e293b', backgroundColor: '#080d1e' }}>
+            <Link href={`/dashboard/season/${seasonId}`}
+              className="flex items-center gap-1 text-[11px] font-semibold transition-colors hover:text-white"
+              style={{ color: '#475569' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
+              {season.name}
             </Link>
-            {allMatches && allMatches.length > 1 && (
-              <div className="flex items-center gap-1">
-                {prevMatch ? (
-                  <Link href={`/dashboard/season/${seasonId}/match/${prevMatch.id}`}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
-                    style={{ borderColor: '#2e3447', color: '#adb4ce' }}
-                    title={`Anterior: ${prevMatch.opponent}`}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
-                    <span className="hidden sm:inline max-w-[80px] truncate">{prevMatch.opponent}</span>
-                  </Link>
-                ) : (
-                  <span className="flex items-center px-2.5 py-1 rounded-lg border opacity-25 text-[11px]"
-                    style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
-                  </span>
-                )}
-                <span className="text-[10px] px-1.5 tabular-nums" style={{ color: '#475569' }}>
-                  {matchIndex + 1}/{allMatches.length}
-                </span>
-                {nextMatch ? (
-                  <Link href={`/dashboard/season/${seasonId}/match/${nextMatch.id}`}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
-                    style={{ borderColor: '#2e3447', color: '#adb4ce' }}
-                    title={`Siguiente: ${nextMatch.opponent}`}>
-                    <span className="hidden sm:inline max-w-[80px] truncate">{nextMatch.opponent}</span>
-                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
-                  </Link>
-                ) : (
-                  <span className="flex items-center px-2.5 py-1 rounded-lg border opacity-25 text-[11px]"
-                    style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="flex items-start justify-between">
-            <div className="min-w-0">
-              <h1 className="font-[family-name:var(--font-heading)] text-xl font-bold text-white truncate">
-                {match.home ? 'vs' : '@'} {match.opponent}
-              </h1>
-              <p className="text-xs text-slate-500 mt-0.5 truncate">
-                {dateStr}{match.competition ? ` · ${match.competition}` : ''}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
               <RivalLogoUpload
                 matchId={matchId}
                 currentUrl={(match as { rival_logo_url?: string | null }).rival_logo_url}
                 opponentName={match.opponent}
               />
-              <DeleteMatchButton matchId={matchId} seasonId={seasonId} />
               {convocatoriaId && (
-                <Link
-                  href={`/dashboard/season/${seasonId}/convocatorias/${convocatoriaId}`}
-                  className="flex items-center gap-1.5 rounded-xl border border-slate-700 px-3 py-2 text-xs text-slate-500 hover:bg-slate-800 hover:text-slate-300 transition-colors"
-                  title="Ver convocatoria"
-                >
+                <Link href={`/dashboard/season/${seasonId}/convocatorias/${convocatoriaId}`}
+                  className="flex items-center justify-center w-8 h-8 rounded-lg border transition-colors hover:border-[#adb4ce]/40"
+                  style={{ borderColor: '#2e3447', color: '#475569' }} title="Ver convocatoria">
                   <span className="material-symbols-outlined" style={{ fontSize: 16 }}>groups</span>
                 </Link>
               )}
-              {isScheduled ? (
-                <div className="flex h-10 items-center justify-center gap-1.5 rounded-xl border px-3"
-                  style={{ borderColor: 'rgba(251,191,36,0.3)', backgroundColor: 'rgba(251,191,36,0.08)' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#fbbf24' }}>schedule</span>
-                  <span className="text-xs font-bold" style={{ color: '#fbbf24' }}>Programado</span>
-                </div>
-              ) : (
-                <div className="flex h-10 items-center justify-center rounded-xl border border-slate-700 px-3 font-[family-name:var(--font-heading)] text-lg font-bold text-white">
-                  {match.goals_for}–{match.goals_against}
+              <DeleteMatchButton matchId={matchId} seasonId={seasonId} />
+              {allMatches && allMatches.length > 1 && (
+                <div className="flex items-center gap-1 ml-1">
+                  {prevMatch ? (
+                    <Link href={`/dashboard/season/${seasonId}/match/${prevMatch.id}`}
+                      className="flex items-center justify-center w-8 h-8 rounded-lg border transition-colors hover:border-[#adb4ce]/40"
+                      style={{ borderColor: '#2e3447', color: '#475569' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
+                    </Link>
+                  ) : (
+                    <span className="flex items-center justify-center w-8 h-8 rounded-lg border opacity-20"
+                      style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
+                    </span>
+                  )}
+                  <span className="text-[10px] tabular-nums px-1" style={{ color: '#334155' }}>{matchIndex + 1}/{allMatches.length}</span>
+                  {nextMatch ? (
+                    <Link href={`/dashboard/season/${seasonId}/match/${nextMatch.id}`}
+                      className="flex items-center justify-center w-8 h-8 rounded-lg border transition-colors hover:border-[#adb4ce]/40"
+                      style={{ borderColor: '#2e3447', color: '#475569' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
+                    </Link>
+                  ) : (
+                    <span className="flex items-center justify-center w-8 h-8 rounded-lg border opacity-20"
+                      style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
+                    </span>
+                  )}
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Cuerpo: equipos + marcador */}
+          <div className="flex items-center justify-between px-4 md:px-8 py-5 gap-4">
+
+            {/* Equipo local */}
+            <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
+              <div className="w-14 h-14 rounded-xl border overflow-hidden flex items-center justify-center"
+                style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}>
+                <span className="text-[13px] font-black" style={{ color: '#dce1fb' }}>
+                  {team.name.trim().split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}
+                </span>
+              </div>
+              <p className="text-[13px] font-bold text-center leading-tight truncate w-full text-center" style={{ color: '#dce1fb' }}>{team.name}</p>
+              <p className="text-[10px] font-semibold" style={{ color: '#475569' }}>{match.home ? 'Local' : 'Visitante'}</p>
+            </div>
+
+            {/* Marcador */}
+            <div className="flex flex-col items-center flex-shrink-0 px-2">
+              {isScheduled ? (
+                <>
+                  <span className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: '#475569' }}>
+                    {dateStr.split(',')[0]}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[28px] font-black" style={{ color: '#334155' }}>–</span>
+                  </div>
+                  {matchTimeStr && (
+                    <span className="text-[12px] font-bold mt-1" style={{ color: '#4be277' }}>{matchTimeStr}h</span>
+                  )}
+                </>
+              ) : (
+                <>
+                  {(() => {
+                    const gf = match.goals_for ?? 0
+                    const ga = match.goals_against ?? 0
+                    const res = gf > ga ? 'V' : gf < ga ? 'D' : 'E'
+                    const resColor = res === 'V' ? '#22c55e' : res === 'D' ? '#ef4444' : '#f59e0b'
+                    return (
+                      <>
+                        <div className="flex items-center gap-1 md:gap-2">
+                          <span className="text-[44px] md:text-[56px] font-black tabular-nums leading-none"
+                            style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{gf}</span>
+                          <span className="text-[20px] md:text-[24px] font-black" style={{ color: '#1e293b' }}>–</span>
+                          <span className="text-[44px] md:text-[56px] font-black tabular-nums leading-none"
+                            style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{ga}</span>
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-wider mt-0.5 px-2 py-0.5 rounded"
+                          style={{ color: resColor, backgroundColor: `${resColor}14` }}>
+                          {res === 'V' ? 'Victoria' : res === 'D' ? 'Derrota' : 'Empate'}
+                        </span>
+                      </>
+                    )
+                  })()}
+                </>
+              )}
+              {match.competition && (
+                <p className="text-[10px] mt-2 text-center" style={{ color: '#334155' }}>{match.competition}</p>
+              )}
+            </div>
+
+            {/* Rival */}
+            <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
+              {(match as { rival_logo_url?: string | null }).rival_logo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={(match as { rival_logo_url: string }).rival_logo_url} alt={match.opponent}
+                  className="w-14 h-14 rounded-xl border object-contain"
+                  style={{ backgroundColor: 'white', borderColor: '#2e3447' }} />
+              ) : (
+                <div className="w-14 h-14 rounded-xl border flex items-center justify-center"
+                  style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}>
+                  <span className="text-[13px] font-black" style={{ color: '#475569' }}>
+                    {match.opponent.trim().split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}
+                  </span>
+                </div>
+              )}
+              <p className="text-[13px] font-bold text-center leading-tight truncate w-full text-center" style={{ color: '#dce1fb' }}>{match.opponent}</p>
+              <p className="text-[10px] font-semibold" style={{ color: '#475569' }}>{match.home ? 'Visitante' : 'Local'}</p>
+            </div>
+          </div>
+
+          {/* Footer: fecha */}
+          <div className="px-4 pb-3 text-center">
+            <p className="text-[11px]" style={{ color: '#334155' }}>
+              {dateStr}{matchTimeStr && !isScheduled ? ` · ${matchTimeStr}h` : ''}
+            </p>
           </div>
         </div>
 
@@ -405,6 +489,22 @@ export default async function MatchPage({
                 </div>
               </div>
             )}
+            {/* Sustituciones */}
+            {subEvents.length > 0 && (
+              <div className="px-4 py-3 border-t border-slate-800" style={{ backgroundColor: '#0f1629' }}>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600 mb-2">Sustituciones</p>
+                <div className="flex flex-col gap-1.5">
+                  {subEvents.map((e, i) => (
+                    <div key={i} className="flex items-center gap-2 text-[11px]">
+                      <span className="tabular-nums font-bold w-7 text-right flex-shrink-0" style={{ color: '#334155' }}>{e.minute}&apos;</span>
+                      {e.out && <span style={{ color: '#f87171' }}>↓ {e.out}</span>}
+                      {e.out && e.in && <span style={{ color: '#334155' }}>·</span>}
+                      {e.in && <span style={{ color: '#4be277' }}>↑ {e.in}</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -425,13 +525,13 @@ export default async function MatchPage({
         />
 
         {/* Tarjeta compartible — solo si está finalizado */}
-        {!isScheduled && <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+        {!isScheduled && <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
             <h3 className="text-[16px] font-semibold text-white mb-4" style={{ fontFamily: 'Sora, sans-serif' }}>
               Compartir resultado
             </h3>
             <MatchShareCard
               teamName={team.name}
-              logoUrl={(season as unknown as { teams: { logo_url?: string | null } }).teams.logo_url}
+              logoUrl={team.logo_url}
               opponent={match.opponent}
               goalsFor={match.goals_for}
               goalsAgainst={match.goals_against}

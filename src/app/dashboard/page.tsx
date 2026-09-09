@@ -4,6 +4,7 @@ import { AnimatedList, AnimatedItem } from '@/components/ui/animated-card'
 import { PageTransition } from '@/components/ui/page-transition'
 import { TeamLogo } from '@/components/team/team-logo'
 import { OnboardingGuide } from '@/components/ui/onboarding-guide'
+import { AlertsModal } from '@/components/ui/alerts-modal'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -12,11 +13,42 @@ export default async function DashboardPage() {
 
   const { data: teams } = await supabase
     .from('teams')
-    .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at, status), training_sessions(id, date, title)), players(id, active)')
+    .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at, status, competition_type), training_sessions(id, date, title)), players(id, active)')
     .order('created_at', { ascending: true })
+
+  // Yellow card alerts — query most recent season per team
+  const recentSeasonIds = (teams ?? []).flatMap(team => {
+    const seasons = (team.seasons ?? []) as { id: string; created_at: string }[]
+    if (!seasons.length) return []
+    return [seasons.reduce((a, b) => a.created_at > b.created_at ? a : b).id]
+  })
+
+  let yellowAlerts: { playerId: string; name: string; count: number }[] = []
+  if (recentSeasonIds.length > 0) {
+    const { data: matchRows } = await supabase
+      .from('matches')
+      .select('appearances(player_id, yellow_cards, players(name, active))')
+      .in('season_id', recentSeasonIds)
+      .neq('status', 'scheduled')
+
+    const playerMap = new Map<string, { name: string; count: number }>()
+    for (const m of matchRows ?? []) {
+      for (const a of (m as unknown as { appearances: { player_id: string; yellow_cards: number; players: { name: string; active: boolean } | null }[] }).appearances ?? []) {
+        if (a.players?.active === false) continue
+        const curr = playerMap.get(a.player_id) ?? { name: a.players?.name ?? '', count: 0 }
+        curr.count += (a.yellow_cards ?? 0)
+        playerMap.set(a.player_id, curr)
+      }
+    }
+    yellowAlerts = [...playerMap.entries()]
+      .map(([playerId, { name, count }]) => ({ playerId, name, count }))
+      .filter(p => p.count >= 4)
+      .sort((a, b) => b.count - a.count)
+  }
 
   return (
     <PageTransition>
+      <AlertsModal alerts={yellowAlerts} />
       <main className="p-4 md:p-10 min-h-[calc(100vh-64px)] pb-10">
 
         {/* Welcome section */}
@@ -65,7 +97,7 @@ export default async function DashboardPage() {
         })()}
 
         {!teams?.length ? (
-          <div className="border-2 border-dashed border-[#2e3447]/50 rounded-[24px] p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500/50 hover:bg-[#191f31]/20 transition-all min-h-[340px]">
+          <div className="border-2 border-dashed border-[#2e3447]/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500/50 hover:bg-[#191f31]/20 transition-all min-h-[340px]">
             <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: '#23293c' }}>
               <span className="material-symbols-outlined text-4xl" style={{ color: '#869585' }}>add_circle</span>
             </div>
@@ -99,7 +131,7 @@ export default async function DashboardPage() {
                 const matches = finishedMatches.filter(m => ((m as { status?: string; competition_type?: string }).competition_type ?? 'liga') !== 'amistoso')
                 const ligaOnly = matches.filter(m => ((m as { competition_type?: string }).competition_type ?? 'liga') === 'liga')
                 const sorted = [...matches].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
-                const lastMatch = finishedMatches.sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())[0]
+                const lastMatch = [...finishedMatches].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())[0]
                 const wins        = matches.filter(m => m.goals_for > m.goals_against).length
                 const draws       = matches.filter(m => m.goals_for === m.goals_against).length
                 const losses      = matches.filter(m => m.goals_for < m.goals_against).length
@@ -140,7 +172,7 @@ export default async function DashboardPage() {
 
                 return (
                   <AnimatedItem key={team.id} delay={idx * 0.05}>
-                    <div className="rounded-[24px] border border-[#1e293b] p-6 flex flex-col hover:border-green-500/50 transition-all group" style={{ backgroundColor: '#0f172a' }}>
+                    <div className="rounded-2xl border border-[#1e293b] p-6 flex flex-col hover:border-[#2e3447] transition-all group" style={{ backgroundColor: '#0f172a' }}>
 
                       {/* Header: escudo + nombre + último resultado */}
                       <div className="flex justify-between items-start mb-4">
@@ -150,11 +182,11 @@ export default async function DashboardPage() {
                           </div>
                           <div>
                             <h4 className="text-[20px] font-semibold leading-7" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{team.name}</h4>
-                            <div className="mt-1 inline-flex items-center px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(34,197,94,0.1)' }}>
-                              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#4be277' }}>
-                                {team.category ?? team.gender ?? 'Mi equipo'}
-                              </span>
-                            </div>
+                            {(team.category ?? team.gender) && (
+                              <p className="text-[11px] mt-0.5" style={{ color: '#475569' }}>
+                                {team.category ?? team.gender}
+                              </p>
+                            )}
                           </div>
                         </div>
 
@@ -177,16 +209,22 @@ export default async function DashboardPage() {
                           <div className="flex gap-2">
                             <div className="flex-1 rounded-lg p-2 text-center border border-[#22c55e]/30" style={{ backgroundColor: 'rgba(34,197,94,0.1)' }}>
                               <span className="block text-[24px] font-bold leading-6 tabular-nums" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{wins}</span>
-                              <span className="text-[10px] font-bold uppercase mt-1 block" style={{ color: '#4be277' }}>Victorias</span>
+                              <span className="text-[11px] font-bold uppercase mt-1 block" style={{ color: '#4be277' }}>V</span>
                             </div>
                             <div className="flex-1 rounded-lg p-2 text-center border border-[#2e3447]/30" style={{ backgroundColor: 'rgba(46,52,71,0.3)' }}>
                               <span className="block text-[24px] font-bold leading-6 tabular-nums" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{draws}</span>
-                              <span className="text-[10px] font-bold uppercase mt-1 block" style={{ color: '#adb4ce' }}>Empates</span>
+                              <span className="text-[11px] font-bold uppercase mt-1 block" style={{ color: '#adb4ce' }}>E</span>
                             </div>
                             <div className="flex-1 rounded-lg p-2 text-center border border-[#f87171]/20" style={{ backgroundColor: 'rgba(248,113,113,0.05)' }}>
                               <span className="block text-[24px] font-bold leading-6 tabular-nums" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{losses}</span>
-                              <span className="text-[10px] font-bold uppercase mt-1 block" style={{ color: '#f87171' }}>Derrotas</span>
+                              <span className="text-[11px] font-bold uppercase mt-1 block" style={{ color: '#f87171' }}>D</span>
                             </div>
+                          </div>
+                          {/* Barra de distribución W/D/L */}
+                          <div className="flex h-1 rounded-full overflow-hidden mt-2.5">
+                            {wins   > 0 && <div style={{ flex: wins,   backgroundColor: '#22c55e' }} />}
+                            {draws  > 0 && <div style={{ flex: draws,  backgroundColor: '#fbbf24', opacity: 0.75 }} />}
+                            {losses > 0 && <div style={{ flex: losses, backgroundColor: '#f87171', opacity: 0.65 }} />}
                           </div>
                         </div>
                       )}
@@ -226,34 +264,33 @@ export default async function DashboardPage() {
 
                       {/* Forma reciente */}
                       {recentForm.length > 0 && (
-                        <div className="flex items-center gap-2 mb-4">
-                          <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Forma</span>
-                          <div className="flex gap-1">
+                        <div className="mb-4">
+                          <div className="flex items-center justify-between mb-2">
+                            {streakLabel ? (
+                              <p className="text-[11px] font-bold" style={{ color: streakColor }}>
+                                {streakLabel} seguidas
+                              </p>
+                            ) : (
+                              <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>Forma</span>
+                            )}
+                            {playerCount > 0 && (
+                              <span className="flex items-center gap-1 text-[10px]" style={{ color: '#475569' }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 12 }}>group</span>
+                                {playerCount}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-end gap-[3px]" style={{ height: 22 }}>
                             {recentForm.map((m, i) => {
                               const res = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+                              const barH = res === 'V' ? 20 : res === 'E' ? 12 : 6
+                              const col  = res === 'V' ? '#4be277' : res === 'E' ? '#fbbf24' : '#f87171'
                               return (
-                                <div key={i} className="w-5 h-5 rounded flex items-center justify-center text-[8px] font-black"
-                                  style={{
-                                    backgroundColor: res === 'V' ? 'rgba(75,226,119,0.15)' : res === 'D' ? 'rgba(248,113,113,0.12)' : 'rgba(251,191,36,0.1)',
-                                    color: res === 'V' ? '#4be277' : res === 'D' ? '#f87171' : '#fbbf24',
-                                    border: `1px solid ${res === 'V' ? 'rgba(75,226,119,0.3)' : res === 'D' ? 'rgba(248,113,113,0.3)' : 'rgba(251,191,36,0.25)'}`,
-                                  }}>
-                                  {res}
-                                </div>
+                                <div key={i} className="rounded-t-sm flex-shrink-0"
+                                  style={{ width: 7, height: barH, backgroundColor: col, opacity: 0.35 + (i / Math.max(recentForm.length - 1, 1)) * 0.65 }} />
                               )
                             })}
                           </div>
-                          {streakLabel ? (
-                            <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full"
-                              style={{ color: streakColor, backgroundColor: `${streakColor}15`, border: `1px solid ${streakColor}30` }}>
-                              {streakLabel}
-                            </span>
-                          ) : playerCount > 0 && (
-                            <span className="ml-auto flex items-center gap-1 text-[10px]" style={{ color: '#adb4ce' }}>
-                              <span className="material-symbols-outlined" style={{ fontSize: 13 }}>group</span>
-                              {playerCount}
-                            </span>
-                          )}
                         </div>
                       )}
 
@@ -276,7 +313,9 @@ export default async function DashboardPage() {
 
                       {/* Próximo entrenamiento */}
                       {nextSession && (
-                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3"
+                        <Link
+                          href={`/dashboard/season/${lastSeason.id}/trainings`}
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 transition-colors hover:opacity-80"
                           style={{ backgroundColor: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.12)' }}>
                           <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#4be277', fontSize: 16 }}>fitness_center</span>
                           <div className="flex-1 min-w-0">
@@ -286,7 +325,8 @@ export default async function DashboardPage() {
                               {nextSession.title ? ` · ${nextSession.title}` : ''}
                             </p>
                           </div>
-                        </div>
+                          <span className="material-symbols-outlined flex-shrink-0 opacity-40" style={{ fontSize: 14, color: '#4be277' }}>chevron_right</span>
+                        </Link>
                       )}
 
                       {/* Acciones */}
@@ -315,7 +355,7 @@ export default async function DashboardPage() {
               <AnimatedItem delay={teams.length * 0.05}>
                 <Link
                   href="/dashboard/team/new"
-                  className="border-2 border-dashed border-[#2e3447]/50 rounded-[24px] p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500/50 hover:bg-[#191f31]/20 transition-all group min-h-[200px]"
+                  className="border-2 border-dashed border-[#2e3447]/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500/50 hover:bg-[#191f31]/20 transition-all group min-h-[200px]"
                 >
                   <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 group-hover:bg-[#22c55e]/10 transition-colors" style={{ backgroundColor: '#23293c' }}>
                     <span className="material-symbols-outlined text-4xl group-hover:text-green-400 transition-colors" style={{ color: '#869585' }}>add_circle</span>

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { requestPasswordReset } from '@/app/auth/actions'
 
 export default function ForgotPasswordPage({
@@ -19,7 +19,7 @@ export default function ForgotPasswordPage({
       </Link>
 
       {/* Card */}
-      <div className="w-full max-w-sm rounded-[24px] border border-[#1e293b] p-8"
+      <div className="w-full max-w-sm rounded-2xl border border-[#1e293b] p-8"
         style={{ backgroundColor: '#0f172a' }}>
 
         <div className="mb-6 text-center">

@@ -26,7 +26,7 @@ export default function ConvocatoriasLoading() {
       </section>
 
       {/* Table */}
-      <section className="rounded-[24px] border overflow-hidden" style={{ backgroundColor: '#191f31', borderColor: '#1e293b' }}>
+      <section className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#191f31', borderColor: '#1e293b' }}>
         <div className="px-6 py-4 border-b" style={{ backgroundColor: 'rgba(35,41,60,0.5)', borderColor: '#1e293b' }}>
           <div className="flex gap-6">
             {[1, 2, 3].map(i => (

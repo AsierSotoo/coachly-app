@@ -34,7 +34,7 @@ export default async function DisponibilidadPage({
             <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>Confirmación de asistencia por enlace mágico</p>
           </div>
 
-          <div className="rounded-[24px] border p-8 flex flex-col items-center text-center gap-5"
+          <div className="rounded-2xl border p-8 flex flex-col items-center text-center gap-5"
             style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
               style={{ backgroundColor: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)' }}>
@@ -159,19 +159,18 @@ export default async function DisponibilidadPage({
   const events: Event[] = [
     ...matches.map(m => ({
       key: `m-${m.id}`, type: 'match' as const,
-      dateMs: new Date(m.played_at).getTime(),
+      dateMs: new Date(m.played_at + 'T12:00:00').getTime(),
       label: `vs ${m.opponent}`,
-      sublabel: new Date(m.played_at).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }) +
-        ' · ' + new Date(m.played_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+      sublabel: new Date(m.played_at + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
       token: m.availability_token,
       seasonName: seasonMap.get(m.season_id) ?? '',
       counts: matchCounts.get(m.id) ?? { y: 0, d: 0, n: 0 },
     })),
     ...sessions.map(s => ({
       key: `t-${s.id}`, type: 'training' as const,
-      dateMs: new Date(s.date).getTime(),
+      dateMs: new Date(s.date + 'T12:00:00').getTime(),
       label: s.title || 'Entrenamiento',
-      sublabel: new Date(s.date).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
+      sublabel: new Date(s.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }),
       token: s.availability_token,
       seasonName: seasonMap.get(s.season_id) ?? '',
       counts: trainCounts.get(s.id) ?? { y: 0, d: 0, n: 0 },

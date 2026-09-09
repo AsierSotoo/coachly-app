@@ -28,12 +28,15 @@ interface Appearance {
   red_cards: number
   rating?: number | null
   pitch_position?: string | null
+  goals_conceded?: number
+  sub_minute?: number | null
 }
 
 interface Match {
   id: string
   opponent: string
   played_at: string
+  match_time?: string | null
   home: boolean
   competition: string | null
   competition_type: string | null
@@ -63,6 +66,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
 
   const formRef = useRef<HTMLFormElement>(null)
   const [liveGoals, setLiveGoals] = useState(() => appearances.reduce((s, a) => s + a.goals, 0))
+  const [liveGoalsAgainst, setLiveGoalsAgainst] = useState(match.goals_against)
 
   // Determinar viewport para evitar inputs duplicados en el formulario
   // (desktop y móvil usan el mismo nombre de campo — solo uno debe estar en el DOM)
@@ -83,6 +87,8 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       }
     })
     setLiveGoals(total)
+    const gaInput = formRef.current.querySelector<HTMLInputElement>('input[name="goals_against"]')
+    if (gaInput) setLiveGoalsAgainst(Number(gaInput.value) || 0)
   }
 
   useEffect(() => {
@@ -94,6 +100,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       <input type="hidden" name="match_id" value={match.id} />
       <input type="hidden" name="season_id" value={seasonId} />
       <input type="hidden" name="player_ids" value={players.map(p => p.id).join(',')} />
+      <input type="hidden" name="gk_ids" value={players.filter(p => (p.position ?? '').toLowerCase().includes('port')).map(p => p.id).join(',')} />
       {/* goals_for guardado — fallback si no hay jugadoras con estado asignado */}
       <input type="hidden" name="goals_for" value={match.goals_for} />
       {/* Cuando es un partido programado, al guardar lo marcamos como finalizado */}
@@ -120,6 +127,8 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
               className="w-full h-11 px-3 text-sm" />
             <div className="flex gap-2">
               <input name="played_at" type="date" required defaultValue={match.played_at} className="flex-1 h-11 px-3 text-sm" />
+              <input name="match_time" type="time" defaultValue={match.match_time?.slice(0, 5) ?? ''} placeholder="--:--"
+                className="w-28 h-11 px-3 text-sm" title="Hora del partido (opcional)" />
               <select name="home" defaultValue={match.home ? 'true' : 'false'} className="h-11 px-3 text-sm">
                 <option value="true">🏠 Local</option>
                 <option value="false">✈️ Visitante</option>
@@ -138,24 +147,53 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         </section>
 
         {/* Resultado */}
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <h2 className="mb-4 text-xs font-medium uppercase tracking-wider text-slate-400">Resultado final</h2>
-          <div className="flex items-center justify-center gap-6">
-            <div className="text-center">
-              <p className="mb-2 text-xs text-slate-500 truncate max-w-[140px]">{teamName}</p>
-              <div className="h-20 w-20 rounded-2xl border border-green-500/30 bg-slate-800 flex items-center justify-center text-4xl font-bold font-[family-name:var(--font-heading)] text-white" title="Se calcula automáticamente de los goles individuales">
-                {liveGoals}
+        {(() => {
+          const liveResult = liveGoals > liveGoalsAgainst ? 'V' : liveGoals < liveGoalsAgainst ? 'D' : 'E'
+          const resultColor = liveResult === 'V' ? '#4be277' : liveResult === 'D' ? '#f87171' : '#fbbf24'
+          const resultBg = liveResult === 'V' ? 'rgba(75,226,119,0.08)' : liveResult === 'D' ? 'rgba(248,113,113,0.08)' : 'rgba(251,191,36,0.08)'
+          const resultBorder = liveResult === 'V' ? 'rgba(75,226,119,0.2)' : liveResult === 'D' ? 'rgba(248,113,113,0.2)' : 'rgba(251,191,36,0.2)'
+          const resultLabel = liveResult === 'V' ? 'Victoria' : liveResult === 'D' ? 'Derrota' : 'Empate'
+          return (
+            <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-medium uppercase tracking-wider text-slate-400">Resultado final</h2>
+                <span className="text-[10px] font-bold px-2.5 py-1 rounded-full border"
+                  style={{ color: resultColor, backgroundColor: resultBg, borderColor: resultBorder }}>
+                  {resultLabel}
+                </span>
               </div>
-              <p className="mt-1.5 text-[9px] text-green-500/70 max-w-[80px]">Auto ⚽</p>
-            </div>
-            <span className="text-3xl text-slate-600 mt-5 font-bold">—</span>
-            <div className="text-center">
-              <p className="mb-2 text-xs text-slate-500 truncate max-w-[140px]">{match.opponent}</p>
-              <input name="goals_against" type="number" min="0" defaultValue={match.goals_against}
-                className="h-20 w-20 rounded-2xl border border-slate-700 bg-slate-800 text-center text-4xl font-bold font-[family-name:var(--font-heading)] text-white focus:border-green-500 focus:outline-none transition-colors" />
-            </div>
-          </div>
-        </section>
+              <div className="flex items-center justify-center gap-4">
+                <div className="flex-1 text-center">
+                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: '#adb4ce' }}>{teamName}</p>
+                  <div className="h-20 w-full max-w-[88px] mx-auto rounded-2xl border flex items-center justify-center text-5xl font-black text-white"
+                    style={{
+                      fontFamily: 'Sora, sans-serif',
+                      backgroundColor: liveGoals > liveGoalsAgainst ? 'rgba(75,226,119,0.08)' : '#191f31',
+                      borderColor: liveGoals > liveGoalsAgainst ? 'rgba(75,226,119,0.3)' : '#2e3447',
+                    }}
+                    title="Se calcula automáticamente de los goles individuales">
+                    {liveGoals}
+                  </div>
+                  <p className="mt-1.5 text-[9px]" style={{ color: '#4be277', opacity: 0.6 }}>Auto ⚽</p>
+                </div>
+                <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                  <span className="text-2xl font-black" style={{ color: '#334155' }}>:</span>
+                </div>
+                <div className="flex-1 text-center">
+                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: '#adb4ce' }}>{match.opponent}</p>
+                  <input name="goals_against" type="number" min="0" defaultValue={match.goals_against}
+                    className="h-20 w-full max-w-[88px] mx-auto rounded-2xl border text-center text-5xl font-black text-white focus:outline-none transition-all block"
+                    style={{
+                      fontFamily: 'Sora, sans-serif',
+                      backgroundColor: liveGoalsAgainst > liveGoals ? 'rgba(248,113,113,0.08)' : '#191f31',
+                      borderColor: liveGoalsAgainst > liveGoals ? 'rgba(248,113,113,0.3)' : '#2e3447',
+                    }} />
+                  <p className="mt-1.5 text-[9px]" style={{ color: '#64748b' }}>Editable</p>
+                </div>
+              </div>
+            </section>
+          )
+        })()}
 
       </div>
 
@@ -228,12 +266,12 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         <section className="hidden lg:block">
           <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
             {/* Cabecera tabla */}
-            <div className="grid grid-cols-[2.5rem_1fr_6rem_4.5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 border-b border-slate-800 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest">
+            <div className="grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 border-b border-slate-800 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest">
               <span className="text-slate-600">#</span>
               <span className="text-slate-600">{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}</span>
               <span className="text-center text-slate-600">Estado</span>
-              <span className="text-center text-slate-500">Min</span>
-              <span className="text-center text-green-500/70">G</span>
+              <span className="text-center text-slate-500">Min/Sub</span>
+              <span className="text-center text-slate-500">G/GC</span>
               <span className="text-center text-blue-400/70">Ast</span>
               <span className="text-center text-yellow-400/70">Am</span>
               <span className="text-center text-red-400/70">Rj</span>

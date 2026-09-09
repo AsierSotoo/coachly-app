@@ -12,7 +12,7 @@ export default function StatsLoading() {
         </div>
       </div>
       {/* Hero section */}
-      <div className="rounded-[24px] border p-6 mb-8 flex gap-8" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+      <div className="rounded-2xl border p-6 mb-8 flex gap-8" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
         <div className="w-48 h-48 rounded-full" style={{ backgroundColor: '#1e293b' }} />
         <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[1,2,3,4].map(i => <div key={i} className="rounded-lg h-28" style={{ backgroundColor: '#1e293b' }} />)}

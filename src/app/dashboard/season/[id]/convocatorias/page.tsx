@@ -6,7 +6,8 @@ import { TeamLogo } from '@/components/team/team-logo'
 import { DeleteConvocatoriaButton } from '@/components/convocatoria/delete-convocatoria-button'
 
 function dateStr(iso: string) {
-  return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+  const d = iso.includes('T') ? iso : iso + 'T12:00:00'
+  return new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function TeamInitials({ name }: { name: string }) {
@@ -165,7 +166,7 @@ export default async function ConvocatoriasPage({
         </section>
 
         {/* ── Tabla con filtros ────────────────────────────────────────── */}
-        <section className="rounded-[24px] border border-[#1e293b] overflow-hidden"
+        <section className="rounded-2xl border border-[#1e293b] overflow-hidden"
           style={{ backgroundColor: '#191f31' }}>
 
           {/* Filtros */}

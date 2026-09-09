@@ -114,14 +114,14 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
         </div>
 
         {total === 0 ? (
-          <div className="rounded-[24px] border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
+          <div className="rounded-2xl border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
             <p className="text-sm" style={{ color: '#adb4ce' }}>Sin partidos registrados aún en esta temporada.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-6">
 
             {/* Resumen */}
-            <section className="rounded-[24px] border border-[#1e293b] p-6" style={{ backgroundColor: '#0f172a' }}>
+            <section className="rounded-2xl border border-[#1e293b] p-6" style={{ backgroundColor: '#0f172a' }}>
               <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#adb4ce' }}>Resumen de temporada</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
@@ -225,7 +225,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
             {/* Líderes */}
             {(topScorer || topAssist || topMinutes) && (
-              <section className="rounded-[24px] border border-[#1e293b] p-6" style={{ backgroundColor: '#0f172a' }}>
+              <section className="rounded-2xl border border-[#1e293b] p-6" style={{ backgroundColor: '#0f172a' }}>
                 <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#adb4ce' }}>Líderes de temporada</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
@@ -248,7 +248,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
             {/* Tabla de goleadoras */}
             {byGoals.length > 0 && (
-              <section className="rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+              <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
                 <div className="px-6 py-4 border-b border-[#1e293b]">
                   <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Goleadoras</p>
                 </div>
@@ -268,7 +268,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
             {/* Tabla asistencias */}
             {byAssists.length > 0 && (
-              <section className="rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+              <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
                 <div className="px-6 py-4 border-b border-[#1e293b]">
                   <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Asistencias</p>
                 </div>
@@ -288,7 +288,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
             {/* Tabla completa de estadísticas */}
             {allPlayers.length > 0 && (
-              <section className="rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+              <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
                 <div className="px-6 py-4 border-b border-[#1e293b]">
                   <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Estadísticas completas</p>
                 </div>
@@ -333,7 +333,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
             )}
 
             {/* Últimos 5 partidos */}
-            <section className="rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+            <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
               <div className="px-6 py-4 border-b border-[#1e293b]">
                 <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Últimos partidos</p>
               </div>

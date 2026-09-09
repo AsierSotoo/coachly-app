@@ -81,8 +81,8 @@ export function SortableStatsTable({ stats, playerLabel, teamId }: { stats: Play
             <ColHeader label="G/90" col="g90"         title="Goles por 90 min (min. 45 min jugados)" />
             <ColHeader label="A"    col="assists"      title="Asistencias" />
             <ColHeader label="G+A"  col="ga"          title="Goles + Asistencias" />
-            <ColHeader label="🟨"   col="yellowCards"  title="Tarjetas amarillas" />
-            <ColHeader label="🟥"   col="redCards"     title="Tarjetas rojas" />
+            <ColHeader label="AM"  col="yellowCards"  title="Tarjetas amarillas" />
+            <ColHeader label="RJ"  col="redCards"     title="Tarjetas rojas" />
           </tr>
         </thead>
         <tbody>

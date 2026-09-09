@@ -150,7 +150,7 @@ export default async function PlayersPage({
 
         {/* Formulario rápido */}
         <section
-          className="mb-8 p-6 rounded-[24px] border transition-all duration-200 hover:border-[#22c55e] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
+          className="mb-8 p-6 rounded-2xl border transition-all duration-200 hover:border-[#22c55e] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
           style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}
         >
           <div className="flex items-center gap-3 mb-6">
@@ -246,9 +246,13 @@ export default async function PlayersPage({
           </div>
 
           {active.length === 0 ? (
-            <div className="rounded-[24px] border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
-              <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>group_add</span>
-              <p className="text-sm" style={{ color: '#adb4ce' }}>Añade la primera {terms.p} usando el formulario de arriba</p>
+            <div className="rounded-2xl border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
+              <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>{searchQ || filterPos ? 'search_off' : 'group_add'}</span>
+              <p className="text-sm" style={{ color: '#adb4ce' }}>
+                {searchQ || filterPos
+                  ? `Sin resultados${searchQ ? ` para "${sp.q}"` : ''}${filterPos ? ` en ${filterPos}` : ''}`
+                  : `Añade la primera ${terms.p} usando el formulario de arriba`}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -262,7 +266,7 @@ export default async function PlayersPage({
 
                 if (editingId === player.id) {
                   return (
-                    <div key={player.id} className="col-span-1 sm:col-span-2 lg:col-span-4 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#4be277' }}>
+                    <div key={player.id} className="col-span-1 sm:col-span-2 lg:col-span-4 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#4be277' }}>
                       <form action={updatePlayer} className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <input type="hidden" name="player_id" value={player.id} />
                         <input type="hidden" name="team_id" value={teamId} />
@@ -313,9 +317,16 @@ export default async function PlayersPage({
 
                 return (
                   <div key={player.id}
-                    className="relative group overflow-hidden rounded-[24px] border p-6 flex flex-col items-center transition-all duration-200 hover:border-[#22c55e] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
+                    className="relative group overflow-hidden rounded-2xl border p-6 flex flex-col items-center transition-all duration-200 hover:border-[#22c55e] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
                     style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}
                   >
+                    {/* Dorsal fantasma de fondo */}
+                    {player.number !== null && (
+                      <span className="absolute top-0 right-2 pointer-events-none select-none"
+                        style={{ fontSize: 84, fontWeight: 900, fontFamily: 'Sora, sans-serif', color: '#dce1fb', opacity: 0.04, lineHeight: 1 }}>
+                        {player.number}
+                      </span>
+                    )}
                     {/* Acciones hover */}
                     <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                       <Link
@@ -395,37 +406,28 @@ export default async function PlayersPage({
                       </div>
                     )}
 
-                    {/* Stats en temporada */}
-                    {(stat.goals > 0 || stat.assists > 0) && (
-                      <div className="flex items-center justify-center gap-4 mb-2">
-                        {stat.goals > 0 && (
-                          <span className="flex items-center gap-1 text-[11px] font-bold" style={{ color: '#4be277' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>sports_soccer</span>
-                            {stat.goals}
-                          </span>
-                        )}
-                        {stat.assists > 0 && (
-                          <span className="flex items-center gap-1 text-[11px] font-bold" style={{ color: '#60a5fa' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 13 }}>electric_bolt</span>
-                            {stat.assists}
-                          </span>
-                        )}
-                        {stat.redCards > 0 && (
-                          <span className="flex items-center gap-1 text-[11px] font-bold" style={{ color: '#f87171' }}>
-                            <span className="w-2.5 h-3.5 rounded-[2px]" style={{ backgroundColor: '#f87171' }} />
-                            {stat.redCards}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    {/* Mini stats grid */}
+                    <div className="grid grid-cols-4 w-full gap-1 mb-3">
+                      {([
+                        { label: 'PJ', value: stat.games,       color: stat.games > 0 ? '#adb4ce' : '#334155' },
+                        { label: 'G',  value: stat.goals,       color: stat.goals > 0 ? '#4be277' : '#334155' },
+                        { label: 'A',  value: stat.assists,     color: stat.assists > 0 ? '#60a5fa' : '#334155' },
+                        { label: 'AM', value: stat.yellowCards, color: stat.yellowCards >= 4 ? '#facc15' : stat.yellowCards > 0 ? '#adb4ce' : '#334155' },
+                      ] as { label: string; value: number; color: string }[]).map(({ label, value, color }) => (
+                        <div key={label} className="rounded-lg py-1.5 text-center" style={{ backgroundColor: '#191f31' }}>
+                          <span className="block text-[15px] font-bold tabular-nums leading-none" style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</span>
+                          <span className="block text-[8px] font-bold uppercase tracking-wider mt-0.5" style={{ color: '#334155' }}>{label}</span>
+                        </div>
+                      ))}
+                    </div>
 
                     {/* Barra de participación */}
                     <div className="w-full h-1 rounded-full overflow-hidden mb-1" style={{ backgroundColor: '#23293c' }}>
                       <div className="h-full rounded-full transition-all duration-500" style={{ width: `${participationPct}%`, backgroundColor: '#22c55e' }} />
                     </div>
                     <div className="flex justify-between w-full">
-                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>Partidos jugados</span>
-                      <span className="text-[10px] font-bold" style={{ color: '#4be277' }}>{stat.games}</span>
+                      <span className="text-[10px] font-bold uppercase" style={{ color: '#475569' }}>Participación</span>
+                      <span className="text-[10px] font-bold" style={{ color: '#4be277' }}>{participationPct}%</span>
                     </div>
                   </div>
                 )

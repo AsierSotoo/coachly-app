@@ -62,31 +62,29 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
 
       {/* Logo */}
       <div className="px-4 mb-8 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
-          <Image src="/logo.png" alt="Coachly" width={40} height={40} className="w-full h-full object-cover" />
+        <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0">
+          <Image src="/logo.png" alt="Coachly" width={36} height={36} className="w-full h-full object-cover" />
         </div>
-        <div>
-          <h1 className="text-[20px] font-extrabold leading-tight" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>Coachly</h1>
-          <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: '#adb4ce', opacity: 0.7 }}>Análisis Técnico</p>
-        </div>
+        <h1 className="text-[18px] font-extrabold tracking-tight" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
+          Coach<span style={{ color: '#4be277' }}>ly</span>
+        </h1>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-0.5 px-2">
+      <nav className="flex-1 space-y-0.5 px-3">
         {NAV.map(({ label, icon, key }) => {
           const active = isActive(key)
           return (
             <Link key={key} href={href(key)}
-              className="flex items-center gap-3 px-4 py-3 rounded-none transition-all duration-200 cursor-pointer group"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 cursor-pointer"
               style={{
-                color: active ? '#4be277' : '#adb4ce',
-                backgroundColor: active ? 'rgba(75,226,119,0.07)' : 'transparent',
-                borderRight: active ? '2px solid #4be277' : '2px solid transparent',
+                color: active ? '#4be277' : '#64748b',
+                backgroundColor: active ? 'rgba(75,226,119,0.1)' : 'transparent',
               }}
-              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.03)' }}
-              onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 22 }}>{icon}</span>
-              <span className="text-[12px] font-semibold uppercase tracking-[0.05em]">{label}</span>
+              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.04)'; if (!active) (e.currentTarget as HTMLElement).style.color = '#adb4ce' }}
+              onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; if (!active) (e.currentTarget as HTMLElement).style.color = '#64748b' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}>{icon}</span>
+              <span className="text-[12px] font-semibold">{label}</span>
             </Link>
           )
         })}

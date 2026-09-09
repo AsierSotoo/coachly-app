@@ -5,6 +5,7 @@ import { PageTransition } from '@/components/ui/page-transition'
 import { updateTrainingSession } from '../actions'
 import { DeleteTrainingButton } from '@/components/training/delete-training-button'
 import { TrainingAttendance } from '@/components/training/training-attendance'
+import { AvailabilityCoachCard } from '@/components/disponibilidad/availability-coach-card'
 
 export default async function TrainingSessionPage({
   params, searchParams,
@@ -17,18 +18,25 @@ export default async function TrainingSessionPage({
   const supabase = await createClient()
 
   const [{ data: session }, { data: season }] = await Promise.all([
-    supabase.from('training_sessions').select('*').eq('id', sessionId).single(),
+    (supabase.from('training_sessions') as any).select('*, teams(availability_enabled)').eq('id', sessionId).single(),
     supabase.from('seasons').select('name').eq('id', seasonId).single(),
   ])
   if (!session || !season) notFound()
 
-  const [{ data: players }, { data: attendanceRows }] = await Promise.all([
+  const availEnabled = !!(session.teams as { availability_enabled?: boolean } | null)?.availability_enabled
+
+  const [{ data: players }, { data: attendanceRows }, { data: availRows }] = await Promise.all([
     supabase.from('players').select('id, name, number, position, photo_url')
       .eq('team_id', session.team_id).eq('active', true)
       .order('number', { ascending: true, nullsFirst: false }),
     supabase.from('training_attendance').select('player_id, attended, absence_reason')
       .eq('session_id', sessionId),
+    availEnabled
+      ? (supabase.from('training_availability') as any).select('player_id, status').eq('session_id', sessionId)
+      : Promise.resolve({ data: [] }),
   ])
+
+  const availResponses = (availRows as { player_id: string; status: string }[] | null) ?? []
 
   const initialAttendance: Record<string, { attended: boolean; reason: string | null }> = {}
   for (const row of attendanceRows ?? []) {
@@ -120,6 +128,14 @@ export default async function TrainingSessionPage({
               </button>
             </div>
           </form>
+
+          {/* ── Disponibilidad (respuestas del enlace compartido) ── */}
+          {availEnabled && (players?.length ?? 0) > 0 && (
+            <AvailabilityCoachCard
+              players={players ?? []}
+              responses={availResponses.map(r => ({ player_id: r.player_id, status: r.status as 'available' | 'unavailable' | 'doubt' }))}
+            />
+          )}
 
           {/* ── Asistencia ── */}
           {(players?.length ?? 0) > 0 && (

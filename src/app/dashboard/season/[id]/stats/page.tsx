@@ -43,17 +43,16 @@ export default async function StatsPage({
   const { ct: ctParam = 'all' } = await searchParams
   const supabase = await createClient()
 
-  const { data: season } = await supabase.from('seasons').select('*, teams(*)').eq('id', seasonId).single()
+  const [{ data: season }, { data: allMatchesRaw }, { data: trainingSessions }] = await Promise.all([
+    supabase.from('seasons').select('*, teams(*)').eq('id', seasonId).single(),
+    supabase.from('matches').select('*').eq('season_id', seasonId).order('played_at'),
+    supabase.from('training_sessions').select('id').eq('season_id', seasonId),
+  ])
   if (!season) notFound()
 
   const team = season.teams as { id: string; name: string; logo_url?: string | null; gender?: string | null }
   const shareToken = (season as { share_token?: string | null }).share_token ?? null
   const terms = getTeamTerms(team.gender)
-
-  const [{ data: allMatchesRaw }, { data: trainingSessions }] = await Promise.all([
-    supabase.from('matches').select('*').eq('season_id', seasonId).order('played_at'),
-    supabase.from('training_sessions').select('id').eq('season_id', seasonId),
-  ])
 
   // Solo partidos finalizados (excluir programados)
   type MatchRaw = NonNullable<typeof allMatchesRaw>[0]
@@ -272,9 +271,6 @@ export default async function StatsPage({
   }
   const competitions = Array.from(compMap.values()).sort((a, b) => b.played - a.played)
 
-  // matchesChrono: partidos filtrados (para last10, H2H, etc.)
-  const matchesChrono = [...(matches ?? [])].sort((a, b) => a.played_at.localeCompare(b.played_at))
-
   // Gráfico de evolución de puntos — siempre usa solo Liga (los amistosos y copa no dan puntos)
   const ligaMatchesChrono = [...ligaFinished].sort((a, b) => a.played_at.localeCompare(b.played_at))
   let cumPts = 0
@@ -324,7 +320,7 @@ export default async function StatsPage({
     if (r === 'V') s.W++; else if (r === 'E') s.E++; else s.D++
     s.lastResult = r
   }
-  const h2h = Array.from(h2hMap.values()).filter(r => r.played > 1).sort((a, b) => b.played - a.played)
+  const h2h = Array.from(h2hMap.values()).sort((a, b) => b.played - a.played || a.opponent.localeCompare(b.opponent))
 
   return (
     <PageTransition>
@@ -373,7 +369,7 @@ export default async function StatsPage({
               { label: 'Liga', ct: 'liga' },
               ...(hasCopaInStats ? [{ label: 'Copa', ct: 'copa' }] : []),
             ] as { label: string; ct: string }[]).map(({ label, ct }) => {
-              const active = ctParam === ct || (!ctParam && ct === '')
+              const active = ctParam === ct || (ctParam === 'all' && ct === '')
               const color = '#a78bfa'
               return (
                 <a key={ct}
@@ -396,7 +392,7 @@ export default async function StatsPage({
         )}
 
         {total === 0 ? (
-          <div className="rounded-[24px] border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
+          <div className="rounded-2xl border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
             <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>leaderboard</span>
             <p className="text-sm" style={{ color: '#adb4ce' }}>Sin partidos registrados en esta temporada</p>
           </div>
@@ -404,7 +400,7 @@ export default async function StatsPage({
           <>
             {/* Hero: donut + métricas + racha */}
             <section
-              className="mb-8 p-6 rounded-[24px] border flex flex-col md:flex-row gap-8 items-center relative overflow-hidden"
+              className="mb-8 p-6 rounded-2xl border flex flex-col md:flex-row gap-8 items-center relative overflow-hidden"
               style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}
             >
               {/* Decoración de fondo */}
@@ -518,7 +514,7 @@ export default async function StatsPage({
 
             {/* Callout máximo goleador */}
             {byGoals.length > 0 && (
-              <div className="mb-6 rounded-[24px] border p-5 flex items-center gap-5 relative overflow-hidden"
+              <div className="mb-6 rounded-2xl border p-5 flex items-center gap-5 relative overflow-hidden"
                 style={{ backgroundColor: '#0f172a', borderColor: 'rgba(34,197,94,0.25)', background: 'linear-gradient(135deg, #0f172a 0%, rgba(34,197,94,0.04) 100%)' }}>
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-green-500/40 to-transparent" />
                 <div className="absolute top-0 right-0 p-5 opacity-[0.04] pointer-events-none select-none">
@@ -543,6 +539,41 @@ export default async function StatsPage({
                   <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#4be277' }}>goles</p>
                 </div>
               </div>
+            )}
+
+            {/* Ranking de goleadoras con barras horizontales */}
+            {byGoals.length > 1 && (
+              <section className="mb-8 rounded-2xl border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+                <div className="px-6 py-4 border-b border-[#1e293b] flex items-center justify-between">
+                  <h3 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    Ranking Goleadoras
+                  </h3>
+                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#475569' }}>
+                    {byGoals.length} {byGoals.length === 1 ? terms.p : terms.pp} con goles
+                  </span>
+                </div>
+                <div className="px-6 py-4 flex flex-col gap-3">
+                  {byGoals.slice(0, 8).map((s, i) => {
+                    const pct = byGoals[0].goals > 0 ? Math.max((s.goals / byGoals[0].goals) * 100, 6) : 0
+                    const medal = i === 0 ? '#fbbf24' : i === 1 ? '#adb4ce' : i === 2 ? '#9d8050' : '#475569'
+                    const barColor = i === 0 ? '#4be277' : i === 1 ? 'rgba(75,226,119,0.65)' : i === 2 ? 'rgba(75,226,119,0.45)' : 'rgba(75,226,119,0.25)'
+                    return (
+                      <div key={s.playerId} className="flex items-center gap-3">
+                        <span className="w-4 text-center text-[11px] font-black flex-shrink-0 tabular-nums" style={{ color: medal }}>{i + 1}</span>
+                        <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" className="w-7 h-7 flex-shrink-0" />
+                        <span className="text-[12px] font-semibold text-white truncate" style={{ minWidth: 80, maxWidth: 120 }}>{shortName(s.name)}</span>
+                        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: barColor }} />
+                        </div>
+                        <div className="flex-shrink-0 flex items-baseline gap-1.5">
+                          <span className="text-[18px] font-extrabold tabular-nums" style={{ color: i === 0 ? '#4be277' : '#adb4ce', fontFamily: 'Sora, sans-serif' }}>{s.goals}</span>
+                          {s.assists > 0 && <span className="text-[10px] font-bold" style={{ color: '#475569' }}>+{s.assists}A</span>}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
             )}
 
             {/* Líderes del Equipo */}
@@ -609,7 +640,7 @@ export default async function StatsPage({
 
             {/* Casa vs Fuera */}
             {total > 0 && (homeM.length > 0 || awayM.length > 0) && (
-              <section className="mb-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="mb-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
                 <h3 className="text-[20px] font-semibold mb-5 text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                   Rendimiento por Campo
                 </h3>
@@ -660,7 +691,7 @@ export default async function StatsPage({
 
             {/* Goles por partido — gráfico de barras */}
             {last10.length > 0 && (
-              <section className="rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
                 <div className="flex flex-col md:flex-row md:items-start justify-between mb-6 gap-4">
                   <div>
                     <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
@@ -716,7 +747,7 @@ export default async function StatsPage({
 
             {/* Gráfico de evolución de puntos */}
             {chartPoints.length >= 2 && (
-              <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
                 <div className="flex items-start justify-between mb-6 gap-4">
                   <div>
                     <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
@@ -748,7 +779,7 @@ export default async function StatsPage({
 
             {/* Carrera goleadora */}
             {goalRacePlayers.length >= 2 && raceMatchLabels.length >= 2 && (
-              <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-6 gap-4">
                   <div>
                     <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
@@ -776,7 +807,7 @@ export default async function StatsPage({
 
             {/* Desglose por competición */}
             {competitions.length >= 2 && (
-              <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
                 <h3 className="text-[20px] font-semibold mb-5 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                   Por Competición
                 </h3>
@@ -814,7 +845,7 @@ export default async function StatsPage({
 
             {/* ── Rendimiento por posición ──────────────────── */}
             {byPosition.length >= 2 && (
-              <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
                 <h3 className="text-[20px] font-semibold mb-5 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                   Rendimiento por Posición
                 </h3>
@@ -897,7 +928,7 @@ export default async function StatsPage({
             )}
             {/* ── Tabla completa de estadísticas ── */}
             {stats.filter(s => s.gamesPlayed > 0).length > 0 && (
-              <section className="mt-8 rounded-[24px] border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="mt-8 rounded-2xl border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
                 <div className="px-6 py-4 border-b border-[#1e293b]">
                   <h3 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                     Tabla de rendimiento
@@ -916,7 +947,7 @@ export default async function StatsPage({
 
             {/* Comparar jugadoras */}
             {compareStats.length >= 2 && (
-              <section className="mt-8 rounded-[24px] border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
                 <h3 className="text-[20px] font-semibold mb-1 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                   Comparar Jugadoras
                 </h3>
@@ -1014,42 +1045,51 @@ function RankCard({
       {players.length === 0 ? (
         <p className="text-[11px] text-center py-3" style={{ color: '#adb4ce' }}>Sin datos</p>
       ) : (
-        <div className="flex flex-col gap-4">
-          {players.map((p, i) => (
-            <div key={p.name + i} className="flex items-center justify-between"
-              style={{ opacity: i === 0 ? 1 : i === 1 ? 0.8 : 0.6 }}>
-              <div className="flex items-center gap-2 min-w-0">
-                <PlayerAvatar name={p.name} photoUrl={p.photoUrl} position={p.position ?? undefined} size="sm" />
-                <span className="text-sm truncate" style={{ color: '#dce1fb' }}>{shortName(p.name)}</span>
-              </div>
+        <div className="flex flex-col gap-3">
+          {players.map((p, i) => {
+            const pct = !showCards && players[0].primary > 0 ? Math.max((p.primary / players[0].primary) * 100, 8) : 0
+            return (
+              <div key={p.name + i} style={{ opacity: i === 0 ? 1 : i === 1 ? 0.82 : 0.65 }}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <PlayerAvatar name={p.name} photoUrl={p.photoUrl} position={p.position ?? undefined} size="sm" />
+                    <span className="text-sm truncate" style={{ color: '#dce1fb' }}>{shortName(p.name)}</span>
+                  </div>
 
-              {showCards ? (
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  {(p.yellowCards ?? 0) > 0 && (
-                    <div className="flex items-center gap-1">
-                      <span className="w-3 h-4 rounded-sm bg-yellow-400" style={{ boxShadow: p.warnCards ? '0 0 6px rgba(250,204,21,0.5)' : 'none' }} />
-                      <span className="text-sm font-bold" style={{ color: '#dce1fb' }}>{p.yellowCards}</span>
+                  {showCards ? (
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {(p.yellowCards ?? 0) > 0 && (
+                        <div className="flex items-center gap-1">
+                          <span className="w-3 h-4 rounded-sm bg-yellow-400" style={{ boxShadow: p.warnCards ? '0 0 6px rgba(250,204,21,0.5)' : 'none' }} />
+                          <span className="text-sm font-bold" style={{ color: '#dce1fb' }}>{p.yellowCards}</span>
+                        </div>
+                      )}
+                      {(p.redCards ?? 0) > 0 && (
+                        <div className="flex items-center gap-1 ml-1">
+                          <span className="w-3 h-4 rounded-sm bg-red-500" />
+                          <span className="text-sm font-bold" style={{ color: '#dce1fb' }}>{p.redCards}</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {(p.redCards ?? 0) > 0 && (
-                    <div className="flex items-center gap-1 ml-1">
-                      <span className="w-3 h-4 rounded-sm bg-red-500" />
-                      <span className="text-sm font-bold" style={{ color: '#dce1fb' }}>{p.redCards}</span>
+                  ) : (
+                    <div className="flex flex-col items-end flex-shrink-0">
+                      <span className="text-[20px] font-bold leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+                        {fmt(p.primary)}
+                      </span>
+                      {p.sublabel && (
+                        <span className="text-[9px] font-bold uppercase mt-0.5" style={{ color: '#4be277', opacity: 0.6 }}>{p.sublabel}</span>
+                      )}
                     </div>
                   )}
                 </div>
-              ) : (
-                <div className="flex flex-col items-end flex-shrink-0">
-                  <span className="text-[20px] font-bold leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
-                    {fmt(p.primary)}
-                  </span>
-                  {p.sublabel && (
-                    <span className="text-[9px] font-bold uppercase mt-0.5" style={{ color: '#4be277', opacity: 0.6 }}>{p.sublabel}</span>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
+                {!showCards && (
+                  <div className="h-[2px] rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: '#22c55e', opacity: i === 0 ? 0.7 : i === 1 ? 0.5 : 0.35 }} />
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

@@ -135,7 +135,7 @@ export default async function PlayerDetailPage({
   // Ranking en plantilla (temporada actual)
   let goalsRank = 0, assistsRank = 0, minutesRank = 0, rankTotal = 0
   if (current?.seasonId) {
-    const { data: smIds } = await supabase.from('matches').select('id').eq('season_id', current.seasonId)
+    const { data: smIds } = await supabase.from('matches').select('id').eq('season_id', current.seasonId).neq('status', 'scheduled')
     const mIds = smIds?.map(m => m.id) ?? []
     if (mIds.length > 0) {
       const { data: tApps } = await supabase.from('appearances')
@@ -153,6 +153,10 @@ export default async function PlayerDetailPage({
       goalsRank   = sortBy('g').findIndex(([id]) => id === playerId) + 1
       assistsRank = sortBy('a').findIndex(([id]) => id === playerId) + 1
       minutesRank = sortBy('m').findIndex(([id]) => id === playerId) + 1
+      // No mostrar posición si el stat es 0
+      const curr = pMap.get(playerId)
+      if (curr?.g === 0) goalsRank = 0
+      if (curr?.a === 0) assistsRank = 0
     }
   }
 
@@ -228,7 +232,7 @@ export default async function PlayerDetailPage({
         <div className="mb-5 overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950">
           <div className="flex items-center gap-2 border-b border-slate-800 px-5 py-3">
             <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 16 }}>edit</span>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Ficha del jugador/a</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Ficha del {terms.p}</p>
             {sp.saved && (
               <span className="ml-auto text-[10px] font-bold" style={{ color: '#4be277' }}>✓ Guardado</span>
             )}
@@ -318,7 +322,7 @@ export default async function PlayerDetailPage({
                   <div key={label} className="flex flex-col items-center gap-1 py-3">
                     <span className="material-symbols-outlined" style={{ fontSize: 13, color: isTop ? color : '#475569' }}>{icon}</span>
                     <p className="text-xl font-black leading-none tabular-nums" style={{ color: isTop ? color : '#64748b', fontFamily: 'Sora, sans-serif' }}>
-                      {medal ?? `${rank}ª`}
+                      {medal ?? (rank > 0 ? `${rank}ª` : '—')}
                     </p>
                     <p className="text-[9px] uppercase tracking-wide" style={{ color: '#475569' }}>{label}</p>
                     <p className="text-[9px]" style={{ color: '#1e3a4c' }}>de {rankTotal}</p>
@@ -519,7 +523,7 @@ export default async function PlayerDetailPage({
               {cardHistory.map((app, i) => {
                 const m = app.matches as MatchExt | null
                 const date = m?.played_at
-                  ? new Date(m.played_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: '2-digit' })
+                  ? new Date(m.played_at + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: '2-digit' })
                   : '?'
                 const season = m?.seasons?.name ?? ''
                 return (

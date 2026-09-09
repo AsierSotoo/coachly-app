@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase-server'
+﻿import { createClient } from '@/lib/supabase-server'
 import { updateProfile } from './actions'
 import { logout } from '@/app/auth/actions'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -30,7 +30,7 @@ export default async function ProfilePage({
         {/* ── Hero ──────────────────────────────────────────────────────── */}
         <form action={updateProfile}>
           <section
-            className="flex flex-col md:flex-row items-center gap-8 p-8 rounded-[24px] border border-[#1e293b] mb-8"
+            className="flex flex-col md:flex-row items-center gap-8 p-8 rounded-2xl border border-[#1e293b] mb-8"
             style={{ backgroundColor: '#0f172a' }}
           >
             {/* Avatar */}
@@ -88,7 +88,7 @@ export default async function ProfilePage({
 
             {/* Información Personal */}
             <div
-              className="rounded-[24px] border border-[#1e293b] p-8 space-y-6"
+              className="rounded-2xl border border-[#1e293b] p-8 space-y-6"
               style={{ backgroundColor: '#0f172a' }}
             >
               <div className="flex items-center gap-3 mb-2">
@@ -157,7 +157,7 @@ export default async function ProfilePage({
 
             {/* Plan actual */}
             <div
-              className="rounded-[24px] border border-[#1e293b] p-8 flex flex-col gap-6"
+              className="rounded-2xl border border-[#1e293b] p-8 flex flex-col gap-6"
               style={{ backgroundColor: '#0f172a' }}
             >
               <div className="flex items-center gap-3">
@@ -196,7 +196,7 @@ export default async function ProfilePage({
 
           {/* Seguridad */}
           <div
-            className="rounded-[24px] border border-[#1e293b] p-8 space-y-6"
+            className="rounded-2xl border border-[#1e293b] p-8 space-y-6"
             style={{ backgroundColor: '#0f172a' }}
           >
             <div className="flex items-center gap-3">
@@ -258,7 +258,7 @@ export default async function ProfilePage({
           </div>
 
           {/* Instalar app */}
-          <div className="rounded-[24px] border border-[#1e293b] p-8 space-y-4" style={{ backgroundColor: '#0f172a' }}>
+          <div className="rounded-2xl border border-[#1e293b] p-8 space-y-4" style={{ backgroundColor: '#0f172a' }}>
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined" style={{ color: '#4be277' }}>install_mobile</span>
               <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Instalar Coachly</h4>
@@ -277,7 +277,7 @@ export default async function ProfilePage({
 
           {/* Zona de Peligro */}
           <div
-            className="rounded-[24px] border p-8 space-y-6"
+            className="rounded-2xl border p-8 space-y-6"
             style={{ backgroundColor: 'rgba(147,0,10,0.04)', borderColor: 'rgba(255,180,171,0.3)' }}
           >
             <div className="flex items-center gap-3">

@@ -1,4 +1,4 @@
-export default function DashboardLoading() {
+﻿export default function DashboardLoading() {
   return (
     <div className="p-4 md:p-10 animate-pulse">
       {/* Header */}
@@ -12,7 +12,7 @@ export default function DashboardLoading() {
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {[1, 2, 3].map(i => (
-          <div key={i} className="rounded-[24px] border p-6 h-56" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+          <div key={i} className="rounded-2xl border p-6 h-56" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
             <div className="flex gap-4 mb-4">
               <div className="w-16 h-16 rounded-2xl" style={{ backgroundColor: '#1e293b' }} />
               <div className="flex-1">

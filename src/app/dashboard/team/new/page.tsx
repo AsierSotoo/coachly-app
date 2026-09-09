@@ -1,4 +1,4 @@
-import { createTeam } from '../actions'
+﻿import { createTeam } from '../actions'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
 
@@ -24,7 +24,7 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
         </div>
 
         {/* Card formulario */}
-        <section className="rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+        <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
 
           <div className="flex items-center gap-3 px-6 py-5 border-b border-[#1e293b]">
             <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 22 }}>sports_soccer</span>

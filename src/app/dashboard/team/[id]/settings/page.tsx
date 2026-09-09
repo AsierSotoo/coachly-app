@@ -17,21 +17,26 @@ export default async function TeamSettingsPage({
 
   const [{ data: team }, { data: seasons }, { count: playerCount }] = await Promise.all([
     supabase.from('teams').select('*').eq('id', teamId).single(),
-    supabase.from('seasons').select('id, name, created_at, matches(id, goals_for, goals_against)').eq('team_id', teamId).order('created_at', { ascending: false }),
+    supabase.from('seasons').select('id, name, created_at, matches(id, goals_for, goals_against, status, competition_type)').eq('team_id', teamId).order('created_at', { ascending: false }),
     supabase.from('players').select('id', { count: 'exact', head: true }).eq('team_id', teamId),
   ])
   if (!team) notFound()
   const sp = await searchParams
 
-  type SeasonWithMatches = { id: string; name: string; created_at: string; matches: { id: string; goals_for: number; goals_against: number }[] }
-  const seasonsTyped = (seasons ?? []) as SeasonWithMatches[]
-  const allMatches   = seasonsTyped.flatMap(s => s.matches)
+  type SeasonWithMatches = { id: string; name: string; created_at: string; matches: { id: string; goals_for: number; goals_against: number; status?: string; competition_type?: string }[] }
+  const seasonsTyped  = (seasons ?? []) as SeasonWithMatches[]
+  const allRawMatches = seasonsTyped.flatMap(s => s.matches)
+  // Solo partidos jugados (excluir programados)
+  const allMatches    = allRawMatches.filter(m => m.status !== 'scheduled')
+  // Puntos solo de liga (los amistosos no dan puntos)
+  const ligaMatches   = allMatches.filter(m => (m.competition_type ?? 'liga') === 'liga')
   const totalW  = allMatches.filter(m => m.goals_for > m.goals_against).length
   const totalE  = allMatches.filter(m => m.goals_for === m.goals_against).length
   const totalD  = allMatches.filter(m => m.goals_for < m.goals_against).length
   const totalGF = allMatches.reduce((s, m) => s + m.goals_for, 0)
   const totalGA = allMatches.reduce((s, m) => s + m.goals_against, 0)
-  const totalPts = totalW * 3 + totalE
+  const totalPts = ligaMatches.filter(m => m.goals_for > m.goals_against).length * 3 +
+                   ligaMatches.filter(m => m.goals_for === m.goals_against).length
   const winPct  = allMatches.length > 0 ? Math.round((totalW / allMatches.length) * 100) : 0
 
   return (
@@ -53,7 +58,7 @@ export default async function TeamSettingsPage({
         </div>
 
         {/* Escudo */}
-        <section className="mb-6 rounded-[24px] border border-[#1e293b] p-6" style={{ backgroundColor: '#0f172a' }}>
+        <section className="mb-6 rounded-2xl border border-[#1e293b] p-6" style={{ backgroundColor: '#0f172a' }}>
           <div className="flex items-center gap-3 mb-5">
             <span className="material-symbols-outlined" style={{ color: '#4be277' }}>shield</span>
             <h2 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
@@ -65,7 +70,7 @@ export default async function TeamSettingsPage({
 
         {/* Historial global del equipo */}
         {allMatches.length > 0 && (
-          <section className="mb-6 rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+          <section className="mb-6 rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
             <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e293b]">
               <span className="material-symbols-outlined" style={{ color: '#4be277' }}>history</span>
               <h2 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Historial del equipo</h2>
@@ -114,9 +119,10 @@ export default async function TeamSettingsPage({
                 <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#475569' }}>Temporadas</p>
                 <div className="flex flex-col gap-2">
                   {seasonsTyped.map(s => {
-                    const w = s.matches.filter(m => m.goals_for > m.goals_against).length
-                    const e = s.matches.filter(m => m.goals_for === m.goals_against).length
-                    const d = s.matches.filter(m => m.goals_for < m.goals_against).length
+                    const played = s.matches.filter(m => m.status !== 'scheduled')
+                    const w = played.filter(m => m.goals_for > m.goals_against).length
+                    const e = played.filter(m => m.goals_for === m.goals_against).length
+                    const d = played.filter(m => m.goals_for < m.goals_against).length
                     return (
                       <Link key={s.id} href={`/dashboard/season/${s.id}`}
                         className="flex items-center gap-3 px-3 py-2 rounded-xl transition-colors hover:bg-[#151b2d]">
@@ -125,7 +131,7 @@ export default async function TeamSettingsPage({
                           <span style={{ color: '#4be277' }}>{w}V</span>
                           <span>{e}E</span>
                           <span style={{ color: '#ffb4ab' }}>{d}D</span>
-                          <span className="ml-1" style={{ color: '#475569' }}>{s.matches.length} PJ</span>
+                          <span className="ml-1" style={{ color: '#475569' }}>{played.length} PJ</span>
                         </div>
                         <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#334155' }}>chevron_right</span>
                       </Link>
@@ -138,7 +144,7 @@ export default async function TeamSettingsPage({
         )}
 
         {/* Datos del equipo */}
-        <section className="rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+        <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
           <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e293b]">
             <span className="material-symbols-outlined" style={{ color: '#4be277' }}>settings</span>
             <h2 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
@@ -154,8 +160,8 @@ export default async function TeamSettingsPage({
                 Nombre del equipo
               </label>
               <input id="name" name="name" type="text" required defaultValue={team.name}
-                className="rounded-xl px-4 text-sm"
-                style={{ minHeight: 44 }}
+                className="rounded-xl px-4 text-sm focus:outline-none"
+                style={{ minHeight: 44, backgroundColor: '#0f172a', border: '1px solid #2e3447', color: '#dce1fb' }}
               />
             </div>
 
@@ -170,8 +176,8 @@ export default async function TeamSettingsPage({
                 </span>
               </label>
               <select id="gender" name="gender" defaultValue={team.gender ?? ''}
-                className="rounded-xl px-4 text-sm"
-                style={{ minHeight: 44 }}>
+                className="rounded-xl px-4 text-sm focus:outline-none"
+                style={{ minHeight: 44, backgroundColor: '#0f172a', border: '1px solid #2e3447', color: '#dce1fb', colorScheme: 'dark' }}>
                 <option value="">Sin especificar (usa femenino por defecto)</option>
                 <option value="Femenino">Femenino — jugadoras, porteras, delanteras...</option>
                 <option value="Masculino">Masculino — jugadores, porteros, delanteros...</option>
@@ -189,8 +195,8 @@ export default async function TeamSettingsPage({
               <input id="category" name="category" type="text"
                 defaultValue={team.category ?? ''}
                 placeholder="ej. Primera Autonómica"
-                className="rounded-xl px-4 text-sm"
-                style={{ minHeight: 44 }}
+                className="rounded-xl px-4 text-sm focus:outline-none placeholder:text-slate-600"
+                style={{ minHeight: 44, backgroundColor: '#0f172a', border: '1px solid #2e3447', color: '#dce1fb' }}
               />
             </div>
 
@@ -215,7 +221,7 @@ export default async function TeamSettingsPage({
         </section>
 
         {/* Funcionalidades opcionales */}
-        <section className="mt-6 rounded-[24px] border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+        <section className="mt-6 rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
           <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e293b]">
             <span className="material-symbols-outlined" style={{ color: '#a78bfa' }}>tune</span>
             <h2 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Funcionalidades opcionales</h2>
@@ -260,7 +266,7 @@ export default async function TeamSettingsPage({
         </section>
 
         {/* Zona de peligro */}
-        <section className="mt-6 rounded-[24px] border p-6" style={{ borderColor: 'rgba(239,68,68,0.2)', backgroundColor: 'rgba(239,68,68,0.03)' }}>
+        <section className="mt-6 rounded-2xl border p-6" style={{ borderColor: 'rgba(239,68,68,0.2)', backgroundColor: 'rgba(239,68,68,0.03)' }}>
           <div className="flex items-center gap-3 mb-4">
             <span className="material-symbols-outlined" style={{ color: '#f87171', fontSize: 20 }}>warning</span>
             <h2 className="text-[16px] font-semibold" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>

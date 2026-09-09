@@ -16,7 +16,7 @@ export default function SeasonLoading() {
         <div className="h-10 w-48 rounded-lg" style={{ backgroundColor: '#1e293b' }} />
       </div>
       {/* Table skeleton */}
-      <div className="rounded-[24px] border overflow-hidden" style={{ backgroundColor: '#070d1f', borderColor: '#1e293b' }}>
+      <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#070d1f', borderColor: '#1e293b' }}>
         <div className="h-14 border-b" style={{ backgroundColor: '#191f31', borderColor: '#1e293b' }} />
         {[1,2,3,4,5].map(i => (
           <div key={i} className="flex items-center gap-6 px-6 py-5 border-b" style={{ borderColor: '#1e293b' }}>

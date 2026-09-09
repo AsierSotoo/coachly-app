@@ -31,7 +31,7 @@ export default async function ConvocatoriaDetailPage({
       .order('number', { ascending: true, nullsFirst: false }),
     supabase.from('convocatoria_players').select('player_id, status').eq('convocatoria_id', convocatoriaId),
     supabase.from('matches')
-      .select('id, opponent, played_at, home, convocatorias(id)')
+      .select('id, opponent, played_at, match_time, home, convocatorias(id)')
       .eq('season_id', seasonId)
       .order('played_at', { ascending: false }),
   ])
@@ -55,9 +55,9 @@ export default async function ConvocatoriaDetailPage({
   const availableMatches = (matches ?? []).filter(m => {
     const linked = m.convocatorias as { id: string }[]
     return linked.length === 0 || linked.some(c => c.id === convocatoriaId)
-  }).map(m => ({ id: m.id, opponent: m.opponent, played_at: m.played_at }))
+  }).map(m => ({ id: m.id, opponent: m.opponent, played_at: m.played_at, match_time: (m as { match_time?: string | null }).match_time ?? null }))
 
-  const linkedMatch = (matches ?? []).find(m => m.id === conv.match_id) as { home?: boolean } | undefined
+  const linkedMatch = (matches ?? []).find(m => m.id === conv.match_id) as { home?: boolean; match_time?: string | null } | undefined
   const isHome = linkedMatch?.home ?? null
 
   const isCompleted = (existing ?? []).some(r => r.status !== 'no_convocada')
@@ -77,7 +77,7 @@ export default async function ConvocatoriaDetailPage({
 
         {/* ── Match Header Card ────────────────────────────────────── */}
         <section
-          className="relative overflow-hidden rounded-[24px] border p-6 mb-8 flex flex-wrap lg:flex-nowrap items-center justify-between gap-6"
+          className="relative overflow-hidden rounded-2xl border p-6 mb-8 flex flex-wrap lg:flex-nowrap items-center justify-between gap-6"
           style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}
         >
           {/* Status badge */}
@@ -133,10 +133,19 @@ export default async function ConvocatoriaDetailPage({
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Fecha</p>
                 <p className="text-sm font-semibold text-white">
-                  {new Date(conv.played_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  {new Date(conv.played_at + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </p>
               </div>
             </div>
+            {linkedMatch?.match_time && (
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 20 }}>sports_soccer</span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Hora partido</p>
+                  <p className="text-sm font-semibold text-white">{linkedMatch.match_time.slice(0, 5)} h</p>
+                </div>
+              </div>
+            )}
             {(conv as any).meeting_time && (
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 20 }}>schedule</span>

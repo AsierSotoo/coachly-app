@@ -13,7 +13,7 @@ export default function PlayersLoading() {
         </div>
       </div>
       {/* Form skeleton */}
-      <div className="rounded-[24px] border p-6 mb-8" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+      <div className="rounded-2xl border p-6 mb-8" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
         <div className="h-5 w-36 rounded mb-6" style={{ backgroundColor: '#1e293b' }} />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[1,2,3,4].map(i => <div key={i} className="h-12 rounded-xl" style={{ backgroundColor: '#1e293b' }} />)}
@@ -22,7 +22,7 @@ export default function PlayersLoading() {
       {/* Grid skeleton */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[1,2,3,4,5,6,7,8].map(i => (
-          <div key={i} className="rounded-[24px] border p-6 flex flex-col items-center gap-4" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+          <div key={i} className="rounded-2xl border p-6 flex flex-col items-center gap-4" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
             <div className="w-24 h-24 rounded-full" style={{ backgroundColor: '#1e293b' }} />
             <div className="h-5 w-28 rounded" style={{ backgroundColor: '#1e293b' }} />
             <div className="h-5 w-16 rounded-full" style={{ backgroundColor: '#1e293b', opacity: 0.6 }} />

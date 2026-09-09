@@ -23,13 +23,12 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Patrón de puntos — z-index: -1 para que quede siempre detrás del contenido */
+/* Gradiente sutil — sustituye el patrón de puntos, más limpio y profesional */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(#1e293b 1px, transparent 1px);
-  background-size: 24px 24px;
+  background: radial-gradient(ellipse 80% 40% at 50% -10%, rgba(34,197,94,0.04) 0%, transparent 70%);
   pointer-events: none;
   z-index: -1;
 }

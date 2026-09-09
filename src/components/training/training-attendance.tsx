@@ -55,7 +55,7 @@ function PlayerRow({
             onClick={() => onChange({ attended: true, reason: null })}
             className="flex items-center gap-1 px-3 py-2.5 text-xs font-bold transition-all"
             style={{
-              backgroundColor: entry.attended ? '#16a34a' : '#151b2d',
+              backgroundColor: entry.attended ? '#22c55e' : '#151b2d',
               color: entry.attended ? 'white' : '#475569',
               minHeight: 44,
             }}
@@ -152,8 +152,6 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
 
   const presentCount = Object.values(entries).filter(e => e.attended).length
   const absentCount  = players.length - presentCount
-  const allMarked    = true // siempre true — los no tocados cuentan como presentes por defecto
-
   const handleSave = () => {
     startTransition(async () => {
       await saveTrainingAttendance(
@@ -177,7 +175,7 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
         </div>
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#4be277' }}>
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#16a34a' }} />
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#22c55e' }} />
             {presentCount} presentes
           </span>
           {absentCount > 0 && (

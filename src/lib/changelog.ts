@@ -5,7 +5,19 @@ export type ChangeEntry = {
   changes: { icon: string; text: string; detail?: string }[]
 }
 
+export const CURRENT_VERSION = 'v26'
+
 export const CHANGELOG: ChangeEntry[] = [
+  {
+    version: 'v26',
+    date: '2026-08-24',
+    title: 'Disponibilidad: ¿Quién eres?',
+    changes: [
+      { icon: '👤', text: 'Página pública: el jugador elige su nombre antes de confirmar', detail: 'Solo puede marcar su propia fila; el resto se muestra como lectura' },
+      { icon: '💾', text: 'El navegador recuerda tu identidad para la próxima vez' },
+      { icon: '📋', text: 'Resumen del equipo visible debajo (solo lectura)' },
+    ],
+  },
   {
     version: 'v25',
     date: '24 agosto 2025',
@@ -394,4 +406,3 @@ export const CHANGELOG: ChangeEntry[] = [
   },
 ]
 
-export const CURRENT_VERSION = 'v25'

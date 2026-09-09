@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -17,7 +17,7 @@ interface Player {
   id: string; name: string; number: number | null
   position: string | null; photo_url?: string | null
 }
-interface AvailableMatch { id: string; opponent: string; played_at: string }
+interface AvailableMatch { id: string; opponent: string; played_at: string; match_time?: string | null }
 const YELLOW_WARNING = 4
 
 interface Props {
@@ -244,7 +244,7 @@ export function ConvocatoriaEditor({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* ── Left: Tabla de jugadoras ─────────────────────────────── */}
-        <div className="lg:col-span-7 rounded-[24px] border overflow-hidden flex flex-col"
+        <div className="lg:col-span-7 rounded-2xl border overflow-hidden flex flex-col"
           style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}>
 
           {/* Header con buscador */}
@@ -360,7 +360,7 @@ export function ConvocatoriaEditor({
         <div className="lg:col-span-5 flex flex-col gap-6">
 
           {/* Roster agrupado */}
-          <div className="rounded-[24px] border overflow-hidden flex flex-col"
+          <div className="rounded-2xl border overflow-hidden flex flex-col"
             style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}>
             <div className="flex items-center justify-between px-5 py-4 border-b"
               style={{ backgroundColor: '#23293c', borderColor: '#2e3447' }}>
@@ -401,7 +401,7 @@ export function ConvocatoriaEditor({
           </div>
 
           {/* Mini campo táctico */}
-          <div className="rounded-[24px] border p-5 relative overflow-hidden"
+          <div className="rounded-2xl border p-5 relative overflow-hidden"
             style={{ backgroundColor: '#0f172a', borderColor: '#1e293b', height: 200 }}>
             <div className="flex items-center justify-between mb-3">
               <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>
@@ -468,7 +468,7 @@ export function ConvocatoriaEditor({
       </div>
 
       {/* ── Vincular partido ────────────────────────────────────────── */}
-      <div className="rounded-[24px] border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+      <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
         <div className="flex items-center gap-3 px-5 py-4 border-b" style={{ borderColor: '#1e293b' }}>
           <span className="material-symbols-outlined" style={{ color: '#adb4ce', fontSize: 18 }}>link</span>
           <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Vincular a partido registrado</p>
@@ -495,7 +495,7 @@ export function ConvocatoriaEditor({
                 <option value="">Selecciona un partido…</option>
                 {availableMatches.map(m => (
                   <option key={m.id} value={m.id}>
-                    vs {m.opponent} · {new Date(m.played_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                    vs {m.opponent} · {new Date(m.played_at + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}{m.match_time ? ` · ${m.match_time.slice(0, 5)}h` : ''}
                   </option>
                 ))}
               </select>
