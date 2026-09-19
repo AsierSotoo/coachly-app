@@ -433,6 +433,13 @@ export default async function MatchPage({
             venue={(match as { venue?: string | null }).venue}
             matchIndex={matchIndex}
             seasonName={season.name}
+            formation={matchFormation}
+            pitchPositions={Object.fromEntries(
+              (appearances ?? []).flatMap(a => {
+                const slot = (a as unknown as { pitch_position?: string | null }).pitch_position
+                return slot ? [[a.player_id, slot]] : []
+              })
+            )}
             players={(sortedPlayers ?? []).map(p => {
               if (isScheduled) {
                 // Usar datos de disponibilidad: unavailable = excluida, el resto = en lista

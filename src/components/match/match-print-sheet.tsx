@@ -1,5 +1,7 @@
 'use client'
 
+import { FORMATIONS } from '@/lib/formations'
+
 interface Player {
   id: string
   name: string
@@ -25,13 +27,15 @@ interface Props {
   matchIndex: number
   seasonName: string
   players: Player[]
+  formation?: string | null
+  pitchPositions?: Record<string, string>
 }
 
 function posLine(pos: string | null): 'gk' | 'def' | 'mid' | 'fwd' {
   const p = (pos ?? '').toLowerCase()
-  if (p.includes('port')) return 'gk'
-  if (p.includes('def')) return 'def'
-  if (p.includes('centro') || p.includes('medio') || p.includes('campist') || p.includes('mid')) return 'mid'
+  if (p.includes('port') || p === 'po') return 'gk'
+  if (p.includes('def') || p.includes('dfc') || p.includes('ld') || p.includes('li')) return 'def'
+  if (p.includes('centro') || p.includes('medio') || p.includes('campist') || p.includes('mc') || p.includes('mid') || p.includes('md') || p.includes('mi') || p.includes('mcd')) return 'mid'
   return 'fwd'
 }
 
@@ -46,7 +50,6 @@ function assignSeq(starters: Player[]): PlayerWithSeq[] {
   return out
 }
 
-// Una fila de jugadores sobre el campo, posicionada en absoluto
 function FieldRow({ players, topPct, circleSize = 28 }: {
   players: PlayerWithSeq[]
   topPct: string
@@ -54,7 +57,7 @@ function FieldRow({ players, topPct, circleSize = 28 }: {
 }) {
   if (players.length === 0) return null
   const nameW = circleSize <= 24 ? 28 : 38
-  const numFs = circleSize <= 24 ? 9   : 11
+  const numFs = circleSize <= 24 ? 9 : 11
   return (
     <div style={{
       position: 'absolute', top: topPct, left: 0, right: 0,
@@ -85,10 +88,13 @@ function FieldRow({ players, topPct, circleSize = 28 }: {
 }
 
 const C = '#111'
+const FW = 272
+const FH = 520
 
 export function MatchPrintSheet({
   teamName, teamLogo, opponent,
   playedAt, matchTime, matchIndex, seasonName, players,
+  formation, pitchPositions,
 }: Props) {
 
   const titulares = players.filter(p => p.status === 'titular').sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
@@ -103,26 +109,39 @@ export function MatchPrintSheet({
   const numbered = assignSeq(eleven)
   const subsNum  = subs.map((p, i) => ({ ...p, seqNum: eleven.length + 1 + i }))
 
-  const gkRow  = numbered.filter(p => p.line === 'gk')
-  const defRow = numbered.filter(p => p.line === 'def')
-  const midRow = numbered.filter(p => p.line === 'mid')
-  const fwdRow = numbered.filter(p => p.line === 'fwd')
+  // Construir filas del campo
+  const seqById = new Map(numbered.map(p => [p.id, p]))
+  const formationDef = formation ? FORMATIONS.find(f => f.id === formation) ?? null : null
+  const hasPitch = formationDef && pitchPositions && Object.keys(pitchPositions).length > 0
 
-  // Posiciones verticales en el campo — GK defiende arriba
-  const rowPositions = { gk: '9%', def: '29%', mid: '53%', fwd: '77%' }
+  let fieldRows: PlayerWithSeq[][]
+  if (hasPitch) {
+    const slotToPlayer = new Map(
+      Object.entries(pitchPositions).map(([pid, slot]) => [slot, pid])
+    )
+    // lines[0]=ataque → abajo del campo; lines[last]=GK → arriba
+    fieldRows = [...formationDef.lines].reverse()
+      .map(line =>
+        line
+          .map(slot => {
+            const pid = slotToPlayer.get(slot.id)
+            return pid ? seqById.get(pid) ?? null : null
+          })
+          .filter((x): x is PlayerWithSeq => x !== null)
+      )
+      .filter(row => row.length > 0)
+  } else {
+    const gkRow  = numbered.filter(p => p.line === 'gk')
+    const defRow = numbered.filter(p => p.line === 'def')
+    const midRow = numbered.filter(p => p.line === 'mid')
+    const fwdRow = numbered.filter(p => p.line === 'fwd')
+    fieldRows = [gkRow, defRow, midRow, fwdRow].filter(r => r.length > 0)
+  }
 
   const d = new Date(playedAt + 'T12:00:00')
   const dateShort = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getFullYear()).slice(2)}`
 
-  // Dimensiones campo
-  const FW = 272
-  const FH = 460
-
-  // Filas lista: ajustar al alto del campo
   const ROW_H = 15
-  const totalP = numbered.length + subsNum.length
-  const listContentH = FH - 30  // descontar notas
-  const fillerRows = Math.max(0, Math.floor(listContentH / ROW_H) - totalP - 1)
 
   return (
     <>
@@ -139,20 +158,15 @@ export function MatchPrintSheet({
         <style>{`
           @media print {
             html, body {
-              height: 297mm !important;
-              max-height: 297mm !important;
-              overflow: hidden !important;
-              margin: 0 !important; padding: 0 !important;
+              height: 297mm !important; max-height: 297mm !important;
+              overflow: hidden !important; margin: 0 !important; padding: 0 !important;
             }
             body * { visibility: hidden !important; }
             .match-print-sheet {
-              visibility: visible !important;
-              display: block !important;
-              position: absolute !important;
-              top: 0 !important; left: 0 !important;
+              visibility: visible !important; display: block !important;
+              position: absolute !important; top: 0 !important; left: 0 !important;
               width: 210mm !important; height: 297mm !important;
-              overflow: hidden !important;
-              background: white !important;
+              overflow: hidden !important; background: white !important;
               padding: 9mm 10mm !important;
               font-family: Arial, Helvetica, sans-serif !important;
               box-sizing: border-box !important;
@@ -173,7 +187,7 @@ export function MatchPrintSheet({
             : <div style={{ width: 42, height: 42, border: '2px solid #111', borderRadius: 4,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 11, fontWeight: 900, color: '#111' }}>
-                {teamName.trim().split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()}
+                {teamName.trim().split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase()}
               </div>
           }
         </div>
@@ -208,111 +222,70 @@ export function MatchPrintSheet({
         {/* CUERPO */}
         <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
 
-          {/* ═══ CAMPO ═══ */}
+          {/* CAMPO */}
           <div style={{
             position: 'relative', width: FW, height: FH, flexShrink: 0,
-            background: 'white',
-            border: `2.5px solid ${C}`,
-            overflow: 'hidden',
+            background: 'white', border: `2.5px solid ${C}`, overflow: 'hidden',
           }}>
-
-            {/* ── Marcas del campo ── */}
-
-            {/* Portería arriba (nuestra) */}
+            {/* Portería arriba */}
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-              width: '30%', height: 10, borderLeft: `2px solid ${C}`, borderRight: `2px solid ${C}`,
-              borderBottom: `2px solid ${C}` }} />
-
+              width: '30%', height: 10, borderLeft: `2px solid ${C}`, borderRight: `2px solid ${C}`, borderBottom: `2px solid ${C}` }} />
             {/* Área pequeña arriba */}
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-              width: '38%', height: '8%',
-              borderLeft: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`,
-              borderBottom: `1.5px solid ${C}` }} />
-
+              width: '38%', height: '8%', borderLeft: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`, borderBottom: `1.5px solid ${C}` }} />
             {/* Área grande arriba */}
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-              width: '66%', height: '17%',
-              borderLeft: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`,
-              borderBottom: `1.5px solid ${C}` }} />
-
+              width: '66%', height: '17%', borderLeft: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`, borderBottom: `1.5px solid ${C}` }} />
             {/* Punto penal arriba */}
-            <div style={{ position: 'absolute', top: '12%', left: '50%',
-              transform: 'translate(-50%, -50%)', width: 4, height: 4,
-              borderRadius: '50%', background: C }} />
-
-            {/* Línea medio campo */}
-            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0,
-              height: 1.5, background: C }} />
-
+            <div style={{ position: 'absolute', top: '12%', left: '50%', transform: 'translate(-50%,-50%)', width: 4, height: 4, borderRadius: '50%', background: C }} />
+            {/* Línea medio */}
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 1.5, background: C }} />
             {/* Círculo central */}
-            <div style={{ position: 'absolute', top: '50%', left: '50%',
-              transform: 'translate(-50%, -50%)', width: 68, height: 68,
-              borderRadius: '50%', border: `1.5px solid ${C}` }} />
-
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 72, height: 72, borderRadius: '50%', border: `1.5px solid ${C}` }} />
             {/* Punto central */}
-            <div style={{ position: 'absolute', top: '50%', left: '50%',
-              transform: 'translate(-50%, -50%)', width: 4, height: 4,
-              borderRadius: '50%', background: C }} />
-
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 4, height: 4, borderRadius: '50%', background: C }} />
             {/* Área grande abajo */}
             <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-              width: '66%', height: '17%',
-              borderLeft: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`,
-              borderTop: `1.5px solid ${C}` }} />
-
+              width: '66%', height: '17%', borderLeft: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`, borderTop: `1.5px solid ${C}` }} />
             {/* Área pequeña abajo */}
             <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-              width: '38%', height: '8%',
-              borderLeft: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`,
-              borderTop: `1.5px solid ${C}` }} />
-
+              width: '38%', height: '8%', borderLeft: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`, borderTop: `1.5px solid ${C}` }} />
             {/* Punto penal abajo */}
-            <div style={{ position: 'absolute', bottom: '12%', left: '50%',
-              transform: 'translate(-50%, 50%)', width: 4, height: 4,
-              borderRadius: '50%', background: C }} />
-
-            {/* Portería abajo (rival) */}
+            <div style={{ position: 'absolute', bottom: '12%', left: '50%', transform: 'translate(-50%,50%)', width: 4, height: 4, borderRadius: '50%', background: C }} />
+            {/* Portería abajo */}
             <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-              width: '30%', height: 10, borderLeft: `2px solid ${C}`, borderRight: `2px solid ${C}`,
-              borderTop: `2px solid ${C}` }} />
+              width: '30%', height: 10, borderLeft: `2px solid ${C}`, borderRight: `2px solid ${C}`, borderTop: `2px solid ${C}` }} />
+            {/* Arcos de esquina */}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: 10, height: 10, borderBottom: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`, borderRadius: '0 0 100% 0' }} />
+            <div style={{ position: 'absolute', top: 0, right: 0, width: 10, height: 10, borderBottom: `1.5px solid ${C}`, borderLeft: `1.5px solid ${C}`, borderRadius: '0 0 0 100%' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, width: 10, height: 10, borderTop: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`, borderRadius: '0 100% 0 0' }} />
+            <div style={{ position: 'absolute', bottom: 0, right: 0, width: 10, height: 10, borderTop: `1.5px solid ${C}`, borderLeft: `1.5px solid ${C}`, borderRadius: '100% 0 0 0' }} />
 
-            {/* Arcos de esquina — dentro del campo */}
-            <div style={{ position: 'absolute', top: 0, left: 0, width: 10, height: 10,
-              borderBottom: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`,
-              borderRadius: '0 0 100% 0' }} />
-            <div style={{ position: 'absolute', top: 0, right: 0, width: 10, height: 10,
-              borderBottom: `1.5px solid ${C}`, borderLeft: `1.5px solid ${C}`,
-              borderRadius: '0 0 0 100%' }} />
-            <div style={{ position: 'absolute', bottom: 0, left: 0, width: 10, height: 10,
-              borderTop: `1.5px solid ${C}`, borderRight: `1.5px solid ${C}`,
-              borderRadius: '0 100% 0 0' }} />
-            <div style={{ position: 'absolute', bottom: 0, right: 0, width: 10, height: 10,
-              borderTop: `1.5px solid ${C}`, borderLeft: `1.5px solid ${C}`,
-              borderRadius: '100% 0 0 0' }} />
-
-            {/* ── Jugadoras sobre el campo ── */}
-            <FieldRow players={gkRow}  topPct={rowPositions.gk}  circleSize={defRow.length >= 5 ? 24 : 28} />
-            <FieldRow players={defRow} topPct={rowPositions.def} circleSize={defRow.length >= 5 ? 24 : 28} />
-            <FieldRow players={midRow} topPct={rowPositions.mid} circleSize={midRow.length >= 5 ? 24 : 28} />
-            <FieldRow players={fwdRow} topPct={rowPositions.fwd} circleSize={fwdRow.length >= 5 ? 24 : 28} />
+            {/* Jugadoras */}
+            {fieldRows.map((row, i) => {
+              const n = fieldRows.length
+              const topPct = n === 1 ? '50%' : `${8 + (i / (n - 1)) * 74}%`
+              const circleSize = row.length >= 5 ? 24 : 28
+              return <FieldRow key={i} players={row} topPct={topPct} circleSize={circleSize} />
+            })}
           </div>
 
-          {/* ═══ LISTA ═══ */}
+          {/* LISTA */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <tbody>
                 {numbered.map((p, i) => {
-                  const last = i === numbered.length - 1 && subsNum.length > 0
+                  const isLastStarter = i === numbered.length - 1 && subsNum.length > 0
                   return (
                     <tr key={p.id}>
                       <td style={{ border: '1px solid #bbb',
-                        borderBottom: last ? '3px solid #111' : '1px solid #bbb',
+                        borderBottom: isLastStarter ? '3px solid #111' : '1px solid #bbb',
                         padding: '0 4px', width: 20, textAlign: 'center', height: ROW_H,
                         fontSize: 8, fontWeight: 900, color: '#111' }}>
                         {p.seqNum}
                       </td>
                       <td style={{ border: '1px solid #bbb',
-                        borderBottom: last ? '3px solid #111' : '1px solid #bbb',
+                        borderBottom: isLastStarter ? '3px solid #111' : '1px solid #bbb',
                         padding: '0 6px', height: ROW_H,
                         fontSize: 9.5, fontWeight: 600, color: '#111' }}>
                         {p.name}
@@ -320,11 +293,6 @@ export function MatchPrintSheet({
                     </tr>
                   )
                 })}
-
-                {numbered.length > 0 && subsNum.length === 0 && (
-                  <tr><td colSpan={2} style={{ background: '#111', height: 3 }} /></tr>
-                )}
-
                 {subsNum.map(p => (
                   <tr key={p.id}>
                     <td style={{ border: '1px solid #bbb', padding: '0 4px', width: 20,
@@ -337,29 +305,22 @@ export function MatchPrintSheet({
                     </td>
                   </tr>
                 ))}
-
-                {Array.from({ length: fillerRows }).map((_, i) => (
-                  <tr key={`f${i}`}>
-                    <td style={{ border: '1px solid #bbb', width: 20, height: ROW_H }} />
-                    <td style={{ border: '1px solid #bbb', height: ROW_H }} />
-                  </tr>
-                ))}
               </tbody>
             </table>
 
-            <div style={{ marginTop: 5 }}>
+            <div style={{ marginTop: 6 }}>
               <div style={{ fontSize: 6.5, fontWeight: 800, textTransform: 'uppercase',
                 letterSpacing: 1, marginBottom: 3, color: '#666' }}>Notas</div>
-              {[1, 2].map(i => (
-                <div key={i} style={{ height: 13, borderBottom: '1px solid #ccc', marginBottom: 2 }} />
+              {[1,2,3].map(i => (
+                <div key={i} style={{ height: 14, borderBottom: '1px solid #ccc', marginBottom: 2 }} />
               ))}
             </div>
           </div>
         </div>
 
-        <div style={{ marginTop: 7, paddingTop: 4, borderTop: '1px solid #ddd',
+        <div style={{ marginTop: 8, paddingTop: 4, borderTop: '1px solid #ddd',
           fontSize: 6.5, color: '#aaa', textAlign: 'center' }}>
-          Generado con Coachly · {teamName} · {opponent}
+          Generado con Coachly · {teamName} · {opponent}{formation ? ` · ${formation}` : ''}
         </div>
       </div>
     </>
