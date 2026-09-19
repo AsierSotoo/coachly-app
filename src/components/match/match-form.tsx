@@ -103,8 +103,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       <input type="hidden" name="gk_ids" value={players.filter(p => (p.position ?? '').toLowerCase().includes('port')).map(p => p.id).join(',')} />
       {/* goals_for guardado — fallback si no hay jugadoras con estado asignado */}
       <input type="hidden" name="goals_for" value={match.goals_for} />
-      {/* Cuando es un partido programado, al guardar lo marcamos como finalizado */}
-      {isScheduled && <input type="hidden" name="new_status" value="finished" />}
+      {/* new_status lo controla el botón "Finalizar" — no hay hidden global */}
 
       {isScheduled && (
         <div className="rounded-xl border px-4 py-3 flex items-start gap-3"
@@ -240,8 +239,8 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         </select>
       </section>
 
-      {/* Táctica / Alineación */}
-      {!isScheduled && (() => {
+      {/* Táctica / Alineación — disponible para todos los partidos */}
+      {(() => {
         const defaultPositions: Record<string, string> = {}
         for (const a of appearances) {
           if (a.pitch_position) defaultPositions[a.pitch_position] = a.player_id
@@ -329,19 +328,36 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       )}
 
       {/* Guardar / Finalizar */}
-      <button type="submit"
-        className="flex h-14 items-center justify-center gap-2 rounded-2xl text-sm font-bold text-white active:scale-[0.98] transition-all cursor-pointer shadow-lg"
-        style={{ backgroundColor: isScheduled ? '#f59e0b' : '#72e697', boxShadow: isScheduled ? '0 4px 20px rgba(245,158,11,0.25)' : '0 4px 20px rgba(34,197,94,0.2)', color: isScheduled ? '#1c1203' : '#fff' }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-          {isScheduled ? 'check_circle' : 'save'}
-        </span>
-        {isScheduled ? 'Finalizar partido' : 'Guardar partido'}
-      </button>
+      {isScheduled ? (
+        <div className="flex flex-col gap-2">
+          {/* Guardar alineación sin finalizar */}
+          <button type="submit" name="new_status" value=""
+            className="flex h-12 items-center justify-center gap-2 rounded-2xl text-sm font-bold active:scale-[0.98] transition-all cursor-pointer border"
+            style={{ borderColor: '#253028', backgroundColor: '#111713', color: '#89968e' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
+            Guardar alineación previa
+          </button>
+          {/* Finalizar: cambia status a finished */}
+          <button type="submit" name="new_status" value="finished"
+            className="flex h-14 items-center justify-center gap-2 rounded-2xl text-sm font-bold active:scale-[0.98] transition-all cursor-pointer shadow-lg"
+            style={{ backgroundColor: '#f59e0b', boxShadow: '0 4px 20px rgba(245,158,11,0.25)', color: '#1c1203' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>check_circle</span>
+            Finalizar partido
+          </button>
+        </div>
+      ) : (
+        <button type="submit"
+          className="flex h-14 items-center justify-center gap-2 rounded-2xl text-sm font-bold text-white active:scale-[0.98] transition-all cursor-pointer shadow-lg"
+          style={{ backgroundColor: '#72e697', boxShadow: '0 4px 20px rgba(34,197,94,0.2)', color: '#fff' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
+          Guardar partido
+        </button>
+      )}
 
-      {/* Sticky móvil */}
+      {/* Sticky móvil — solo "Finalizar" si está programado */}
       <div className="fixed left-0 right-0 z-30 px-4 sm:hidden pointer-events-none"
         style={{ bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))', paddingBottom: 8 }}>
-        <button type="submit"
+        <button type="submit" name="new_status" value={isScheduled ? 'finished' : ''}
           className="pointer-events-auto w-full flex items-center justify-center gap-2 rounded-2xl text-sm font-bold shadow-2xl active:scale-[0.98] transition-all cursor-pointer"
           style={{ height: 52, backgroundColor: isScheduled ? '#f59e0b' : '#72e697', color: isScheduled ? '#1c1203' : '#fff' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
