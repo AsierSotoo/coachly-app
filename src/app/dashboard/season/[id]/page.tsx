@@ -694,10 +694,8 @@ export default async function SeasonPage({
 
                 return (
                   <div key={match.id}
-                    className="flex items-center last:border-0 transition-colors group"
+                    className="flex items-center last:border-0 transition-colors group hover:bg-[var(--bg-elevated)]"
                     style={{ borderBottom: '1px solid var(--bdr-strong)', borderLeft: `3px solid ${resColor}` }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'}
-                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
                   >
 
                     {/* Fecha */}
@@ -754,11 +752,9 @@ export default async function SeasonPage({
                     <div className="flex-shrink-0 flex items-center py-2 pr-2 md:pr-4 gap-0.5">
                       <Link
                         href={`/dashboard/season/${seasonId}/match/${match.id}`}
-                        className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors"
+                        className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors hover:bg-[var(--bg-elevated)]"
                         title="Ver partido"
                         style={{ color: 'var(--tx-3)' }}
-                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'}
-                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 20 }}>chevron_right</span>
                       </Link>

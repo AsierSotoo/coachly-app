@@ -901,10 +901,7 @@ export default async function StatsPage({
                         const lastColor = r.lastResult === 'V' ? '#72e697' : r.lastResult === 'D' ? '#f87171' : '#fbbf24'
                         const lastBg = r.lastResult === 'V' ? 'rgba(75,226,119,0.12)' : r.lastResult === 'D' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.08)'
                         return (
-                          <tr key={r.opponent} className="border-b last:border-0 transition-colors" style={{ borderColor: 'var(--bdr-strong)' }}
-                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'}
-                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
-                          >
+                          <tr key={r.opponent} className="border-b last:border-0 transition-colors hover:bg-[var(--bg-elevated)]" style={{ borderColor: 'var(--bdr-strong)' }}>
                             <td className="px-4 py-3">
                               <p className="text-sm font-semibold" style={{ color: 'var(--tx)' }}>{r.opponent}</p>
                             </td>
