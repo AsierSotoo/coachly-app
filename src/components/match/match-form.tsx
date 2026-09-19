@@ -120,28 +120,28 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Datos del partido */}
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5 flex flex-col gap-3">
-          <h2 className="text-xs font-medium uppercase tracking-wider text-slate-400">Datos del partido</h2>
+        <section className="rounded-2xl border p-5 flex flex-col gap-3" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
+          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#637168' }}>Datos del partido</h2>
           <div className="flex flex-col gap-2">
             <input name="opponent" type="text" required defaultValue={match.opponent} placeholder="Rival"
-              className="w-full h-11 px-3 text-sm" />
+              className="w-full h-11 px-3" />
             <div className="flex gap-2">
-              <input name="played_at" type="date" required defaultValue={match.played_at} className="flex-1 h-11 px-3 text-sm" />
+              <input name="played_at" type="date" required defaultValue={match.played_at} className="flex-1 h-11 px-3" />
               <input name="match_time" type="time" defaultValue={match.match_time?.slice(0, 5) ?? ''} placeholder="--:--"
-                className="w-28 h-11 px-3 text-sm" title="Hora del partido (opcional)" />
-              <select name="home" defaultValue={match.home ? 'true' : 'false'} className="h-11 px-3 text-sm">
+                className="w-28 h-11 px-3" title="Hora del partido (opcional)" />
+              <select name="home" defaultValue={match.home ? 'true' : 'false'} className="h-11 px-3">
                 <option value="true">🏠 Local</option>
                 <option value="false">✈️ Visitante</option>
               </select>
             </div>
             <div className="flex gap-2">
-              <select name="competition_type" defaultValue={(match.competition_type as string | null) ?? 'liga'} className="h-11 px-3 text-sm flex-shrink-0">
+              <select name="competition_type" defaultValue={(match.competition_type as string | null) ?? 'liga'} className="h-11 px-3 flex-shrink-0">
                 <option value="liga">🏆 Liga</option>
                 <option value="copa">🥈 Copa</option>
                 <option value="amistoso">🤝 Amistoso</option>
               </select>
               <input name="competition" type="text" defaultValue={match.competition ?? ''} placeholder="Nombre competición (opcional)"
-                className="flex-1 h-11 px-3 text-sm" />
+                className="flex-1 h-11 px-3" />
             </div>
           </div>
         </section>
@@ -149,14 +149,14 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         {/* Resultado */}
         {(() => {
           const liveResult = liveGoals > liveGoalsAgainst ? 'V' : liveGoals < liveGoalsAgainst ? 'D' : 'E'
-          const resultColor = liveResult === 'V' ? '#4be277' : liveResult === 'D' ? '#f87171' : '#fbbf24'
+          const resultColor = liveResult === 'V' ? '#72e697' : liveResult === 'D' ? '#f87171' : '#fbbf24'
           const resultBg = liveResult === 'V' ? 'rgba(75,226,119,0.08)' : liveResult === 'D' ? 'rgba(248,113,113,0.08)' : 'rgba(251,191,36,0.08)'
           const resultBorder = liveResult === 'V' ? 'rgba(75,226,119,0.2)' : liveResult === 'D' ? 'rgba(248,113,113,0.2)' : 'rgba(251,191,36,0.2)'
           const resultLabel = liveResult === 'V' ? 'Victoria' : liveResult === 'D' ? 'Derrota' : 'Empate'
           return (
-            <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+            <section className="rounded-2xl border p-5" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xs font-medium uppercase tracking-wider text-slate-400">Resultado final</h2>
+                <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#637168' }}>Resultado final</h2>
                 <span className="text-[10px] font-bold px-2.5 py-1 rounded-full border"
                   style={{ color: resultColor, backgroundColor: resultBg, borderColor: resultBorder }}>
                   {resultLabel}
@@ -164,31 +164,40 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
               </div>
               <div className="flex items-center justify-center gap-4">
                 <div className="flex-1 text-center">
-                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: '#adb4ce' }}>{teamName}</p>
+                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: '#89968e' }}>{teamName}</p>
                   <div className="h-20 w-full max-w-[88px] mx-auto rounded-2xl border flex items-center justify-center text-5xl font-black text-white"
                     style={{
                       fontFamily: 'Sora, sans-serif',
-                      backgroundColor: liveGoals > liveGoalsAgainst ? 'rgba(75,226,119,0.08)' : '#191f31',
-                      borderColor: liveGoals > liveGoalsAgainst ? 'rgba(75,226,119,0.3)' : '#2e3447',
+                      backgroundColor: liveGoals > liveGoalsAgainst ? 'rgba(75,226,119,0.08)' : '#171f1a',
+                      borderColor: liveGoals > liveGoalsAgainst ? 'rgba(75,226,119,0.3)' : '#2a342d',
                     }}
                     title="Se calcula automáticamente de los goles individuales">
                     {liveGoals}
                   </div>
-                  <p className="mt-1.5 text-[9px]" style={{ color: '#4be277', opacity: 0.6 }}>Auto ⚽</p>
+                  <p className="mt-1.5 text-[9px]" style={{ color: '#72e697', opacity: 0.6 }}>Auto ⚽</p>
                 </div>
                 <div className="flex flex-col items-center gap-1 flex-shrink-0">
                   <span className="text-2xl font-black" style={{ color: '#334155' }}>:</span>
                 </div>
                 <div className="flex-1 text-center">
-                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: '#adb4ce' }}>{match.opponent}</p>
-                  <input name="goals_against" type="number" min="0" defaultValue={match.goals_against}
-                    className="h-20 w-full max-w-[88px] mx-auto rounded-2xl border text-center text-5xl font-black text-white focus:outline-none transition-all block"
+                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: '#89968e' }}>{match.opponent}</p>
+                  <input type="hidden" name="goals_against" value={liveGoalsAgainst} />
+                  <div className="h-20 w-full max-w-[88px] mx-auto rounded-2xl border flex items-center justify-center text-5xl font-black text-white select-none"
                     style={{
                       fontFamily: 'Sora, sans-serif',
-                      backgroundColor: liveGoalsAgainst > liveGoals ? 'rgba(248,113,113,0.08)' : '#191f31',
-                      borderColor: liveGoalsAgainst > liveGoals ? 'rgba(248,113,113,0.3)' : '#2e3447',
-                    }} />
-                  <p className="mt-1.5 text-[9px]" style={{ color: '#64748b' }}>Editable</p>
+                      backgroundColor: liveGoalsAgainst > liveGoals ? 'rgba(248,113,113,0.08)' : '#171f1a',
+                      borderColor: liveGoalsAgainst > liveGoals ? 'rgba(248,113,113,0.3)' : '#2a342d',
+                    }}>
+                    {liveGoalsAgainst}
+                  </div>
+                  <div className="mt-2 flex items-center justify-center gap-3">
+                    <button type="button" onClick={() => setLiveGoalsAgainst(v => Math.max(0, v - 1))}
+                      className="w-7 h-7 rounded-full border flex items-center justify-center text-sm font-bold transition-colors cursor-pointer"
+                      style={{ borderColor: '#2a342d', color: '#89968e', backgroundColor: '#171f1a' }}>−</button>
+                    <button type="button" onClick={() => setLiveGoalsAgainst(v => v + 1)}
+                      className="w-7 h-7 rounded-full border flex items-center justify-center text-sm font-bold transition-colors cursor-pointer"
+                      style={{ borderColor: '#2a342d', color: '#89968e', backgroundColor: '#171f1a' }}>+</button>
+                  </div>
                 </div>
               </div>
             </section>
@@ -198,30 +207,30 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       </div>
 
       {/* Notas del partido */}
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <section className="rounded-2xl border p-5" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
         <div className="flex items-center gap-2 mb-3">
-          <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 18 }}>edit_note</span>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Análisis post-partido</h2>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#637168' }}>edit_note</span>
+          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#637168' }}>Análisis post-partido</h2>
         </div>
         <textarea
           name="notes"
           rows={3}
           defaultValue={match.notes ?? ''}
           placeholder="¿Cómo fue el partido? Pressing, errores defensivos, momentos clave, sensaciones del equipo..."
-          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm resize-none focus:border-green-500/60 focus:outline-none transition-colors leading-relaxed"
-          style={{ color: '#dce1fb', minHeight: 'auto' }}
+          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 resize-none focus:border-green-500/60 focus:outline-none transition-colors leading-relaxed"
+          style={{ color: '#edf2ee', minHeight: 'auto' }}
         />
       </section>
 
       {/* Jugadora del partido */}
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+      <section className="rounded-2xl border p-5" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
         <div className="flex items-center gap-2 mb-3">
           <span className="material-symbols-outlined" style={{ color: '#facc15', fontSize: 18 }}>star</span>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)} del partido</h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#637168' }}>{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)} del partido</h2>
         </div>
         <select name="mvp_player_id" defaultValue={match.mvp_player_id ?? ''}
-          className="w-full h-11 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm appearance-none focus:border-green-500/60 focus:outline-none transition-colors"
-          style={{ color: '#dce1fb' }}>
+          className="w-full h-11 rounded-xl border border-slate-700 bg-slate-800 px-3 appearance-none focus:border-green-500/60 focus:outline-none transition-colors"
+          style={{ color: '#edf2ee' }}>
           <option value="">Sin seleccionar</option>
           {players.map(p => (
             <option key={p.id} value={p.id}>
@@ -264,14 +273,14 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       {/* Solo se renderiza en desktop para evitar inputs duplicados con nombres iguales */}
       {(isMobile === null || !isMobile) && (
         <section className="hidden lg:block">
-          <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+          <div className="overflow-hidden rounded-2xl border" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
             {/* Cabecera tabla */}
-            <div className="grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 border-b border-slate-800 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest">
-              <span className="text-slate-600">#</span>
-              <span className="text-slate-600">{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}</span>
-              <span className="text-center text-slate-600">Estado</span>
-              <span className="text-center text-slate-500">Min/Sub</span>
-              <span className="text-center text-slate-500">G/GC</span>
+            <div className="grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 border-b px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
+              <span style={{ color: '#334155' }}>#</span>
+              <span style={{ color: '#637168' }}>{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}</span>
+              <span className="text-center" style={{ color: '#637168' }}>Estado</span>
+              <span className="text-center" style={{ color: '#637168' }}>Min/Sub</span>
+              <span className="text-center" style={{ color: '#637168' }}>G/GC</span>
               <span className="text-center text-blue-400/70">Ast</span>
               <span className="text-center text-yellow-400/70">Am</span>
               <span className="text-center text-red-400/70">Rj</span>
@@ -296,10 +305,15 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       {/* Solo se renderiza en móvil para evitar inputs duplicados con nombres iguales */}
       {(isMobile === null || isMobile) && (
         <section className="lg:hidden">
-          <div className="flex items-center gap-4 text-xs text-slate-500 px-1 mb-3">
-            {[['T','Titular','bg-green-500'],['S','Suplente','bg-slate-500'],['–',`No ${terms.called}`,'bg-slate-700']].map(([k,l,c]) => (
+          <div className="flex items-center gap-4 text-xs px-1 mb-3" style={{ color: '#637168' }}>
+            {([
+              { k: 'T', l: 'Titular',         bg: '#72e697', color: '#07140c' },
+              { k: 'S', l: 'Suplente',        bg: '#2a342d', color: '#89968e' },
+              { k: '–', l: `No ${terms.called}`, bg: '#111713', color: '#637168' },
+            ]).map(({ k, l, bg, color }) => (
               <span key={k} className="flex items-center gap-1.5">
-                <span className={`flex h-5 w-6 items-center justify-center rounded ${c} text-[10px] font-bold text-white`}>{k}</span>{l}
+                <span className="flex h-5 w-6 items-center justify-center rounded text-[10px] font-bold"
+                  style={{ backgroundColor: bg, color }}>{k}</span>{l}
               </span>
             ))}
           </div>
@@ -317,7 +331,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       {/* Guardar / Finalizar */}
       <button type="submit"
         className="flex h-14 items-center justify-center gap-2 rounded-2xl text-sm font-bold text-white active:scale-[0.98] transition-all cursor-pointer shadow-lg"
-        style={{ backgroundColor: isScheduled ? '#f59e0b' : '#22c55e', boxShadow: isScheduled ? '0 4px 20px rgba(245,158,11,0.25)' : '0 4px 20px rgba(34,197,94,0.2)', color: isScheduled ? '#1c1203' : '#fff' }}>
+        style={{ backgroundColor: isScheduled ? '#f59e0b' : '#72e697', boxShadow: isScheduled ? '0 4px 20px rgba(245,158,11,0.25)' : '0 4px 20px rgba(34,197,94,0.2)', color: isScheduled ? '#1c1203' : '#fff' }}>
         <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
           {isScheduled ? 'check_circle' : 'save'}
         </span>
@@ -329,7 +343,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         style={{ bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))', paddingBottom: 8 }}>
         <button type="submit"
           className="pointer-events-auto w-full flex items-center justify-center gap-2 rounded-2xl text-sm font-bold shadow-2xl active:scale-[0.98] transition-all cursor-pointer"
-          style={{ height: 52, backgroundColor: isScheduled ? '#f59e0b' : '#22c55e', color: isScheduled ? '#1c1203' : '#fff' }}>
+          style={{ height: 52, backgroundColor: isScheduled ? '#f59e0b' : '#72e697', color: isScheduled ? '#1c1203' : '#fff' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
             {isScheduled ? 'check_circle' : 'save'}
           </span>

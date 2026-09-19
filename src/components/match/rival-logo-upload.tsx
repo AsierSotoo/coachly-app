@@ -4,7 +4,6 @@ import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { compressImage } from '@/lib/compress-image'
 import { toast } from 'sonner'
-import Image from 'next/image'
 
 interface Props {
   matchId: string
@@ -41,28 +40,28 @@ export function RivalLogoUpload({ matchId, currentUrl, opponentName }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div
-        onClick={() => !uploading && inputRef.current?.click()}
-        className="relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-700 bg-slate-800 hover:border-green-500/50 transition-all group"
-      >
-        {uploading ? (
-          <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: '#4be277' }}>progress_activity</span>
-        ) : url ? (
-          <>
-            <Image src={url} alt={opponentName} fill className="object-contain p-1.5" unoptimized />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl">
-              <span className="material-symbols-outlined text-white" style={{ fontSize: 16 }}>upload</span>
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-xs font-black text-slate-500">{initials}</span>
-            <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity absolute" style={{ fontSize: 20, color: '#4be277' }}>add_photo_alternate</span>
+    <div
+      onClick={() => !uploading && inputRef.current?.click()}
+      title="Escudo del rival"
+      className="relative flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded-lg border transition-all group"
+      style={{ borderStyle: url ? 'solid' : 'dashed', borderColor: 'var(--bdr-strong)', backgroundColor: url ? 'white' : 'var(--bg-elevated)' }}
+    >
+      {uploading ? (
+        <span className="material-symbols-outlined animate-spin" style={{ fontSize: 14, color: 'var(--accent)' }}>progress_activity</span>
+      ) : url ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={url} alt={opponentName} className="w-full h-full object-contain p-0.5" />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+            <span className="material-symbols-outlined text-white" style={{ fontSize: 12 }}>upload</span>
           </div>
-        )}
-      </div>
-      <p className="text-[9px] text-slate-600 text-center">Escudo rival</p>
+        </>
+      ) : (
+        <>
+          <span className="text-[9px] font-black" style={{ color: 'var(--tx-3)' }}>{initials}</span>
+          <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity absolute" style={{ fontSize: 14, color: 'var(--accent)' }}>add_photo_alternate</span>
+        </>
+      )}
       <input ref={inputRef} type="file" accept="image/*" className="hidden"
         onChange={e => { const f = e.target.files?.[0]; if (f) upload(f) }} />
     </div>

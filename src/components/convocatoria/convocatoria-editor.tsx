@@ -165,21 +165,21 @@ export function ConvocatoriaEditor({
         />
         <button type="button" onClick={() => window.print()}
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold border active:scale-95 transition-all cursor-pointer"
-          style={{ backgroundColor: '#23293c', borderColor: '#2e3447', color: '#dce1fb' }}>
+          style={{ backgroundColor: '#1a231d', borderColor: '#2a342d', color: '#edf2ee' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>print</span>
           Imprimir
         </button>
         <button type="button" onClick={handleCopy}
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold border active:scale-95 transition-all cursor-pointer"
-          style={{ backgroundColor: '#23293c', borderColor: '#2e3447', color: '#dce1fb' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: copied ? '#4be277' : undefined }}>
+          style={{ backgroundColor: '#1a231d', borderColor: '#2a342d', color: '#edf2ee' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: copied ? '#72e697' : undefined }}>
             {copied ? 'check' : 'content_copy'}
           </span>
           {copied ? 'Copiado' : 'Copiar lista'}
         </button>
         <button type="button" onClick={handleSave} disabled={savePending}
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold active:scale-95 transition-all cursor-pointer disabled:opacity-60"
-          style={{ backgroundColor: '#22c55e', color: '#003915', boxShadow: '0 0 15px rgba(34,197,94,0.25)' }}>
+          style={{ backgroundColor: '#72e697', color: '#07140c', boxShadow: '0 0 15px rgba(34,197,94,0.25)' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
           {savePending ? 'Guardando…' : 'Guardar Convocatoria'}
         </button>
@@ -188,33 +188,33 @@ export function ConvocatoriaEditor({
       {/* ── Hora y lugar ────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>
+          <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>
             Hora de convocatoria
           </label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#adb4ce', fontSize: 16 }}>schedule</span>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#89968e', fontSize: 16 }}>schedule</span>
             <input
               type="time"
               value={localMeetingTime}
               onChange={e => setLocalMeetingTime(e.target.value)}
-              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[#4be277] transition-colors"
-              style={{ backgroundColor: '#151b2d', borderColor: '#2e3447', color: '#dce1fb' }}
+              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[#72e697] transition-colors"
+              style={{ backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee' }}
             />
           </div>
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>
+          <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>
             Lugar
           </label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#adb4ce', fontSize: 16 }}>location_on</span>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#89968e', fontSize: 16 }}>location_on</span>
             <input
               type="text"
               value={localLocation}
               onChange={e => setLocalLocation(e.target.value)}
               placeholder="Campo Municipal de Pamplona…"
-              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[#4be277] transition-colors"
-              style={{ backgroundColor: '#151b2d', borderColor: '#2e3447', color: '#dce1fb' }}
+              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[#72e697] transition-colors"
+              style={{ backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee' }}
             />
           </div>
         </div>
@@ -232,7 +232,7 @@ export function ConvocatoriaEditor({
               <p className="text-sm font-bold" style={{ color: '#facc15' }}>
                 {atRisk.length === 1 ? '1 jugadora en riesgo de sanción' : `${atRisk.length} jugadoras en riesgo de sanción`}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: '#adb4ce' }}>
+              <p className="text-xs mt-0.5" style={{ color: '#89968e' }}>
                 {atRisk.map(p => `${p.name} (${yellowCards[p.id]}🟨)`).join(' · ')} — acumulan {YELLOW_WARNING}+ tarjetas esta temporada.
               </p>
             </div>
@@ -245,22 +245,22 @@ export function ConvocatoriaEditor({
 
         {/* ── Left: Tabla de jugadoras ─────────────────────────────── */}
         <div className="lg:col-span-7 rounded-2xl border overflow-hidden flex flex-col"
-          style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}>
+          style={{ backgroundColor: '#111713', borderColor: '#2a342d' }}>
 
           {/* Header con buscador */}
           <div className="flex items-center justify-between px-5 py-4 border-b"
-            style={{ backgroundColor: '#070d1f', borderColor: '#1e293b' }}>
+            style={{ backgroundColor: '#0b100d', borderColor: '#253028' }}>
             <h3 className="text-[18px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
               Plantilla Disponible
             </h3>
             <div className="relative">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2"
-                style={{ color: '#adb4ce', fontSize: 18 }}>search</span>
+                style={{ color: '#89968e', fontSize: 18 }}>search</span>
               <input
                 type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="Buscar jugadora..."
-                className="border rounded-lg pl-9 pr-4 py-2 text-sm outline-none focus:border-[#4be277] transition-colors w-52"
-                style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}
+                className="border rounded-lg pl-9 pr-4 py-2 text-sm outline-none focus:border-[#72e697] transition-colors w-52"
+                style={{ backgroundColor: '#171f1a', borderColor: '#2a342d', color: '#edf2ee' }}
               />
             </div>
           </div>
@@ -268,11 +268,11 @@ export function ConvocatoriaEditor({
           {/* Tabla */}
           <div className="overflow-y-auto flex-1" style={{ maxHeight: 480 }}>
             <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 z-10" style={{ backgroundColor: '#151b2d' }}>
-                <tr className="border-b" style={{ borderColor: '#1e293b' }}>
+              <thead className="sticky top-0 z-10" style={{ backgroundColor: '#111713' }}>
+                <tr className="border-b" style={{ borderColor: '#253028' }}>
                   {['Jugadora', 'Pos', 'Status', 'Acción'].map((h, i) => (
                     <th key={h} className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest"
-                      style={{ color: '#adb4ce', textAlign: i === 3 ? 'right' : 'left' }}>{h}</th>
+                      style={{ color: '#89968e', textAlign: i === 3 ? 'right' : 'left' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -288,7 +288,7 @@ export function ConvocatoriaEditor({
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg overflow-hidden border flex-shrink-0"
-                            style={{ borderColor: inSquad ? 'rgba(34,197,94,0.3)' : '#2e3447', backgroundColor: '#23293c' }}>
+                            style={{ borderColor: inSquad ? 'rgba(34,197,94,0.3)' : '#2a342d', backgroundColor: '#1a231d' }}>
                             <PlayerAvatar name={p.name} photoUrl={p.photo_url} position={p.position ?? undefined} size="sm" />
                           </div>
                           <div>
@@ -302,7 +302,7 @@ export function ConvocatoriaEditor({
                               )}
                             </div>
                             {p.number !== null && (
-                              <p className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>
+                              <p className="text-[10px] font-bold uppercase" style={{ color: '#89968e' }}>
                                 Dorsal {p.number}
                               </p>
                             )}
@@ -314,8 +314,8 @@ export function ConvocatoriaEditor({
                       <td className="px-4 py-3">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold"
                           style={{
-                            backgroundColor: inSquad ? 'rgba(34,197,94,0.1)' : '#23293c',
-                            color: inSquad ? '#4be277' : '#adb4ce',
+                            backgroundColor: inSquad ? 'rgba(34,197,94,0.1)' : '#1a231d',
+                            color: inSquad ? '#72e697' : '#89968e',
                           }}>
                           {terms.posAbbr(p.position)}
                         </span>
@@ -324,7 +324,7 @@ export function ConvocatoriaEditor({
                       {/* Status */}
                       <td className="px-4 py-3 text-center">
                         {inSquad ? (
-                          <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 20, fontVariationSettings: "'FILL' 1" }}>
+                          <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 20, fontVariationSettings: "'FILL' 1" }}>
                             check_circle
                           </span>
                         ) : (
@@ -341,8 +341,8 @@ export function ConvocatoriaEditor({
                           onClick={() => inSquad ? remove(p.id) : add(p.id)}
                           className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all active:scale-95 cursor-pointer"
                           style={inSquad
-                            ? { color: '#4be277', backgroundColor: 'transparent' }
-                            : { color: '#adb4ce', backgroundColor: 'transparent' }
+                            ? { color: '#72e697', backgroundColor: 'transparent' }
+                            : { color: '#89968e', backgroundColor: 'transparent' }
                           }
                         >
                           {inSquad ? 'REMOVER' : 'AÑADIR'}
@@ -361,23 +361,23 @@ export function ConvocatoriaEditor({
 
           {/* Roster agrupado */}
           <div className="rounded-2xl border overflow-hidden flex flex-col"
-            style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}>
+            style={{ backgroundColor: '#171f1a', borderColor: '#2a342d' }}>
             <div className="flex items-center justify-between px-5 py-4 border-b"
-              style={{ backgroundColor: '#23293c', borderColor: '#2e3447' }}>
+              style={{ backgroundColor: '#1a231d', borderColor: '#2a342d' }}>
               <h3 className="text-[18px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                 Convocadas
               </h3>
               <div className="flex items-center gap-1">
-                <span className="text-[24px] font-bold" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{squadCount}</span>
-                <span className="text-sm" style={{ color: '#adb4ce' }}>/ {players.length}</span>
+                <span className="text-[24px] font-bold" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>{squadCount}</span>
+                <span className="text-sm" style={{ color: '#89968e' }}>/ {players.length}</span>
               </div>
             </div>
 
             <ul className="p-4 overflow-y-auto space-y-0.5" style={{ maxHeight: 280 }}>
               {sortedSquad.map(p => (
-                <li key={p.id} className="group flex items-center justify-between px-2 py-1.5 rounded-lg transition-colors hover:bg-[#23293c]">
+                <li key={p.id} className="group flex items-center justify-between px-2 py-1.5 rounded-lg transition-colors hover:bg-[#1a231d]">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="w-5 text-right text-[11px] font-bold flex-shrink-0" style={{ color: '#adb4ce' }}>
+                    <span className="w-5 text-right text-[11px] font-bold flex-shrink-0" style={{ color: '#89968e' }}>
                       {p.number ?? '—'}
                     </span>
                     <span className="text-sm text-white truncate">{p.name}</span>
@@ -393,7 +393,7 @@ export function ConvocatoriaEditor({
                 </li>
               ))}
               {squadCount === 0 && (
-                <li className="text-center text-sm py-4 list-none" style={{ color: '#adb4ce' }}>
+                <li className="text-center text-sm py-4 list-none" style={{ color: '#89968e' }}>
                   Añade jugadoras desde la tabla
                 </li>
               )}
@@ -402,12 +402,12 @@ export function ConvocatoriaEditor({
 
           {/* Mini campo táctico */}
           <div className="rounded-2xl border p-5 relative overflow-hidden"
-            style={{ backgroundColor: '#0f172a', borderColor: '#1e293b', height: 200 }}>
+            style={{ backgroundColor: '#111713', borderColor: '#253028', height: 200 }}>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>
                 Distribución Táctica
               </p>
-              <span className="text-[10px] font-bold" style={{ color: '#4be277' }}>
+              <span className="text-[10px] font-bold" style={{ color: '#72e697' }}>
                 {gkCount}-{dfCount}-{mcCount}-{dlCount}
               </span>
             </div>
@@ -424,7 +424,7 @@ export function ConvocatoriaEditor({
               {/* GK */}
               {Array.from({ length: Math.min(gkCount, 1) }).map((_, i) => (
                 <div key={`gk${i}`} className="absolute w-4 h-4 rounded-full"
-                  style={{ backgroundColor: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,0.6)', bottom: 8, left: '50%', transform: 'translateX(-50%)' }} />
+                  style={{ backgroundColor: '#72e697', boxShadow: '0 0 8px rgba(34,197,94,0.6)', bottom: 8, left: '50%', transform: 'translateX(-50%)' }} />
               ))}
               {/* DF */}
               {Array.from({ length: Math.min(dfCount, 5) }).map((_, i, arr) => (
@@ -455,43 +455,43 @@ export function ConvocatoriaEditor({
           { icon: 'link',          value: linkedMatchId ? 1 : 0, label: linkedMatchId ? 'Partido Vinculado' : 'Sin Partido' },
         ].map(({ icon, value, label }) => (
           <div key={label} className="flex items-center gap-4 rounded-xl border p-4"
-            style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}>
+            style={{ backgroundColor: '#111713', borderColor: '#2a342d' }}>
             <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(34,197,94,0.1)' }}>
-              <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 20 }}>{icon}</span>
+              <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 20 }}>{icon}</span>
             </div>
             <div>
               <p className="text-[20px] font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{value}</p>
-              <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>{label}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>{label}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* ── Vincular partido ────────────────────────────────────────── */}
-      <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-        <div className="flex items-center gap-3 px-5 py-4 border-b" style={{ borderColor: '#1e293b' }}>
-          <span className="material-symbols-outlined" style={{ color: '#adb4ce', fontSize: 18 }}>link</span>
-          <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Vincular a partido registrado</p>
+      <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#111713', borderColor: '#253028' }}>
+        <div className="flex items-center gap-3 px-5 py-4 border-b" style={{ borderColor: '#253028' }}>
+          <span className="material-symbols-outlined" style={{ color: '#89968e', fontSize: 18 }}>link</span>
+          <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Vincular a partido registrado</p>
         </div>
         <div className="p-5">
           {linkedMatchId ? (
             <div className="flex items-center justify-between rounded-xl border px-4 py-3"
               style={{ backgroundColor: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.2)' }}>
               <div>
-                <p className="text-xs font-semibold" style={{ color: '#4be277' }}>Partido vinculado</p>
-                <p className="text-[11px] mt-0.5" style={{ color: '#adb4ce' }}>El partido usará esta convocatoria al registrar estadísticas</p>
+                <p className="text-xs font-semibold" style={{ color: '#72e697' }}>Partido vinculado</p>
+                <p className="text-[11px] mt-0.5" style={{ color: '#89968e' }}>El partido usará esta convocatoria al registrar estadísticas</p>
               </div>
               <button type="button" onClick={handleUnlink} disabled={linkPending}
                 className="flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs cursor-pointer transition-colors hover:border-red-500/40 hover:text-red-400"
-                style={{ borderColor: '#2e3447', color: '#adb4ce' }}>
+                style={{ borderColor: '#2a342d', color: '#89968e' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }}>link_off</span> Desvincular
               </button>
             </div>
           ) : availableMatches.length > 0 ? (
             <div className="flex gap-3">
               <select value={selectedMatch} onChange={e => setSelectedMatch(e.target.value)}
-                className="flex-1 border rounded-xl px-4 py-2.5 text-sm outline-none appearance-none focus:border-[#4be277] transition-colors"
-                style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }}>
+                className="flex-1 border rounded-xl px-4 py-2.5 text-sm outline-none appearance-none focus:border-[#72e697] transition-colors"
+                style={{ backgroundColor: '#090e0b', borderColor: '#2a342d', color: '#edf2ee' }}>
                 <option value="">Selecciona un partido…</option>
                 {availableMatches.map(m => (
                   <option key={m.id} value={m.id}>
@@ -501,12 +501,12 @@ export function ConvocatoriaEditor({
               </select>
               <button type="button" onClick={handleLink} disabled={!selectedMatch || linkPending}
                 className="flex items-center gap-2 px-5 rounded-xl text-sm font-bold cursor-pointer disabled:opacity-40 transition-all active:scale-95"
-                style={{ backgroundColor: '#22c55e', color: '#003915' }}>
+                style={{ backgroundColor: '#72e697', color: '#07140c' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }}>link</span> Vincular
               </button>
             </div>
           ) : (
-            <p className="text-sm py-1" style={{ color: '#adb4ce' }}>No hay partidos disponibles para vincular en esta temporada.</p>
+            <p className="text-sm py-1" style={{ color: '#89968e' }}>No hay partidos disponibles para vincular en esta temporada.</p>
           )}
         </div>
       </div>
@@ -524,10 +524,10 @@ export function ConvocatoriaEditor({
               style={{ width: 72, height: 72, objectFit: 'contain', borderRadius: 8, border: '1px solid #e2e8f0', background: 'white', padding: 4 }} />
           )}
           <div>
-            <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>
+            <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#111713', letterSpacing: '-0.02em' }}>
               {teamName}
             </h1>
-            <p style={{ margin: '2px 0 0', fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>
+            <p style={{ margin: '2px 0 0', fontSize: '0.75rem', color: '#637168', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>
               CONVOCATORIA OFICIAL
             </p>
             {seasonName && (
@@ -538,17 +538,17 @@ export function ConvocatoriaEditor({
 
         {/* Info partido */}
         <div style={{ textAlign: 'right' }}>
-          <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>vs {opponent}</p>
-          <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#475569' }}>
+          <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#111713' }}>vs {opponent}</p>
+          <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#637168' }}>
             {new Date(playedAt).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
           {localMeetingTime && (
-            <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#0f172a', fontWeight: 600 }}>
+            <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#111713', fontWeight: 600 }}>
               ⏰ Convocatoria: {localMeetingTime} h
             </p>
           )}
           {localLocation && (
-            <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#475569' }}>
+            <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#637168' }}>
               📍 {localLocation}
             </p>
           )}
@@ -567,7 +567,7 @@ export function ConvocatoriaEditor({
             <span style={{ width: 24, textAlign: 'right', fontWeight: 700, color: '#94a3b8', fontSize: '0.8rem', flexShrink: 0 }}>
               {p.number !== null ? p.number : '—'}
             </span>
-            <span style={{ flex: 1, color: '#0f172a', fontSize: '0.875rem' }}>
+            <span style={{ flex: 1, color: '#111713', fontSize: '0.875rem' }}>
               {p.name}
             </span>
           </div>
@@ -581,14 +581,14 @@ export function ConvocatoriaEditor({
             No convocadas ({fueraCount})
           </p>
           <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>
-            {players.filter(p => !isInSquad(p.id)).sort((a, b) => (a.number ?? 99) - (b.number ?? 99)).map(p => `${p.number ? `#${p.number} ` : ''}${p.name}`).join(' · ')}
+            {players.filter(p => !isInSquad(p.id)).sort((a, b) => (a.number ?? 99) - (b.number ?? 99)).map(p => `${p.number ? `${p.number} ` : ''}${p.name}`).join(' · ')}
           </p>
         </div>
       )}
 
       {/* Pie */}
       <div style={{ marginTop: '2rem', paddingTop: '0.75rem', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', color: '#94a3b8' }}>
-        <span>Total convocadas: <strong style={{ color: '#0f172a' }}>{squadCount}</strong></span>
+        <span>Total convocadas: <strong style={{ color: '#111713' }}>{squadCount}</strong></span>
         <span>Generado con Coachly · coachly.app</span>
       </div>
     </div>
