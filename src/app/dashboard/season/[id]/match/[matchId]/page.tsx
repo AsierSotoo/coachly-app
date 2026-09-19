@@ -10,7 +10,6 @@ import { PageTransition } from '@/components/ui/page-transition'
 import { getFormation } from '@/lib/formations'
 import { ShareWhatsAppButton } from '@/components/match/share-whatsapp-button'
 import { MatchPrintSheet } from '@/components/match/match-print-sheet'
-import { PreMatchLineupPicker } from '@/components/match/pre-match-lineup-picker'
 import Link from 'next/link'
 
 export default async function MatchPage({
@@ -406,23 +405,6 @@ export default async function MatchPage({
           </div>
         )}
 
-        {/* Alineación previa — solo en partidos programados */}
-        {isScheduled && players && players.length > 0 && (
-          <PreMatchLineupPicker
-            matchId={matchId}
-            seasonId={seasonId}
-            opponent={match.opponent}
-            playedAt={match.played_at}
-            convocatoriaId={convocatoriaId}
-            players={(players ?? []).map(p => ({ id: p.id, name: p.name, number: p.number, position: p.position }))}
-            initialStatuses={
-              Object.fromEntries(
-                Object.entries(convocatoriaStatuses).map(([k, v]) => [k, v as 'titular' | 'convocada' | 'no_convocada'])
-              )
-            }
-          />
-        )}
-
         {/* Picker de disponibilidad — solo en partidos programados */}
         {isScheduled && players && players.length > 0 && (
           <div className="mb-6">
@@ -446,13 +428,23 @@ export default async function MatchPage({
             opponent={match.opponent}
             rivalLogo={(match as { rival_logo_url?: string | null }).rival_logo_url}
             dateStr={dateStr}
+            playedAt={match.played_at}
             matchTime={matchTimeStr}
             venue={(match as { venue?: string | null }).venue}
             matchIndex={matchIndex}
             seasonName={season.name}
             players={(sortedPlayers ?? []).map(p => {
+              if (isScheduled) {
+                // Usar datos de disponibilidad: unavailable = excluida, el resto = en lista
+                const avail = initialAvailability[p.id]
+                return {
+                  id: p.id, name: p.name, number: p.number, position: p.position,
+                  status: avail === 'unavailable' ? 'no_convocada' as const : 'convocada' as const,
+                }
+              }
+              // Partido finalizado: convocatoria si existe, si no, appearances
               const convStatus = convocatoriaStatuses[p.id] ?? null
-              if (!convStatus && !isScheduled) {
+              if (!convStatus) {
                 const app = appearances?.find(a => a.player_id === p.id)
                 if (app && (app.minutes ?? 0) > 0) {
                   return { id: p.id, name: p.name, number: p.number, position: p.position, status: (app.starter ? 'titular' : 'convocada') as 'titular' | 'convocada' }

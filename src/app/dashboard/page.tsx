@@ -118,7 +118,7 @@ export default async function DashboardPage() {
   return (
     <PageTransition>
       <AlertsModal alerts={yellowAlerts} />
-      <main className="mx-auto w-full max-w-[620px] px-4 pt-6 pb-32 md:px-6 md:pt-10 md:pb-16">
+      <main className="mx-auto w-full max-w-[620px] lg:max-w-[1040px] px-4 pt-6 pb-32 md:px-6 md:pt-10 md:pb-16">
 
         {/* ── EMPTY STATE ──────────────────────────────────────── */}
         {!teams.length && (
@@ -204,11 +204,31 @@ export default async function DashboardPage() {
                     )}
                   </div>
 
+                  {lastSeason && (
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <Link href={`/dashboard/season/${lastSeason.id}/convocatorias/new`}
+                        className="flex items-center justify-center gap-2 rounded-[12px] border py-3 text-[13px] font-bold transition-all active:scale-[.97]"
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', color: 'var(--tx-2)', boxShadow: 'var(--shadow-card)' }}>
+                        <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>assignment</span>
+                        Convocatoria
+                      </Link>
+                      <Link href={`/dashboard/season/${lastSeason.id}/trainings/new`}
+                        className="flex items-center justify-center gap-2 rounded-[12px] border py-3 text-[13px] font-bold transition-all active:scale-[.97]"
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', color: 'var(--tx-2)', boxShadow: 'var(--shadow-card)' }}>
+                        <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>fitness_center</span>
+                        Entrenamiento
+                      </Link>
+                    </div>
+                  )}
+
+                  <div className="lg:grid lg:grid-cols-[1fr_320px] lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
+                  <div className="space-y-4">
+
                   {/* ── Hero: próximo partido ─────────────────── */}
                   {nextMatch && (
                     <Link href={`/dashboard/season/${lastSeason!.id}/match/${nextMatch.id}`}
                       className="block overflow-hidden rounded-[16px] border transition-all active:scale-[.99]"
-                      style={{ backgroundColor: 'rgba(251,191,36,0.06)', borderColor: 'rgba(251,191,36,0.22)' }}>
+                      style={{ backgroundColor: 'rgba(251,191,36,0.06)', borderColor: 'rgba(251,191,36,0.22)', boxShadow: 'var(--shadow-card)' }}>
                       <div className="flex items-stretch">
                         {/* Left: match info */}
                         <div className="flex-1 px-5 py-4">
@@ -245,7 +265,7 @@ export default async function DashboardPage() {
                   {!nextMatch && lastMatch && heroInfo && heroInfo.type === 'result' && (
                     <Link href={`/dashboard/season/${lastSeason!.id}/match/${lastMatch.id}`}
                       className="block overflow-hidden rounded-[16px] border transition-all active:scale-[.99]"
-                      style={{ backgroundColor: heroInfo.bg, borderColor: heroInfo.border }}>
+                      style={{ backgroundColor: heroInfo.bg, borderColor: heroInfo.border, boxShadow: 'var(--shadow-card)' }}>
                       <div className="px-5 pt-4 pb-3">
                         <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[.12em]" style={{ color: heroInfo.color }}>
                           Último partido
@@ -300,7 +320,7 @@ export default async function DashboardPage() {
 
                   {/* ── Stats: 7 columnas ────────────────────── */}
                   {competitive.length > 0 && (
-                    <div className="overflow-hidden rounded-[14px] border" style={{ backgroundColor: 'var(--bg-card-2)', borderColor: 'var(--bdr)' }}>
+                    <div className="overflow-hidden rounded-[14px] border" style={{ backgroundColor: 'var(--bg-card-2)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
                       <div className="grid grid-cols-7">
                         {[
                           { label: 'PJ',  value: competitive.length, color: 'var(--tx)' },
@@ -363,11 +383,14 @@ export default async function DashboardPage() {
                     </div>
                   )}
 
+                  </div>
+                  <div className="space-y-4">
+
                   {/* ── Próximo entrenamiento ─────────────────── */}
                   {nextSession && (
                     <Link href={`/dashboard/season/${lastSeason!.id}/trainings`}
                       className="flex items-center gap-3 rounded-[12px] border px-4 py-3 transition-all active:scale-[.99]"
-                      style={{ backgroundColor: 'rgba(114,230,151,0.04)', borderColor: 'rgba(114,230,151,0.14)' }}>
+                      style={{ backgroundColor: 'rgba(114,230,151,0.04)', borderColor: 'rgba(114,230,151,0.14)', boxShadow: 'var(--shadow-card)' }}>
                       <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--accent)', fontSize: 18 }}>fitness_center</span>
                       <div className="min-w-0 flex-1">
                         <p className="text-[9px] font-extrabold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>Próximo entrenamiento</p>
@@ -381,10 +404,10 @@ export default async function DashboardPage() {
                   )}
 
                   {/* ── Quick tiles ──────────────────────────── */}
-                  <div className="grid grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-3 lg:grid-cols-1 gap-2.5">
                     <Link href={`/dashboard/team/${team.id}/players`}
                       className="flex flex-col gap-1.5 rounded-[14px] border p-4 transition-all active:scale-[.97] hover:border-[var(--accent)]/30"
-                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)' }}>
+                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--accent-subtle)' }}>
                         <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>group</span>
                       </div>
@@ -397,7 +420,7 @@ export default async function DashboardPage() {
                     </Link>
                     <Link href={seasonHref}
                       className="flex flex-col gap-1.5 rounded-[14px] border p-4 transition-all active:scale-[.97] hover:border-[var(--accent)]/30"
-                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)' }}>
+                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--accent-subtle)' }}>
                         <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>calendar_today</span>
                       </div>
@@ -410,7 +433,7 @@ export default async function DashboardPage() {
                     </Link>
                     <Link href={`/dashboard/season/${lastSeason?.id ?? ''}/stats`}
                       className="flex flex-col gap-1.5 rounded-[14px] border p-4 transition-all active:scale-[.97] hover:border-[var(--accent)]/30"
-                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)' }}>
+                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--accent-subtle)' }}>
                         <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>bar_chart</span>
                       </div>
@@ -419,6 +442,9 @@ export default async function DashboardPage() {
                         <p className="text-[11px] mt-0.5" style={{ color: 'var(--tx-4)' }}>Rankings</p>
                       </div>
                     </Link>
+                  </div>
+
+                  </div>
                   </div>
 
                 </div>
@@ -454,7 +480,7 @@ export default async function DashboardPage() {
                     return (
                       <AnimatedItem key={team.id} delay={idx * 0.05}>
                         <div className="flex flex-col rounded-[14px] border p-5 transition-colors hover:border-[var(--bdr-strong)]"
-                          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)' }}>
+                          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
                           <div className="mb-4 flex items-center gap-3">
                             <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border"
                               style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>

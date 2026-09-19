@@ -19,6 +19,7 @@ interface Props {
   opponent: string
   rivalLogo?: string | null
   dateStr: string
+  playedAt: string
   matchTime?: string | null
   venue?: string | null
   matchIndex: number
@@ -35,7 +36,7 @@ function posLine(pos: string | null): 'gk' | 'def' | 'mid' | 'fwd' {
 }
 
 function assignSequentialNumbers(titulares: Player[]): PlayerWithSeq[] {
-  const byLine = { gk: [], def: [], mid: [], fwd: [] } as Record<string, Player[]>
+  const byLine: Record<string, Player[]> = { gk: [], def: [], mid: [], fwd: [] }
   for (const p of titulares) byLine[posLine(p.position)].push(p)
   for (const key of Object.keys(byLine)) byLine[key].sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
   let num = 1
@@ -46,27 +47,24 @@ function assignSequentialNumbers(titulares: Player[]): PlayerWithSeq[] {
   return result
 }
 
-function PitchRow({ players, style }: { players: PlayerWithSeq[]; style?: React.CSSProperties }) {
+function PitchRow({ players }: { players: PlayerWithSeq[] }) {
   if (players.length === 0) return null
   return (
-    <div style={{
-      display: 'flex', justifyContent: 'space-evenly', alignItems: 'center',
-      ...style,
-    }}>
+    <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
       {players.map(p => (
-        <div key={p.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+        <div key={p.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
           <div style={{
-            width: 26, height: 26, borderRadius: '50%',
-            border: '2px solid black', background: 'white',
+            width: 24, height: 24, borderRadius: '50%',
+            border: '2px solid #111', background: 'white',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 10, fontWeight: 900, color: 'black', flexShrink: 0,
+            fontSize: 9, fontWeight: 900, color: '#111', flexShrink: 0,
           }}>
             {p.seqNum}
           </div>
           <span style={{
-            fontSize: 7, fontWeight: 700, textAlign: 'center',
-            maxWidth: 38, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-            color: 'white',
+            fontSize: 6.5, fontWeight: 700, textAlign: 'center',
+            maxWidth: 36, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+            color: '#111',
           }}>
             {p.name.split(' ')[0]}
           </span>
@@ -77,8 +75,8 @@ function PitchRow({ players, style }: { players: PlayerWithSeq[]; style?: React.
 }
 
 export function MatchPrintSheet({
-  teamName, teamLogo, opponent, rivalLogo,
-  dateStr, matchTime, venue, matchIndex, seasonName, players,
+  teamName, teamLogo, opponent,
+  playedAt, matchTime, matchIndex, seasonName, players,
 }: Props) {
 
   const titulares  = players.filter(p => p.status === 'titular').sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
@@ -91,27 +89,24 @@ export function MatchPrintSheet({
   const startingEleven = hasConvocatoria ? titulares : allAvailable.slice(0, 11)
   const numbered = assignSequentialNumbers(startingEleven)
   const subs = hasConvocatoria ? convocadas : allAvailable.slice(11)
+  const subsWithNum = subs.map((p, i) => ({ ...p, seqNum: startingEleven.length + 1 + i }))
 
   const gkRow  = numbered.filter(p => p.line === 'gk')
   const defRow = numbered.filter(p => p.line === 'def')
   const midRow = numbered.filter(p => p.line === 'mid')
   const fwdRow = numbered.filter(p => p.line === 'fwd')
 
-  // Subs get sequential numbers from 12 onward
-  const subsWithNum = subs.map((p, i) => ({ ...p, seqNum: startingEleven.length + 1 + i }))
+  // Fecha real del partido
+  const d = new Date(playedAt + 'T12:00:00')
+  const dateShort = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getFullYear()).slice(2)}`
 
-  // Format date short: DD/MM/YY
-  const dateShort = (() => {
-    const today = new Date()
-    const d = today.getDate().toString().padStart(2, '0')
-    const m = (today.getMonth() + 1).toString().padStart(2, '0')
-    const y = today.getFullYear().toString().slice(2)
-    return `${d}/${m}/${y}`
-  })()
+  const FIELD_COLOR = '#111'
+  const FIELD_BG    = '#f9fafb'
+  const MARK_OP     = 1
 
   return (
     <>
-      {/* Print trigger button — visible only on screen */}
+      {/* Botón pantalla */}
       <button
         onClick={() => window.print()}
         className="flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer"
@@ -121,57 +116,54 @@ export function MatchPrintSheet({
         Imprimir hoja del partido
       </button>
 
-      {/* Print-only content */}
+      {/* Contenido impresión */}
       <div className="match-print-sheet" style={{ display: 'none' }}>
         <style>{`
           @media print {
-            body > * { visibility: hidden !important; }
+            html { height: auto; }
+            body { height: 0 !important; overflow: hidden !important; margin: 0 !important; }
             .match-print-sheet {
-              visibility: visible !important;
               display: block !important;
               position: fixed !important;
               inset: 0 !important;
               background: white !important;
-              padding: 20px 24px !important;
+              padding: 14px 18px !important;
               font-family: Arial, Helvetica, sans-serif !important;
+              overflow: hidden !important;
+              visibility: visible !important;
+              z-index: 99999 !important;
             }
             .match-print-sheet * { visibility: visible !important; }
             @page { margin: 0; size: A4 portrait; }
           }
         `}</style>
 
-        {/* ── CABECERA ──────────────────────────────────────── */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-          <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 1, textTransform: 'uppercase' }}>
+        {/* ── CABECERA ── */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+          <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 1.5, textTransform: 'uppercase', color: '#111' }}>
             PLANTILLA PARTIDOS
           </div>
           {teamLogo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={teamLogo} alt={teamName} style={{ width: 52, height: 52, objectFit: 'contain' }} />
+            <img src={teamLogo} alt={teamName} style={{ width: 48, height: 48, objectFit: 'contain' }} />
           ) : (
-            <div style={{
-              width: 52, height: 52, border: '2px solid black', borderRadius: 6,
+            <div style={{ width: 48, height: 48, border: '2px solid #111', borderRadius: 6,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 14, fontWeight: 900,
-            }}>
+              fontSize: 13, fontWeight: 900, color: '#111' }}>
               {teamName.trim().split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()}
             </div>
           )}
         </div>
 
-        {/* ── TABLA INFO DEL PARTIDO ──────────────────────── */}
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 14, tableLayout: 'fixed' }}>
+        {/* ── TABLA INFO ── */}
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12, tableLayout: 'fixed' }}>
           <thead>
             <tr>
-              {[
-                { label: 'JORNADA', width: '28%' },
-                { label: 'FECHA',   width: '28%' },
-                { label: 'CONTRARIO', width: '44%' },
-              ].map(col => (
+              {[{ label: 'JORNADA', w: '26%' }, { label: 'FECHA', w: '28%' }, { label: 'CONTRARIO', w: '46%' }].map(col => (
                 <th key={col.label} style={{
-                  border: '1px solid black', padding: '4px 8px',
-                  fontSize: 9, fontWeight: 700, textAlign: 'left',
-                  width: col.width, backgroundColor: '#f0f0f0',
+                  border: '1px solid #aaa', padding: '3px 7px',
+                  fontSize: 8, fontWeight: 800, textAlign: 'left',
+                  width: col.w, backgroundColor: '#e8e8e8', color: '#111',
                 }}>
                   {col.label}
                 </th>
@@ -180,141 +172,158 @@ export function MatchPrintSheet({
           </thead>
           <tbody>
             <tr>
-              <td style={{ border: '1px solid black', padding: '5px 8px', fontSize: 11, fontWeight: 600 }}>
+              <td style={{ border: '1px solid #aaa', padding: '4px 7px', fontSize: 11, fontWeight: 700, color: '#111' }}>
                 {seasonName} J{matchIndex + 1}
               </td>
-              <td style={{ border: '1px solid black', padding: '5px 8px', fontSize: 11, fontWeight: 600 }}>
+              <td style={{ border: '1px solid #aaa', padding: '4px 7px', fontSize: 11, fontWeight: 700, color: '#111' }}>
                 {dateShort}{matchTime ? ` · ${matchTime}h` : ''}
               </td>
-              <td style={{ border: '1px solid black', padding: '5px 8px', fontSize: 11, fontWeight: 700 }}>
+              <td style={{ border: '1px solid #aaa', padding: '4px 7px', fontSize: 11, fontWeight: 800, color: '#111' }}>
                 {opponent}
               </td>
             </tr>
           </tbody>
         </table>
 
-        {/* ── CUERPO: CAMPO + LISTA ────────────────────────── */}
-        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+        {/* ── CUERPO ── */}
+        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
 
           {/* Campo */}
-          <div style={{ width: 200, flexShrink: 0 }}>
+          <div style={{ width: 188, flexShrink: 0 }}>
             <div style={{
-              position: 'relative', width: 200, height: 310,
-              backgroundColor: '#1a5232', borderRadius: 4,
-              border: '2px solid black', overflow: 'hidden',
+              position: 'relative', width: 188, height: 298,
+              backgroundColor: FIELD_BG,
+              border: `2px solid ${FIELD_COLOR}`,
+              overflow: 'visible',
               display: 'flex', flexDirection: 'column',
-              justifyContent: 'space-between', padding: '10px 4px',
+              justifyContent: 'space-between', padding: '12px 4px',
             }}>
-              {/* Marcas del campo */}
-              <div style={{ position: 'absolute', inset: 0, opacity: 0.2, pointerEvents: 'none' }}>
-                {/* Línea de medio campo */}
-                <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', height: 1, backgroundColor: 'white' }} />
-                {/* Círculo central */}
-                <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 50, height: 50, borderRadius: '50%', border: '1px solid white' }} />
-                {/* Área grande arriba (nuestra portería) */}
-                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '65%', height: '18%', borderBottom: '1px solid white', borderLeft: '1px solid white', borderRight: '1px solid white' }} />
+              {/* Marcas */}
+              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: MARK_OP }}>
+                {/* Portería arriba */}
+                <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)',
+                  width: '32%', height: 9, border: `2px solid ${FIELD_COLOR}`, borderTop: 'none',
+                  backgroundColor: FIELD_BG }} />
+                {/* Portería abajo */}
+                <div style={{ position: 'absolute', bottom: -1, left: '50%', transform: 'translateX(-50%)',
+                  width: '32%', height: 9, border: `2px solid ${FIELD_COLOR}`, borderBottom: 'none',
+                  backgroundColor: FIELD_BG }} />
+                {/* Área grande arriba */}
+                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+                  width: '65%', height: '18%', borderBottom: `1.5px solid ${FIELD_COLOR}`,
+                  borderLeft: `1.5px solid ${FIELD_COLOR}`, borderRight: `1.5px solid ${FIELD_COLOR}` }} />
                 {/* Área pequeña arriba */}
-                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '35%', height: '9%', borderBottom: '1px solid white', borderLeft: '1px solid white', borderRight: '1px solid white' }} />
-                {/* Área grande abajo (rival) */}
-                <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '65%', height: '18%', borderTop: '1px solid white', borderLeft: '1px solid white', borderRight: '1px solid white' }} />
+                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+                  width: '36%', height: '9%', borderBottom: `1.5px solid ${FIELD_COLOR}`,
+                  borderLeft: `1.5px solid ${FIELD_COLOR}`, borderRight: `1.5px solid ${FIELD_COLOR}` }} />
+                {/* Punto penal arriba */}
+                <div style={{ position: 'absolute', top: '12%', left: '50%',
+                  transform: 'translate(-50%, -50%)', width: 3, height: 3,
+                  borderRadius: '50%', backgroundColor: FIELD_COLOR }} />
+                {/* Línea medio */}
+                <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', height: 1.5, backgroundColor: FIELD_COLOR }} />
+                {/* Círculo central */}
+                <div style={{ position: 'absolute', left: '50%', top: '50%',
+                  transform: 'translate(-50%,-50%)', width: 52, height: 52,
+                  borderRadius: '50%', border: `1.5px solid ${FIELD_COLOR}` }} />
+                {/* Punto central */}
+                <div style={{ position: 'absolute', top: '50%', left: '50%',
+                  transform: 'translate(-50%,-50%)', width: 3, height: 3,
+                  borderRadius: '50%', backgroundColor: FIELD_COLOR }} />
+                {/* Área grande abajo */}
+                <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+                  width: '65%', height: '18%', borderTop: `1.5px solid ${FIELD_COLOR}`,
+                  borderLeft: `1.5px solid ${FIELD_COLOR}`, borderRight: `1.5px solid ${FIELD_COLOR}` }} />
                 {/* Área pequeña abajo */}
-                <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '35%', height: '9%', borderTop: '1px solid white', borderLeft: '1px solid white', borderRight: '1px solid white' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+                  width: '36%', height: '9%', borderTop: `1.5px solid ${FIELD_COLOR}`,
+                  borderLeft: `1.5px solid ${FIELD_COLOR}`, borderRight: `1.5px solid ${FIELD_COLOR}` }} />
+                {/* Punto penal abajo */}
+                <div style={{ position: 'absolute', bottom: '12%', left: '50%',
+                  transform: 'translate(-50%, 50%)', width: 3, height: 3,
+                  borderRadius: '50%', backgroundColor: FIELD_COLOR }} />
+                {/* Arco esquina sup-izq */}
+                <div style={{ position: 'absolute', top: -6, left: -6, width: 12, height: 12,
+                  borderRadius: '50%', border: `1px solid ${FIELD_COLOR}` }} />
+                {/* Arco esquina sup-der */}
+                <div style={{ position: 'absolute', top: -6, right: -6, width: 12, height: 12,
+                  borderRadius: '50%', border: `1px solid ${FIELD_COLOR}` }} />
+                {/* Arco esquina inf-izq */}
+                <div style={{ position: 'absolute', bottom: -6, left: -6, width: 12, height: 12,
+                  borderRadius: '50%', border: `1px solid ${FIELD_COLOR}` }} />
+                {/* Arco esquina inf-der */}
+                <div style={{ position: 'absolute', bottom: -6, right: -6, width: 12, height: 12,
+                  borderRadius: '50%', border: `1px solid ${FIELD_COLOR}` }} />
               </div>
 
-              {/* GK (arriba, defiende) */}
               <PitchRow players={gkRow} />
-
-              {/* Defensas */}
               <PitchRow players={defRow} />
-
-              {/* Medios */}
               <PitchRow players={midRow} />
-
-              {/* Delanteros */}
               <PitchRow players={fwdRow} />
-
-              {/* Slot vacío si sólo hay 3 líneas de campo */}
               {fwdRow.length === 0 && <div />}
             </div>
           </div>
 
-          {/* Lista de jugadoras */}
-          <div style={{ flex: 1 }}>
+          {/* Lista */}
+          <div style={{ flex: 1, minWidth: 0 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <tbody>
-                {/* Titulares */}
                 {numbered.map((p, i) => (
                   <tr key={p.id}>
                     <td style={{
-                      border: '1px solid black',
-                      borderBottom: i === numbered.length - 1 && subsWithNum.length > 0 ? '3px solid black' : '1px solid black',
-                      padding: '4px 6px',
-                      width: 28, textAlign: 'center',
-                      fontSize: 10, fontWeight: 900, color: '#222',
-                    }}>
-                      {p.seqNum}
-                    </td>
+                      border: '1px solid #aaa',
+                      borderBottom: i === numbered.length - 1 && subsWithNum.length > 0 ? '3px solid #111' : '1px solid #aaa',
+                      padding: '3px 5px', width: 24, textAlign: 'center',
+                      fontSize: 9, fontWeight: 900, color: '#111',
+                    }}>{p.seqNum}</td>
                     <td style={{
-                      border: '1px solid black',
-                      borderBottom: i === numbered.length - 1 && subsWithNum.length > 0 ? '3px solid black' : '1px solid black',
-                      padding: '4px 8px',
-                      fontSize: 11, fontWeight: 500,
-                    }}>
-                      {p.name}
-                    </td>
+                      border: '1px solid #aaa',
+                      borderBottom: i === numbered.length - 1 && subsWithNum.length > 0 ? '3px solid #111' : '1px solid #aaa',
+                      padding: '3px 7px', fontSize: 10, fontWeight: 600, color: '#111',
+                    }}>{p.name}</td>
                   </tr>
                 ))}
 
-                {/* Separador visual si no hay suplentes */}
                 {numbered.length > 0 && subsWithNum.length === 0 && (
                   <tr>
-                    <td colSpan={2} style={{ border: '1px solid black', backgroundColor: '#000', height: 4 }} />
+                    <td colSpan={2} style={{ border: '1px solid #aaa', backgroundColor: '#111', height: 3 }} />
                   </tr>
                 )}
 
-                {/* Suplentes */}
                 {subsWithNum.map(p => (
                   <tr key={p.id}>
-                    <td style={{
-                      border: '1px solid black', padding: '4px 6px',
-                      width: 28, textAlign: 'center',
-                      fontSize: 10, fontWeight: 900, color: '#555',
-                    }}>
-                      {p.seqNum}
-                    </td>
-                    <td style={{
-                      border: '1px solid black', padding: '4px 8px',
-                      fontSize: 11, fontWeight: 500, color: '#333',
-                    }}>
+                    <td style={{ border: '1px solid #aaa', padding: '3px 5px', width: 24, textAlign: 'center',
+                      fontSize: 9, fontWeight: 900, color: '#444' }}>{p.seqNum}</td>
+                    <td style={{ border: '1px solid #aaa', padding: '3px 7px', fontSize: 10, fontWeight: 500, color: '#333' }}>
                       {p.name}
                     </td>
                   </tr>
                 ))}
 
-                {/* Filas vacías para anotar a mano */}
                 {Array.from({ length: Math.max(0, 16 - numbered.length - subsWithNum.length) }).map((_, i) => (
                   <tr key={`empty-${i}`}>
-                    <td style={{ border: '1px solid black', padding: '4px 6px', width: 28, height: 22 }} />
-                    <td style={{ border: '1px solid black', padding: '4px 8px' }} />
+                    <td style={{ border: '1px solid #aaa', padding: '3px 5px', width: 24, height: 20 }} />
+                    <td style={{ border: '1px solid #aaa', padding: '3px 7px' }} />
                   </tr>
                 ))}
               </tbody>
             </table>
 
             {/* Notas */}
-            <div style={{ marginTop: 10, borderTop: '1px solid #ccc', paddingTop: 6 }}>
-              <div style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 5, color: '#555' }}>
+            <div style={{ marginTop: 8, borderTop: '1px solid #ccc', paddingTop: 5 }}>
+              <div style={{ fontSize: 7, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, color: '#555' }}>
                 Notas
               </div>
               {[1, 2, 3].map(i => (
-                <div key={i} style={{ height: 18, borderBottom: '1px solid #ccc', marginBottom: 3 }} />
+                <div key={i} style={{ height: 16, borderBottom: '1px solid #ccc', marginBottom: 3 }} />
               ))}
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ marginTop: 12, paddingTop: 6, borderTop: '1px solid #eee', fontSize: 7, color: '#bbb', textAlign: 'center' }}>
+        <div style={{ marginTop: 10, paddingTop: 5, borderTop: '1px solid #ddd',
+          fontSize: 7, color: '#999', textAlign: 'center' }}>
           Generado con Coachly · {teamName} · {opponent}
         </div>
       </div>
