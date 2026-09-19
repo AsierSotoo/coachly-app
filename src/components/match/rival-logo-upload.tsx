@@ -34,10 +34,9 @@ export function RivalLogoUpload({ matchId, seasonId, currentUrl, opponentName }:
     if (uploadError) { toast.error(uploadError.message); setUploading(false); return }
 
     const { data } = supabase.storage.from('team-logos').getPublicUrl(path)
-    try {
-      await setMatchRivalLogo(matchId, data.publicUrl, seasonId)
-    } catch (e) {
-      toast.error('Error al guardar: ' + (e instanceof Error ? e.message : String(e)))
+    const result = await setMatchRivalLogo(matchId, data.publicUrl, seasonId)
+    if (result?.error) {
+      toast.error('Error al guardar: ' + result.error)
       setUploading(false)
       return
     }

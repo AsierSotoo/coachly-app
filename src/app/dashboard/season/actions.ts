@@ -154,11 +154,12 @@ export async function deleteMatch(formData: FormData) {
   redirect(`/dashboard/season/${seasonId}`)
 }
 
-export async function setMatchRivalLogo(matchId: string, url: string, seasonId: string) {
+export async function setMatchRivalLogo(matchId: string, url: string, seasonId: string): Promise<{ error?: string }> {
   const supabase = await createClient()
   const { error } = await supabase.from('matches').update({ rival_logo_url: url }).eq('id', matchId)
-  if (error) throw new Error(error.message)
+  if (error) return { error: error.message }
   revalidatePath(`/dashboard/season/${seasonId}/match/${matchId}`)
+  return {}
 }
 
 export async function ensureMatchConvocatoria(
