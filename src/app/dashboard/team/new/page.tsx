@@ -1,4 +1,4 @@
-﻿import { createTeam } from '../actions'
+import { createTeam } from '../actions'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
 
@@ -11,24 +11,24 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
         <div className="mb-8">
           <Link href="/dashboard"
             className="flex items-center gap-1 text-xs hover:underline mb-4"
-            style={{ color: '#89968e' }}>
+            style={{ color: 'var(--tx-2)' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
             Volver al inicio
           </Link>
-          <h1 className="text-[28px] font-extrabold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+          <h1 className="text-[28px] font-extrabold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
             Nuevo equipo
           </h1>
-          <p className="text-sm mt-1" style={{ color: '#89968e' }}>
+          <p className="text-sm mt-1" style={{ color: 'var(--tx-2)' }}>
             Configura los datos básicos. Podrás editarlos después.
           </p>
         </div>
 
         {/* Card formulario */}
-        <section className="rounded-2xl border border-[#253028] overflow-hidden" style={{ backgroundColor: '#111713' }}>
+        <section className="rounded-2xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
 
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-[#253028]">
-            <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 22 }}>sports_soccer</span>
-            <h2 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+          <div className="flex items-center gap-3 px-6 py-5 border-b" style={{ borderColor: 'var(--bdr-strong)' }}>
+            <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 22 }}>sports_soccer</span>
+            <h2 className="text-[16px] font-semibold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
               Datos del equipo
             </h2>
           </div>
@@ -39,13 +39,13 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
             <div className="flex flex-col gap-2">
               <label htmlFor="name"
                 className="text-[11px] font-bold uppercase tracking-wider"
-                style={{ color: '#89968e' }}>
+                style={{ color: 'var(--tx-2)' }}>
                 Nombre del equipo
               </label>
               <input id="name" name="name" type="text" required
                 placeholder="ej. CD Ilumberri"
-                className="rounded-xl px-4 text-sm"
-                style={{ minHeight: 44 }}
+                className="rounded-xl px-4 text-sm focus:outline-none focus:border-[var(--accent)]"
+                style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)' }}
               />
             </div>
 
@@ -53,16 +53,16 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
             <div className="flex flex-col gap-2">
               <label htmlFor="gender"
                 className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2"
-                style={{ color: '#89968e' }}>
+                style={{ color: 'var(--tx-2)' }}>
                 Género del equipo
                 <span className="px-2 py-0.5 rounded-full text-[9px] font-bold normal-case"
-                  style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: '#72e697', border: '1px solid rgba(34,197,94,0.2)' }}>
+                  style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent)', border: '1px solid var(--accent)' }}>
                   Afecta al lenguaje de la app
                 </span>
               </label>
               <select id="gender" name="gender" required
-                className="rounded-xl px-4 text-sm"
-                style={{ minHeight: 44 }}>
+                className="rounded-xl px-4 text-sm focus:outline-none focus:border-[var(--accent)]"
+                style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)', colorScheme: 'dark' }}>
                 <option value="">Selecciona el género...</option>
                 <option value="Femenino">Femenino — jugadoras, porteras, delanteras...</option>
                 <option value="Masculino">Masculino — jugadores, porteros, delanteros...</option>
@@ -74,16 +74,16 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
             <div className="flex flex-col gap-2">
               <label htmlFor="category"
                 className="text-[11px] font-bold uppercase tracking-wider"
-                style={{ color: '#89968e' }}>
+                style={{ color: 'var(--tx-2)' }}>
                 Categoría
-                <span className="ml-2 text-[10px] font-normal normal-case" style={{ color: '#2a342d' }}>
+                <span className="ml-2 text-[10px] font-normal normal-case" style={{ color: 'var(--bdr-strong)' }}>
                   (opcional)
                 </span>
               </label>
               <input id="category" name="category" type="text"
                 placeholder="ej. Primera Autonómica"
-                className="rounded-xl px-4 text-sm"
-                style={{ minHeight: 44 }}
+                className="rounded-xl px-4 text-sm focus:outline-none focus:border-[var(--accent)] placeholder:text-slate-600"
+                style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)' }}
               />
             </div>
 
@@ -92,8 +92,8 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
             <button type="submit"
               className="flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer mt-2"
               style={{
-                backgroundColor: '#72e697',
-                color: '#07140c',
+                backgroundColor: 'var(--accent)',
+                color: 'var(--accent-fg)',
                 minHeight: 48,
                 boxShadow: '0 0 16px rgba(34,197,94,0.25)',
                 fontFamily: 'Sora, sans-serif',

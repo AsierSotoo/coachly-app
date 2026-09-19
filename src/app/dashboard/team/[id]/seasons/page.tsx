@@ -29,17 +29,17 @@ export default async function SeasonsPage({
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-[#2a342d] overflow-hidden" style={{ backgroundColor: '#171f1a' }}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center border overflow-hidden" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
               <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
             </div>
             <div>
-              <Link href="/dashboard" className="text-xs hover:underline mb-1 block" style={{ color: '#89968e' }}>
+              <Link href="/dashboard" className="text-xs hover:underline mb-1 block" style={{ color: 'var(--tx-2)' }}>
                 ← Mis equipos
               </Link>
-              <h1 className="text-[24px] font-extrabold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              <h1 className="text-[24px] font-extrabold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                 {team.name}
               </h1>
-              <p className="text-sm mt-0.5" style={{ color: '#89968e' }}>
+              <p className="text-sm mt-0.5" style={{ color: 'var(--tx-2)' }}>
                 {seasons?.length ?? 0} temporada{(seasons?.length ?? 0) !== 1 ? 's' : ''}
               </p>
             </div>
@@ -47,26 +47,23 @@ export default async function SeasonsPage({
         </div>
 
         {/* Nueva temporada */}
-        <section
-          className="mb-8 rounded-2xl border border-[#253028] overflow-hidden"
-          style={{ backgroundColor: '#111713' }}
-        >
-          <div className="flex items-center gap-3 px-5 py-4 border-b border-[#253028]">
-            <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 18 }}>add_circle</span>
-            <h2 className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Nueva temporada</h2>
+        <section className="mb-8 rounded-2xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+          <div className="flex items-center gap-3 px-5 py-4 border-b" style={{ borderColor: 'var(--bdr-strong)' }}>
+            <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>add_circle</span>
+            <h2 className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Nueva temporada</h2>
           </div>
           <form action={createSeason} className="flex gap-3 p-5">
             <input type="hidden" name="team_id" value={teamId} />
             <input
               name="name" type="text" required
               placeholder="ej. 2025/26"
-              className="flex-1 rounded-xl px-4 text-sm focus:outline-none placeholder:text-slate-600"
-              style={{ minHeight: 44, backgroundColor: '#111713', border: '1px solid #2a342d', color: '#edf2ee' }}
+              className="flex-1 rounded-xl px-4 text-sm focus:outline-none placeholder:text-slate-600 focus:border-[var(--accent)]"
+              style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)' }}
             />
             <button
               type="submit"
               className="flex items-center gap-2 rounded-xl px-5 text-sm font-bold active:scale-95 transition-all cursor-pointer flex-shrink-0"
-              style={{ backgroundColor: '#72e697', color: '#07140c', minHeight: 44, boxShadow: '0 0 12px rgba(34,197,94,0.2)' }}
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', minHeight: 44, boxShadow: '0 0 12px rgba(34,197,94,0.2)' }}
             >
               <span className="material-symbols-outlined text-lg">add</span>
               Crear
@@ -77,9 +74,9 @@ export default async function SeasonsPage({
 
         {/* Lista de temporadas */}
         {!seasons?.length ? (
-          <div className="rounded-2xl border-2 border-dashed border-[#2a342d]/50 py-16 text-center">
-            <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2a342d' }}>calendar_today</span>
-            <p className="text-sm" style={{ color: '#89968e' }}>Crea la primera temporada para empezar.</p>
+          <div className="rounded-2xl border-2 border-dashed py-16 text-center" style={{ borderColor: 'var(--bdr-strong)' }}>
+            <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: 'var(--bdr-strong)' }}>calendar_today</span>
+            <p className="text-sm" style={{ color: 'var(--tx-2)' }}>Crea la primera temporada para empezar.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
@@ -97,29 +94,29 @@ export default async function SeasonsPage({
               return (
                 <div
                   key={season.id}
-                  className="group relative overflow-hidden rounded-2xl border border-[#253028] transition-all hover:border-[#72e697]/30 hover:shadow-lg"
-                  style={{ backgroundColor: '#111713' }}
+                  className="group relative overflow-hidden rounded-2xl border transition-all hover:border-[var(--accent)]/30 hover:shadow-lg"
+                  style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
                 >
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent" />
 
                   <Link href={`/dashboard/season/${season.id}`} className="block p-5 pb-4">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#72e697]/20"
-                          style={{ backgroundColor: 'rgba(34,197,94,0.08)' }}>
-                          <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 18 }}>calendar_today</span>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border"
+                          style={{ backgroundColor: 'var(--accent-subtle)', borderColor: 'var(--accent)' }}>
+                          <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>calendar_today</span>
                         </div>
                         <div>
-                          <p className="text-base font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                          <p className="text-base font-bold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                             {season.name}
                           </p>
-                          <p className="text-xs mt-0.5" style={{ color: '#89968e' }}>
+                          <p className="text-xs mt-0.5" style={{ color: 'var(--tx-2)' }}>
                             {total} partido{total !== 1 ? 's' : ''} registrado{total !== 1 ? 's' : ''}
                           </p>
                         </div>
                       </div>
                       <span className="material-symbols-outlined transition-transform group-hover:translate-x-0.5"
-                        style={{ color: '#2a342d', fontSize: 20 }}>chevron_right</span>
+                        style={{ color: 'var(--bdr-strong)', fontSize: 20 }}>chevron_right</span>
                     </div>
 
                     {total > 0 ? (
@@ -133,25 +130,25 @@ export default async function SeasonsPage({
                             <div key={label} className="flex items-center justify-center gap-2 rounded-xl border py-2.5"
                               style={{ backgroundColor: bg, borderColor: border }}>
                               <span className="text-xl font-extrabold" style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</span>
-                              <span className="text-[10px] font-bold uppercase" style={{ color: '#89968e' }}>{label}</span>
+                              <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>{label}</span>
                             </div>
                           ))}
                         </div>
-                        <p className="text-[11px] text-center mt-2" style={{ color: '#89968e' }}>
+                        <p className="text-[11px] text-center mt-2" style={{ color: 'var(--tx-2)' }}>
                           GF&nbsp;<span style={{ color: '#72e697' }}>{goalsFor}</span>
                           &nbsp;·&nbsp;
                           GC&nbsp;<span style={{ color: '#ffb4ab' }}>{goalsAgainst}</span>
                           &nbsp;·&nbsp;
-                          <span style={{ color: diff > 0 ? '#72e697' : diff < 0 ? '#ffb4ab' : '#89968e' }}>
+                          <span style={{ color: diff > 0 ? '#72e697' : diff < 0 ? '#ffb4ab' : 'var(--tx-2)' }}>
                             {diff > 0 ? `+${diff}` : diff}
                           </span>
                         </p>
-                        <p className="text-[10px] text-center mt-0.5" style={{ color: '#637168' }}>
+                        <p className="text-[10px] text-center mt-0.5" style={{ color: 'var(--tx-3)' }}>
                           {allSeasonMatches.length - total > 0 ? `${allSeasonMatches.length - total} pendiente${allSeasonMatches.length - total !== 1 ? 's' : ''}` : ''}
                         </p>
                       </>
                     ) : (
-                      <p className="text-xs text-center py-1" style={{ color: '#2a342d' }}>Sin partidos registrados aún</p>
+                      <p className="text-xs text-center py-1" style={{ color: 'var(--bdr-strong)' }}>Sin partidos registrados aún</p>
                     )}
                   </Link>
 
@@ -160,16 +157,16 @@ export default async function SeasonsPage({
                       <Link
                         href={`/dashboard/season/${season.id}/stats`}
                         className="flex items-center gap-1.5 text-xs font-bold transition-colors hover:underline"
-                        style={{ color: '#89968e' }}
+                        style={{ color: 'var(--tx-2)' }}
                       >
-                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#72e697' }}>leaderboard</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--accent)' }}>leaderboard</span>
                         Ver estadísticas
                       </Link>
                     ) : (
                       <Link
                         href={`/dashboard/season/${season.id}?new=1`}
                         className="flex items-center gap-1.5 text-xs font-bold transition-colors"
-                        style={{ color: '#72e697' }}
+                        style={{ color: 'var(--accent)' }}
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 14 }}>add_circle</span>
                         Registrar primer partido

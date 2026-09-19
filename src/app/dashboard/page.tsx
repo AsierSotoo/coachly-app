@@ -377,12 +377,12 @@ export default async function DashboardPage() {
               <>
                 <div className="mb-5 flex items-center justify-between">
                   <h1 className="text-[22px] font-bold tracking-[-0.03em]"
-                    style={{ color: '#edf2ee', fontFamily: 'Sora, sans-serif' }}>
+                    style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                     Tus equipos
                   </h1>
                   <Link href="/dashboard/team/new"
                     className="flex items-center gap-1.5 rounded-[10px] px-4 text-sm font-bold transition-transform active:scale-95"
-                    style={{ backgroundColor: '#72e697', color: '#07140c', fontFamily: 'Sora, sans-serif', minHeight: 40 }}>
+                    style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', fontFamily: 'Sora, sans-serif', minHeight: 40 }}>
                     <span className="material-symbols-outlined text-sm">add</span>
                     Nuevo
                   </Link>
@@ -390,27 +390,27 @@ export default async function DashboardPage() {
 
                 <AnimatedList className="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
                   {teams.map((team, idx) => {
-                    const { lastSeason, competitive, wins, draws, losses, points, playerCount, recentForm, lastMatch, seasonHref } = processTeam(team)
+                    const { lastSeason, competitive, wins, draws, losses, points, recentForm, lastMatch, seasonHref } = processTeam(team)
 
                     const lastResultInfo = lastMatch
-                      ? lastMatch.goals_for > lastMatch.goals_against ? { label: 'V', color: '#72e697' }
+                      ? lastMatch.goals_for > lastMatch.goals_against ? { label: 'V', color: 'var(--accent)' }
                         : lastMatch.goals_for < lastMatch.goals_against ? { label: 'D', color: '#f87171' }
                         : { label: 'E', color: '#fbbf24' }
                       : null
 
                     return (
                       <AnimatedItem key={team.id} delay={idx * 0.05}>
-                        <div className="flex flex-col rounded-[14px] border border-[#1e2921] p-5 transition-colors hover:border-[#2a342d]"
-                          style={{ backgroundColor: '#111713' }}>
+                        <div className="flex flex-col rounded-[14px] border p-5 transition-colors hover:border-[var(--bdr-strong)]"
+                          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)' }}>
                           <div className="mb-4 flex items-center gap-3">
-                            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#253028]"
-                              style={{ backgroundColor: '#171f1a' }}>
+                            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border"
+                              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
                               <TeamLogo name={team.name} logoUrl={team.logo_url} size="md" className="h-9 w-9" />
                             </div>
                             <div className="min-w-0 flex-1">
                               <h3 className="truncate text-[16px] font-semibold"
-                                style={{ color: '#edf2ee', fontFamily: 'Sora, sans-serif' }}>{team.name}</h3>
-                              <p className="text-[11px]" style={{ color: '#637168' }}>{lastSeason?.name ?? 'Sin temporada'}</p>
+                                style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>{team.name}</h3>
+                              <p className="text-[11px]" style={{ color: 'var(--tx-3)' }}>{lastSeason?.name ?? 'Sin temporada'}</p>
                             </div>
                             {lastMatch && lastResultInfo && (
                               <span className="flex-shrink-0 rounded px-2 py-0.5 text-[12px] font-bold"
@@ -423,15 +423,15 @@ export default async function DashboardPage() {
                           {competitive.length > 0 && (
                             <div className="mb-4 grid grid-cols-4 gap-2">
                               {[
-                                { label: 'V',   value: wins,   color: '#72e697' },
+                                { label: 'V',   value: wins,   color: 'var(--accent)' },
                                 { label: 'E',   value: draws,  color: '#fbbf24' },
                                 { label: 'D',   value: losses, color: '#f87171' },
-                                { label: 'Pts', value: points, color: '#edf2ee' },
+                                { label: 'Pts', value: points, color: 'var(--tx)' },
                               ].map(({ label, value, color }) => (
-                                <div key={label} className="rounded-lg py-2 text-center" style={{ backgroundColor: '#0d120f' }}>
+                                <div key={label} className="rounded-lg py-2 text-center" style={{ backgroundColor: 'var(--bg-base)' }}>
                                   <span className="block text-[18px] font-bold tabular-nums"
                                     style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</span>
-                                  <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#3e4942' }}>{label}</span>
+                                  <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--bdr-strong)' }}>{label}</span>
                                 </div>
                               ))}
                             </div>
@@ -444,8 +444,8 @@ export default async function DashboardPage() {
                                 return (
                                   <span key={i} className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black"
                                     style={{
-                                      backgroundColor: res === 'V' ? '#72e697' : res === 'E' ? '#1e2921' : '#2d1414',
-                                      color: res === 'V' ? '#07140c' : res === 'E' ? '#89968e' : '#f87171',
+                                      backgroundColor: res === 'V' ? 'var(--accent)' : res === 'E' ? 'var(--bg-elevated)' : '#2d1414',
+                                      color: res === 'V' ? 'var(--accent-fg)' : res === 'E' ? 'var(--tx-2)' : '#f87171',
                                     }}>
                                     {res}
                                   </span>
@@ -457,12 +457,12 @@ export default async function DashboardPage() {
                           <div className="mt-auto flex gap-2.5">
                             <Link href={`/dashboard/team/${team.id}/players`}
                               className="flex flex-1 items-center justify-center rounded-lg border text-[13px] font-semibold transition-all active:scale-95"
-                              style={{ borderColor: '#253028', color: '#89968e', minHeight: 40 }}>
+                              style={{ borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)', minHeight: 40 }}>
                               Plantilla
                             </Link>
                             <Link href={seasonHref}
                               className="flex flex-1 items-center justify-center rounded-lg text-[13px] font-semibold transition-all active:scale-95"
-                              style={{ backgroundColor: '#72e697', color: '#07140c', fontFamily: 'Sora, sans-serif', minHeight: 40 }}>
+                              style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', fontFamily: 'Sora, sans-serif', minHeight: 40 }}>
                               Temporada
                             </Link>
                           </div>
@@ -473,10 +473,10 @@ export default async function DashboardPage() {
 
                   <AnimatedItem delay={teams.length * 0.05}>
                     <Link href="/dashboard/team/new"
-                      className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-[14px] border border-dashed text-center transition-all hover:border-[#72e697]/40"
-                      style={{ borderColor: '#253028' }}>
-                      <span className="material-symbols-outlined text-[32px]" style={{ color: '#3e4942' }}>add_circle</span>
-                      <p className="text-[14px] font-semibold" style={{ color: '#637168' }}>Añadir equipo</p>
+                      className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-[14px] border border-dashed text-center transition-all hover:border-[var(--accent)]"
+                      style={{ borderColor: 'var(--bdr-strong)' }}>
+                      <span className="material-symbols-outlined text-[32px]" style={{ color: 'var(--bdr-strong)' }}>add_circle</span>
+                      <p className="text-[14px] font-semibold" style={{ color: 'var(--tx-3)' }}>Añadir equipo</p>
                     </Link>
                   </AnimatedItem>
                 </AnimatedList>

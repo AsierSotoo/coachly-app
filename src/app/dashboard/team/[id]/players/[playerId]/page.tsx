@@ -192,29 +192,29 @@ export default async function PlayerDetailPage({
               {prevPlayer ? (
                 <Link href={`/dashboard/team/${teamId}/players/${prevPlayer.id}`}
                   className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
-                  style={{ borderColor: '#2a342d', color: '#89968e' }} title={prevPlayer.name}>
+                  style={{ borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }} title={prevPlayer.name}>
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
                   <span className="hidden sm:inline max-w-[80px] truncate">{prevPlayer.name.split(' ')[0]}</span>
                 </Link>
               ) : (
                 <span className="flex items-center px-2.5 py-1 rounded-lg border opacity-25 text-[11px]"
-                  style={{ borderColor: '#2a342d', color: '#89968e' }}>
+                  style={{ borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
                 </span>
               )}
-              <span className="text-[10px] px-1.5 tabular-nums" style={{ color: '#637168' }}>
+              <span className="text-[10px] px-1.5 tabular-nums" style={{ color: 'var(--tx-3)' }}>
                 {playerIdx + 1}/{allPlayers.length}
               </span>
               {nextPlayer ? (
                 <Link href={`/dashboard/team/${teamId}/players/${nextPlayer.id}`}
                   className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
-                  style={{ borderColor: '#2a342d', color: '#89968e' }} title={nextPlayer.name}>
+                  style={{ borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }} title={nextPlayer.name}>
                   <span className="hidden sm:inline max-w-[80px] truncate">{nextPlayer.name.split(' ')[0]}</span>
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
                 </Link>
               ) : (
                 <span className="flex items-center px-2.5 py-1 rounded-lg border opacity-25 text-[11px]"
-                  style={{ borderColor: '#2a342d', color: '#89968e' }}>
+                  style={{ borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
                 </span>
               )}
@@ -234,7 +234,7 @@ export default async function PlayerDetailPage({
             <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 16 }}>edit</span>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Ficha del {terms.p}</p>
             {sp.saved && (
-              <span className="ml-auto text-[10px] font-bold" style={{ color: '#72e697' }}>✓ Guardado</span>
+              <span className="ml-auto text-[10px] font-bold" style={{ color: 'var(--accent)' }}>✓ Guardado</span>
             )}
           </div>
 
@@ -261,14 +261,14 @@ export default async function PlayerDetailPage({
                   <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Nombre</label>
                   <input name="name" type="text" required defaultValue={player.name}
                     className="h-10 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm focus:border-green-500/60 focus:outline-none transition-colors"
-                    style={{ color: '#edf2ee', minHeight: 'auto', fontSize: 14 }} />
+                    style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }} />
                 </div>
                 <div className="w-20 flex flex-col gap-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Dorsal</label>
                   <input name="number" type="number" min="1" max="99" defaultValue={player.number ?? ''}
                     placeholder="—"
                     className="h-10 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-center focus:border-green-500/60 focus:outline-none transition-colors"
-                    style={{ color: '#edf2ee', minHeight: 'auto', fontSize: 14 }} />
+                    style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }} />
                 </div>
               </div>
 
@@ -276,7 +276,7 @@ export default async function PlayerDetailPage({
                 <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Posición</label>
                 <select name="position" defaultValue={player.position ?? ''}
                   className="h-10 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm focus:border-green-500/60 focus:outline-none transition-colors appearance-none"
-                  style={{ color: '#edf2ee', minHeight: 'auto', fontSize: 14 }}>
+                  style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }}>
                   <option value="">Sin posición</option>
                   {terms.positions.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
@@ -287,14 +287,14 @@ export default async function PlayerDetailPage({
                 <textarea name="bio" rows={5} defaultValue={player.bio ?? ''}
                   placeholder="Perfil, puntos fuertes, notas del entrenador..."
                   className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm resize-y focus:border-green-500/60 focus:outline-none transition-colors leading-relaxed"
-                  style={{ color: '#edf2ee', minHeight: 'auto', fontSize: 14 }} />
+                  style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }} />
               </div>
 
               <div className="flex items-center justify-between">
                 <DeletePlayerButton playerId={player.id} teamId={teamId} />
                 <button type="submit"
                   className="px-5 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
-                  style={{ backgroundColor: '#72e697', color: '#07140c' }}>
+                  style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}>
                   Guardar cambios
                 </button>
               </div>
@@ -308,7 +308,7 @@ export default async function PlayerDetailPage({
             <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
               <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 14 }}>leaderboard</span>
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Ranking en plantilla · {current.seasonName}</p>
-              <span className="ml-auto text-[10px]" style={{ color: '#334155' }}>{rankTotal} jugadoras</span>
+              <span className="ml-auto text-[10px]" style={{ color: 'var(--bdr-strong)' }}>{rankTotal} jugadoras</span>
             </div>
             <div className="grid grid-cols-3 divide-x divide-slate-800">
               {[
@@ -320,12 +320,12 @@ export default async function PlayerDetailPage({
                 const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : null
                 return (
                   <div key={label} className="flex flex-col items-center gap-1 py-3">
-                    <span className="material-symbols-outlined" style={{ fontSize: 13, color: isTop ? color : '#637168' }}>{icon}</span>
-                    <p className="text-xl font-black leading-none tabular-nums" style={{ color: isTop ? color : '#637168', fontFamily: 'Sora, sans-serif' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 13, color: isTop ? color : 'var(--tx-3)' }}>{icon}</span>
+                    <p className="text-xl font-black leading-none tabular-nums" style={{ color: isTop ? color : 'var(--tx-3)', fontFamily: 'Sora, sans-serif' }}>
                       {medal ?? (rank > 0 ? `${rank}ª` : '—')}
                     </p>
-                    <p className="text-[9px] uppercase tracking-wide" style={{ color: '#637168' }}>{label}</p>
-                    <p className="text-[9px]" style={{ color: '#1e3a4c' }}>de {rankTotal}</p>
+                    <p className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--tx-3)' }}>{label}</p>
+                    <p className="text-[9px]" style={{ color: 'var(--tx-3)' }}>de {rankTotal}</p>
                   </div>
                 )
               })}
@@ -339,7 +339,7 @@ export default async function PlayerDetailPage({
             <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
               <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>star</span>
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Valoración del entrenador</p>
-              <span className="ml-auto text-[10px]" style={{ color: '#334155' }}>{ratingCount} partido{ratingCount !== 1 ? 's' : ''}</span>
+              <span className="ml-auto text-[10px]" style={{ color: 'var(--bdr-strong)' }}>{ratingCount} partido{ratingCount !== 1 ? 's' : ''}</span>
             </div>
             <div className="px-4 py-3 flex items-center gap-4">
               <p className="text-[40px] font-extrabold leading-none tabular-nums" style={{ color: '#fbbf24', fontFamily: 'Sora, sans-serif' }}>{avgRating.toFixed(1)}</p>
@@ -349,7 +349,7 @@ export default async function PlayerDetailPage({
                     <span key={i} className="material-symbols-outlined" style={{ fontSize: 20, color: '#fbbf24', fontVariationSettings: `'FILL' ${i < Math.round(avgRating) ? 1 : 0}` }}>star</span>
                   ))}
                 </div>
-                <p className="text-[10px] mt-1" style={{ color: '#637168' }}>valoración media de {ratingCount} partido{ratingCount !== 1 ? 's' : ''}</p>
+                <p className="text-[10px] mt-1" style={{ color: 'var(--tx-3)' }}>valoración media de {ratingCount} partido{ratingCount !== 1 ? 's' : ''}</p>
               </div>
             </div>
           </div>
@@ -370,15 +370,15 @@ export default async function PlayerDetailPage({
                 const yellow  = (app.yellow_cards ?? 0) > 0
                 const red     = (app.red_cards ?? 0) > 0
                 const opp     = m?.opponent?.slice(0, 4)?.toUpperCase() ?? '?'
-                const dot  = scored ? '#72e697' : played ? '#3b82f6' : '#334155'
-                const text = scored ? '#72e697' : played ? '#60a5fa' : '#637168'
+                const dot  = scored ? 'var(--accent)' : played ? '#3b82f6' : 'var(--bdr-strong)'
+                const text = scored ? 'var(--accent)' : played ? '#60a5fa' : 'var(--tx-3)'
                 return (
                   <div key={i} className="flex flex-col items-center gap-1 flex-1">
                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2"
                       style={{ borderColor: dot, backgroundColor: played ? `${dot}18` : 'transparent', color: text }}>
                       {scored ? '⚽' : played ? '●' : '○'}
                     </div>
-                    <p className="text-[8px] uppercase tracking-wide truncate max-w-[36px] text-center" style={{ color: '#637168' }}>{opp}</p>
+                    <p className="text-[8px] uppercase tracking-wide truncate max-w-[36px] text-center" style={{ color: 'var(--tx-3)' }}>{opp}</p>
                     {(yellow || red) && (
                       <div className="w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: red ? '#ef4444' : '#facc15' }} />
                     )}
@@ -387,16 +387,16 @@ export default async function PlayerDetailPage({
               })}
               <div className="ml-auto flex flex-col gap-1 pl-2">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#72e697' }} />
-                  <span className="text-[8px]" style={{ color: '#637168' }}>Con gol</span>
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
+                  <span className="text-[8px]" style={{ color: 'var(--tx-3)' }}>Con gol</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#3b82f6' }} />
-                  <span className="text-[8px]" style={{ color: '#637168' }}>Jugó</span>
+                  <span className="text-[8px]" style={{ color: 'var(--tx-3)' }}>Jugó</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full border" style={{ borderColor: '#334155' }} />
-                  <span className="text-[8px]" style={{ color: '#637168' }}>No jugó</span>
+                  <div className="w-2 h-2 rounded-full border" style={{ borderColor: 'var(--bdr-strong)' }} />
+                  <span className="text-[8px]" style={{ color: 'var(--tx-3)' }}>No jugó</span>
                 </div>
               </div>
             </div>
@@ -418,10 +418,10 @@ export default async function PlayerDetailPage({
                 <div key={label} className="px-4 py-3">
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className="material-symbols-outlined" style={{ fontSize: 12, color }}>{icon}</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: '#89968e' }}>{label}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: 'var(--tx-2)' }}>{label}</span>
                   </div>
                   <p className="text-lg font-black leading-none" style={{ color, fontFamily: 'Sora, sans-serif' }}>{data.games} PJ</p>
-                  <p className="text-[10px] mt-1" style={{ color: '#89968e' }}>
+                  <p className="text-[10px] mt-1" style={{ color: 'var(--tx-2)' }}>
                     {data.goals}G · {data.assists}A · {data.minutes}&apos;
                   </p>
                 </div>
@@ -430,10 +430,10 @@ export default async function PlayerDetailPage({
                 <div className="px-4 py-3">
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#a78bfa' }}>security</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: '#89968e' }}>Portería a cero</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wide" style={{ color: 'var(--tx-2)' }}>Portería a cero</span>
                   </div>
                   <p className="text-lg font-black leading-none" style={{ color: '#a78bfa', fontFamily: 'Sora, sans-serif' }}>{cleanSheets}</p>
-                  <p className="text-[10px] mt-1" style={{ color: '#89968e' }}>de {T.games} partidos</p>
+                  <p className="text-[10px] mt-1" style={{ color: 'var(--tx-2)' }}>de {T.games} partidos</p>
                 </div>
               )}
             </div>
@@ -513,11 +513,11 @@ export default async function PlayerDetailPage({
 
         {/* ── Historial de tarjetas ─────────────────────────── */}
         {cardHistory.length > 0 && (
-          <div className="mt-5 overflow-hidden rounded-3xl border border-slate-800" style={{ backgroundColor: '#090e0b' }}>
+          <div className="mt-5 overflow-hidden rounded-3xl border border-slate-800" style={{ backgroundColor: 'var(--bg-base)' }}>
             <div className="flex items-center gap-2 border-b border-slate-800 px-5 py-3">
               <span className="material-symbols-outlined text-slate-500" style={{ fontSize: 16 }}>style</span>
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Historial de tarjetas</p>
-              <span className="ml-auto text-[10px]" style={{ color: '#334155' }}>{cardHistory.length} partidos</span>
+              <span className="ml-auto text-[10px]" style={{ color: 'var(--bdr-strong)' }}>{cardHistory.length} partidos</span>
             </div>
             <div className="divide-y divide-slate-800/40">
               {cardHistory.map((app, i) => {
@@ -528,10 +528,10 @@ export default async function PlayerDetailPage({
                 const season = m?.seasons?.name ?? ''
                 return (
                   <div key={i} className="flex items-center gap-3 px-5 py-2.5">
-                    <span className="text-[11px] tabular-nums flex-shrink-0 w-16" style={{ color: '#637168' }}>{date}</span>
+                    <span className="text-[11px] tabular-nums flex-shrink-0 w-16" style={{ color: 'var(--tx-3)' }}>{date}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-slate-400 truncate">vs {m?.opponent ?? '?'}</p>
-                      {season && <p className="text-[10px]" style={{ color: '#334155' }}>{season}</p>}
+                      {season && <p className="text-[10px]" style={{ color: 'var(--bdr-strong)' }}>{season}</p>}
                     </div>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       {Array.from({ length: app.yellow_cards ?? 0 }).map((_, j) => (
@@ -551,26 +551,26 @@ export default async function PlayerDetailPage({
         {/* ── SEGUIMIENTO DE SANCIONES ──────────────────────── */}
         {totalYellow > 0 && (
           <div className={`mt-5 overflow-hidden rounded-3xl border ${warnSanction ? 'border-yellow-500/40' : 'border-slate-800'}`}
-            style={{ backgroundColor: warnSanction ? 'rgba(234,179,8,0.04)' : '#090e0b' }}>
-            <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: warnSanction ? 'rgba(234,179,8,0.15)' : '#253028' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, color: warnSanction ? '#facc15' : '#637168' }}>gavel</span>
-              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: warnSanction ? '#facc15' : '#637168' }}>
+            style={{ backgroundColor: warnSanction ? 'rgba(234,179,8,0.04)' : 'var(--bg-base)' }}>
+            <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: warnSanction ? 'rgba(234,179,8,0.15)' : 'var(--bdr-strong)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16, color: warnSanction ? '#facc15' : 'var(--tx-3)' }}>gavel</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: warnSanction ? '#facc15' : 'var(--tx-3)' }}>
                 Seguimiento de sanciones
               </p>
             </div>
             <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-1">
-                  <span className="text-2xl font-extrabold tabular-nums" style={{ color: warnSanction ? '#facc15' : '#edf2ee', fontFamily: 'Sora, sans-serif' }}>
+                  <span className="text-2xl font-extrabold tabular-nums" style={{ color: warnSanction ? '#facc15' : 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                     {effectiveYellow}/{SANCTION_THRESHOLD}
                   </span>
-                  <span className="text-xs" style={{ color: '#637168' }}>amarillas en el ciclo actual</span>
+                  <span className="text-xs" style={{ color: 'var(--tx-3)' }}>amarillas en el ciclo actual</span>
                 </div>
-                <div className="w-full h-1.5 rounded-full overflow-hidden mb-2" style={{ backgroundColor: '#253028' }}>
+                <div className="w-full h-1.5 rounded-full overflow-hidden mb-2" style={{ backgroundColor: 'var(--bdr-strong)' }}>
                   <div className="h-full rounded-full transition-all duration-500"
                     style={{ width: `${Math.min((effectiveYellow / SANCTION_THRESHOLD) * 100, 100)}%`, backgroundColor: warnSanction ? '#facc15' : '#72e697' }} />
                 </div>
-                <p className="text-xs" style={{ color: '#637168' }}>
+                <p className="text-xs" style={{ color: 'var(--tx-3)' }}>
                   {cyclesServed > 0 ? `${cyclesServed} sanción${cyclesServed !== 1 ? 'es' : ''} cumplida${cyclesServed !== 1 ? 's' : ''} · ` : ''}
                   {warnSanction
                     ? '⚠️ Sanción activa — marca como cumplida tras el partido de suspensión'
@@ -611,7 +611,7 @@ function AttendanceBar({ attended, total }: AttendanceData) {
     <div className="flex items-center gap-3 border-t border-slate-800/60 px-5 py-2.5">
       <span className="material-symbols-outlined text-slate-700" style={{ fontSize: 12 }}>fitness_center</span>
       <span className="text-[10px] text-slate-700 uppercase tracking-wide mr-auto">Entrenos</span>
-      <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#253028' }}>
+      <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bdr-strong)' }}>
         <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
       </div>
       <span className="text-[11px] font-bold tabular-nums" style={{ color: textColor }}>
@@ -626,7 +626,7 @@ function StatCard({ title, seasonId, data, highlight, attendance }: { title: str
     <div className={`overflow-hidden rounded-3xl border bg-slate-900/80 backdrop-blur ${highlight ? 'border-green-500/20' : 'border-slate-800'}`}>
       <div className={`flex items-center justify-between border-b px-4 py-3 ${highlight ? 'border-green-500/10 bg-green-500/5' : 'border-slate-800'}`}>
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: highlight ? '#72e697' : '#94a3b8' }}>target</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: highlight ? 'var(--accent)' : '#94a3b8' }}>target</span>
           <h2 className={`text-xs font-bold uppercase tracking-widest ${highlight ? 'text-green-300' : 'text-slate-300'}`}>{title}</h2>
         </div>
         <Link

@@ -53,20 +53,20 @@ export default async function TrainingSessionPage({
       <main className="max-w-xl mx-auto px-4 py-6 pb-32 md:pb-10">
         <Link href={`/dashboard/season/${seasonId}/trainings`}
           className="flex items-center gap-1 text-xs mb-5 hover:text-slate-300 transition-colors"
-          style={{ color: '#637168' }}>
+          style={{ color: 'var(--tx-3)' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
           Entrenamientos
         </Link>
 
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h1 className="text-xl font-black text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+            <h1 className="text-xl font-black" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
               {session.title ?? 'Entrenamiento'}
             </h1>
-            <p className="text-xs mt-0.5" style={{ color: '#637168' }}>{cap}</p>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--tx-3)' }}>{cap}</p>
           </div>
           {sp.saved && (
-            <span className="text-xs font-bold" style={{ color: '#72e697' }}>✓ Guardado</span>
+            <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>✓ Guardado</span>
           )}
         </div>
 
@@ -77,43 +77,43 @@ export default async function TrainingSessionPage({
             <input type="hidden" name="id" value={session.id} />
             <input type="hidden" name="season_id" value={seasonId} />
 
-            <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#111713', borderColor: '#2a342d' }}>
-              <div className="divide-y" style={{ borderColor: '#2a342d' }}>
+            <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+              <div className="divide-y" style={{ borderColor: 'var(--bdr-strong)' }}>
 
                 <div className="flex flex-col gap-1 px-5 py-4">
-                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Fecha</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Fecha</label>
                   <input name="date" type="date" required defaultValue={session.date}
                     className="bg-transparent text-sm focus:outline-none"
-                    style={{ color: '#edf2ee', colorScheme: 'dark' }} />
+                    style={{ color: 'var(--tx)', colorScheme: 'dark' }} />
                 </div>
 
                 <div className="flex flex-col gap-1 px-5 py-4">
-                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>
-                    Título <span style={{ color: '#637168' }}>(opcional)</span>
+                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>
+                    Título <span style={{ color: 'var(--tx-3)' }}>(opcional)</span>
                   </label>
                   <input name="title" type="text" placeholder="Ej: Táctica, Físico, Rondos..."
                     defaultValue={session.title ?? ''}
                     className="bg-transparent text-sm focus:outline-none placeholder:text-slate-700"
-                    style={{ color: '#edf2ee' }} />
+                    style={{ color: 'var(--tx)' }} />
                 </div>
 
                 <div className="flex flex-col gap-1 px-5 py-4">
-                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>
-                    Duración (min) <span style={{ color: '#637168' }}>(opcional)</span>
+                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>
+                    Duración (min) <span style={{ color: 'var(--tx-3)' }}>(opcional)</span>
                   </label>
                   <input name="duration_min" type="number" min="1" max="300" placeholder="90"
                     defaultValue={session.duration_min ?? ''}
                     className="bg-transparent text-sm focus:outline-none placeholder:text-slate-700 w-24"
-                    style={{ color: '#edf2ee' }} />
+                    style={{ color: 'var(--tx)' }} />
                 </div>
 
                 <div className="flex flex-col gap-1 px-5 py-4">
-                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Notas / sensaciones</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Notas / sensaciones</label>
                   <textarea name="notes" rows={5}
                     placeholder="Qué se entrenó, sensaciones del equipo, notas para el próximo día..."
                     defaultValue={session.notes ?? ''}
                     className="bg-transparent text-sm resize-y focus:outline-none placeholder:text-slate-700 leading-relaxed"
-                    style={{ color: '#edf2ee' }} />
+                    style={{ color: 'var(--tx)' }} />
                 </div>
 
               </div>
@@ -123,7 +123,7 @@ export default async function TrainingSessionPage({
               <DeleteTrainingButton id={session.id} seasonId={seasonId} />
               <button type="submit"
                 className="px-6 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
-                style={{ backgroundColor: '#72e697', color: '#07140c' }}>
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}>
                 Guardar cambios
               </button>
             </div>

@@ -41,7 +41,6 @@ export default async function ConvocatoriaDetailPage({
     initial[row.player_id] = row.status as ConvocatoriaStatus
   }
 
-  // Tarjetas amarillas acumuladas en la temporada por jugadora
   const matchIds = (matches ?? []).map(m => m.id)
   const { data: cardData } = matchIds.length > 0
     ? await supabase.from('appearances').select('player_id, yellow_cards').in('match_id', matchIds).gt('yellow_cards', 0)
@@ -67,27 +66,27 @@ export default async function ConvocatoriaDetailPage({
       <main className="max-w-7xl mx-auto px-4 md:px-10 py-8 pb-32 md:pb-10">
 
         {/* ── Breadcrumb ────────────────────────────────────────────── */}
-        <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest mb-6" style={{ color: '#89968e' }}>
-          <Link href={`/dashboard/season/${seasonId}`} className="hover:text-white transition-colors">Temporada</Link>
+        <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest mb-6" style={{ color: 'var(--tx-2)' }}>
+          <Link href={`/dashboard/season/${seasonId}`} className="hover:text-[var(--tx)] transition-colors">Temporada</Link>
           <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_right</span>
-          <Link href={`/dashboard/season/${seasonId}/convocatorias`} className="hover:text-white transition-colors">Convocatorias</Link>
+          <Link href={`/dashboard/season/${seasonId}/convocatorias`} className="hover:text-[var(--tx)] transition-colors">Convocatorias</Link>
           <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_right</span>
-          <span className="text-white">vs {conv.opponent}</span>
+          <span style={{ color: 'var(--tx)' }}>vs {conv.opponent}</span>
         </div>
 
         {/* ── Match Header Card ────────────────────────────────────── */}
         <section
           className="relative overflow-hidden rounded-2xl border p-6 mb-8 flex flex-wrap lg:flex-nowrap items-center justify-between gap-6"
-          style={{ backgroundColor: '#171f1a', borderColor: '#2a342d' }}
+          style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}
         >
           {/* Status badge */}
           <div className="absolute top-4 right-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border"
               style={isCompleted
                 ? { backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: '#72e697' }
-                : { backgroundColor: '#2a342d', borderColor: '#3d4a3d', color: '#89968e' }}>
-              <span className={`w-1.5 h-1.5 rounded-full ${isCompleted ? 'bg-green-400' : 'animate-pulse'}`}
-                style={{ backgroundColor: isCompleted ? '#72e697' : '#89968e' }} />
+                : { backgroundColor: 'var(--bdr-strong)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isCompleted ? '' : 'animate-pulse'}`}
+                style={{ backgroundColor: isCompleted ? '#72e697' : 'var(--tx-2)' }} />
               {isCompleted ? 'COMPLETADA' : 'PENDIENTE'}
             </span>
           </div>
@@ -96,30 +95,30 @@ export default async function ConvocatoriaDetailPage({
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <h2 className="text-[24px] font-extrabold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{team.name}</h2>
-                <p className="text-[11px] font-bold uppercase tracking-wider mt-0.5" style={{ color: '#89968e' }}>
+                <h2 className="text-[24px] font-extrabold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>{team.name}</h2>
+                <p className="text-[11px] font-bold uppercase tracking-wider mt-0.5" style={{ color: 'var(--tx-2)' }}>
                   {isHome === true ? 'Local' : isHome === false ? 'Visitante' : 'Local'}
                 </p>
               </div>
               <div className="w-14 h-14 rounded-xl flex items-center justify-center border overflow-hidden"
-                style={{ backgroundColor: '#1a231d', borderColor: '#2a342d' }}>
+                style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
                 <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
               </div>
             </div>
 
             <div className="flex flex-col items-center">
-              <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>vs</span>
-              <div className="h-px w-10 mt-1" style={{ backgroundColor: '#2a342d' }} />
+              <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>vs</span>
+              <div className="h-px w-10 mt-1" style={{ backgroundColor: 'var(--bdr-strong)' }} />
             </div>
 
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-xl flex items-center justify-center border text-xl font-black"
-                style={{ backgroundColor: '#1a231d', borderColor: '#2a342d', color: '#72e697', fontFamily: 'Sora, sans-serif' }}>
+                style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>
                 {conv.opponent.slice(0, 2).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-[24px] font-extrabold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{conv.opponent}</h2>
-                <p className="text-[11px] font-bold uppercase tracking-wider mt-0.5" style={{ color: '#89968e' }}>
+                <h2 className="text-[24px] font-extrabold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>{conv.opponent}</h2>
+                <p className="text-[11px] font-bold uppercase tracking-wider mt-0.5" style={{ color: 'var(--tx-2)' }}>
                   {isHome === false ? 'Local' : isHome === true ? 'Visitante' : 'Visitante'}
                 </p>
               </div>
@@ -129,46 +128,46 @@ export default async function ConvocatoriaDetailPage({
           {/* Match metadata */}
           <div className="flex flex-wrap gap-6 pr-10">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 20 }}>calendar_month</span>
+              <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 20 }}>calendar_month</span>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>Fecha</p>
-                <p className="text-sm font-semibold text-white">
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Fecha</p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--tx)' }}>
                   {new Date(conv.played_at + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </p>
               </div>
             </div>
             {linkedMatch?.match_time && (
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 20 }}>sports_soccer</span>
+                <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 20 }}>sports_soccer</span>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>Hora partido</p>
-                  <p className="text-sm font-semibold text-white">{linkedMatch.match_time.slice(0, 5)} h</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Hora partido</p>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--tx)' }}>{linkedMatch.match_time.slice(0, 5)} h</p>
                 </div>
               </div>
             )}
             {(conv as any).meeting_time && (
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 20 }}>schedule</span>
+                <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 20 }}>schedule</span>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>Convocatoria</p>
-                  <p className="text-sm font-semibold text-white">{(conv as any).meeting_time} h</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Convocatoria</p>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--tx)' }}>{(conv as any).meeting_time} h</p>
                 </div>
               </div>
             )}
             {(conv as any).location && (
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 20 }}>location_on</span>
+                <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 20 }}>location_on</span>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>Lugar</p>
-                  <p className="text-sm font-semibold text-white">{(conv as any).location}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Lugar</p>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--tx)' }}>{(conv as any).location}</p>
                 </div>
               </div>
             )}
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 20 }}>sports_soccer</span>
+              <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 20 }}>sports_soccer</span>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>Temporada</p>
-                <p className="text-sm font-semibold text-white">{season.name}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Temporada</p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--tx)' }}>{season.name}</p>
               </div>
             </div>
           </div>
