@@ -91,11 +91,11 @@ export default async function PlayersPage({
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-[32px] font-extrabold leading-10 tracking-tight text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+            <h2 className="text-[32px] font-extrabold leading-10 tracking-tight" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
               Plantilla
             </h2>
-            <p className="flex items-center gap-2 mt-1" style={{ color: '#adb4ce' }}>
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#4be277' }} />
+            <p className="flex items-center gap-2 mt-1" style={{ color: 'var(--tx-2)' }}>
+              <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--accent)' }} />
               {searchQ
                 ? `${active.length} resultado${active.length !== 1 ? 's' : ''} para "${sp.q}"`
                 : `${allActive.length} ${allActive.length !== 1 ? terms.pp : terms.p} ${allActive.length !== 1 ? terms.actives : terms.active} en el sistema`
@@ -105,19 +105,19 @@ export default async function PlayersPage({
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             {/* Buscador */}
             <form method="get" action={`/dashboard/team/${teamId}/players`}
-              className="flex items-center gap-2 rounded-xl border px-3 py-2 focus-within:border-[#4be277] transition-colors"
-              style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}>
-              <span className="material-symbols-outlined" style={{ color: '#adb4ce', fontSize: 18 }}>search</span>
+              className="flex items-center gap-2 rounded-xl border px-3 py-2 focus-within:border-[var(--accent)] transition-colors"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
+              <span className="material-symbols-outlined" style={{ color: 'var(--tx-2)', fontSize: 18 }}>search</span>
               <input
                 name="q"
                 type="text"
                 placeholder="Buscar jugadora..."
                 defaultValue={sp.q ?? ''}
                 className="bg-transparent border-none outline-none text-sm w-36"
-                style={{ color: '#dce1fb' }}
+                style={{ color: 'var(--tx)' }}
               />
               {sp.q && (
-                <Link href={`/dashboard/team/${teamId}/players`} style={{ color: '#adb4ce' }}>
+                <Link href={`/dashboard/team/${teamId}/players`} style={{ color: 'var(--tx-2)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
                 </Link>
               )}
@@ -131,8 +131,8 @@ export default async function PlayersPage({
             />
             <Link
               href={`/dashboard/team/${teamId}/settings`}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-colors hover:bg-[#23293c]"
-              style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border transition-colors hover:bg-[var(--bg-elevated)]"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}
             >
               <span className="material-symbols-outlined text-lg">settings</span>
               Ajustes
@@ -140,7 +140,7 @@ export default async function PlayersPage({
             <Link
               href={`/dashboard/team/${teamId}/seasons`}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-opacity hover:opacity-90"
-              style={{ backgroundColor: '#22c55e', color: '#003915' }}
+              style={{ backgroundColor: '#72e697', color: '#07140c' }}
             >
               <span className="material-symbols-outlined text-lg">calendar_today</span>
               Temporadas
@@ -150,32 +150,32 @@ export default async function PlayersPage({
 
         {/* Formulario rápido */}
         <section
-          className="mb-8 p-6 rounded-2xl border transition-all duration-200 hover:border-[#22c55e] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
-          style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}
+          className="mb-8 p-6 rounded-2xl border transition-all duration-200 hover:border-[var(--accent)] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
         >
           <div className="flex items-center gap-3 mb-6">
-            <span className="material-symbols-outlined" style={{ color: '#4be277' }}>add_circle</span>
-            <h3 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Rápido Registro</h3>
+            <span className="material-symbols-outlined" style={{ color: 'var(--accent)' }}>add_circle</span>
+            <h3 className="text-[20px] font-semibold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>Rápido Registro</h3>
           </div>
           <form action={addPlayer} className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <input type="hidden" name="team_id" value={teamId} />
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Nombre Completo</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Nombre Completo</label>
               <input name="name" type="text" required placeholder={terms.p === 'jugador' ? 'Ej: Carlos García' : 'Ej: María García'}
-                className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[#4be277]"
-                style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }} />
+                className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[var(--accent)]"
+                style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }} />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Dorsal</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Dorsal</label>
               <input name="number" type="number" min="1" max="99" placeholder="10"
-                className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[#4be277]"
-                style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }} />
+                className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[var(--accent)]"
+                style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }} />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Posición</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Posición</label>
               <select name="position"
-                className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[#4be277] appearance-none"
-                style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}>
+                className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[var(--accent)] appearance-none"
+                style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}>
                 <option value="">Sin posición</option>
                 {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
@@ -183,7 +183,7 @@ export default async function PlayersPage({
             <div className="flex items-end">
               <button type="submit"
                 className="w-full h-[50px] rounded-xl flex items-center justify-center gap-2 text-sm font-bold active:scale-95 transition-transform cursor-pointer"
-                style={{ backgroundColor: '#22c55e', color: '#003915' }}>
+                style={{ backgroundColor: '#72e697', color: '#07140c' }}>
                 Confirmar {terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}
               </button>
             </div>
@@ -198,7 +198,7 @@ export default async function PlayersPage({
               {terms.pp.charAt(0).toUpperCase() + terms.pp.slice(1)} {terms.actives.charAt(0).toUpperCase() + terms.actives.slice(1)}
             </h3>
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[10px] font-bold uppercase tracking-wider mr-1" style={{ color: '#475569' }}>Ordenar</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider mr-1" style={{ color: '#637168' }}>Ordenar</span>
               {([
                 { key: 'dorsal', label: 'Dorsal' },
                 { key: 'goals', label: 'Goles' },
@@ -211,8 +211,8 @@ export default async function PlayersPage({
                   <Link key={opt.key} href={href}
                     className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border transition-colors"
                     style={isActive
-                      ? { backgroundColor: 'rgba(34,197,94,0.15)', color: '#4be277', borderColor: 'rgba(34,197,94,0.3)' }
-                      : { backgroundColor: 'transparent', color: '#64748b', borderColor: '#2e3447' }
+                      ? { backgroundColor: 'rgba(34,197,94,0.15)', color: '#72e697', borderColor: 'rgba(34,197,94,0.3)' }
+                      : { backgroundColor: 'transparent', color: '#637168', borderColor: '#2a342d' }
                     }>
                     {opt.label}
                   </Link>
@@ -222,12 +222,12 @@ export default async function PlayersPage({
             {/* Filtro por posición */}
             {presentPositions.length >= 2 && (
               <div className="flex items-center gap-1.5 flex-wrap mt-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider mr-1" style={{ color: '#475569' }}>Posición</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider mr-1" style={{ color: '#637168' }}>Posición</span>
                 <Link href={`/dashboard/team/${teamId}/players?${sp.q ? `q=${encodeURIComponent(sp.q)}&` : ''}${sp.sort ? `sort=${sp.sort}&` : ''}` }
                   className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border transition-colors"
                   style={!filterPos
                     ? { backgroundColor: 'rgba(96,165,250,0.15)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.3)' }
-                    : { backgroundColor: 'transparent', color: '#64748b', borderColor: '#2e3447' }
+                    : { backgroundColor: 'transparent', color: '#637168', borderColor: '#2a342d' }
                   }>Todas</Link>
                 {presentPositions.map(pos => {
                   const isActive = filterPos === pos
@@ -237,7 +237,7 @@ export default async function PlayersPage({
                       className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border transition-colors"
                       style={isActive
                         ? { backgroundColor: 'rgba(96,165,250,0.15)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.3)' }
-                        : { backgroundColor: 'transparent', color: '#64748b', borderColor: '#2e3447' }
+                        : { backgroundColor: 'transparent', color: '#637168', borderColor: '#2a342d' }
                       }>{pos}</Link>
                   )
                 })}
@@ -246,9 +246,9 @@ export default async function PlayersPage({
           </div>
 
           {active.length === 0 ? (
-            <div className="rounded-2xl border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
-              <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>{searchQ || filterPos ? 'search_off' : 'group_add'}</span>
-              <p className="text-sm" style={{ color: '#adb4ce' }}>
+            <div className="rounded-2xl border-2 border-dashed border-[#2a342d]/50 py-16 text-center">
+              <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2a342d' }}>{searchQ || filterPos ? 'search_off' : 'group_add'}</span>
+              <p className="text-sm" style={{ color: '#89968e' }}>
                 {searchQ || filterPos
                   ? `Sin resultados${searchQ ? ` para "${sp.q}"` : ''}${filterPos ? ` en ${filterPos}` : ''}`
                   : `Añade la primera ${terms.p} usando el formulario de arriba`}
@@ -266,48 +266,48 @@ export default async function PlayersPage({
 
                 if (editingId === player.id) {
                   return (
-                    <div key={player.id} className="col-span-1 sm:col-span-2 lg:col-span-4 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#4be277' }}>
+                    <div key={player.id} className="col-span-1 sm:col-span-2 lg:col-span-4 rounded-2xl border p-6" style={{ backgroundColor: '#111713', borderColor: '#72e697' }}>
                       <form action={updatePlayer} className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <input type="hidden" name="player_id" value={player.id} />
                         <input type="hidden" name="team_id" value={teamId} />
                         <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Nombre</label>
+                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>Nombre</label>
                           <input name="name" type="text" required defaultValue={player.name}
                             className="border rounded-xl px-4 py-3 text-sm outline-none"
-                            style={{ backgroundColor: '#191f31', borderColor: '#4be277', color: '#dce1fb' }} />
+                            style={{ backgroundColor: '#171f1a', borderColor: '#72e697', color: '#edf2ee' }} />
                         </div>
                         <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Dorsal</label>
+                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>Dorsal</label>
                           <input name="number" type="number" min="1" max="99" defaultValue={player.number ?? ''}
                             className="border rounded-xl px-4 py-3 text-sm outline-none"
-                            style={{ backgroundColor: '#191f31', borderColor: '#4be277', color: '#dce1fb' }} />
+                            style={{ backgroundColor: '#171f1a', borderColor: '#72e697', color: '#edf2ee' }} />
                         </div>
                         <div className="flex flex-col gap-2">
-                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Posición</label>
+                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>Posición</label>
                           <select name="position" defaultValue={player.position ?? ''}
                             className="border rounded-xl px-4 py-3 text-sm outline-none"
-                            style={{ backgroundColor: '#191f31', borderColor: '#4be277', color: '#dce1fb' }}>
+                            style={{ backgroundColor: '#171f1a', borderColor: '#72e697', color: '#edf2ee' }}>
                             <option value="">Sin posición</option>
                             {POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
                           </select>
                         </div>
                         <div className="flex items-end gap-2">
-                          <button type="submit" className="flex-1 h-[50px] rounded-xl flex items-center justify-center gap-1 text-sm font-bold cursor-pointer" style={{ backgroundColor: '#22c55e', color: '#003915' }}>
+                          <button type="submit" className="flex-1 h-[50px] rounded-xl flex items-center justify-center gap-1 text-sm font-bold cursor-pointer" style={{ backgroundColor: '#72e697', color: '#07140c' }}>
                             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>check</span> Guardar
                           </button>
-                          <Link href={`/dashboard/team/${teamId}/players`} className="h-[50px] w-12 rounded-xl flex items-center justify-center border border-[#2e3447] cursor-pointer hover:bg-[#2e3447] transition-colors" style={{ color: '#adb4ce' }}>
+                          <Link href={`/dashboard/team/${teamId}/players`} className="h-[50px] w-12 rounded-xl flex items-center justify-center border border-[#2a342d] cursor-pointer hover:bg-[#2a342d] transition-colors" style={{ color: '#89968e' }}>
                             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
                           </Link>
                         </div>
                         <div className="md:col-span-4 flex flex-col gap-2">
-                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Descripción</label>
+                          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>Descripción</label>
                           <textarea
                             name="bio"
                             rows={2}
                             defaultValue={player.bio ?? ''}
                             placeholder="Breve descripción de esta jugadora: su perfil, sus puntos fuertes..."
                             className="border rounded-xl px-4 py-3 text-sm outline-none resize-none"
-                            style={{ backgroundColor: '#191f31', borderColor: '#4be277', color: '#dce1fb' }}
+                            style={{ backgroundColor: '#171f1a', borderColor: '#72e697', color: '#edf2ee' }}
                           />
                         </div>
                       </form>
@@ -317,13 +317,13 @@ export default async function PlayersPage({
 
                 return (
                   <div key={player.id}
-                    className="relative group overflow-hidden rounded-2xl border p-6 flex flex-col items-center transition-all duration-200 hover:border-[#22c55e] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
-                    style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}
+                    className="relative group overflow-hidden rounded-2xl border p-6 flex flex-col items-center transition-all duration-200 hover:border-[#72e697] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
+                    style={{ backgroundColor: '#111713', borderColor: '#253028' }}
                   >
                     {/* Dorsal fantasma de fondo */}
                     {player.number !== null && (
                       <span className="absolute top-0 right-2 pointer-events-none select-none"
-                        style={{ fontSize: 84, fontWeight: 900, fontFamily: 'Sora, sans-serif', color: '#dce1fb', opacity: 0.04, lineHeight: 1 }}>
+                        style={{ fontSize: 84, fontWeight: 900, fontFamily: 'Sora, sans-serif', color: '#edf2ee', opacity: 0.04, lineHeight: 1 }}>
                         {player.number}
                       </span>
                     )}
@@ -331,8 +331,8 @@ export default async function PlayersPage({
                     <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                       <Link
                         href={`/dashboard/team/${teamId}/players?edit=${player.id}`}
-                        className="w-8 h-8 rounded-full flex items-center justify-center border border-[#2e3447] hover:text-[#4be277] transition-colors cursor-pointer"
-                        style={{ backgroundColor: '#23293c', color: '#adb4ce' }}
+                        className="w-8 h-8 rounded-full flex items-center justify-center border border-[#2a342d] hover:text-[#72e697] transition-colors cursor-pointer"
+                        style={{ backgroundColor: '#1a231d', color: '#89968e' }}
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit</span>
                       </Link>
@@ -341,8 +341,8 @@ export default async function PlayersPage({
                         <input type="hidden" name="team_id" value={teamId} />
                         <input type="hidden" name="active" value="true" />
                         <button type="submit"
-                          className="w-8 h-8 rounded-full flex items-center justify-center border border-[#2e3447] hover:text-[#ffb4ab] transition-colors cursor-pointer"
-                          style={{ backgroundColor: '#23293c', color: '#adb4ce' }}
+                          className="w-8 h-8 rounded-full flex items-center justify-center border border-[#2a342d] hover:text-[#ffb4ab] transition-colors cursor-pointer"
+                          style={{ backgroundColor: '#1a231d', color: '#89968e' }}
                         >
                           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>block</span>
                         </button>
@@ -356,12 +356,12 @@ export default async function PlayersPage({
                         currentUrl={player.photo_url}
                         playerName={player.name}
                         circular
-                        style={{ borderColor: '#4be277', filter: 'drop-shadow(0 0 8px rgba(34,197,94,0.3))' }}
+                        style={{ borderColor: '#72e697', filter: 'drop-shadow(0 0 8px rgba(34,197,94,0.3))' }}
                       />
                       {player.number !== null && (
                         <span
                           className="absolute bottom-0 right-0 w-8 h-8 rounded-full text-sm font-bold flex items-center justify-center border-2"
-                          style={{ backgroundColor: '#22c55e', color: '#003915', borderColor: '#0c1324', fontFamily: 'Sora, sans-serif' }}
+                          style={{ backgroundColor: '#72e697', color: '#07140c', borderColor: '#090e0b', fontFamily: 'Sora, sans-serif' }}
                         >
                           {player.number}
                         </span>
@@ -371,8 +371,8 @@ export default async function PlayersPage({
                     {/* Nombre */}
                     <Link
                       href={`/dashboard/team/${teamId}/players/${player.id}`}
-                      className="text-[20px] font-semibold mb-1 text-center hover:text-[#4be277] transition-colors"
-                      style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}
+                      className="text-[20px] font-semibold mb-1 text-center hover:text-[#72e697] transition-colors"
+                      style={{ color: '#edf2ee', fontFamily: 'Sora, sans-serif' }}
                     >
                       {player.name}
                     </Link>
@@ -385,14 +385,14 @@ export default async function PlayersPage({
                       </span>
                     ) : (
                       <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border mb-4"
-                        style={{ backgroundColor: '#23293c', color: '#adb4ce', borderColor: '#2e3447' }}>
+                        style={{ backgroundColor: '#1a231d', color: '#89968e', borderColor: '#2a342d' }}>
                         Sin posición
                       </span>
                     )}
 
                     {/* Descripción */}
                     {player.bio && (
-                      <p className="text-xs text-center line-clamp-2 mb-3 px-1 leading-relaxed" style={{ color: '#adb4ce' }}>
+                      <p className="text-xs text-center line-clamp-2 mb-3 px-1 leading-relaxed" style={{ color: '#89968e' }}>
                         {player.bio}
                       </p>
                     )}
@@ -409,12 +409,12 @@ export default async function PlayersPage({
                     {/* Mini stats grid */}
                     <div className="grid grid-cols-4 w-full gap-1 mb-3">
                       {([
-                        { label: 'PJ', value: stat.games,       color: stat.games > 0 ? '#adb4ce' : '#334155' },
-                        { label: 'G',  value: stat.goals,       color: stat.goals > 0 ? '#4be277' : '#334155' },
+                        { label: 'PJ', value: stat.games,       color: stat.games > 0 ? '#89968e' : '#334155' },
+                        { label: 'G',  value: stat.goals,       color: stat.goals > 0 ? '#72e697' : '#334155' },
                         { label: 'A',  value: stat.assists,     color: stat.assists > 0 ? '#60a5fa' : '#334155' },
-                        { label: 'AM', value: stat.yellowCards, color: stat.yellowCards >= 4 ? '#facc15' : stat.yellowCards > 0 ? '#adb4ce' : '#334155' },
+                        { label: 'AM', value: stat.yellowCards, color: stat.yellowCards >= 4 ? '#facc15' : stat.yellowCards > 0 ? '#89968e' : '#334155' },
                       ] as { label: string; value: number; color: string }[]).map(({ label, value, color }) => (
-                        <div key={label} className="rounded-lg py-1.5 text-center" style={{ backgroundColor: '#191f31' }}>
+                        <div key={label} className="rounded-lg py-1.5 text-center" style={{ backgroundColor: '#171f1a' }}>
                           <span className="block text-[15px] font-bold tabular-nums leading-none" style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</span>
                           <span className="block text-[8px] font-bold uppercase tracking-wider mt-0.5" style={{ color: '#334155' }}>{label}</span>
                         </div>
@@ -422,12 +422,12 @@ export default async function PlayersPage({
                     </div>
 
                     {/* Barra de participación */}
-                    <div className="w-full h-1 rounded-full overflow-hidden mb-1" style={{ backgroundColor: '#23293c' }}>
-                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${participationPct}%`, backgroundColor: '#22c55e' }} />
+                    <div className="w-full h-1 rounded-full overflow-hidden mb-1" style={{ backgroundColor: '#1a231d' }}>
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${participationPct}%`, backgroundColor: '#72e697' }} />
                     </div>
                     <div className="flex justify-between w-full">
-                      <span className="text-[10px] font-bold uppercase" style={{ color: '#475569' }}>Participación</span>
-                      <span className="text-[10px] font-bold" style={{ color: '#4be277' }}>{participationPct}%</span>
+                      <span className="text-[10px] font-bold uppercase" style={{ color: '#637168' }}>Participación</span>
+                      <span className="text-[10px] font-bold" style={{ color: '#72e697' }}>{participationPct}%</span>
                     </div>
                   </div>
                 )
@@ -443,20 +443,20 @@ export default async function PlayersPage({
               <h3 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                 {terms.pp.charAt(0).toUpperCase() + terms.pp.slice(1)} Inactiv{terms.actives.slice(-2)} / Bajas
               </h3>
-              <span className="text-sm italic" style={{ color: '#adb4ce' }}>Ocultas de la alineación principal</span>
+              <span className="text-sm italic" style={{ color: '#89968e' }}>Ocultas de la alineación principal</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {inactive.map(player => (
                 <div key={player.id}
                   className="flex items-center justify-between p-4 rounded-xl border"
-                  style={{ backgroundColor: 'rgba(25,31,49,0.5)', borderColor: '#2e3447' }}>
+                  style={{ backgroundColor: 'rgba(25,31,49,0.5)', borderColor: '#2a342d' }}>
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center border" style={{ backgroundColor: '#23293c', borderColor: '#2e3447' }}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center border" style={{ backgroundColor: '#1a231d', borderColor: '#2a342d' }}>
                       <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position} size="sm" />
                     </div>
                     <div>
-                      <p className="font-bold" style={{ color: '#dce1fb' }}>{player.name}</p>
-                      <p className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>
+                      <p className="font-bold" style={{ color: '#edf2ee' }}>{player.name}</p>
+                      <p className="text-[10px] font-bold uppercase" style={{ color: '#89968e' }}>
                         {player.position ?? '—'} · Baja
                       </p>
                     </div>
@@ -467,7 +467,7 @@ export default async function PlayersPage({
                     <input type="hidden" name="active" value="false" />
                     <button type="submit"
                       className="text-[10px] font-bold uppercase tracking-wider hover:underline cursor-pointer transition-colors"
-                      style={{ color: '#4be277' }}>
+                      style={{ color: '#72e697' }}>
                       Reactivar
                     </button>
                   </form>

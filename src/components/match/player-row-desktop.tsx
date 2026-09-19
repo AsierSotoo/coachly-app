@@ -68,10 +68,10 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
     else if (status === 'suplente') setMinutes(Math.max(0, 90 - n))
   }
 
-  const statusBtns: { s: Status; label: string; active: string; inactive: string }[] = [
-    { s: 'titular',      label: 'T', active: 'bg-green-500 text-white',      inactive: 'text-slate-600 hover:bg-slate-800' },
-    { s: 'suplente',     label: 'S', active: 'bg-slate-500 text-white',      inactive: 'text-slate-600 hover:bg-slate-800' },
-    { s: 'no_convocada', label: '–', active: 'bg-slate-700 text-slate-300',  inactive: 'text-slate-700 hover:bg-slate-800' },
+  const statusBtns: { s: Status; label: string; activeBg: string; activeColor: string }[] = [
+    { s: 'titular',      label: 'T', activeBg: '#72e697', activeColor: '#07140c' },
+    { s: 'suplente',     label: 'S', activeBg: '#2a342d', activeColor: '#89968e' },
+    { s: 'no_convocada', label: '–', activeBg: '#171f1a', activeColor: '#637168' },
   ]
 
   // Para GK: GC (goles concedidos) en lugar de Gol
@@ -93,12 +93,14 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
   const posColor = player.position ? (POSITION_COLORS[player.position] ?? 'text-slate-400') : 'text-slate-400'
 
   return (
-    <div className={`grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 px-4 py-2.5 transition-colors ${isOut ? 'opacity-40' : 'hover:bg-slate-800/40'} ${!isLast ? 'border-b border-slate-800/60' : ''}`}>
+    <div className={`grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 px-4 py-2.5 transition-colors ${!isLast ? 'border-b' : ''}`}
+      style={{ opacity: isOut ? 0.4 : 1, borderColor: '#1e2921' }}>
 
       <input type="hidden" name={`status_${player.id}`} value={status} />
 
       {/* # */}
-      <span className={`font-[family-name:var(--font-heading)] text-sm font-black ${player.number !== null ? posColor : 'text-slate-700'}`}>
+      <span className={`font-[family-name:var(--font-heading)] text-sm font-black ${player.number !== null ? posColor : ''}`}
+        style={player.number === null ? { color: '#2a342d' } : undefined}>
         {player.number ?? '—'}
       </span>
 
@@ -106,7 +108,7 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
       <div className="flex items-center gap-2.5 min-w-0">
         <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position} size="sm" />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white truncate leading-tight">{player.name}</p>
+          <p className="text-sm font-semibold truncate leading-tight" style={{ color: '#edf2ee' }}>{player.name}</p>
           {player.position && (
             <p className={`text-[10px] uppercase tracking-wide ${posColor} opacity-70`}>{player.position}</p>
           )}
@@ -114,10 +116,14 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
       </div>
 
       {/* Estado */}
-      <div className="flex justify-center rounded-lg overflow-hidden border border-slate-700">
-        {statusBtns.map(({ s, label, active, inactive }) => (
+      <div className="flex justify-center rounded-lg overflow-hidden border" style={{ borderColor: '#2a342d' }}>
+        {statusBtns.map(({ s, label, activeBg, activeColor }) => (
           <button key={s} type="button" onClick={() => setStatus(s)}
-            className={`flex h-8 w-[calc(100%/3)] items-center justify-center text-xs font-black transition-all cursor-pointer ${status === s ? active : inactive}`}>
+            className="flex h-8 w-[calc(100%/3)] items-center justify-center text-xs font-black transition-all cursor-pointer"
+            style={{
+              backgroundColor: status === s ? activeBg : 'transparent',
+              color: status === s ? activeColor : '#3e4d42',
+            }}>
             {label}
           </button>
         ))}
@@ -131,7 +137,8 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
           value={minutes}
           onChange={e => setMinutes(Number(e.target.value))}
           disabled={isOut}
-          className="h-6 w-full rounded-t-lg border border-b-0 border-slate-700 bg-slate-800 text-center text-xs font-bold tabular-nums text-white focus:outline-none disabled:opacity-30"
+          className="w-full text-center font-bold tabular-nums focus:outline-none disabled:opacity-30"
+          style={{ height: 24, borderRadius: '0.375rem 0.375rem 0 0', borderWidth: 1, borderColor: '#2a342d', backgroundColor: '#161e18', color: '#edf2ee', fontSize: 12, minHeight: 'unset', padding: 0 }}
         />
         <input
           name={`sub_minute_${player.id}`}
@@ -141,8 +148,8 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
           disabled={isOut}
           placeholder={status === 'titular' ? '↓' : '↑'}
           title={status === 'titular' ? 'Minuto de sustitución (salida)' : 'Minuto de entrada'}
-          className="h-5 w-full rounded-b-lg border border-slate-700 bg-slate-900 text-center text-[10px] font-bold tabular-nums focus:outline-none disabled:opacity-30"
-          style={{ color: '#475569' }}
+          className="w-full text-center font-bold tabular-nums focus:outline-none disabled:opacity-30"
+          style={{ height: 20, borderRadius: '0 0 0.375rem 0.375rem', borderWidth: 1, borderColor: '#2a342d', backgroundColor: '#111713', color: '#637168', fontSize: 10, minHeight: 'unset', padding: 0 }}
         />
       </div>
 
@@ -151,7 +158,8 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
         <input key={name} name={name} type="number" min="0"
           defaultValue={def}
           disabled={isOut}
-          className={`h-9 w-full rounded-lg border border-slate-700 bg-slate-800 text-center text-sm font-bold tabular-nums focus:outline-none disabled:opacity-30 ${color} ${focus}`}
+          className={`w-full rounded-lg text-center font-bold tabular-nums focus:outline-none disabled:opacity-30 ${color} ${focus}`}
+          style={{ height: 36, borderWidth: 1, borderColor: '#2a342d', backgroundColor: '#161e18', fontSize: 14, minHeight: 'unset', padding: 0 }}
         />
       ))}
 

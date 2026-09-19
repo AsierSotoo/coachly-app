@@ -35,7 +35,7 @@ export function WhatsNewModal() {
     >
       <div
         className="w-full max-w-md rounded-2xl border shadow-2xl overflow-hidden"
-        style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}
+        style={{ backgroundColor: '#111713', borderColor: '#2a342d' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -43,10 +43,10 @@ export function WhatsNewModal() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: '#4be277', border: '1px solid rgba(34,197,94,0.3)' }}>
+                style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: '#72e697', border: '1px solid rgba(34,197,94,0.3)' }}>
                 {entry.version}
               </span>
-              <span className="text-[11px]" style={{ color: '#475569' }}>{entry.date}</span>
+              <span className="text-[11px]" style={{ color: '#637168' }}>{entry.date}</span>
             </div>
             <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
               Novedades en Coachly
@@ -55,7 +55,7 @@ export function WhatsNewModal() {
           <button
             onClick={dismiss}
             className="flex items-center justify-center w-8 h-8 rounded-full border transition-colors hover:bg-slate-700 cursor-pointer flex-shrink-0"
-            style={{ borderColor: '#2e3447', color: '#64748b' }}
+            style={{ borderColor: '#2a342d', color: '#637168' }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
           </button>
@@ -74,20 +74,20 @@ export function WhatsNewModal() {
                   className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg"
                   style={{ backgroundColor: 'rgba(34,197,94,0.1)' }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#4be277' }}>{c.icon}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#72e697' }}>{c.icon}</span>
                 </span>
-                <p className="text-sm flex-1 leading-snug" style={{ color: '#dce1fb' }}>{c.text}</p>
+                <p className="text-sm flex-1 leading-snug" style={{ color: '#edf2ee' }}>{c.text}</p>
                 {c.detail && (
                   <span
                     className="material-symbols-outlined flex-shrink-0 transition-transform duration-200"
-                    style={{ fontSize: 16, color: '#475569', transform: expanded === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    style={{ fontSize: 16, color: '#637168', transform: expanded === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
                   >
                     expand_more
                   </span>
                 )}
               </button>
               {c.detail && expanded === i && (
-                <p className="px-3 pb-3 pt-0 text-xs leading-relaxed ml-11" style={{ color: '#64748b' }}>
+                <p className="px-3 pb-3 pt-0 text-xs leading-relaxed ml-11" style={{ color: '#637168' }}>
                   {c.detail}
                 </p>
               )}
@@ -100,7 +100,7 @@ export function WhatsNewModal() {
           <button
             onClick={dismiss}
             className="w-full h-11 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
-            style={{ backgroundColor: '#22c55e', color: '#003915', fontFamily: 'Sora, sans-serif' }}
+            style={{ backgroundColor: '#72e697', color: '#07140c', fontFamily: 'Sora, sans-serif' }}
           >
             ¡Entendido!
           </button>

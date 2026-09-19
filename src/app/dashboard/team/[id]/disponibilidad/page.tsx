@@ -26,35 +26,35 @@ export default async function DisponibilidadPage({
   if (!isEnabled) {
     return (
       <PageTransition>
-        <main className="max-w-2xl mx-auto px-4 md:px-10 py-8">
+        <main className="max-w-2xl mx-auto px-4 md:px-10 py-8 pb-32 md:pb-10">
           <div className="mb-8">
             <h1 className="text-[28px] font-extrabold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
               Disponibilidad
             </h1>
-            <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>Confirmación de asistencia por enlace mágico</p>
+            <p className="text-sm mt-1" style={{ color: '#89968e' }}>Confirmación de asistencia por enlace mágico</p>
           </div>
 
           <div className="rounded-2xl border p-8 flex flex-col items-center text-center gap-5"
-            style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+            style={{ backgroundColor: '#111713', borderColor: '#253028' }}>
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
               style={{ backgroundColor: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 32, color: '#a78bfa' }}>event_available</span>
             </div>
             <div>
               <h2 className="text-lg font-bold text-white mb-2">Activa la confirmación de disponibilidad</h2>
-              <p className="text-sm leading-relaxed" style={{ color: '#adb4ce' }}>
+              <p className="text-sm leading-relaxed" style={{ color: '#89968e' }}>
                 Genera un enlace por partido o entrenamiento y compártelo con tu grupo de WhatsApp.
                 Cada jugadora pulsa su nombre y confirma si puede asistir — sin crear cuenta.
               </p>
             </div>
-            <div className="w-full flex flex-col gap-2 text-sm text-left" style={{ color: '#64748b' }}>
+            <div className="w-full flex flex-col gap-2 text-sm text-left" style={{ color: '#637168' }}>
               {[
                 { icon: 'sports_soccer', text: 'Funciona para partidos y entrenamientos' },
                 { icon: 'share',         text: 'Copia el enlace y pégalo en el grupo de WhatsApp' },
                 { icon: 'touch_app',     text: 'Las jugadoras eligen: Voy / Duda / No puedo' },
                 { icon: 'visibility',    text: 'El coach ve en tiempo real quién ha confirmado' },
               ].map(({ icon, text }) => (
-                <div key={text} className="flex items-center gap-3 px-4 py-2.5 rounded-xl" style={{ backgroundColor: '#151b2d' }}>
+                <div key={text} className="flex items-center gap-3 px-4 py-2.5 rounded-xl" style={{ backgroundColor: '#111713' }}>
                   <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: '#a78bfa' }}>{icon}</span>
                   <span>{text}</span>
                 </div>
@@ -72,7 +72,7 @@ export default async function DisponibilidadPage({
             </form>
             <p className="text-xs" style={{ color: '#334155' }}>
               También puedes activarlo desde{' '}
-              <Link href={`/dashboard/team/${teamId}/settings`} className="underline" style={{ color: '#475569' }}>
+              <Link href={`/dashboard/team/${teamId}/settings`} className="underline" style={{ color: '#637168' }}>
                 Ajustes del equipo
               </Link>
             </p>
@@ -186,20 +186,20 @@ export default async function DisponibilidadPage({
     const total = ev.counts.y + ev.counts.d + ev.counts.n
     const isMatch = ev.type === 'match'
     return (
-      <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-        <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ borderColor: '#1e293b' }}>
+      <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#111713', borderColor: '#253028' }}>
+        <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ borderColor: '#253028' }}>
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{
               backgroundColor: isMatch ? 'rgba(75,226,119,0.1)' : 'rgba(251,191,36,0.1)',
               border: `1px solid ${isMatch ? 'rgba(75,226,119,0.2)' : 'rgba(251,191,36,0.2)'}`,
             }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 16, color: isMatch ? '#4be277' : '#fbbf24', fontVariationSettings: "'FILL' 1" }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16, color: isMatch ? '#72e697' : '#fbbf24', fontVariationSettings: "'FILL' 1" }}>
               {isMatch ? 'sports_soccer' : 'fitness_center'}
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold truncate text-white">{ev.label}</p>
-            <p className="text-[10px] mt-0.5" style={{ color: '#475569' }}>
+            <p className="text-[10px] mt-0.5" style={{ color: '#637168' }}>
               {ev.sublabel}{ev.seasonName ? ` · ${ev.seasonName}` : ''}
             </p>
           </div>
@@ -208,19 +208,19 @@ export default async function DisponibilidadPage({
         {total > 0 ? (
           <div className="flex items-center gap-5 px-4 py-3">
             <div className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#4be277', fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-              <span className="text-sm font-bold" style={{ color: '#4be277' }}>{ev.counts.y}</span>
-              <span className="text-[10px]" style={{ color: '#475569' }}>Voy</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#72e697', fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              <span className="text-sm font-bold" style={{ color: '#72e697' }}>{ev.counts.y}</span>
+              <span className="text-[10px]" style={{ color: '#637168' }}>Voy</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>help</span>
               <span className="text-sm font-bold" style={{ color: '#fbbf24' }}>{ev.counts.d}</span>
-              <span className="text-[10px]" style={{ color: '#475569' }}>Duda</span>
+              <span className="text-[10px]" style={{ color: '#637168' }}>Duda</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#f87171', fontVariationSettings: "'FILL' 1" }}>cancel</span>
               <span className="text-sm font-bold" style={{ color: '#f87171' }}>{ev.counts.n}</span>
-              <span className="text-[10px]" style={{ color: '#475569' }}>No puede</span>
+              <span className="text-[10px]" style={{ color: '#637168' }}>No puede</span>
             </div>
             <span className="ml-auto text-[10px]" style={{ color: '#334155' }}>{total} resp.</span>
           </div>
@@ -236,14 +236,14 @@ export default async function DisponibilidadPage({
 
   return (
     <PageTransition>
-      <main className="max-w-2xl mx-auto px-4 md:px-10 py-8 pb-10">
+      <main className="max-w-2xl mx-auto px-4 md:px-10 py-8 pb-32 md:pb-10">
 
         <div className="flex items-start justify-between mb-6 gap-4">
           <div>
             <h1 className="text-[28px] font-extrabold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
               Disponibilidad
             </h1>
-            <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>
+            <p className="text-sm mt-1" style={{ color: '#89968e' }}>
               Partidos y entrenamientos · Comparte el enlace con tu grupo
             </p>
           </div>
@@ -252,7 +252,7 @@ export default async function DisponibilidadPage({
             <input type="hidden" name="enabled"  value="false" />
             <button type="submit"
               className="text-[10px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-lg"
-              style={{ backgroundColor: '#1e293b', color: '#475569', border: '1px solid #2e3447' }}>
+              style={{ backgroundColor: '#253028', color: '#637168', border: '1px solid #2a342d' }}>
               Desactivar
             </button>
           </form>
@@ -262,15 +262,15 @@ export default async function DisponibilidadPage({
         <div className="mb-6 rounded-2xl px-4 py-3 flex items-start gap-3"
           style={{ backgroundColor: 'rgba(167,139,250,0.07)', border: '1px solid rgba(167,139,250,0.15)' }}>
           <span className="material-symbols-outlined mt-0.5 flex-shrink-0" style={{ fontSize: 16, color: '#a78bfa' }}>info</span>
-          <p className="text-xs leading-relaxed" style={{ color: '#adb4ce' }}>
-            Pulsa <strong style={{ color: '#dce1fb' }}>Compartir</strong> en cualquier evento para enviar el enlace.
+          <p className="text-xs leading-relaxed" style={{ color: '#89968e' }}>
+            Pulsa <strong style={{ color: '#edf2ee' }}>Compartir</strong> en cualquier evento para enviar el enlace.
             Las jugadoras confirman sin crear cuenta.
           </p>
         </div>
 
         {upcoming.length > 0 && (
           <section className="mb-6">
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#475569' }}>Próximos</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#637168' }}>Próximos</p>
             <div className="flex flex-col gap-3">
               {upcoming.map(ev => <EventCard key={ev.key} ev={ev} />)}
             </div>
@@ -279,7 +279,7 @@ export default async function DisponibilidadPage({
 
         {recent.length > 0 && (
           <section>
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#475569' }}>Recientes</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: '#637168' }}>Recientes</p>
             <div className="flex flex-col gap-3">
               {recent.map(ev => <EventCard key={ev.key} ev={ev} />)}
             </div>
@@ -288,8 +288,8 @@ export default async function DisponibilidadPage({
 
         {events.length === 0 && (
           <div className="text-center py-16">
-            <span className="material-symbols-outlined" style={{ fontSize: 48, color: '#1e293b' }}>event</span>
-            <p className="mt-4 text-sm" style={{ color: '#475569' }}>No hay partidos ni entrenamientos todavía</p>
+            <span className="material-symbols-outlined" style={{ fontSize: 48, color: '#253028' }}>event</span>
+            <p className="mt-4 text-sm" style={{ color: '#637168' }}>No hay partidos ni entrenamientos todavía</p>
           </div>
         )}
       </main>

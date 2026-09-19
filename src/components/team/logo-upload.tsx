@@ -86,7 +86,7 @@ export function LogoUpload({ teamId, currentUrl, teamName }: LogoUploadProps) {
         }`}
       >
         {uploading ? (
-          <span className="material-symbols-outlined animate-spin" style={{ fontSize: 32, color: '#4be277' }}>progress_activity</span>
+          <span className="material-symbols-outlined animate-spin" style={{ fontSize: 32, color: '#72e697' }}>progress_activity</span>
         ) : url ? (
           <>
             <Image src={url} alt={`Escudo ${teamName}`} fill className="object-contain p-2" unoptimized />
@@ -96,7 +96,7 @@ export function LogoUpload({ teamId, currentUrl, teamName }: LogoUploadProps) {
           </>
         ) : (
           <div className="flex flex-col items-center gap-2 text-center px-2">
-            <span className="material-symbols-outlined" style={{ fontSize: 32, color: '#475569' }}>shield</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 32, color: '#637168' }}>shield</span>
             <span className="text-[10px] text-slate-500 leading-tight">Subir escudo</span>
           </div>
         )}

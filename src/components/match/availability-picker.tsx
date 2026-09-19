@@ -22,7 +22,7 @@ interface Props {
 }
 
 const BUTTONS: { status: 'available' | 'doubt' | 'unavailable'; label: string; icon: string; color: string; bg: string; border: string }[] = [
-  { status: 'available',   label: 'Disponible',    icon: 'check',            color: '#4be277', bg: 'rgba(75,226,119,0.15)',  border: 'rgba(75,226,119,0.35)'  },
+  { status: 'available',   label: 'Disponible',    icon: 'check',            color: '#72e697', bg: 'rgba(75,226,119,0.15)',  border: 'rgba(75,226,119,0.35)'  },
   { status: 'doubt',       label: 'Duda',          icon: 'help',             color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.35)'  },
   { status: 'unavailable', label: 'No disponible', icon: 'close',            color: '#f87171', bg: 'rgba(248,113,113,0.15)', border: 'rgba(248,113,113,0.35)' },
 ]
@@ -50,12 +50,12 @@ export function AvailabilityPicker({ matchId, seasonId, players, initialAvailabi
       {/* Cabecera */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-slate-800">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#adb4ce' }}>how_to_reg</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#89968e' }}>how_to_reg</span>
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Disponibilidad</h2>
         </div>
         <div className="flex items-center gap-2 text-[11px] font-bold">
           {available.length > 0 && (
-            <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#4be277' }}>
+            <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#72e697' }}>
               ✓ {available.length}
             </span>
           )}
@@ -70,7 +70,7 @@ export function AvailabilityPicker({ matchId, seasonId, players, initialAvailabi
             </span>
           )}
           {unset.length > 0 && (
-            <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(173,180,206,0.08)', color: '#475569' }}>
+            <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(173,180,206,0.08)', color: '#637168' }}>
               {unset.length} sin marcar
             </span>
           )}
@@ -101,7 +101,7 @@ export function AvailabilityPicker({ matchId, seasonId, players, initialAvailabi
                       className="flex h-9 w-10 items-center justify-center transition-all"
                       style={active
                         ? { backgroundColor: btn.bg, border: `1px solid ${btn.border}`, color: btn.color }
-                        : { backgroundColor: 'transparent', color: '#475569' }
+                        : { backgroundColor: 'transparent', color: '#637168' }
                       }
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: 16, fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}>

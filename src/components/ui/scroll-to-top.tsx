@@ -35,12 +35,12 @@ export function ScrollToTop() {
             right: 16,
             width: 42,
             height: 42,
-            backgroundColor: '#151b2d',
-            borderColor: '#2e3447',
-            color: '#adb4ce',
+            backgroundColor: '#111713',
+            borderColor: '#2a342d',
+            color: '#89968e',
             boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
           }}
-          whileHover={{ scale: 1.1, borderColor: '#4be277', color: '#4be277' }}
+          whileHover={{ scale: 1.1, borderColor: '#72e697', color: '#72e697' }}
           whileTap={{ scale: 0.92 }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>keyboard_arrow_up</span>

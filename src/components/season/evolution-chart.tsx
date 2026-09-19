@@ -41,8 +41,8 @@ export function EvolutionChart({ points }: { points: ChartMatch[] }) {
       >
         <defs>
           <linearGradient id="evoGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+            <stop offset="0%" stopColor="#72e697" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#72e697" stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -51,10 +51,10 @@ export function EvolutionChart({ points }: { points: ChartMatch[] }) {
           <g key={pts}>
             <line
               x1={PAD_X} y1={cy(pts)} x2={W - PAD_X} y2={cy(pts)}
-              stroke="#1e293b" strokeWidth="1" strokeDasharray="4 4"
+              stroke="#253028" strokeWidth="1" strokeDasharray="4 4"
             />
             <text x={PAD_X - 4} y={cy(pts) + 4} textAnchor="end"
-              fontSize="9" fill="#475569" fontFamily="Sora, sans-serif">
+              fontSize="9" fill="#637168" fontFamily="Sora, sans-serif">
               {pts}
             </text>
           </g>
@@ -64,11 +64,11 @@ export function EvolutionChart({ points }: { points: ChartMatch[] }) {
         <path d={areaPath} fill="url(#evoGrad)" />
 
         {/* Línea */}
-        <path d={linePath} fill="none" stroke="#22c55e" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <path d={linePath} fill="none" stroke="#72e697" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
 
         {/* Puntos */}
         {points.map((p, i) => {
-          const dotColor = p.result === 'V' ? '#22c55e' : p.result === 'D' ? '#f87171' : '#94a3b8'
+          const dotColor = p.result === 'V' ? '#72e697' : p.result === 'D' ? '#f87171' : '#94a3b8'
           const isHov = hovered === i
           return (
             <g key={i}>
@@ -84,7 +84,7 @@ export function EvolutionChart({ points }: { points: ChartMatch[] }) {
                 cx={cx(i)} cy={cy(p.cumPoints)}
                 r={isHov ? 6 : 4}
                 fill={dotColor}
-                stroke="#0c1324"
+                stroke="#090e0b"
                 strokeWidth={2}
                 style={{ transition: 'r 0.1s', pointerEvents: 'none' }}
               />
@@ -104,14 +104,14 @@ export function EvolutionChart({ points }: { points: ChartMatch[] }) {
           return (
             <g pointerEvents="none">
               <rect x={tipX} y={tipY} width={tipW} height={tipH} rx={6}
-                fill="#151b2d" stroke="#2e3447" strokeWidth={1} />
-              <text x={tipX + 8} y={tipY + 14} fontSize="10" fill="#adb4ce" fontFamily="Sora, sans-serif">
+                fill="#111713" stroke="#2a342d" strokeWidth={1} />
+              <text x={tipX + 8} y={tipY + 14} fontSize="10" fill="#89968e" fontFamily="Sora, sans-serif">
                 vs {p.opponent.slice(0, 12)}{p.opponent.length > 12 ? '…' : ''}
               </text>
-              <text x={tipX + 8} y={tipY + 28} fontSize="11" fontWeight="bold" fill="#dce1fb" fontFamily="Sora, sans-serif">
+              <text x={tipX + 8} y={tipY + 28} fontSize="11" fontWeight="bold" fill="#edf2ee" fontFamily="Sora, sans-serif">
                 {p.gf}–{p.ga} · {p.result}
               </text>
-              <text x={tipX + 8} y={tipY + 43} fontSize="10" fill="#4be277" fontFamily="Sora, sans-serif">
+              <text x={tipX + 8} y={tipY + 43} fontSize="10" fill="#72e697" fontFamily="Sora, sans-serif">
                 {p.cumPoints} pts acumulados
               </text>
             </g>
@@ -125,7 +125,7 @@ export function EvolutionChart({ points }: { points: ChartMatch[] }) {
           <span key={i}
             className="text-[8px] font-bold uppercase truncate text-center"
             style={{
-              color: hovered === i ? '#dce1fb' : '#475569',
+              color: hovered === i ? '#edf2ee' : '#637168',
               width: `${100 / points.length}%`,
               transition: 'color 0.1s',
             }}>

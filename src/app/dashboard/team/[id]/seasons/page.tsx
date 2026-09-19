@@ -24,22 +24,22 @@ export default async function SeasonsPage({
 
   return (
     <PageTransition>
-      <main className="max-w-3xl mx-auto px-4 md:px-10 py-8 pb-10">
+      <main className="max-w-3xl mx-auto px-4 md:px-10 py-8 pb-32 md:pb-10">
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-[#2e3447] overflow-hidden" style={{ backgroundColor: '#191f31' }}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-[#2a342d] overflow-hidden" style={{ backgroundColor: '#171f1a' }}>
               <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
             </div>
             <div>
-              <Link href="/dashboard" className="text-xs hover:underline mb-1 block" style={{ color: '#adb4ce' }}>
+              <Link href="/dashboard" className="text-xs hover:underline mb-1 block" style={{ color: '#89968e' }}>
                 ← Mis equipos
               </Link>
               <h1 className="text-[24px] font-extrabold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                 {team.name}
               </h1>
-              <p className="text-sm mt-0.5" style={{ color: '#adb4ce' }}>
+              <p className="text-sm mt-0.5" style={{ color: '#89968e' }}>
                 {seasons?.length ?? 0} temporada{(seasons?.length ?? 0) !== 1 ? 's' : ''}
               </p>
             </div>
@@ -48,12 +48,12 @@ export default async function SeasonsPage({
 
         {/* Nueva temporada */}
         <section
-          className="mb-8 rounded-2xl border border-[#1e293b] overflow-hidden"
-          style={{ backgroundColor: '#0f172a' }}
+          className="mb-8 rounded-2xl border border-[#253028] overflow-hidden"
+          style={{ backgroundColor: '#111713' }}
         >
-          <div className="flex items-center gap-3 px-5 py-4 border-b border-[#1e293b]">
-            <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 18 }}>add_circle</span>
-            <h2 className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Nueva temporada</h2>
+          <div className="flex items-center gap-3 px-5 py-4 border-b border-[#253028]">
+            <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 18 }}>add_circle</span>
+            <h2 className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Nueva temporada</h2>
           </div>
           <form action={createSeason} className="flex gap-3 p-5">
             <input type="hidden" name="team_id" value={teamId} />
@@ -61,12 +61,12 @@ export default async function SeasonsPage({
               name="name" type="text" required
               placeholder="ej. 2025/26"
               className="flex-1 rounded-xl px-4 text-sm focus:outline-none placeholder:text-slate-600"
-              style={{ minHeight: 44, backgroundColor: '#0f172a', border: '1px solid #2e3447', color: '#dce1fb' }}
+              style={{ minHeight: 44, backgroundColor: '#111713', border: '1px solid #2a342d', color: '#edf2ee' }}
             />
             <button
               type="submit"
               className="flex items-center gap-2 rounded-xl px-5 text-sm font-bold active:scale-95 transition-all cursor-pointer flex-shrink-0"
-              style={{ backgroundColor: '#22c55e', color: '#003915', minHeight: 44, boxShadow: '0 0 12px rgba(34,197,94,0.2)' }}
+              style={{ backgroundColor: '#72e697', color: '#07140c', minHeight: 44, boxShadow: '0 0 12px rgba(34,197,94,0.2)' }}
             >
               <span className="material-symbols-outlined text-lg">add</span>
               Crear
@@ -77,9 +77,9 @@ export default async function SeasonsPage({
 
         {/* Lista de temporadas */}
         {!seasons?.length ? (
-          <div className="rounded-2xl border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
-            <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>calendar_today</span>
-            <p className="text-sm" style={{ color: '#adb4ce' }}>Crea la primera temporada para empezar.</p>
+          <div className="rounded-2xl border-2 border-dashed border-[#2a342d]/50 py-16 text-center">
+            <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2a342d' }}>calendar_today</span>
+            <p className="text-sm" style={{ color: '#89968e' }}>Crea la primera temporada para empezar.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
@@ -97,61 +97,61 @@ export default async function SeasonsPage({
               return (
                 <div
                   key={season.id}
-                  className="group relative overflow-hidden rounded-2xl border border-[#1e293b] transition-all hover:border-[#22c55e]/30 hover:shadow-lg"
-                  style={{ backgroundColor: '#0f172a' }}
+                  className="group relative overflow-hidden rounded-2xl border border-[#253028] transition-all hover:border-[#72e697]/30 hover:shadow-lg"
+                  style={{ backgroundColor: '#111713' }}
                 >
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent" />
 
                   <Link href={`/dashboard/season/${season.id}`} className="block p-5 pb-4">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#22c55e]/20"
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#72e697]/20"
                           style={{ backgroundColor: 'rgba(34,197,94,0.08)' }}>
-                          <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 18 }}>calendar_today</span>
+                          <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 18 }}>calendar_today</span>
                         </div>
                         <div>
                           <p className="text-base font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                             {season.name}
                           </p>
-                          <p className="text-xs mt-0.5" style={{ color: '#adb4ce' }}>
+                          <p className="text-xs mt-0.5" style={{ color: '#89968e' }}>
                             {total} partido{total !== 1 ? 's' : ''} registrado{total !== 1 ? 's' : ''}
                           </p>
                         </div>
                       </div>
                       <span className="material-symbols-outlined transition-transform group-hover:translate-x-0.5"
-                        style={{ color: '#2e3447', fontSize: 20 }}>chevron_right</span>
+                        style={{ color: '#2a342d', fontSize: 20 }}>chevron_right</span>
                     </div>
 
                     {total > 0 ? (
                       <>
                         <div className="grid grid-cols-3 gap-2">
                           {[
-                            { label: 'Victorias', value: wins,   color: '#4be277',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
+                            { label: 'Victorias', value: wins,   color: '#72e697',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
                             { label: 'Empates',   value: draws,  color: '#fbbf24',  bg: 'rgba(251,191,36,0.07)',    border: 'rgba(251,191,36,0.2)' },
                             { label: 'Derrotas',  value: losses, color: '#f87171',  bg: 'rgba(248,113,113,0.05)',   border: 'rgba(248,113,113,0.2)' },
                           ].map(({ label, value, color, bg, border }) => (
                             <div key={label} className="flex items-center justify-center gap-2 rounded-xl border py-2.5"
                               style={{ backgroundColor: bg, borderColor: border }}>
                               <span className="text-xl font-extrabold" style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</span>
-                              <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>{label}</span>
+                              <span className="text-[10px] font-bold uppercase" style={{ color: '#89968e' }}>{label}</span>
                             </div>
                           ))}
                         </div>
-                        <p className="text-[11px] text-center mt-2" style={{ color: '#adb4ce' }}>
-                          GF&nbsp;<span style={{ color: '#4be277' }}>{goalsFor}</span>
+                        <p className="text-[11px] text-center mt-2" style={{ color: '#89968e' }}>
+                          GF&nbsp;<span style={{ color: '#72e697' }}>{goalsFor}</span>
                           &nbsp;·&nbsp;
                           GC&nbsp;<span style={{ color: '#ffb4ab' }}>{goalsAgainst}</span>
                           &nbsp;·&nbsp;
-                          <span style={{ color: diff > 0 ? '#4be277' : diff < 0 ? '#ffb4ab' : '#adb4ce' }}>
+                          <span style={{ color: diff > 0 ? '#72e697' : diff < 0 ? '#ffb4ab' : '#89968e' }}>
                             {diff > 0 ? `+${diff}` : diff}
                           </span>
                         </p>
-                        <p className="text-[10px] text-center mt-0.5" style={{ color: '#475569' }}>
+                        <p className="text-[10px] text-center mt-0.5" style={{ color: '#637168' }}>
                           {allSeasonMatches.length - total > 0 ? `${allSeasonMatches.length - total} pendiente${allSeasonMatches.length - total !== 1 ? 's' : ''}` : ''}
                         </p>
                       </>
                     ) : (
-                      <p className="text-xs text-center py-1" style={{ color: '#2e3447' }}>Sin partidos registrados aún</p>
+                      <p className="text-xs text-center py-1" style={{ color: '#2a342d' }}>Sin partidos registrados aún</p>
                     )}
                   </Link>
 
@@ -160,16 +160,16 @@ export default async function SeasonsPage({
                       <Link
                         href={`/dashboard/season/${season.id}/stats`}
                         className="flex items-center gap-1.5 text-xs font-bold transition-colors hover:underline"
-                        style={{ color: '#adb4ce' }}
+                        style={{ color: '#89968e' }}
                       >
-                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#4be277' }}>leaderboard</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#72e697' }}>leaderboard</span>
                         Ver estadísticas
                       </Link>
                     ) : (
                       <Link
                         href={`/dashboard/season/${season.id}?new=1`}
                         className="flex items-center gap-1.5 text-xs font-bold transition-colors"
-                        style={{ color: '#4be277' }}
+                        style={{ color: '#72e697' }}
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 14 }}>add_circle</span>
                         Registrar primer partido

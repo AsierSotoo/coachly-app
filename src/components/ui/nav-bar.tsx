@@ -33,9 +33,10 @@ export function NavBar({ teams }: { teams: Team[] }) {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-20 border-t border-[#2e3447]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-20 border-t"
       style={{
-        backgroundColor: 'rgba(7,13,31,0.97)',
+        backgroundColor: 'var(--bg)',
+        borderColor: 'var(--bdr-strong)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -47,13 +48,13 @@ export function NavBar({ teams }: { teams: Team[] }) {
           return (
             <Link key={item.key} href={item.href}
               className="relative flex flex-1 flex-col items-center justify-center gap-0.5 h-full transition-all active:scale-90 active:opacity-70"
-              style={{ color: active ? '#4be277' : '#64748b' }}>
+              style={{ color: active ? 'var(--accent)' : 'var(--tx-3)' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 22, fontVariationSettings: active ? "'FILL' 1, 'wght' 500" : "'FILL' 0, 'wght' 400" }}>
                 {item.icon}
               </span>
               <span className="text-[10px] font-semibold leading-none">{item.label}</span>
               {active && (
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full" style={{ backgroundColor: '#4be277' }} />
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
               )}
             </Link>
           )

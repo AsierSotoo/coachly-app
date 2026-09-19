@@ -37,7 +37,7 @@ export function MatchShareCard({
   const [showLineup, setShowLineup] = useState(false)
 
   const result = goalsFor > goalsAgainst ? 'V' : goalsFor < goalsAgainst ? 'D' : 'E'
-  const resultColor = result === 'V' ? '#4be277' : result === 'D' ? '#ffb4ab' : '#adb4ce'
+  const resultColor = result === 'V' ? '#72e697' : result === 'D' ? '#ffb4ab' : '#89968e'
   const dateLabel = new Date(playedAt + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
 
   async function share() {
@@ -45,7 +45,7 @@ export function MatchShareCard({
     if (!el) return
     setLoading(true)
     try {
-      const dataUrl = await toPng(el, { pixelRatio: 2, backgroundColor: '#0f172a' })
+      const dataUrl = await toPng(el, { pixelRatio: 2, backgroundColor: '#111713' })
       const filename = `${teamName.replace(/\s+/g, '_')}_vs_${opponent.replace(/\s+/g, '_')}.png`
       const blob = await (await fetch(dataUrl)).blob()
       const file = new File([blob], filename, { type: 'image/png' })
@@ -79,8 +79,8 @@ export function MatchShareCard({
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all active:scale-95"
             style={{
               backgroundColor: showLineup ? 'rgba(75,226,119,0.1)' : 'transparent',
-              borderColor: showLineup ? 'rgba(75,226,119,0.4)' : '#2e3447',
-              color: showLineup ? '#4be277' : '#64748b',
+              borderColor: showLineup ? 'rgba(75,226,119,0.4)' : '#2a342d',
+              color: showLineup ? '#72e697' : '#637168',
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: showLineup ? "'FILL' 1" : "'FILL' 0" }}>
@@ -89,7 +89,7 @@ export function MatchShareCard({
             {showLineup ? 'Alineación incluida' : 'Incluir alineación'}
           </button>
           {showLineup && (
-            <span className="text-[10px]" style={{ color: '#475569' }}>
+            <span className="text-[10px]" style={{ color: '#637168' }}>
               {lineupData.formation}
             </span>
           )}
@@ -100,13 +100,13 @@ export function MatchShareCard({
       <div
         id="match-share-card"
         style={{
-          backgroundColor: '#0f172a',
+          backgroundColor: '#111713',
           borderRadius: 20,
           padding: 28,
           width: '100%',
           maxWidth: 480,
           fontFamily: 'system-ui, -apple-system, sans-serif',
-          border: '1px solid #1e293b',
+          border: '1px solid #253028',
         }}
       >
         {/* Resultado */}
@@ -117,20 +117,20 @@ export function MatchShareCard({
               /* eslint-disable-next-line @next/next/no-img-element */
               <img src={logoUrl} alt={teamName} style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 8, backgroundColor: 'white', padding: 4 }} />
             ) : (
-              <div style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: '#23293c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: '#4be277' }}>
+              <div style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: '#72e697' }}>
                 {teamInitials(teamName)}
               </div>
             )}
-            <p style={{ color: '#dce1fb', fontSize: 12, fontWeight: 700, textAlign: 'center', margin: 0, maxWidth: 80 }}>{teamName}</p>
-            <p style={{ color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', margin: 0 }}>{home ? 'Local' : 'Visitante'}</p>
+            <p style={{ color: '#edf2ee', fontSize: 12, fontWeight: 700, textAlign: 'center', margin: 0, maxWidth: 80 }}>{teamName}</p>
+            <p style={{ color: '#637168', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', margin: 0 }}>{home ? 'Local' : 'Visitante'}</p>
           </div>
 
           {/* Marcador */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 52, fontWeight: 900, color: goalsFor > goalsAgainst ? '#4be277' : '#dce1fb', lineHeight: 1 }}>{goalsFor}</span>
+              <span style={{ fontSize: 52, fontWeight: 900, color: goalsFor > goalsAgainst ? '#72e697' : '#edf2ee', lineHeight: 1 }}>{goalsFor}</span>
               <span style={{ fontSize: 28, fontWeight: 700, color: '#334155', lineHeight: 1 }}>–</span>
-              <span style={{ fontSize: 52, fontWeight: 900, color: goalsAgainst > goalsFor ? '#ffb4ab' : '#dce1fb', lineHeight: 1 }}>{goalsAgainst}</span>
+              <span style={{ fontSize: 52, fontWeight: 900, color: goalsAgainst > goalsFor ? '#ffb4ab' : '#edf2ee', lineHeight: 1 }}>{goalsAgainst}</span>
             </div>
             <div style={{
               padding: '3px 10px', borderRadius: 20,
@@ -145,21 +145,21 @@ export function MatchShareCard({
 
           {/* Rival */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
-            <div style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: '#23293c', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: '#adb4ce' }}>
+            <div style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: '#89968e' }}>
               {teamInitials(opponent)}
             </div>
-            <p style={{ color: '#dce1fb', fontSize: 12, fontWeight: 700, textAlign: 'center', margin: 0, maxWidth: 80 }}>{opponent}</p>
-            <p style={{ color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', margin: 0 }}>{home ? 'Visitante' : 'Local'}</p>
+            <p style={{ color: '#edf2ee', fontSize: 12, fontWeight: 700, textAlign: 'center', margin: 0, maxWidth: 80 }}>{opponent}</p>
+            <p style={{ color: '#637168', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', margin: 0 }}>{home ? 'Visitante' : 'Local'}</p>
           </div>
         </div>
 
         {/* Divisor */}
-        <div style={{ height: 1, backgroundColor: '#1e293b', marginBottom: 16 }} />
+        <div style={{ height: 1, backgroundColor: '#253028', marginBottom: 16 }} />
 
         {/* Goleadoras */}
         {scorers.length > 0 && (
           <div style={{ marginBottom: 14 }}>
-            <p style={{ color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, margin: '0 0 8px' }}>Goles</p>
+            <p style={{ color: '#637168', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, margin: '0 0 8px' }}>Goles</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {scorers.map(s => (
                 <div key={s.name} style={{
@@ -168,7 +168,7 @@ export function MatchShareCard({
                   backgroundColor: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)',
                 }}>
                   <span style={{ fontSize: 11 }}>⚽</span>
-                  <span style={{ color: '#dce1fb', fontSize: 12, fontWeight: 600 }}>
+                  <span style={{ color: '#edf2ee', fontSize: 12, fontWeight: 600 }}>
                     {s.name.split(' ')[0]}{s.goals > 1 ? ` ×${s.goals}` : ''}
                   </span>
                 </div>
@@ -188,8 +188,8 @@ export function MatchShareCard({
         {/* Alineación (opcional) */}
         {showLineup && lineupData && (
           <div style={{ marginBottom: 14 }}>
-            <div style={{ height: 1, backgroundColor: '#1e293b', marginBottom: 14 }} />
-            <p style={{ color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 10px' }}>
+            <div style={{ height: 1, backgroundColor: '#253028', marginBottom: 14 }} />
+            <p style={{ color: '#637168', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 10px' }}>
               Alineación · {lineupData.formation}
             </p>
             {/* Campo mini */}
@@ -211,7 +211,7 @@ export function MatchShareCard({
                         {slot.player ? (slot.player.number ?? slot.label) : slot.label}
                       </div>
                       <span style={{
-                        color: slot.player ? '#adb4ce' : 'rgba(255,255,255,0.15)',
+                        color: slot.player ? '#89968e' : 'rgba(255,255,255,0.15)',
                         fontSize: 8, textAlign: 'center',
                         overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
                         maxWidth: 44,
@@ -227,11 +227,11 @@ export function MatchShareCard({
         )}
 
         {/* Footer */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 14, borderTop: '1px solid #1e293b' }}>
-          <p style={{ color: '#475569', fontSize: 10, margin: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 14, borderTop: '1px solid #253028' }}>
+          <p style={{ color: '#637168', fontSize: 10, margin: 0 }}>
             {dateLabel}{competition ? ` · ${competition}` : ''}
           </p>
-          <p style={{ color: '#4be277', fontSize: 10, fontWeight: 800, margin: 0 }}>Coachly</p>
+          <p style={{ color: '#72e697', fontSize: 10, fontWeight: 800, margin: 0 }}>Coachly</p>
         </div>
       </div>
 
@@ -240,7 +240,7 @@ export function MatchShareCard({
         onClick={share}
         disabled={loading}
         className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-        style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: '#4be277', width: 'fit-content' }}
+        style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: '#72e697', width: 'fit-content' }}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
           {loading ? 'hourglass_empty' : 'share'}

@@ -30,8 +30,8 @@ export default async function ProfilePage({
         {/* ── Hero ──────────────────────────────────────────────────────── */}
         <form action={updateProfile}>
           <section
-            className="flex flex-col md:flex-row items-center gap-8 p-8 rounded-2xl border border-[#1e293b] mb-8"
-            style={{ backgroundColor: '#0f172a' }}
+            className="flex flex-col md:flex-row items-center gap-8 p-8 rounded-2xl border border-[#253028] mb-8"
+            style={{ backgroundColor: '#111713' }}
           >
             {/* Avatar */}
             <AvatarUpload
@@ -49,13 +49,13 @@ export default async function ProfilePage({
                 </h3>
                 <span
                   className="flex items-center gap-1 px-3 py-1 rounded-full border text-[11px] font-bold uppercase tracking-widest"
-                  style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: '#4be277' }}
+                  style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: '#72e697' }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }}>verified</span>
                   {provider}
                 </span>
               </div>
-              <p className="text-sm" style={{ color: '#adb4ce' }}>
+              <p className="text-sm" style={{ color: '#89968e' }}>
                 {user.email}
               </p>
             </div>
@@ -75,7 +75,7 @@ export default async function ProfilePage({
               <button
                 type="submit"
                 className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm active:scale-95 transition-all cursor-pointer"
-                style={{ backgroundColor: '#22c55e', color: '#003915', fontFamily: 'Sora, sans-serif' }}
+                style={{ backgroundColor: '#72e697', color: '#07140c', fontFamily: 'Sora, sans-serif' }}
               >
                 <span className="material-symbols-outlined text-lg">save</span>
                 Guardar Cambios
@@ -88,11 +88,11 @@ export default async function ProfilePage({
 
             {/* Información Personal */}
             <div
-              className="rounded-2xl border border-[#1e293b] p-8 space-y-6"
-              style={{ backgroundColor: '#0f172a' }}
+              className="rounded-2xl border border-[#253028] p-8 space-y-6"
+              style={{ backgroundColor: '#111713' }}
             >
               <div className="flex items-center gap-3 mb-2">
-                <span className="material-symbols-outlined" style={{ color: '#4be277' }}>person_outline</span>
+                <span className="material-symbols-outlined" style={{ color: '#72e697' }}>person_outline</span>
                 <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                   Información Personal
                 </h4>
@@ -100,7 +100,7 @@ export default async function ProfilePage({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>
+                  <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>
                     Nombre Completo
                   </label>
                   <input
@@ -108,12 +108,12 @@ export default async function ProfilePage({
                     type="text"
                     defaultValue={profile?.name ?? ''}
                     placeholder="Tu nombre como entrenador"
-                    className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[#4be277]"
-                    style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }}
+                    className="border rounded-xl px-4 py-3 text-sm outline-none transition-all focus:border-[#72e697]"
+                    style={{ backgroundColor: '#090e0b', borderColor: '#2a342d', color: '#edf2ee' }}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>
+                  <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>
                     Email
                   </label>
                   <input
@@ -121,58 +121,58 @@ export default async function ProfilePage({
                     value={user.email ?? ''}
                     readOnly
                     className="border rounded-xl px-4 py-3 text-sm outline-none cursor-not-allowed"
-                    style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#adb4ce', opacity: 0.7 }}
+                    style={{ backgroundColor: '#090e0b', borderColor: '#2a342d', color: '#89968e', opacity: 0.7 }}
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: '#adb4ce' }}>
+                <label className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: '#89968e' }}>
                   Club / Organización
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold" style={{ backgroundColor: '#23293c', color: '#adb4ce' }}>Próximamente</span>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold" style={{ backgroundColor: '#1a231d', color: '#89968e' }}>Próximamente</span>
                 </label>
                 <input
                   type="text"
                   placeholder="Nombre del club o academia"
                   disabled
                   className="border rounded-xl px-4 py-3 text-sm outline-none cursor-not-allowed"
-                  style={{ backgroundColor: '#0c1324', borderColor: '#1e293b', color: '#adb4ce', opacity: 0.5 }}
+                  style={{ backgroundColor: '#090e0b', borderColor: '#253028', color: '#89968e', opacity: 0.5 }}
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: '#adb4ce' }}>
+                <label className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: '#89968e' }}>
                   Número de Teléfono
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold" style={{ backgroundColor: '#23293c', color: '#adb4ce' }}>Próximamente</span>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold" style={{ backgroundColor: '#1a231d', color: '#89968e' }}>Próximamente</span>
                 </label>
                 <input
                   type="tel"
                   placeholder="+34 600 000 000"
                   disabled
                   className="border rounded-xl px-4 py-3 text-sm outline-none cursor-not-allowed"
-                  style={{ backgroundColor: '#0c1324', borderColor: '#1e293b', color: '#adb4ce', opacity: 0.5 }}
+                  style={{ backgroundColor: '#090e0b', borderColor: '#253028', color: '#89968e', opacity: 0.5 }}
                 />
               </div>
             </div>
 
             {/* Plan actual */}
             <div
-              className="rounded-2xl border border-[#1e293b] p-8 flex flex-col gap-6"
-              style={{ backgroundColor: '#0f172a' }}
+              className="rounded-2xl border border-[#253028] p-8 flex flex-col gap-6"
+              style={{ backgroundColor: '#111713' }}
             >
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined" style={{ color: '#4be277' }}>workspace_premium</span>
+                <span className="material-symbols-outlined" style={{ color: '#72e697' }}>workspace_premium</span>
                 <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                   Plan actual
                 </h4>
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-xl border" style={{ backgroundColor: '#070d1f', borderColor: 'rgba(34,197,94,0.2)' }}>
+              <div className="flex items-center justify-between p-4 rounded-xl border" style={{ backgroundColor: '#0b100d', borderColor: 'rgba(34,197,94,0.2)' }}>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#4be277' }}>Básico · Gratuito</p>
-                  <p className="text-sm" style={{ color: '#adb4ce' }}>Sin límite de equipos ni jugadoras</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#72e697' }}>Básico · Gratuito</p>
+                  <p className="text-sm" style={{ color: '#89968e' }}>Sin límite de equipos ni jugadoras</p>
                 </div>
-                <p className="text-[28px] font-extrabold" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>€0</p>
+                <p className="text-[28px] font-extrabold" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>€0</p>
               </div>
 
               {[
@@ -182,8 +182,8 @@ export default async function ProfilePage({
                 'Gestión de convocatorias',
               ].map(feat => (
                 <div key={feat} className="flex items-center gap-3">
-                  <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#4be277', fontSize: 18 }}>check_circle</span>
-                  <p className="text-sm" style={{ color: '#dce1fb' }}>{feat}</p>
+                  <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#72e697', fontSize: 18 }}>check_circle</span>
+                  <p className="text-sm" style={{ color: '#edf2ee' }}>{feat}</p>
                 </div>
               ))}
             </div>
@@ -196,11 +196,11 @@ export default async function ProfilePage({
 
           {/* Seguridad */}
           <div
-            className="rounded-2xl border border-[#1e293b] p-8 space-y-6"
-            style={{ backgroundColor: '#0f172a' }}
+            className="rounded-2xl border border-[#253028] p-8 space-y-6"
+            style={{ backgroundColor: '#111713' }}
           >
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined" style={{ color: '#4be277' }}>security</span>
+              <span className="material-symbols-outlined" style={{ color: '#72e697' }}>security</span>
               <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
                 Seguridad
               </h4>
@@ -212,13 +212,13 @@ export default async function ProfilePage({
               className="flex items-center justify-between p-4 -mx-4 rounded-xl transition-colors group hover:bg-slate-800/30"
             >
               <div className="flex items-center gap-4">
-                <span className="material-symbols-outlined" style={{ color: '#adb4ce' }}>lock</span>
+                <span className="material-symbols-outlined" style={{ color: '#89968e' }}>lock</span>
                 <div>
                   <p className="font-semibold text-sm text-white">Cambiar Contraseña</p>
-                  <p className="text-xs mt-0.5" style={{ color: '#adb4ce' }}>Restablece tu contraseña por email</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#89968e' }}>Restablece tu contraseña por email</p>
                 </div>
               </div>
-              <span className="material-symbols-outlined transition-transform group-hover:translate-x-1" style={{ color: '#adb4ce', fontSize: 20 }}>chevron_right</span>
+              <span className="material-symbols-outlined transition-transform group-hover:translate-x-1" style={{ color: '#89968e', fontSize: 20 }}>chevron_right</span>
             </Link>
 
             {/* Cerrar sesión */}
@@ -231,46 +231,46 @@ export default async function ProfilePage({
                   <span className="material-symbols-outlined" style={{ color: '#ffb4ab' }}>logout</span>
                   <div className="text-left">
                     <p className="font-semibold text-sm text-white">Cerrar Sesión</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#adb4ce' }}>Salir de tu cuenta en este dispositivo</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#89968e' }}>Salir de tu cuenta en este dispositivo</p>
                   </div>
                 </div>
-                <span className="material-symbols-outlined transition-transform group-hover:translate-x-1" style={{ color: '#adb4ce', fontSize: 20 }}>chevron_right</span>
+                <span className="material-symbols-outlined transition-transform group-hover:translate-x-1" style={{ color: '#89968e', fontSize: 20 }}>chevron_right</span>
               </button>
             </form>
 
             {/* 2FA — placeholder */}
             <div className="flex items-center justify-between p-4 -mx-4 rounded-xl opacity-50">
               <div className="flex items-center gap-4">
-                <span className="material-symbols-outlined" style={{ color: '#adb4ce' }}>fact_check</span>
+                <span className="material-symbols-outlined" style={{ color: '#89968e' }}>fact_check</span>
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="font-semibold text-sm text-white">Autenticación de dos pasos</p>
-                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold" style={{ backgroundColor: '#23293c', color: '#adb4ce' }}>Próximamente</span>
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold" style={{ backgroundColor: '#1a231d', color: '#89968e' }}>Próximamente</span>
                   </div>
-                  <p className="text-xs mt-0.5" style={{ color: '#adb4ce' }}>Añade una capa extra de seguridad</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#89968e' }}>Añade una capa extra de seguridad</p>
                 </div>
               </div>
               {/* Toggle visual desactivado */}
-              <div className="relative w-11 h-6 rounded-full cursor-not-allowed" style={{ backgroundColor: '#2e3447' }}>
+              <div className="relative w-11 h-6 rounded-full cursor-not-allowed" style={{ backgroundColor: '#2a342d' }}>
                 <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white/30" />
               </div>
             </div>
           </div>
 
           {/* Instalar app */}
-          <div className="rounded-2xl border border-[#1e293b] p-8 space-y-4" style={{ backgroundColor: '#0f172a' }}>
+          <div className="rounded-2xl border border-[#253028] p-8 space-y-4" style={{ backgroundColor: '#111713' }}>
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined" style={{ color: '#4be277' }}>install_mobile</span>
+              <span className="material-symbols-outlined" style={{ color: '#72e697' }}>install_mobile</span>
               <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>Instalar Coachly</h4>
             </div>
-            <p className="text-sm" style={{ color: '#adb4ce' }}>
+            <p className="text-sm" style={{ color: '#89968e' }}>
               Añade Coachly a la pantalla de inicio de tu móvil para acceder más rápido, como si fuera una app nativa.
             </p>
             <PwaInstallButton />
-            <div className="rounded-xl border border-[#2e3447] p-4 space-y-2" style={{ backgroundColor: '#151b2d' }}>
-              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>En iPhone / Safari</p>
-              <p className="text-xs" style={{ color: '#64748b' }}>
-                Toca el botón <strong style={{ color: '#adb4ce' }}>Compartir</strong> de Safari → <strong style={{ color: '#adb4ce' }}>Añadir a pantalla de inicio</strong>
+            <div className="rounded-xl border border-[#2a342d] p-4 space-y-2" style={{ backgroundColor: '#111713' }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>En iPhone / Safari</p>
+              <p className="text-xs" style={{ color: '#637168' }}>
+                Toca el botón <strong style={{ color: '#89968e' }}>Compartir</strong> de Safari → <strong style={{ color: '#89968e' }}>Añadir a pantalla de inicio</strong>
               </p>
             </div>
           </div>
@@ -287,7 +287,7 @@ export default async function ProfilePage({
               </h4>
             </div>
 
-            <p className="text-sm leading-relaxed" style={{ color: '#adb4ce' }}>
+            <p className="text-sm leading-relaxed" style={{ color: '#89968e' }}>
               Al eliminar tu cuenta, todos los equipos, jugadoras, temporadas y estadísticas
               registradas se perderán permanentemente. Esta acción no se puede deshacer.
             </p>
@@ -305,7 +305,7 @@ export default async function ProfilePage({
               Eliminar Cuenta Definitivamente
             </button>
 
-            <p className="text-[11px] text-center" style={{ color: '#adb4ce', opacity: 0.6 }}>
+            <p className="text-[11px] text-center" style={{ color: '#89968e', opacity: 0.6 }}>
               Función disponible próximamente — contacta soporte para eliminar tu cuenta
             </p>
           </div>

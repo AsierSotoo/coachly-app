@@ -56,12 +56,12 @@ export function PlayerCompare({ players }: { players: CompareStat[] }) {
         {([{ id: aId, set: setAId, label: 'Jugadora A', exclude: bId },
            { id: bId, set: setBId, label: 'Jugadora B', exclude: aId }] as const).map(({ id, set, label, exclude }) => (
           <div key={label} className="flex flex-col gap-2">
-            <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>{label}</label>
+            <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#89968e' }}>{label}</label>
             <select
               value={id}
               onChange={e => set(e.target.value)}
               className="border rounded-xl px-4 py-3 text-sm outline-none appearance-none"
-              style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }}
+              style={{ backgroundColor: '#090e0b', borderColor: '#2a342d', color: '#edf2ee' }}
             >
               <option value="">— Elige jugadora —</option>
               {players
@@ -83,20 +83,20 @@ export function PlayerCompare({ players }: { players: CompareStat[] }) {
               ? <>
                   <PlayerAvatar name={a.name} photoUrl={a.photoUrl} position={a.position} size="lg" className="h-14 w-14" />
                   <p className="text-sm font-bold text-white text-center">{shortName(a.name)}</p>
-                  <p className="text-[10px]" style={{ color: '#adb4ce' }}>{a.position ?? '—'}</p>
+                  <p className="text-[10px]" style={{ color: '#89968e' }}>{a.position ?? '—'}</p>
                 </>
-              : <div className="h-14 w-14 rounded-full border-2 border-dashed border-[#2e3447]" />
+              : <div className="h-14 w-14 rounded-full border-2 border-dashed border-[#2a342d]" />
             }
           </div>
-          <span className="text-lg font-black" style={{ color: '#2e3447' }}>VS</span>
+          <span className="text-lg font-black" style={{ color: '#2a342d' }}>VS</span>
           <div className="flex flex-col items-center gap-1">
             {b
               ? <>
                   <PlayerAvatar name={b.name} photoUrl={b.photoUrl} position={b.position} size="lg" className="h-14 w-14" />
                   <p className="text-sm font-bold text-white text-center">{shortName(b.name)}</p>
-                  <p className="text-[10px]" style={{ color: '#adb4ce' }}>{b.position ?? '—'}</p>
+                  <p className="text-[10px]" style={{ color: '#89968e' }}>{b.position ?? '—'}</p>
                 </>
-              : <div className="h-14 w-14 rounded-full border-2 border-dashed border-[#2e3447]" />
+              : <div className="h-14 w-14 rounded-full border-2 border-dashed border-[#2a342d]" />
             }
           </div>
         </div>
@@ -104,7 +104,7 @@ export function PlayerCompare({ players }: { players: CompareStat[] }) {
 
       {/* Tabla comparativa */}
       {a && b && (
-        <div className="rounded-xl border overflow-hidden" style={{ borderColor: '#1e293b' }}>
+        <div className="rounded-xl border overflow-hidden" style={{ borderColor: '#253028' }}>
           {ROWS.map((row, i) => {
             const va = getValue(a, row)
             const vb = getValue(b, row)
@@ -113,17 +113,17 @@ export function PlayerCompare({ players }: { players: CompareStat[] }) {
             return (
               <div key={i}
                 className="grid grid-cols-[1fr_auto_1fr] items-center px-4 py-3 border-b last:border-0"
-                style={{ borderColor: '#1e293b', backgroundColor: i % 2 === 0 ? '#070d1f' : '#0c1324' }}>
+                style={{ borderColor: '#253028', backgroundColor: i % 2 === 0 ? '#0b100d' : '#090e0b' }}>
                 <span className="text-sm font-bold tabular-nums text-right"
-                  style={{ color: aWins ? '#4be277' : '#dce1fb' }}>
+                  style={{ color: aWins ? '#72e697' : '#edf2ee' }}>
                   {formatVal(row, va)}
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wide px-3 text-center"
-                  style={{ color: '#475569', minWidth: 120 }}>
+                  style={{ color: '#637168', minWidth: 120 }}>
                   {row.label}
                 </span>
                 <span className="text-sm font-bold tabular-nums text-left"
-                  style={{ color: bWins ? '#4be277' : '#dce1fb' }}>
+                  style={{ color: bWins ? '#72e697' : '#edf2ee' }}>
                   {formatVal(row, vb)}
                 </span>
               </div>
@@ -133,7 +133,7 @@ export function PlayerCompare({ players }: { players: CompareStat[] }) {
       )}
 
       {!a && !b && (
-        <p className="text-center text-sm py-8" style={{ color: '#475569' }}>
+        <p className="text-center text-sm py-8" style={{ color: '#637168' }}>
           Selecciona dos jugadoras para comparar sus estadísticas
         </p>
       )}

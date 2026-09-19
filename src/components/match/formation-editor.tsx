@@ -88,7 +88,7 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
           </h2>
         </div>
         {formationDef && (
-          <span className="text-[10px] font-bold tabular-nums" style={{ color: assigned === total ? '#4be277' : '#475569' }}>
+          <span className="text-[10px] font-bold tabular-nums" style={{ color: assigned === total ? '#72e697' : '#637168' }}>
             {assigned}/{total}
           </span>
         )}
@@ -104,8 +104,8 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
             className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all active:scale-95"
             style={{
               backgroundColor: formation === f.id ? 'rgba(75,226,119,0.1)' : 'transparent',
-              borderColor: formation === f.id ? 'rgba(75,226,119,0.4)' : '#2e3447',
-              color: formation === f.id ? '#4be277' : '#64748b',
+              borderColor: formation === f.id ? 'rgba(75,226,119,0.4)' : '#2a342d',
+              color: formation === f.id ? '#72e697' : '#637168',
             }}
           >
             {f.id}
@@ -129,7 +129,7 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
                   <div key={slot.id} className="flex-1 min-w-0 flex flex-col gap-1">
                     <span
                       className="text-[9px] font-bold text-center uppercase tracking-wider"
-                      style={{ color: isAssigned ? '#4be277' : '#334155' }}
+                      style={{ color: isAssigned ? '#72e697' : '#334155' }}
                     >
                       {slot.label}
                     </span>
@@ -139,9 +139,9 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
                       className="w-full rounded-lg border px-1 text-[10px] font-semibold text-center focus:outline-none transition-colors"
                       style={{
                         height: 32,
-                        backgroundColor: isAssigned ? 'rgba(75,226,119,0.07)' : '#151b2d',
-                        borderColor: isAssigned ? 'rgba(75,226,119,0.25)' : '#2e3447',
-                        color: isAssigned ? '#dce1fb' : '#475569',
+                        backgroundColor: isAssigned ? 'rgba(75,226,119,0.07)' : '#111713',
+                        borderColor: isAssigned ? 'rgba(75,226,119,0.25)' : '#2a342d',
+                        color: isAssigned ? '#edf2ee' : '#637168',
                         appearance: 'none',
                       }}
                     >
@@ -165,7 +165,7 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
             </div>
           ))}
 
-          <p className="text-[10px] mt-1" style={{ color: '#1e293b' }}>
+          <p className="text-[10px] mt-1" style={{ color: '#253028' }}>
             Cada jugadora solo puede ocupar una posición
           </p>
         </div>

@@ -1,36 +1,86 @@
 @import "tailwindcss";
 
+/* ── Design tokens — dark (default) ──────────────────────────── */
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
-  --card: #0f172a;
-  --card-hover: #1e293b;
-  --border: #1e293b;
-  --muted: #94a3b8;
-  --accent: #22c55e;
-  /* Safe area insets for iPhone notch / home indicator */
+  --bg:         #0b1310;
+  --bg-card:    #152019;
+  --bg-card-2:  #101a14;
+  --bg-elevated:#1c2c23;
+  --bg-input:   #162019;
+  --bdr-strong: #2e4538;
+  --bdr:        #243c2c;
+  --bdr-subtle: #1a2d22;
+  --tx:         #edf2ee;
+  --tx-2:       #89968e;
+  --tx-3:       #637168;
+  --tx-4:       #3e4942;
+  --accent:        #72e697;
+  --accent-fg:     #07140c;
+  --accent-subtle: rgba(114,230,151,0.09);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.03);
+  /* Legacy aliases */
+  --background: var(--bg);
+  --foreground: var(--tx);
+  --card:       var(--bg-card);
+  --card-hover: var(--bg-elevated);
+  --border:     var(--bdr-strong);
+  --muted:      var(--tx-2);
+  /* Safe area */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-top:    env(safe-area-inset-top, 0px);
+}
+
+/* ── Design tokens — light ────────────────────────────────────── */
+:root[data-theme="light"] {
+  --bg:         #eaf0ec;
+  --bg-card:    #f6faf7;
+  --bg-card-2:  #eff5f1;
+  --bg-elevated:#e2ece5;
+  --bg-input:   #edf3ef;
+  --bdr-strong: #b8cebf;
+  --bdr:        #ccddd2;
+  --bdr-subtle: #ddeae0;
+  --tx:         #0a1a0e;
+  --tx-2:       #3d5c44;
+  --tx-3:       #5a7a61;
+  --tx-4:       #8aaa90;
+  --accent:        #0d8c3e;
+  --accent-fg:     #ffffff;
+  --accent-subtle: rgba(13,140,62,0.08);
+  --shadow-card: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+  --background: var(--bg);
+  --foreground: var(--tx);
+  --card:       var(--bg-card);
+  --card-hover: var(--bg-elevated);
+  --border:     var(--bdr-strong);
+  --muted:      var(--tx-2);
 }
 
 html,
 body {
-  background-color: #0c1324;
-  color: #dce1fb;
+  background-color: var(--bg);
+  color: var(--tx);
   min-height: 100%;
   /* Prevents double-tap zoom while allowing pinch zoom */
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Gradiente sutil — sustituye el patrón de puntos, más limpio y profesional */
+/* Gradiente de atmósfera */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse 80% 40% at 50% -10%, rgba(34,197,94,0.04) 0%, transparent 70%);
+  background:
+    radial-gradient(ellipse 80% 50% at 70% -5%, rgba(114,230,151,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 30% at 10% 90%, rgba(114,230,151,0.04) 0%, transparent 60%);
   pointer-events: none;
   z-index: -1;
+}
+[data-theme="light"] body::before {
+  background:
+    radial-gradient(ellipse 80% 50% at 70% -5%, rgba(13,140,62,0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 30% at 10% 90%, rgba(13,140,62,0.03) 0%, transparent 60%);
 }
 
 /* ── Inputs / Selects / Textareas ─────────────────────────────────────────── */
@@ -39,21 +89,36 @@ input[type="email"],
 input[type="password"],
 input[type="number"],
 input[type="date"],
+input[type="time"],
 input[type="search"],
 input[type="tel"],
 select,
 textarea {
-  background-color: #1e293b;
-  border-color: #334155;
-  color: #f8fafc;
-  border-radius: 0.75rem;
+  background-color: var(--bg-input);
+  border-color: var(--bdr-strong);
+  color: var(--tx);
+  border-radius: 0.625rem;
   border-width: 1px;
-  /* Minimum touch target */
-  min-height: 44px;
   padding-left: 1rem;
   padding-right: 1rem;
   /* Prevent iOS zoom on focus (font-size must be >= 16px) */
   font-size: 16px;
+}
+
+/* Touch target only on mobile — desktop compact table inputs keep their own height */
+@media (max-width: 1023px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="search"],
+  input[type="tel"],
+  select,
+  textarea {
+    min-height: 44px;
+  }
 }
 
 input[type="text"]:focus,
@@ -65,13 +130,13 @@ input[type="search"]:focus,
 input[type="tel"]:focus,
 select:focus,
 textarea:focus {
-  border-color: #22c55e;
+  border-color: var(--accent);
   outline: none;
-  box-shadow: 0 0 0 1px #22c55e33;
+  box-shadow: 0 0 0 3px var(--accent-subtle);
 }
 
 input::placeholder {
-  color: #475569;
+  color: var(--tx-3);
 }
 
 select {
@@ -80,8 +145,8 @@ select {
 }
 
 select option {
-  background-color: #1e293b;
-  color: #f8fafc;
+  background-color: var(--bg-input);
+  color: var(--tx);
 }
 
 /* ── Buttons ───────────────────────────────────────────────────────────────── */
@@ -92,8 +157,43 @@ button, [role="button"], a[href] {
 /* ── Scrollbar ─────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #475569; }
+::-webkit-scrollbar-thumb { background: var(--bdr-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--bdr); }
+
+/* Coachly visual language */
+.landing-shell {
+  background:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
+    radial-gradient(circle at 74% 34%, rgba(114,230,151,.08), transparent 28%),
+    #080d0a;
+  background-size: 52px 52px, 52px 52px, auto, auto;
+}
+[data-theme="light"] .landing-shell {
+  background:
+    linear-gradient(rgba(0,0,0,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.015) 1px, transparent 1px),
+    radial-gradient(circle at 74% 34%, rgba(13,140,62,.06), transparent 28%),
+    #f3f7f4;
+  background-size: 52px 52px, 52px 52px, auto, auto;
+}
+.landing-nav { border-bottom: 1px solid rgba(255,255,255,.055); }
+[data-theme="light"] .landing-nav { border-bottom: 1px solid var(--bdr); }
+.landing-primary { background: var(--accent); color: var(--accent-fg); box-shadow: 0 8px 28px rgba(37,126,70,.16); }
+.landing-primary:hover { opacity: 0.9; }
+.match-board { background: linear-gradient(145deg, rgba(21,29,24,.98), rgba(11,16,13,.98)); }
+.workflow-item + .workflow-item { border-top: 1px solid rgba(255,255,255,.07); }
+.app-surface { background: var(--bg); }
+.app-panel { background: var(--bg-card); border: 1px solid var(--bdr-strong); border-radius: 14px; }
+.app-panel-muted { background: var(--bg-card-2); border: 1px solid var(--bdr); border-radius: 12px; }
+.app-kicker { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.app-title { color: var(--tx); font-family: var(--font-heading); font-weight: 700; letter-spacing: -.035em; }
+.app-muted { color: var(--tx-2); }
+.app-divider { border-color: var(--bdr-strong); }
+
+@media (min-width: 640px) {
+  .workflow-item + .workflow-item { border-top: 0; border-left: 1px solid rgba(255,255,255,.07); }
+}
 
 /* ── Safe area nav bar spacing ─────────────────────────────────────────────── */
 .pb-safe {
@@ -123,7 +223,7 @@ input.score-input {
   padding: 0;
   min-height: unset;
   font-size: 28px;
-  color: #dce1fb;
+  color: var(--tx);
   width: 44px;
   text-align: center;
   line-height: 1;
@@ -165,7 +265,7 @@ input.score-input::-webkit-outer-spin-button {
     left: 0;
     right: 0;
     background: white;
-    color: #0f172a;
+    color: #111713;
     font-family: system-ui, sans-serif;
     font-size: 13px;
   }

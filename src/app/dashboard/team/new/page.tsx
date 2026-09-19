@@ -11,23 +11,23 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
         <div className="mb-8">
           <Link href="/dashboard"
             className="flex items-center gap-1 text-xs hover:underline mb-4"
-            style={{ color: '#adb4ce' }}>
+            style={{ color: '#89968e' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
             Volver al inicio
           </Link>
           <h1 className="text-[28px] font-extrabold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
             Nuevo equipo
           </h1>
-          <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>
+          <p className="text-sm mt-1" style={{ color: '#89968e' }}>
             Configura los datos básicos. Podrás editarlos después.
           </p>
         </div>
 
         {/* Card formulario */}
-        <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
+        <section className="rounded-2xl border border-[#253028] overflow-hidden" style={{ backgroundColor: '#111713' }}>
 
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-[#1e293b]">
-            <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 22 }}>sports_soccer</span>
+          <div className="flex items-center gap-3 px-6 py-5 border-b border-[#253028]">
+            <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 22 }}>sports_soccer</span>
             <h2 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
               Datos del equipo
             </h2>
@@ -39,7 +39,7 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
             <div className="flex flex-col gap-2">
               <label htmlFor="name"
                 className="text-[11px] font-bold uppercase tracking-wider"
-                style={{ color: '#adb4ce' }}>
+                style={{ color: '#89968e' }}>
                 Nombre del equipo
               </label>
               <input id="name" name="name" type="text" required
@@ -53,10 +53,10 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
             <div className="flex flex-col gap-2">
               <label htmlFor="gender"
                 className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2"
-                style={{ color: '#adb4ce' }}>
+                style={{ color: '#89968e' }}>
                 Género del equipo
                 <span className="px-2 py-0.5 rounded-full text-[9px] font-bold normal-case"
-                  style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: '#4be277', border: '1px solid rgba(34,197,94,0.2)' }}>
+                  style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: '#72e697', border: '1px solid rgba(34,197,94,0.2)' }}>
                   Afecta al lenguaje de la app
                 </span>
               </label>
@@ -74,9 +74,9 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
             <div className="flex flex-col gap-2">
               <label htmlFor="category"
                 className="text-[11px] font-bold uppercase tracking-wider"
-                style={{ color: '#adb4ce' }}>
+                style={{ color: '#89968e' }}>
                 Categoría
-                <span className="ml-2 text-[10px] font-normal normal-case" style={{ color: '#2e3447' }}>
+                <span className="ml-2 text-[10px] font-normal normal-case" style={{ color: '#2a342d' }}>
                   (opcional)
                 </span>
               </label>
@@ -92,8 +92,8 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
             <button type="submit"
               className="flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer mt-2"
               style={{
-                backgroundColor: '#22c55e',
-                color: '#003915',
+                backgroundColor: '#72e697',
+                color: '#07140c',
                 minHeight: 48,
                 boxShadow: '0 0 16px rgba(34,197,94,0.25)',
                 fontFamily: 'Sora, sans-serif',

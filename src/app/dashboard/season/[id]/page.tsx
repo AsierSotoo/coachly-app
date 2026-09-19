@@ -24,7 +24,7 @@ function OpponentInitial({ name }: { name: string }) {
   const letters = name.trim().split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
   return (
     <div className="w-10 h-10 rounded flex items-center justify-center text-[11px] font-black border flex-shrink-0"
-      style={{ backgroundColor: '#23293c', borderColor: '#2e3447', color: '#adb4ce' }}>
+      style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}>
       {letters}
     </div>
   )
@@ -154,7 +154,7 @@ export default async function SeasonPage({
     streakType === 'D' ? `${streakCount} derrotas seguidas` :
     `${streakCount} empates seguidos`
   ) : null
-  const streakColor = streakType === 'V' ? '#4be277' : streakType === 'D' ? '#f87171' : '#fbbf24'
+  const streakColor = streakType === 'V' ? '#72e697' : streakType === 'D' ? '#f87171' : '#fbbf24'
 
   return (
     <PageTransition>
@@ -162,113 +162,70 @@ export default async function SeasonPage({
 
         {/* ── Page header ──────────────────────────────────────────────── */}
         <div className="flex items-center gap-4 mb-7">
-          <div className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden border" style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}>
+          <div className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden border" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
             <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" className="w-full h-full" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-semibold mb-0.5 truncate" style={{ color: '#475569' }}>
+            <p className="text-[11px] font-semibold mb-0.5 truncate" style={{ color: 'var(--tx-3)' }}>
               {(season as unknown as { name: string }).name}
             </p>
-            <h1 className="text-[20px] md:text-[22px] font-black leading-tight truncate" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
+            <h1 className="text-[20px] md:text-[22px] font-black leading-tight truncate" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
               {team.name}
             </h1>
           </div>
           {total > 0 && (
-            <div className="hidden sm:flex items-center divide-x divide-[#1e293b] rounded-xl border overflow-hidden flex-shrink-0"
-              style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-              <div className="px-4 py-2.5 text-center">
-                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>PJ</p>
-                <p className="text-[18px] font-black tabular-nums leading-tight" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{total}</p>
+            <div className="flex items-center rounded-xl border overflow-hidden flex-shrink-0"
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+              <div className="px-2.5 py-2 sm:px-4 sm:py-2.5 text-center border-r" style={{ borderColor: 'var(--bdr)' }}>
+                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>PJ</p>
+                <p className="text-[15px] sm:text-[18px] font-black tabular-nums leading-tight" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>{total}</p>
               </div>
-              <div className="px-4 py-2.5 text-center">
-                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>GF</p>
-                <p className="text-[18px] font-black tabular-nums leading-tight" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{goalsFor}</p>
+              <div className="px-2.5 py-2 sm:px-4 sm:py-2.5 text-center border-r" style={{ borderColor: 'var(--bdr)' }}>
+                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>GF</p>
+                <p className="text-[15px] sm:text-[18px] font-black tabular-nums leading-tight" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>{goalsFor}</p>
               </div>
-              <div className="px-4 py-2.5 text-center">
-                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>GC</p>
-                <p className="text-[18px] font-black tabular-nums leading-tight" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{goalsAgainst}</p>
+              <div className="px-2.5 py-2 sm:px-4 sm:py-2.5 text-center border-r" style={{ borderColor: 'var(--bdr)' }}>
+                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>GC</p>
+                <p className="text-[15px] sm:text-[18px] font-black tabular-nums leading-tight" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{goalsAgainst}</p>
               </div>
               {ligaMatches.length > 0 && (
-                <div className="px-4 py-2.5 text-center">
-                  <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>PTS</p>
-                  <p className="text-[18px] font-black tabular-nums leading-tight" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{ligaPts}</p>
+                <div className="px-2.5 py-2 sm:px-4 sm:py-2.5 text-center">
+                  <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>PTS</p>
+                  <p className="text-[15px] sm:text-[18px] font-black tabular-nums leading-tight" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>{ligaPts}</p>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* ── Stats Cards ─────────────────────────────────────────────── */}
-        <section className="grid grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
-
-          {/* Victorias */}
-          <div
-            className="relative overflow-hidden rounded-xl border p-3 md:p-6 hover:border-[#22c55e]/40 transition-colors"
-            style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}
-          >
-            <p className="text-[11px] font-bold uppercase tracking-wide mb-1 md:mb-2" style={{ color: '#64748b' }}>Victorias</p>
-            <div className="flex items-end gap-2 mb-3">
-              <span className="text-[32px] md:text-[44px] font-extrabold leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{wins}</span>
-              {total > 0 && (
-                <span className="mb-1 text-[11px] font-bold" style={{ color: '#4be27799' }}>
-                  {winRate}%
-                </span>
-              )}
+        {/* ── Balance competitivo ─────────────────────────────────────── */}
+        <section className="mb-6 overflow-hidden rounded-[14px] border md:mb-8"
+          style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+          <div className="flex flex-col gap-4 border-b px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+            style={{ borderColor: 'var(--bdr-strong)' }}>
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-[.16em]" style={{ color: 'var(--accent)' }}>Balance competitivo</p>
+              <p className="mt-1 text-sm" style={{ color: 'var(--tx-2)' }}>{total > 0 ? `${winRate}% de victorias en ${total} partidos` : 'Todavía no hay partidos finalizados'}</p>
             </div>
-            {total > 0 && (
-              <div className="h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
-                <div className="h-full rounded-full" style={{ width: `${winRate}%`, backgroundColor: '#4be277' }} />
-              </div>
-            )}
-          </div>
-
-          {/* Empates */}
-          <div
-            className="relative overflow-hidden rounded-xl border p-3 md:p-6 hover:border-[#adb4ce]/20 transition-colors"
-            style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}
-          >
-            <p className="text-[11px] font-bold uppercase tracking-wide mb-1 md:mb-2" style={{ color: '#64748b' }}>Empates</p>
-            <div className="flex items-end gap-2 mb-3">
-              <span className="text-[32px] md:text-[44px] font-extrabold leading-none" style={{ color: '#fbbf24', fontFamily: 'Sora, sans-serif' }}>{draws}</span>
-              {total > 0 && (
-                <span className="mb-1 text-[11px] font-bold" style={{ color: '#fbbf2499' }}>
-                  {drawRate}%
-                </span>
-              )}
+            <div className="flex items-center gap-5 sm:gap-7">
+              <div><span className="text-2xl font-extrabold tabular-nums" style={{ color: 'var(--tx)' }}>{wins}</span><span className="ml-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>V</span></div>
+              <div><span className="text-2xl font-extrabold tabular-nums" style={{ color: 'var(--tx)' }}>{draws}</span><span className="ml-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>E</span></div>
+              <div><span className="text-2xl font-extrabold tabular-nums" style={{ color: 'var(--tx)' }}>{losses}</span><span className="ml-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>D</span></div>
             </div>
-            {total > 0 && (
-              <div className="h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
-                <div className="h-full rounded-full" style={{ width: `${drawRate}%`, backgroundColor: '#fbbf24' }} />
-              </div>
-            )}
           </div>
-
-          {/* Derrotas */}
-          <div
-            className="relative overflow-hidden rounded-xl border p-3 md:p-6 hover:border-[#f87171]/20 transition-colors"
-            style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}
-          >
-            <p className="text-[11px] font-bold uppercase tracking-wide mb-1 md:mb-2" style={{ color: '#64748b' }}>Derrotas</p>
-            <div className="flex items-end gap-2 mb-3">
-              <span className="text-[32px] md:text-[44px] font-extrabold leading-none" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{losses}</span>
-              {total > 0 && (
-                <span className="mb-1 text-[11px] font-bold" style={{ color: '#f8717199' }}>
-                  {lossRate}%
-                </span>
-              )}
+          {total > 0 && (
+            <div className="flex h-1.5" style={{ backgroundColor: 'var(--bg)' }}>
+              {wins > 0 && <div style={{ width: `${winRate}%`, backgroundColor: 'var(--accent)' }} />}
+              {draws > 0 && <div style={{ width: `${drawRate}%`, backgroundColor: 'var(--tx-3)' }} />}
+              {losses > 0 && <div style={{ width: `${lossRate}%`, backgroundColor: '#d76b6b' }} />}
             </div>
-            {total > 0 && (
-              <div className="h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
-                <div className="h-full rounded-full" style={{ width: `${lossRate}%`, backgroundColor: '#f87171' }} />
-              </div>
-            )}
-          </div>
+          )}
         </section>
 
         {/* ── Forma reciente ──────────────────────────────────────────── */}
         {recentForm.length > 0 && (
           <div className="flex items-center gap-3 mb-6 px-1">
-            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Forma</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Forma</span>
             <div className="flex gap-1.5">
               {recentForm.map((r, i) => (
                 <div key={i}
@@ -276,13 +233,13 @@ export default async function SeasonPage({
                   style={{
                     backgroundColor: r === 'V' ? 'rgba(75,226,119,0.12)' : r === 'D' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.08)',
                     borderColor:     r === 'V' ? 'rgba(75,226,119,0.35)' : r === 'D' ? 'rgba(248,113,113,0.3)' : 'rgba(251,191,36,0.25)',
-                    color:           r === 'V' ? '#4be277' : r === 'D' ? '#f87171' : '#fbbf24',
+                    color:           r === 'V' ? '#72e697' : r === 'D' ? '#f87171' : '#fbbf24',
                   }}>
                   {r}
                 </div>
               ))}
             </div>
-            <span className="text-[11px]" style={{ color: '#adb4ce' }}>
+            <span className="text-[11px]" style={{ color: 'var(--tx-2)' }}>
               {wins}V {draws}E {losses}D · {total} PJ
             </span>
             {streakLabel && (
@@ -304,28 +261,28 @@ export default async function SeasonPage({
           const ordinal = (n: number) => n === 1 ? '1ª' : n === 2 ? '2ª' : n === 3 ? '3ª' : `${n}ª`
           return (
             <div className="flex flex-wrap items-center gap-2 mb-5 px-1">
-              <span className="text-[10px] font-bold uppercase tracking-widest flex-shrink-0" style={{ color: '#adb4ce' }}>Liga</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest flex-shrink-0" style={{ color: 'var(--tx-2)' }}>Liga</span>
               {lp != null && lt != null ? (
                 <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] font-bold"
-                  style={{ backgroundColor: 'rgba(75,226,119,0.08)', borderColor: 'rgba(75,226,119,0.2)', color: '#4be277' }}>
+                  style={{ backgroundColor: 'var(--accent-subtle)', borderColor: 'var(--bdr)', color: 'var(--accent)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 12 }}>leaderboard</span>
                   {ordinal(lp)} de {lt}
                 </span>
               ) : (
-                <span className="text-[11px]" style={{ color: '#4b5563' }}>Sin datos</span>
+                <span className="text-[11px]" style={{ color: 'var(--tx-3)' }}>Sin datos</span>
               )}
               <form action={updateSeasonLeague} className="flex items-center gap-1.5 ml-auto">
                 <input type="hidden" name="season_id" value={seasonId} />
                 <input name="league_position" type="number" min="1" defaultValue={lp ?? ''} placeholder="Pos"
-                  className="w-14 h-8 rounded-lg border px-1 text-sm text-center outline-none focus:border-[#4be277] transition-colors"
-                  style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }} />
-                <span className="text-xs flex-shrink-0" style={{ color: '#4b5563' }}>/</span>
+                  className="w-14 h-8 rounded-lg border px-1 text-sm text-center outline-none transition-colors"
+                  style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }} />
+                <span className="text-xs flex-shrink-0" style={{ color: 'var(--tx-3)' }}>/</span>
                 <input name="league_total_teams" type="number" min="2" defaultValue={lt ?? ''} placeholder="Tot"
-                  className="w-14 h-8 rounded-lg border px-1 text-sm text-center outline-none focus:border-[#4be277] transition-colors"
-                  style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }} />
+                  className="w-14 h-8 rounded-lg border px-1 text-sm text-center outline-none transition-colors"
+                  style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }} />
                 <button type="submit"
-                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border transition-colors hover:border-[#4be277] hover:text-[#4be277] active:scale-95"
-                  style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#adb4ce' }}>
+                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border transition-colors active:scale-95"
+                  style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check</span>
                 </button>
               </form>
@@ -336,15 +293,15 @@ export default async function SeasonPage({
         {/* ── Mini leaderboard ─────────────────────────────────────────── */}
         {topScorers.length > 0 && (
           <div className="flex items-center gap-2 mb-5 px-1 flex-wrap">
-            <span className="text-[10px] font-bold uppercase tracking-widest flex-shrink-0" style={{ color: '#adb4ce' }}>Goleadoras</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest flex-shrink-0" style={{ color: 'var(--tx-2)' }}>Goleadoras</span>
             {topScorers.map((s, i) => (
               <div key={s.name} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px]"
                 style={{
-                  backgroundColor: i === 0 ? 'rgba(75,226,119,0.08)' : 'rgba(46,52,71,0.3)',
-                  borderColor: i === 0 ? 'rgba(75,226,119,0.2)' : '#2e3447',
-                  color: i === 0 ? '#4be277' : '#adb4ce',
+                  backgroundColor: i === 0 ? 'var(--accent-subtle)' : 'var(--bg-elevated)',
+                  borderColor: i === 0 ? 'var(--bdr)' : 'var(--bdr-strong)',
+                  color: i === 0 ? 'var(--accent)' : 'var(--tx-2)',
                 }}>
-                <span className="font-black text-[9px]" style={{ color: i === 0 ? '#f59e0b' : i === 1 ? '#94a3b8' : '#b45309' }}>
+                <span className="font-black text-[9px]" style={{ color: i === 0 ? '#f59e0b' : i === 1 ? 'var(--tx-3)' : '#b45309' }}>
                   {i + 1}
                 </span>
                 <span className="font-semibold">{s.name.split(' ')[0]}</span>
@@ -352,7 +309,7 @@ export default async function SeasonPage({
               </div>
             ))}
             <Link href={`/dashboard/season/${seasonId}/stats`} className="text-[10px] font-bold ml-auto flex-shrink-0"
-              style={{ color: '#4be277' }}>
+              style={{ color: 'var(--accent)' }}>
               Ver stats →
             </Link>
           </div>
@@ -364,39 +321,39 @@ export default async function SeasonPage({
             <Link
               href={`/dashboard/season/${seasonId}?new=1`}
               className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm active:scale-95 transition-all col-span-2 md:col-span-1"
-              style={{ backgroundColor: '#22c55e', color: '#003915', fontFamily: 'Sora, sans-serif' }}
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', fontFamily: 'Sora, sans-serif' }}
             >
               <span className="material-symbols-outlined text-lg">add_circle</span>
               Nuevo Partido
             </Link>
             <Link
               href={`/dashboard/team/${team.id}/players`}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all hover:bg-[#23293c]"
-              style={{ backgroundColor: '#2e3447', borderColor: '#3d4a3d', color: '#dce1fb' }}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all hover:bg-[#1a231d]"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}
             >
               <span className="material-symbols-outlined text-lg">person_pin</span>
               <span>Plantilla</span>
             </Link>
             <Link
               href={`/dashboard/season/${seasonId}/trainings`}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all hover:bg-[#23293c]"
-              style={{ backgroundColor: '#2e3447', borderColor: '#3d4a3d', color: '#dce1fb' }}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}
             >
               <span className="material-symbols-outlined text-lg">fitness_center</span>
               <span>Entrenos</span>
             </Link>
             <Link
               href={`/dashboard/season/${seasonId}/convocatorias`}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all hover:bg-[#23293c]"
-              style={{ backgroundColor: '#2e3447', borderColor: '#3d4a3d', color: '#dce1fb' }}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}
             >
               <span className="material-symbols-outlined text-lg">groups</span>
               <span>Convocatorias</span>
             </Link>
             <Link
               href={`/dashboard/season/${seasonId}/calendar`}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all hover:bg-[#23293c]"
-              style={{ backgroundColor: '#2e3447', borderColor: '#3d4a3d', color: '#dce1fb' }}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}
             >
               <span className="material-symbols-outlined text-lg">calendar_month</span>
               <span>Calendario</span>
@@ -415,7 +372,7 @@ export default async function SeasonPage({
                   { label: `D ${losses}`, r: 'D', count: losses },
                 ] as { label: string; r: string; count: number }[]).filter(c => c.r === '' || c.count > 0).map(({ label, r }) => {
                   const active = resultFilter === r || (!resultFilter && r === '')
-                  const color = r === 'V' ? '#4be277' : r === 'D' ? '#f87171' : r === 'E' ? '#fbbf24' : '#dce1fb'
+                  const color = r === 'V' ? '#72e697' : r === 'D' ? '#f87171' : r === 'E' ? '#fbbf24' : 'var(--tx)'
                   const ctPart = ctFilter ? `&ct=${ctFilter}` : ''
                   const qPart = sp.q ? `&q=${sp.q}` : ''
                   return (
@@ -424,8 +381,8 @@ export default async function SeasonPage({
                       className="px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all"
                       style={{
                         backgroundColor: active ? `${color}18` : 'transparent',
-                        borderColor: active ? `${color}50` : '#2e3447',
-                        color: active ? color : '#adb4ce',
+                        borderColor: active ? `${color}50` : 'var(--bdr-strong)',
+                        color: active ? color : 'var(--tx-2)',
                       }}>
                       {label}
                     </a>
@@ -452,8 +409,8 @@ export default async function SeasonPage({
                       className="px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all"
                       style={{
                         backgroundColor: active ? `${color}15` : 'transparent',
-                        borderColor: active ? `${color}40` : '#2e3447',
-                        color: active ? color : '#64748b',
+                        borderColor: active ? `${color}40` : 'var(--bdr-strong)',
+                        color: active ? color : 'var(--tx-3)',
                       }}>
                       {label}{ct && count > 0 ? ` ${count}` : ''}
                     </a>
@@ -463,18 +420,18 @@ export default async function SeasonPage({
             )}
             {/* Buscador */}
             <form method="get" action={`/dashboard/season/${seasonId}`}
-              className="flex items-center gap-2 rounded-lg border px-4 py-2.5 focus-within:border-[#4be277] transition-colors"
-              style={{ backgroundColor: '#191f31', borderColor: '#2e3447' }}>
+              className="flex items-center gap-2 rounded-lg border px-4 py-2.5 transition-colors"
+              style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)' }}>
               {resultFilter && <input type="hidden" name="r" value={resultFilter} />}
               {ctFilter && <input type="hidden" name="ct" value={ctFilter} />}
-              <span className="material-symbols-outlined" style={{ color: '#adb4ce', fontSize: 18 }}>search</span>
+              <span className="material-symbols-outlined" style={{ color: 'var(--tx-3)', fontSize: 18 }}>search</span>
               <input
                 name="q"
                 type="text"
                 placeholder="Buscar rival..."
                 defaultValue={sp.q ?? ''}
                 className="bg-transparent border-none outline-none text-sm w-36"
-                style={{ color: '#dce1fb' }}
+                style={{ color: 'var(--tx)' }}
               />
             </form>
           </div>
@@ -483,15 +440,15 @@ export default async function SeasonPage({
         {/* ── Formulario Nuevo Partido ─────────────────────────────────── */}
         {showForm && (
           <section
-            className="mb-8 rounded-2xl border border-[#1e293b] overflow-hidden"
-            style={{ backgroundColor: '#0f172a' }}
+            className="mb-8 rounded-2xl border overflow-hidden"
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
           >
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e293b]">
-              <span className="material-symbols-outlined" style={{ color: '#4be277' }}>calendar_month</span>
-              <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Añadir al calendario</h3>
+            <div className="flex items-center gap-3 px-6 py-4 border-b" style={{ borderColor: 'var(--bdr-strong)' }}>
+              <span className="material-symbols-outlined" style={{ color: 'var(--accent)' }}>calendar_month</span>
+              <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Añadir al calendario</h3>
             </div>
-            <p className="px-6 pt-4 text-xs" style={{ color: '#4b5563' }}>
-              El partido quedará programado. Cuando acabe, entra en él y pulsa <strong style={{ color: '#adb4ce' }}>Finalizar partido</strong> para registrar el resultado.
+            <p className="px-6 pt-4 text-xs" style={{ color: 'var(--tx-3)' }}>
+              El partido quedará programado. Cuando acabe, entra en él y pulsa <strong style={{ color: 'var(--tx-2)' }}>Finalizar partido</strong> para registrar el resultado.
             </p>
             <form action={createMatch} className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               <input type="hidden" name="season_id" value={seasonId} />
@@ -502,57 +459,57 @@ export default async function SeasonPage({
               )}
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Rival</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Rival</label>
                 <input name="opponent" type="text" required placeholder="Nombre del rival" list="opponents-list"
-                  className="border rounded-xl px-4 py-3 text-sm outline-none focus:border-[#4be277] transition-all"
-                  style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }} />
+                  className="border rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                  style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }} />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Fecha y hora</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Fecha y hora</label>
                 <div className="flex gap-2">
                   <input name="played_at" type="date" required defaultValue={new Date().toISOString().split('T')[0]}
-                    className="flex-1 border rounded-xl px-4 py-3 text-sm outline-none focus:border-[#4be277] transition-all"
-                    style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }} />
+                    className="flex-1 border rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                    style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }} />
                   <input name="match_time" type="time"
-                    className="w-28 border rounded-xl px-3 py-3 text-sm outline-none focus:border-[#4be277] transition-all"
-                    style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }}
+                    className="w-28 border rounded-xl px-3 py-3 text-sm outline-none transition-all"
+                    style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}
                     title="Hora del partido (opcional)" />
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Campo</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Campo</label>
                 <select name="home"
-                  className="border rounded-xl px-4 py-3 text-sm outline-none focus:border-[#4be277] transition-all appearance-none"
-                  style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }}>
+                  className="border rounded-xl px-4 py-3 text-sm outline-none transition-all appearance-none"
+                  style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}>
                   <option value="true">Local</option>
                   <option value="false">Visitante</option>
                 </select>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Tipo</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Tipo</label>
                 <select name="competition_type"
-                  className="border rounded-xl px-4 py-3 text-sm outline-none focus:border-[#4be277] transition-all appearance-none"
-                  style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }}>
-                  <option value="liga">🏆 Liga</option>
-                  <option value="copa">🥈 Copa</option>
-                  <option value="amistoso">🤝 Amistoso</option>
+                  className="border rounded-xl px-4 py-3 text-sm outline-none transition-all appearance-none"
+                  style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}>
+                  <option value="liga">Liga</option>
+                  <option value="copa">Copa</option>
+                  <option value="amistoso">Amistoso</option>
                 </select>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#adb4ce' }}>Nombre competición</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-2)' }}>Nombre competición</label>
                 <input name="competition" type="text" placeholder="Liga Navarra, Copa..."
-                  className="border rounded-xl px-4 py-3 text-sm outline-none focus:border-[#4be277] transition-all"
-                  style={{ backgroundColor: '#0c1324', borderColor: '#2e3447', color: '#dce1fb' }} />
+                  className="border rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                  style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }} />
               </div>
 
               <div className="md:col-span-2 flex items-end">
                 <button type="submit"
                   className="w-full h-[50px] rounded-xl flex items-center justify-center gap-2 text-sm font-bold active:scale-95 transition-transform cursor-pointer"
-                  style={{ backgroundColor: '#22c55e', color: '#003915' }}>
+                  style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}>
                   <span className="material-symbols-outlined text-lg">add</span>
                   Añadir partido
                 </button>
@@ -568,37 +525,41 @@ export default async function SeasonPage({
 
         {/* ── Próximos partidos (programados) ─────────────────────────── */}
         {scheduledMatches.length > 0 && (
-          <section className="mb-6 rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#070d1f' }}>
-            <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-[#1e293b]" style={{ backgroundColor: '#191f31' }}>
+          <section className="mb-6 rounded-2xl border overflow-hidden"
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+            <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined" style={{ color: '#adb4ce', fontSize: 18 }}>calendar_month</span>
-                <h3 className="text-base font-semibold" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
+                <span className="material-symbols-outlined" style={{ color: 'var(--tx-2)', fontSize: 18 }}>calendar_month</span>
+                <h3 className="text-base font-semibold" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                   Calendario · {scheduledMatches.length} partido{scheduledMatches.length !== 1 ? 's' : ''}
                 </h3>
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded"
-                style={{ backgroundColor: 'rgba(173,180,206,0.08)', color: '#adb4ce', border: '1px solid rgba(173,180,206,0.15)' }}>
+                style={{ backgroundColor: 'var(--bg-card)', color: 'var(--tx-2)', border: '1px solid var(--bdr)' }}>
                 Programados
               </span>
             </div>
             <div>
               {scheduledMatches.map(m => (
-                <Link key={m.id} href={`/dashboard/season/${seasonId}/match/${m.id}`}
-                  className="flex items-center gap-3 px-4 md:px-6 py-3 border-b border-[#1e293b] last:border-0 hover:bg-[#0f172a] transition-colors group">
+                <div key={m.id} className="flex items-center gap-3 px-4 md:px-6 py-3 border-b last:border-0 transition-colors group"
+                  style={{ borderColor: 'var(--bdr)' }}>
+                  {/* Fecha */}
                   <div className="flex flex-col items-center justify-center w-10 h-10 rounded-lg flex-shrink-0"
-                    style={{ backgroundColor: '#151b2d', border: '1px solid #2e3447' }}>
-                    <span className="text-[9px] font-bold uppercase leading-none" style={{ color: '#adb4ce' }}>
+                    style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--bdr-strong)' }}>
+                    <span className="text-[9px] font-bold uppercase leading-none" style={{ color: 'var(--tx-3)' }}>
                       {new Date(m.played_at + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}
                     </span>
-                    <span className="text-[18px] font-black leading-tight" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
+                    <span className="text-[18px] font-black leading-tight" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                       {new Date(m.played_at + 'T12:00:00').getDate()}
                     </span>
                   </div>
+                  {/* Info rival */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-bold truncate" style={{ color: '#dce1fb' }}>{m.opponent}</p>
+                      <p className="text-sm font-bold truncate" style={{ color: 'var(--tx)' }}>{m.opponent}</p>
                       <span className="text-[10px] px-1.5 py-0.5 rounded flex-shrink-0"
-                        style={{ backgroundColor: m.home ? 'rgba(75,226,119,0.1)' : 'rgba(173,180,206,0.08)', color: m.home ? '#4be277' : '#adb4ce' }}>
+                        style={{ backgroundColor: m.home ? 'var(--accent-subtle)' : 'var(--bg-elevated)', color: m.home ? 'var(--accent)' : 'var(--tx-2)' }}>
                         {m.home ? 'Local' : 'Visit.'}
                       </span>
                       {(m as { match_time?: string | null }).match_time && (
@@ -609,7 +570,7 @@ export default async function SeasonPage({
                       )}
                     </div>
                     {m.competition && (
-                      <p className="text-[11px] truncate mt-0.5" style={{ color: '#4b5563' }}>{m.competition}</p>
+                      <p className="text-[11px] truncate mt-0.5" style={{ color: 'var(--tx-3)' }}>{m.competition}</p>
                     )}
                   </div>
                   {/* Badges de disponibilidad */}
@@ -619,7 +580,7 @@ export default async function SeasonPage({
                     return (
                       <div className="flex items-center gap-1 flex-shrink-0">
                         {av.available > 0 && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#4be277' }}>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#72e697' }}>
                             ✓{av.available}
                           </span>
                         )}
@@ -636,10 +597,16 @@ export default async function SeasonPage({
                       </div>
                     )
                   })()}
-                  <span className="material-symbols-outlined flex-shrink-0 opacity-30 group-hover:opacity-60 transition-opacity" style={{ fontSize: 16, color: '#adb4ce' }}>
-                    chevron_right
-                  </span>
-                </Link>
+                  {/* Acciones */}
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                    <Link href={`/dashboard/season/${seasonId}/match/${m.id}`}
+                      className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors"
+                      title="Ver partido" style={{ color: 'var(--tx-3)' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>chevron_right</span>
+                    </Link>
+                    <DeleteMatchButton matchId={m.id} seasonId={seasonId} />
+                  </div>
+                </div>
               ))}
             </div>
           </section>
@@ -658,39 +625,39 @@ export default async function SeasonPage({
 
         {/* ── Tabla de Partidos ────────────────────────────────────────── */}
         <section
-          className="rounded-2xl border border-[#1e293b] overflow-hidden"
-          style={{ backgroundColor: '#070d1f' }}
+          className="rounded-2xl border overflow-hidden"
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
         >
           {/* Cabecera de la tabla */}
           <div
-            className="flex items-center justify-between px-6 py-4 border-b border-[#1e293b]"
-            style={{ backgroundColor: '#191f31' }}
+            className="flex items-center justify-between px-6 py-4 border-b"
+            style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}
           >
             <div className="flex items-center gap-3 min-w-0">
               <TeamLogo name={team.name} logoUrl={team.logo_url} size="sm" />
-              <h3 className="text-[13px] font-bold uppercase tracking-wide" style={{ color: '#475569' }}>
+              <h3 className="text-[13px] font-bold uppercase tracking-wide" style={{ color: 'var(--tx-3)' }}>
                 Resultados
               </h3>
             </div>
             <div className="flex gap-2 flex-shrink-0">
               <Link
                 href={`/dashboard/season/${seasonId}/stats`}
-                className="px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider border transition-colors hover:border-[#4be277]/50"
-                style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.2)', color: '#4be277' }}
+                className="px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider border transition-colors"
+                style={{ backgroundColor: 'var(--accent-subtle)', borderColor: 'var(--bdr)', color: 'var(--accent)' }}
               >
                 Stats
               </Link>
               <Link
                 href={`/dashboard/season/${seasonId}/convocatorias`}
-                className="px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider border transition-colors hover:border-[#adb4ce]/30 hidden sm:flex items-center"
-                style={{ backgroundColor: '#2e3447', borderColor: '#3d4a3d', color: '#adb4ce' }}
+                className="px-3 py-1 rounded text-[10px] font-bold uppercase tracking-wider border transition-colors hidden sm:flex items-center"
+                style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}
               >
                 Convocatorias
               </Link>
               <Link
                 href={`/dashboard/season/${seasonId}/convocatorias`}
-                className="sm:hidden flex items-center justify-center w-8 h-7 rounded border transition-colors hover:border-[#adb4ce]/30"
-                style={{ backgroundColor: '#2e3447', borderColor: '#3d4a3d', color: '#adb4ce' }}
+                className="sm:hidden flex items-center justify-center w-8 h-7 rounded border transition-colors"
+                style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}
                 title="Convocatorias"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 14 }}>groups</span>
@@ -700,8 +667,8 @@ export default async function SeasonPage({
 
           {filtered.length === 0 ? (
             <div className="py-16 text-center">
-              <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>sports_soccer</span>
-              <p className="text-sm" style={{ color: '#adb4ce' }}>
+              <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: 'var(--bdr-strong)' }}>sports_soccer</span>
+              <p className="text-sm" style={{ color: 'var(--tx-2)' }}>
                 {searchQ ? `Sin resultados para "${searchQ}"` : 'Aún no hay partidos en esta temporada.'}
               </p>
             </div>
@@ -711,7 +678,7 @@ export default async function SeasonPage({
                 const gf = match.goals_for ?? 0
                 const ga = match.goals_against ?? 0
                 const res = gf > ga ? 'V' : gf < ga ? 'D' : 'E'
-                const resColor = res === 'V' ? '#22c55e' : res === 'D' ? '#ef4444' : '#f59e0b'
+                const resColor = res === 'V' ? '#72e697' : res === 'D' ? '#ef4444' : '#f59e0b'
                 const apps = match.appearances as AppRow[]
                 const hasData = apps.length > 0
                 const scorers = apps
@@ -727,15 +694,18 @@ export default async function SeasonPage({
 
                 return (
                   <div key={match.id}
-                    className="flex items-center border-b border-[#1e293b] last:border-0 hover:bg-[#0a1020] transition-colors group"
-                    style={{ borderLeft: `3px solid ${resColor}` }}>
+                    className="flex items-center last:border-0 transition-colors group"
+                    style={{ borderBottom: '1px solid var(--bdr-strong)', borderLeft: `3px solid ${resColor}` }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
+                  >
 
                     {/* Fecha */}
                     <div className="flex-shrink-0 w-12 md:w-14 text-center py-4 pl-3">
-                      <div className="text-[10px] font-bold uppercase leading-none" style={{ color: '#475569', letterSpacing: '0.06em' }}>
+                      <div className="text-[10px] font-bold uppercase leading-none" style={{ color: 'var(--tx-3)', letterSpacing: '0.06em' }}>
                         {matchDate.toLocaleDateString('es-ES', { month: 'short' })}
                       </div>
-                      <div className="text-xl md:text-[22px] font-black leading-snug" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
+                      <div className="text-xl md:text-[22px] font-black leading-snug" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                         {matchDate.getDate()}
                       </div>
                     </div>
@@ -744,22 +714,22 @@ export default async function SeasonPage({
                     <div className="flex-1 min-w-0 py-4 px-3">
                       <div className="flex items-center gap-2 min-w-0">
                         {(match as { rival_logo_url?: string | null }).rival_logo_url && (
-                          <div className="w-5 h-5 flex-shrink-0 overflow-hidden rounded bg-white border border-[#2e3447]">
+                          <div className="w-5 h-5 flex-shrink-0 overflow-hidden rounded" style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--bdr-strong)' }}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={(match as { rival_logo_url: string }).rival_logo_url} alt="" className="w-full h-full object-contain" />
                           </div>
                         )}
-                        <p className="text-[15px] font-semibold text-white truncate leading-tight">{match.opponent}</p>
+                        <p className="text-[15px] font-semibold truncate leading-tight" style={{ color: 'var(--tx)' }}>{match.opponent}</p>
                         {ct === 'copa' && (
                           <span className="flex-shrink-0 text-[10px] font-bold" style={{ color: '#60a5fa' }}>Copa</span>
                         )}
                         {ct === 'amistoso' && (
-                          <span className="flex-shrink-0 text-[10px] font-bold" style={{ color: '#475569' }}>Amistoso</span>
+                          <span className="flex-shrink-0 text-[10px] font-bold" style={{ color: 'var(--tx-3)' }}>Amistoso</span>
                         )}
                       </div>
-                      <p className="text-[11px] mt-0.5 truncate" style={{ color: '#334155' }}>
+                      <p className="text-[11px] mt-0.5 truncate" style={{ color: 'var(--tx-3)' }}>
                         {match.home ? 'Local' : 'Visitante'}
-                        {scorers.length > 0 && <span style={{ color: '#334155' }}> · {scorers.slice(0, 3).join(' · ')}</span>}
+                        {scorers.length > 0 && <span> · {scorers.slice(0, 3).join(' · ')}</span>}
                         {!hasData && <span style={{ color: '#92400e' }}> · sin datos</span>}
                       </p>
                     </div>
@@ -767,16 +737,16 @@ export default async function SeasonPage({
                     {/* Marcador */}
                     <div className="flex-shrink-0 flex items-center gap-1.5 py-4 px-2 md:px-3">
                       {hasConvocatoria && (
-                        <span className="material-symbols-outlined hidden md:block" style={{ fontSize: 13, color: '#166534' }}
+                        <span className="material-symbols-outlined hidden md:block" style={{ fontSize: 13, color: 'var(--accent)' }}
                           title="Convocatoria realizada">check_circle</span>
                       )}
                       <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg"
                         style={{ backgroundColor: `${resColor}0d`, border: `1px solid ${resColor}22` }}>
                         <span className="text-[20px] md:text-[24px] font-black tabular-nums leading-none"
-                          style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{gf}</span>
+                          style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>{gf}</span>
                         <span className="text-xs font-bold" style={{ color: `${resColor}80` }}>–</span>
                         <span className="text-[20px] md:text-[24px] font-black tabular-nums leading-none"
-                          style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{ga}</span>
+                          style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>{ga}</span>
                       </div>
                     </div>
 
@@ -784,9 +754,11 @@ export default async function SeasonPage({
                     <div className="flex-shrink-0 flex items-center py-2 pr-2 md:pr-4 gap-0.5">
                       <Link
                         href={`/dashboard/season/${seasonId}/match/${match.id}`}
-                        className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors hover:bg-[#191f31]"
+                        className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors"
                         title="Ver partido"
-                        style={{ color: '#334155' }}
+                        style={{ color: 'var(--tx-3)' }}
+                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
                       >
                         <span className="material-symbols-outlined" style={{ fontSize: 20 }}>chevron_right</span>
                       </Link>
@@ -796,12 +768,12 @@ export default async function SeasonPage({
                 )
               })}
 
-              <div className="flex items-center justify-between px-5 py-3 border-t border-[#1e293b]">
-                <p className="text-[11px]" style={{ color: '#334155' }}>
+              <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid var(--bdr-strong)' }}>
+                <p className="text-[11px]" style={{ color: 'var(--tx-3)' }}>
                   {filtered.length} partido{filtered.length !== 1 ? 's' : ''}
                 </p>
                 <div className="flex items-center gap-3 text-[11px] font-bold tabular-nums">
-                  {wins > 0 && <span style={{ color: '#22c55e' }}>{wins}V</span>}
+                  {wins > 0 && <span style={{ color: '#72e697' }}>{wins}V</span>}
                   {draws > 0 && <span style={{ color: '#f59e0b' }}>{draws}E</span>}
                   {losses > 0 && <span style={{ color: '#ef4444' }}>{losses}D</span>}
                 </div>
@@ -811,7 +783,7 @@ export default async function SeasonPage({
         </section>
 
         {/* ── Footer ───────────────────────────────────────────────────── */}
-        <footer className="mt-8" style={{ color: '#334155' }}>
+        <footer className="mt-8" style={{ color: 'var(--tx-3)' }}>
           <p className="text-[11px]">© {new Date().getFullYear()} Coachly · {team.name}</p>
         </footer>
 

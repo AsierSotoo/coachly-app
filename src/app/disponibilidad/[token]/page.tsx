@@ -100,11 +100,11 @@ export default async function PublicAvailabilityPage({ params }: { params: Promi
       <div className="min-h-screen flex flex-col items-center justify-center px-4"
         style={{ backgroundColor: '#080d1e', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
-          style={{ backgroundColor: '#1e293b' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 32, color: '#475569' }}>link_off</span>
+          style={{ backgroundColor: '#253028' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 32, color: '#637168' }}>link_off</span>
         </div>
         <h1 className="text-lg font-bold text-white mb-2 text-center">Enlace no válido</h1>
-        <p className="text-sm text-center leading-relaxed" style={{ color: '#64748b', maxWidth: 280 }}>
+        <p className="text-sm text-center leading-relaxed" style={{ color: '#637168', maxWidth: 280 }}>
           Este enlace no existe o la confirmación de asistencia está desactivada para este equipo.
         </p>
       </div>

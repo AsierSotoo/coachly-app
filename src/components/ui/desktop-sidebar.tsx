@@ -35,38 +35,41 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
 
   const href = (key: string) => {
     switch (key) {
-      case 'home':    return '/dashboard'
-      case 'season':          return seasonId ? `/dashboard/season/${seasonId}` : teamId ? `/dashboard/team/${teamId}/seasons` : '/dashboard'
-      case 'calendar':        return seasonId ? `/dashboard/season/${seasonId}/calendar` : '/dashboard'
-      case 'players':         return teamId ? `/dashboard/team/${teamId}/players` : '/dashboard'
-      case 'stats':           return seasonId ? `/dashboard/season/${seasonId}/stats` : '/dashboard'
-      case 'disponibilidad':  return teamId ? `/dashboard/team/${teamId}/disponibilidad` : '/dashboard'
-      case 'profile':         return '/dashboard/profile'
-      default:        return '/dashboard'
+      case 'home':           return '/dashboard'
+      case 'season':         return seasonId ? `/dashboard/season/${seasonId}` : teamId ? `/dashboard/team/${teamId}/seasons` : '/dashboard'
+      case 'calendar':       return seasonId ? `/dashboard/season/${seasonId}/calendar` : '/dashboard'
+      case 'players':        return teamId ? `/dashboard/team/${teamId}/players` : '/dashboard'
+      case 'stats':          return seasonId ? `/dashboard/season/${seasonId}/stats` : '/dashboard'
+      case 'disponibilidad': return teamId ? `/dashboard/team/${teamId}/disponibilidad` : '/dashboard'
+      case 'profile':        return '/dashboard/profile'
+      default:               return '/dashboard'
     }
   }
 
   const isActive = (key: string) => {
-    if (key === 'home')    return pathname === '/dashboard'
-    if (key === 'season')          return pathname.startsWith('/dashboard/season') && !pathname.includes('/stats') && !pathname.includes('/convocatoria') && !pathname.includes('/calendar')
-    if (key === 'calendar')        return pathname.includes('/calendar')
-    if (key === 'players')         return pathname.startsWith('/dashboard/team') && !pathname.includes('/disponibilidad')
-    if (key === 'stats')           return pathname.includes('/stats')
-    if (key === 'disponibilidad')  return pathname.includes('/disponibilidad')
-    if (key === 'profile')         return pathname.startsWith('/dashboard/profile')
+    if (key === 'home')           return pathname === '/dashboard'
+    if (key === 'season')         return pathname.startsWith('/dashboard/season') && !pathname.includes('/stats') && !pathname.includes('/convocatoria') && !pathname.includes('/calendar')
+    if (key === 'calendar')       return pathname.includes('/calendar')
+    if (key === 'players')        return pathname.startsWith('/dashboard/team') && !pathname.includes('/disponibilidad')
+    if (key === 'stats')          return pathname.includes('/stats')
+    if (key === 'disponibilidad') return pathname.includes('/disponibilidad')
+    if (key === 'profile')        return pathname.startsWith('/dashboard/profile')
     return false
   }
 
   return (
-    <aside className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 border-r border-[#2e3447] py-8 z-30" style={{ backgroundColor: '#151b2d' }}>
-
+    <aside
+      className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 border-r py-7 z-30"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
+    >
       {/* Logo */}
       <div className="px-4 mb-8 flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0">
           <Image src="/logo.png" alt="Coachly" width={36} height={36} className="w-full h-full object-cover" />
         </div>
-        <h1 className="text-[18px] font-extrabold tracking-tight" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
-          Coach<span style={{ color: '#4be277' }}>ly</span>
+        <h1 className="text-[18px] font-extrabold tracking-[-.04em]"
+          style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+          Coach<span style={{ color: 'var(--accent)' }}>ly</span>
         </h1>
       </div>
 
@@ -75,16 +78,34 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
         {NAV.map(({ label, icon, key }) => {
           const active = isActive(key)
           return (
-            <Link key={key} href={href(key)}
+            <Link
+              key={key}
+              href={href(key)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 cursor-pointer"
               style={{
-                color: active ? '#4be277' : '#64748b',
-                backgroundColor: active ? 'rgba(75,226,119,0.1)' : 'transparent',
+                color: active ? 'var(--accent)' : 'var(--tx-3)',
+                backgroundColor: active ? 'var(--accent-subtle)' : 'transparent',
               }}
-              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.04)'; if (!active) (e.currentTarget as HTMLElement).style.color = '#adb4ce' }}
-              onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; if (!active) (e.currentTarget as HTMLElement).style.color = '#64748b' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 20, fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}>{icon}</span>
-              <span className="text-[12px] font-semibold">{label}</span>
+              onMouseEnter={e => {
+                if (!active) {
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'
+                  ;(e.currentTarget as HTMLElement).style.color = 'var(--tx-2)'
+                }
+              }}
+              onMouseLeave={e => {
+                if (!active) {
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
+                  ;(e.currentTarget as HTMLElement).style.color = 'var(--tx-3)'
+                }
+              }}
+            >
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 20, fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
+              >
+                {icon}
+              </span>
+              <span className="text-[13px] font-semibold">{label}</span>
             </Link>
           )
         })}
@@ -96,11 +117,16 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
       </div>
 
       {/* Profile */}
-      <div className="px-4 pt-4 border-t border-[#2e3447]/50">
-        <Link href="/dashboard/profile"
+      <div className="px-4 pt-4 border-t" style={{ borderColor: 'var(--bdr-strong)' }}>
+        <Link
+          href="/dashboard/profile"
           className="flex items-center gap-3 p-2 rounded-xl transition-colors cursor-pointer active:scale-95"
-          style={{ backgroundColor: '#23293c' }}>
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border" style={{ borderColor: 'rgba(75,226,119,0.2)' }}>
+          style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--bdr-strong)' }}
+        >
+          <div
+            className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border"
+            style={{ borderColor: 'var(--accent-subtle)' }}
+          >
             {avatarUrl
               ? <Image src={avatarUrl} alt={displayName} fill className="object-cover" unoptimized />
               : <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-green-500 to-green-700">
@@ -109,10 +135,10 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
             }
           </div>
           <div className="flex-1 min-w-0 overflow-hidden">
-            <p className="text-[12px] font-semibold truncate" style={{ color: '#dce1fb' }}>{displayName}</p>
-            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#4be277' }}>Entrenador</p>
+            <p className="text-[12px] font-semibold truncate" style={{ color: 'var(--tx)' }}>{displayName}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--accent)' }}>Entrenador</p>
           </div>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#adb4ce' }}>settings</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--tx-3)' }}>settings</span>
         </Link>
       </div>
     </aside>

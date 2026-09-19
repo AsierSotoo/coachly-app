@@ -6,21 +6,48 @@ import { TeamLogo } from '@/components/team/team-logo'
 import { OnboardingGuide } from '@/components/ui/onboarding-guide'
 import { AlertsModal } from '@/components/ui/alerts-modal'
 
+type Match = {
+  id: string
+  goals_for: number
+  goals_against: number
+  opponent: string
+  played_at: string
+  status?: string
+  competition_type?: string
+}
+
+type Season = {
+  id: string
+  name: string
+  created_at: string
+  matches: Match[]
+  training_sessions: { id: string; date: string; title: string | null }[]
+}
+
+type Team = {
+  id: string
+  name: string
+  category?: string | null
+  gender?: string | null
+  logo_url?: string | null
+  seasons: Season[]
+  players: { id: string; active: boolean }[]
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient()
-
   const todayStr = new Date().toISOString().split('T')[0]
 
-  const { data: teams } = await supabase
+  const { data: raw } = await supabase
     .from('teams')
     .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at, status, competition_type), training_sessions(id, date, title)), players(id, active)')
     .order('created_at', { ascending: true })
 
-  // Yellow card alerts — query most recent season per team
-  const recentSeasonIds = (teams ?? []).flatMap(team => {
-    const seasons = (team.seasons ?? []) as { id: string; created_at: string }[]
-    if (!seasons.length) return []
-    return [seasons.reduce((a, b) => a.created_at > b.created_at ? a : b).id]
+  const teams = (raw ?? []) as Team[]
+
+  const recentSeasonIds = teams.flatMap(t => {
+    if (!t.seasons.length) return []
+    return [t.seasons.reduce((a, b) => a.created_at > b.created_at ? a : b).id]
   })
 
   let yellowAlerts: { playerId: string; name: string; count: number }[] = []
@@ -46,325 +73,415 @@ export default async function DashboardPage() {
       .sort((a, b) => b.count - a.count)
   }
 
+  function processTeam(team: Team) {
+    const lastSeason = [...team.seasons].sort((a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )[0] ?? null
+
+    const allMatches = lastSeason?.matches ?? []
+    const finished   = allMatches.filter(m => m.status !== 'scheduled')
+    const competitive = finished.filter(m => (m.competition_type ?? 'liga') !== 'amistoso')
+    const ligaOnly   = competitive.filter(m => (m.competition_type ?? 'liga') === 'liga')
+    const sorted     = [...competitive].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
+    const lastMatch  = [...finished].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())[0] ?? null
+
+    const wins    = competitive.filter(m => m.goals_for > m.goals_against).length
+    const draws   = competitive.filter(m => m.goals_for === m.goals_against).length
+    const losses  = competitive.filter(m => m.goals_for < m.goals_against).length
+    const goalsFor    = competitive.reduce((s, m) => s + m.goals_for, 0)
+    const goalsAgainst = competitive.reduce((s, m) => s + m.goals_against, 0)
+    const points  = ligaOnly.filter(m => m.goals_for > m.goals_against).length * 3 +
+                    ligaOnly.filter(m => m.goals_for === m.goals_against).length
+    const playerCount = team.players.filter(p => p.active).length
+    const recentForm  = sorted.slice(0, 5).reverse()
+
+    let streakCount = 0
+    let streakType: 'V' | 'D' | 'E' | null = null
+    for (const m of sorted) {
+      const r: 'V' | 'D' | 'E' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+      if (!streakType) { streakType = r; streakCount = 1 }
+      else if (r === streakType) streakCount++
+      else break
+    }
+
+    const nextMatch = allMatches.filter(m => m.status === 'scheduled').sort((a, b) => a.played_at.localeCompare(b.played_at))[0] ?? null
+    const nextSession = [...(lastSeason?.training_sessions ?? [])].filter(s => s.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date))[0] ?? null
+    const seasonHref = team.seasons.length === 1 ? `/dashboard/season/${team.seasons[0].id}` : `/dashboard/team/${team.id}/seasons`
+
+    return { lastSeason, allMatches, competitive, sorted, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref }
+  }
+
+  const firstTeam   = teams[0]
+  const firstSeasons = firstTeam?.seasons ?? []
+  const firstSeason = firstSeasons[0]
+
   return (
     <PageTransition>
       <AlertsModal alerts={yellowAlerts} />
-      <main className="p-4 md:p-10 min-h-[calc(100vh-64px)] pb-10">
+      <main className="mx-auto w-full max-w-[620px] px-4 pt-6 pb-32 md:px-6 md:pt-10 md:pb-16">
 
-        {/* Welcome section */}
-        <section className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        {/* ── EMPTY STATE ──────────────────────────────────────── */}
+        {!teams.length && (
+          <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-[22px] border"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
+              <span className="material-symbols-outlined text-5xl" style={{ color: 'var(--accent)' }}>sports_soccer</span>
+            </div>
             <div>
-              <h3 className="text-[22px] md:text-[24px] font-semibold leading-8" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
-                Resumen de la temporada
-              </h3>
-              <p className="text-[15px] mt-1" style={{ color: '#adb4ce' }}>
-                {teams?.length
-                  ? `${teams.length} equipo${teams.length !== 1 ? 's' : ''} activo${teams.length !== 1 ? 's' : ''}`
-                  : 'Sin equipos registrados aún'}
+              <h1 className="text-[28px] font-bold tracking-[-0.035em]"
+                style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                Empieza aquí
+              </h1>
+              <p className="mx-auto mt-2 max-w-[260px] text-[15px] leading-relaxed" style={{ color: 'var(--tx-2)' }}>
+                Crea tu equipo para llevar las estadísticas de la temporada
               </p>
             </div>
-            <Link
-              href="/dashboard/team/new"
-              className="flex items-center justify-center gap-2 px-6 rounded-lg text-sm font-semibold transition-transform active:scale-95 shadow-[0px_0px_12px_rgba(34,197,94,0.2)] cursor-pointer self-start sm:self-auto"
-              style={{ backgroundColor: '#22c55e', color: '#003915', fontFamily: 'Sora, sans-serif', minHeight: 44 }}
-            >
-              <span className="material-symbols-outlined text-sm">add</span>
-              Nuevo equipo
+            <Link href="/dashboard/team/new"
+              className="flex items-center gap-2 rounded-[12px] px-7 py-3 text-sm font-bold transition-all active:scale-95"
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', fontFamily: 'Sora, sans-serif' }}>
+              <span className="material-symbols-outlined text-base">add</span>
+              Crear mi equipo
             </Link>
           </div>
-        </section>
+        )}
 
-        {/* Onboarding */}
-        {(() => {
-          const firstTeam = teams?.[0]
-          const seasons = (firstTeam?.seasons ?? []) as { id: string; matches: { id: string }[] }[]
-          const firstSeason = seasons[0]
-          const hasTeam    = (teams?.length ?? 0) > 0
-          const hasPlayers = ((firstTeam?.players ?? []) as { active: boolean }[]).some(p => p.active)
-          const hasSeason  = seasons.length > 0
-          const hasMatches = (firstSeason?.matches?.length ?? 0) > 0
-          return (
+        {/* ── HAS TEAMS ────────────────────────────────────────── */}
+        {!!teams.length && (
+          <>
             <OnboardingGuide
-              hasTeam={hasTeam}
-              hasPlayers={hasPlayers}
-              hasSeason={hasSeason}
-              hasMatches={hasMatches}
+              hasTeam={true}
+              hasPlayers={firstTeam?.players?.some(p => p.active) ?? false}
+              hasSeason={firstSeasons.length > 0}
+              hasMatches={(firstSeason?.matches?.length ?? 0) > 0}
               teamId={firstTeam?.id}
               seasonId={firstSeason?.id}
             />
-          )
-        })()}
 
-        {!teams?.length ? (
-          <div className="border-2 border-dashed border-[#2e3447]/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500/50 hover:bg-[#191f31]/20 transition-all min-h-[340px]">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: '#23293c' }}>
-              <span className="material-symbols-outlined text-4xl" style={{ color: '#869585' }}>add_circle</span>
-            </div>
-            <p className="text-[20px] font-semibold" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>Empieza aquí</p>
-            <p className="text-sm mt-2 max-w-[200px]" style={{ color: '#adb4ce' }}>Crea tu primer equipo para registrar estadísticas</p>
-            <Link href="/dashboard/team/new"
-              className="mt-6 flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all active:scale-95 cursor-pointer"
-              style={{ backgroundColor: '#22c55e', color: '#003915' }}>
-              <span className="material-symbols-outlined text-sm">add</span> Crear equipo
-            </Link>
-          </div>
-        ) : (
-          <>
-            {/* Team cards grid */}
-            <AnimatedList className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
-              {teams.map((team, idx) => {
-                type SeasonWithMatches = {
-                  id: string; name: string; created_at: string
-                  matches: { id: string; goals_for: number; goals_against: number; opponent: string; played_at: string; status?: string }[]
-                  training_sessions: { id: string; date: string; title: string | null }[]
-                }
-                const seasons = (team.seasons ?? []) as SeasonWithMatches[]
-                // Ordenar por fecha de creación DESC para obtener la más reciente
-                const lastSeason = [...seasons].sort((a, b) =>
-                  new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-                )[0]
-                // Solo partidos finalizados para estadísticas
-                const allMatches = lastSeason?.matches ?? []
-                const finishedMatches = allMatches.filter(m => m.status !== 'scheduled')
-                // Competitivos (liga + copa) para V/E/D. Solo liga para puntos.
-                const matches = finishedMatches.filter(m => ((m as { status?: string; competition_type?: string }).competition_type ?? 'liga') !== 'amistoso')
-                const ligaOnly = matches.filter(m => ((m as { competition_type?: string }).competition_type ?? 'liga') === 'liga')
-                const sorted = [...matches].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
-                const lastMatch = [...finishedMatches].sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())[0]
-                const wins        = matches.filter(m => m.goals_for > m.goals_against).length
-                const draws       = matches.filter(m => m.goals_for === m.goals_against).length
-                const losses      = matches.filter(m => m.goals_for < m.goals_against).length
-                const goalsFor    = matches.reduce((s, m) => s + m.goals_for, 0)
-                const goalsAgainst = matches.reduce((s, m) => s + m.goals_against, 0)
-                const playerCount = ((team.players ?? []) as { id: string; active: boolean }[]).filter(p => p.active).length
-                const recentForm  = sorted.slice(0, 5).reverse()
-                const points      = ligaOnly.filter(m => m.goals_for > m.goals_against).length * 3 +
-                                    ligaOnly.filter(m => m.goals_for === m.goals_against).length
+            {/* ── SINGLE TEAM: full dashboard ─────────────────── */}
+            {teams.length === 1 && (() => {
+              const team = teams[0]
+              const { lastSeason, competitive, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref } = processTeam(team)
 
-                // Racha actual
-                let streakCount = 0; let streakType: 'V' | 'D' | 'E' | null = null
-                for (const m of sorted) {
-                  const r: 'V' | 'D' | 'E' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                  if (streakType === null) { streakType = r; streakCount = 1 }
-                  else if (r === streakType) streakCount++
-                  else break
-                }
-                const streakLabel = streakCount >= 3 ? (
-                  streakType === 'V' ? `${streakCount} victorias` :
-                  streakType === 'D' ? `${streakCount} derrotas` : `${streakCount} empates`
-                ) : null
-                const streakColor = streakType === 'V' ? '#4be277' : streakType === 'D' ? '#f87171' : '#fbbf24'
+              const streakColor = streakType === 'V' ? '#72e697' : streakType === 'D' ? '#f87171' : '#fbbf24'
+              const streakLabel = streakCount >= 3 ? (
+                streakType === 'V' ? `${streakCount}V seguidas` : streakType === 'D' ? `${streakCount}D seguidas` : `${streakCount}E seguidas`
+              ) : null
 
-                const nextSession = [...(lastSeason?.training_sessions ?? [])]
-                  .filter(s => s.date >= todayStr)
-                  .sort((a, b) => a.date.localeCompare(b.date))[0] ?? null
+              const heroInfo = nextMatch
+                ? { type: 'next' as const, bg: 'rgba(251,191,36,0.05)', border: 'rgba(251,191,36,0.2)', color: '#fbbf24', label: '' }
+                : lastMatch
+                ? lastMatch.goals_for > lastMatch.goals_against
+                  ? { type: 'result' as const, bg: 'rgba(114,230,151,0.05)', border: 'rgba(114,230,151,0.18)', color: '#72e697', label: 'Victoria' }
+                  : lastMatch.goals_for < lastMatch.goals_against
+                  ? { type: 'result' as const, bg: 'rgba(248,113,113,0.05)', border: 'rgba(248,113,113,0.18)', color: '#f87171', label: 'Derrota'  }
+                  : { type: 'result' as const, bg: 'rgba(251,191,36,0.05)',  border: 'rgba(251,191,36,0.18)',  color: '#fbbf24', label: 'Empate'   }
+                : null
 
-                const lastResult = lastMatch
-                  ? lastMatch.goals_for > lastMatch.goals_against ? { label: 'V', color: '#4be277' }
-                    : lastMatch.goals_for < lastMatch.goals_against ? { label: 'D', color: '#f87171' }
-                    : { label: 'E', color: '#fbbf24' }
-                  : null
+              return (
+                <div className="space-y-4">
 
-                const nextMatch = allMatches
-                  .filter(m => (m as { status?: string }).status === 'scheduled')
-                  .sort((a, b) => a.played_at.localeCompare(b.played_at))[0] ?? null
+                  {/* Team identity */}
+                  <div className="flex items-center gap-3.5">
+                    <div className="h-[56px] w-[56px] flex-shrink-0 overflow-hidden rounded-[14px] border flex items-center justify-center"
+                      style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
+                      <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" className="h-10 w-10" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h1 className="truncate text-[21px] font-bold leading-tight tracking-[-0.03em]"
+                        style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                        {team.name}
+                      </h1>
+                      <p className="mt-0.5 text-[12px]" style={{ color: 'var(--tx-3)' }}>
+                        {lastSeason?.name ?? 'Sin temporada activa'}
+                        {(team.category ?? team.gender) ? ` · ${team.category ?? team.gender}` : ''}
+                      </p>
+                    </div>
+                    {streakLabel && (
+                      <span className="flex-shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold"
+                        style={{ backgroundColor: `${streakColor}15`, color: streakColor, border: `1px solid ${streakColor}28` }}>
+                        {streakLabel}
+                      </span>
+                    )}
+                  </div>
 
-                return (
-                  <AnimatedItem key={team.id} delay={idx * 0.05}>
-                    <div className="rounded-2xl border border-[#1e293b] p-6 flex flex-col hover:border-[#2e3447] transition-all group" style={{ backgroundColor: '#0f172a' }}>
-
-                      {/* Header: escudo + nombre + último resultado */}
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex gap-4 items-center">
-                          <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[#2e3447] p-2 group-hover:scale-105 transition-transform overflow-hidden" style={{ backgroundColor: '#191f31' }}>
-                            <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" className="h-12 w-12" />
-                          </div>
-                          <div>
-                            <h4 className="text-[20px] font-semibold leading-7" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{team.name}</h4>
-                            {(team.category ?? team.gender) && (
-                              <p className="text-[11px] mt-0.5" style={{ color: '#475569' }}>
-                                {team.category ?? team.gender}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        {lastMatch && lastResult && (
-                          <div className="flex items-center gap-1 px-2 py-1 rounded-lg border border-[#2e3447]" style={{ backgroundColor: '#070d1f' }}>
-                            <span className="text-[12px] font-semibold" style={{ color: lastResult.color }}>
-                              {lastResult.label} {lastMatch.goals_for}-{lastMatch.goals_against}
-                            </span>
-                            <span className="text-[10px] ml-1 truncate max-w-[60px]" style={{ color: '#adb4ce' }}>vs {lastMatch.opponent}</span>
-                          </div>
-                        )}
+                  {/* Hero: next match */}
+                  {nextMatch && heroInfo && (
+                    <Link href={`/dashboard/season/${lastSeason!.id}/match/${nextMatch.id}`}
+                      className="block rounded-[16px] border p-5 transition-all active:scale-[.99]"
+                      style={{ backgroundColor: heroInfo.bg, borderColor: heroInfo.border }}>
+                      <p className="mb-2.5 text-[10px] font-extrabold uppercase tracking-[.15em]" style={{ color: heroInfo.color }}>
+                        Próximo partido
+                      </p>
+                      <p className="text-[24px] font-bold leading-tight tracking-[-0.025em]"
+                        style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                        vs {nextMatch.opponent}
+                      </p>
+                      <p className="mt-1.5 text-[13px]" style={{ color: 'var(--tx-2)' }}>
+                        {new Date(nextMatch.played_at + 'T12:00:00').toLocaleDateString('es-ES', {
+                          weekday: 'long', day: 'numeric', month: 'long',
+                        })}
+                      </p>
+                      <div className="mt-4 flex items-center gap-1 text-[13px] font-semibold" style={{ color: heroInfo.color }}>
+                        <span>Preparar convocatoria</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 15 }}>chevron_right</span>
                       </div>
+                    </Link>
+                  )}
 
-                      {/* Season record */}
-                      {matches.length > 0 && (
-                        <div className="my-4">
-                          <p className="text-[12px] font-semibold uppercase tracking-tight mb-2" style={{ color: '#adb4ce' }}>
-                            {lastSeason?.name ?? 'Temporada actual'}
+                  {/* Hero: last result */}
+                  {!nextMatch && lastMatch && heroInfo && heroInfo.type === 'result' && (
+                    <Link href={`/dashboard/season/${lastSeason!.id}/match/${lastMatch.id}`}
+                      className="block rounded-[16px] border p-5 transition-all active:scale-[.99]"
+                      style={{ backgroundColor: heroInfo.bg, borderColor: heroInfo.border }}>
+                      <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[.15em]" style={{ color: heroInfo.color }}>
+                        Último partido
+                      </p>
+                      <div className="flex items-baseline gap-4">
+                        <span className="text-[44px] font-extrabold leading-none tabular-nums"
+                          style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                          {lastMatch.goals_for}–{lastMatch.goals_against}
+                        </span>
+                        <div>
+                          <p className="text-[17px] font-semibold" style={{ color: heroInfo.color }}>
+                            {heroInfo.label}
                           </p>
-                          <div className="flex gap-2">
-                            <div className="flex-1 rounded-lg p-2 text-center border border-[#22c55e]/30" style={{ backgroundColor: 'rgba(34,197,94,0.1)' }}>
-                              <span className="block text-[24px] font-bold leading-6 tabular-nums" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{wins}</span>
-                              <span className="text-[11px] font-bold uppercase mt-1 block" style={{ color: '#4be277' }}>V</span>
-                            </div>
-                            <div className="flex-1 rounded-lg p-2 text-center border border-[#2e3447]/30" style={{ backgroundColor: 'rgba(46,52,71,0.3)' }}>
-                              <span className="block text-[24px] font-bold leading-6 tabular-nums" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>{draws}</span>
-                              <span className="text-[11px] font-bold uppercase mt-1 block" style={{ color: '#adb4ce' }}>E</span>
-                            </div>
-                            <div className="flex-1 rounded-lg p-2 text-center border border-[#f87171]/20" style={{ backgroundColor: 'rgba(248,113,113,0.05)' }}>
-                              <span className="block text-[24px] font-bold leading-6 tabular-nums" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{losses}</span>
-                              <span className="text-[11px] font-bold uppercase mt-1 block" style={{ color: '#f87171' }}>D</span>
-                            </div>
+                          <p className="text-[12px]" style={{ color: 'var(--tx-3)' }}>vs {lastMatch.opponent}</p>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex items-center gap-1 text-[13px] font-semibold" style={{ color: heroInfo.color }}>
+                        <span>Ver partido</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 15 }}>chevron_right</span>
+                      </div>
+                    </Link>
+                  )}
+
+                  {/* No matches yet */}
+                  {!nextMatch && !lastMatch && (
+                    <Link href={seasonHref}
+                      className="flex flex-col items-center justify-center gap-2.5 rounded-[16px] border border-dashed py-10 text-center transition-all"
+                      style={{ borderColor: 'var(--bdr-strong)' }}>
+                      <span className="material-symbols-outlined text-[32px]" style={{ color: 'var(--tx-4)' }}>sports_soccer</span>
+                      <p className="text-[14px] font-semibold" style={{ color: 'var(--tx-3)' }}>Sin partidos registrados aún</p>
+                      <p className="text-[12px] px-6 leading-5" style={{ color: 'var(--tx-4)' }}>
+                        Añade el primer partido de la temporada
+                      </p>
+                    </Link>
+                  )}
+
+                  {/* Season stats */}
+                  {competitive.length > 0 && (
+                    <div className="overflow-hidden rounded-[14px] border" style={{ backgroundColor: 'var(--bg-card-2)', borderColor: 'var(--bdr)' }}>
+                      <div className="grid grid-cols-5 divide-x" style={{ borderColor: 'var(--bdr)' }}>
+                        {[
+                          { label: 'PJ',  value: competitive.length, color: 'var(--tx)' },
+                          { label: 'V',   value: wins,               color: 'var(--accent)' },
+                          { label: 'E',   value: draws,              color: '#fbbf24' },
+                          { label: 'D',   value: losses,             color: '#f87171' },
+                          { label: 'Pts', value: points,             color: 'var(--tx)' },
+                        ].map(({ label, value, color }) => (
+                          <div key={label} className="flex flex-col items-center gap-1 py-4" style={{ borderColor: 'var(--bdr)' }}>
+                            <span className="text-[22px] font-extrabold tabular-nums leading-none"
+                              style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</span>
+                            <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-4)' }}>{label}</span>
                           </div>
-                          {/* Barra de distribución W/D/L */}
-                          <div className="flex h-1 rounded-full overflow-hidden mt-2.5">
-                            {wins   > 0 && <div style={{ flex: wins,   backgroundColor: '#22c55e' }} />}
-                            {draws  > 0 && <div style={{ flex: draws,  backgroundColor: '#fbbf24', opacity: 0.75 }} />}
-                            {losses > 0 && <div style={{ flex: losses, backgroundColor: '#f87171', opacity: 0.65 }} />}
-                          </div>
+                        ))}
+                      </div>
+                      {(wins + draws + losses) > 0 && (
+                        <div className="flex h-[3px]">
+                          {wins   > 0 && <div style={{ flex: wins,   backgroundColor: '#72e697' }} />}
+                          {draws  > 0 && <div style={{ flex: draws,  backgroundColor: '#fbbf24', opacity: 0.75 }} />}
+                          {losses > 0 && <div style={{ flex: losses, backgroundColor: '#f87171', opacity: 0.65 }} />}
                         </div>
                       )}
+                    </div>
+                  )}
 
-                      {matches.length > 0 && (
-                        <div className="flex items-center justify-between mt-2 px-1">
-                          <p className="text-[11px]" style={{ color: '#adb4ce' }}>
-                            GF&nbsp;<span style={{ color: '#4be277' }}>{goalsFor}</span>
-                            &nbsp;·&nbsp;
-                            GC&nbsp;<span style={{ color: '#ffb4ab' }}>{goalsAgainst}</span>
-                            &nbsp;·&nbsp;{matches.length}&nbsp;PJ
-                          </p>
-                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg"
-                            style={{ backgroundColor: 'rgba(75,226,119,0.08)', border: '1px solid rgba(75,226,119,0.15)' }}>
-                            <span className="text-[13px] font-black tabular-nums" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{points}</span>
-                            <span className="text-[9px] font-bold uppercase" style={{ color: '#4be277' }}>pts</span>
-                          </div>
+                  {/* Form + GF/GC */}
+                  {recentForm.length > 0 && (
+                    <div className="flex items-center justify-between px-0.5">
+                      <div>
+                        <p className="mb-2.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>Últimos 5</p>
+                        <div className="flex gap-2">
+                          {recentForm.map((m, i) => {
+                            const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+                            const formStyles = {
+                              V: { bg: 'var(--accent)',  text: 'var(--accent-fg)' },
+                              E: { bg: 'var(--bdr)',     text: 'var(--tx-2)' },
+                              D: { bg: 'rgba(248,113,113,0.15)', text: '#f87171' },
+                            }[res]
+                            return (
+                              <span key={i} className="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-black"
+                                style={{ backgroundColor: formStyles.bg, color: formStyles.text }}>
+                                {res}
+                              </span>
+                            )
+                          })}
                         </div>
-                      )}
-
-                      {seasons.length === 0 && (
-                        <Link
-                          href={`/dashboard/team/${team.id}/seasons`}
-                          className="my-3 flex items-center gap-2 rounded-xl border border-dashed px-4 py-3 text-xs font-semibold transition-colors hover:border-green-500/40 hover:text-green-400"
-                          style={{ borderColor: '#2e3447', color: '#adb4ce' }}
-                        >
-                          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add_circle</span>
-                          Crear primera temporada para empezar
-                        </Link>
-                      )}
-
-                      {seasons.length > 0 && matches.length === 0 && (
-                        <p className="my-3 text-xs text-center" style={{ color: '#adb4ce' }}>
-                          Sin partidos en {lastSeason?.name}
+                      </div>
+                      <div className="text-right">
+                        <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>GF · GC</p>
+                        <p className="text-[17px] font-extrabold tabular-nums leading-none"
+                          style={{ fontFamily: 'Sora, sans-serif' }}>
+                          <span style={{ color: 'var(--accent)' }}>{goalsFor}</span>
+                          <span style={{ color: 'var(--bdr-strong)' }}> · </span>
+                          <span style={{ color: '#f87171', opacity: 0.85 }}>{goalsAgainst}</span>
                         </p>
-                      )}
+                      </div>
+                    </div>
+                  )}
 
-                      {/* Forma reciente */}
-                      {recentForm.length > 0 && (
-                        <div className="mb-4">
-                          <div className="flex items-center justify-between mb-2">
-                            {streakLabel ? (
-                              <p className="text-[11px] font-bold" style={{ color: streakColor }}>
-                                {streakLabel} seguidas
-                              </p>
-                            ) : (
-                              <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#475569' }}>Forma</span>
-                            )}
-                            {playerCount > 0 && (
-                              <span className="flex items-center gap-1 text-[10px]" style={{ color: '#475569' }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 12 }}>group</span>
-                                {playerCount}
+                  {/* Next training */}
+                  {nextSession && (
+                    <Link href={`/dashboard/season/${lastSeason!.id}/trainings`}
+                      className="flex items-center gap-3 rounded-[12px] border px-4 py-3.5 transition-all active:scale-[.99]"
+                      style={{ backgroundColor: 'rgba(114,230,151,0.04)', borderColor: 'rgba(114,230,151,0.15)' }}>
+                      <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--accent)', fontSize: 20 }}>fitness_center</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-extrabold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>Próximo entrenamiento</p>
+                        <p className="mt-0.5 truncate text-[13px]" style={{ color: 'var(--tx-2)' }}>
+                          {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}
+                          {nextSession.title ? ` · ${nextSession.title}` : ''}
+                        </p>
+                      </div>
+                      <span className="material-symbols-outlined opacity-40 flex-shrink-0" style={{ fontSize: 16, color: 'var(--accent)' }}>chevron_right</span>
+                    </Link>
+                  )}
+
+                  {/* Quick action cards */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <Link href={`/dashboard/team/${team.id}/players`}
+                      className="flex flex-col gap-0.5 rounded-[14px] border p-4 transition-all active:scale-[.98]"
+                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)' }}>
+                      <span className="material-symbols-outlined mb-1" style={{ color: 'var(--accent)', fontSize: 22 }}>group</span>
+                      <p className="text-[14px] font-semibold" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>Plantilla</p>
+                      <p className="text-[12px]" style={{ color: 'var(--tx-4)' }}>
+                        {playerCount > 0 ? `${playerCount} jugadoras` : 'Sin jugadoras'}
+                      </p>
+                    </Link>
+                    <Link href={seasonHref}
+                      className="flex flex-col gap-0.5 rounded-[14px] border p-4 transition-all active:scale-[.98]"
+                      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)' }}>
+                      <span className="material-symbols-outlined mb-1" style={{ color: 'var(--accent)', fontSize: 22 }}>calendar_today</span>
+                      <p className="text-[14px] font-semibold" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>Temporada</p>
+                      <p className="text-[12px]" style={{ color: 'var(--tx-4)' }}>
+                        {competitive.length > 0 ? `${competitive.length} partidos` : lastSeason?.name ?? 'Sin temporada'}
+                      </p>
+                    </Link>
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* ── MULTIPLE TEAMS: grid ─────────────────────────── */}
+            {teams.length > 1 && (
+              <>
+                <div className="mb-5 flex items-center justify-between">
+                  <h1 className="text-[22px] font-bold tracking-[-0.03em]"
+                    style={{ color: '#edf2ee', fontFamily: 'Sora, sans-serif' }}>
+                    Tus equipos
+                  </h1>
+                  <Link href="/dashboard/team/new"
+                    className="flex items-center gap-1.5 rounded-[10px] px-4 text-sm font-bold transition-transform active:scale-95"
+                    style={{ backgroundColor: '#72e697', color: '#07140c', fontFamily: 'Sora, sans-serif', minHeight: 40 }}>
+                    <span className="material-symbols-outlined text-sm">add</span>
+                    Nuevo
+                  </Link>
+                </div>
+
+                <AnimatedList className="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+                  {teams.map((team, idx) => {
+                    const { lastSeason, competitive, wins, draws, losses, points, playerCount, recentForm, lastMatch, seasonHref } = processTeam(team)
+
+                    const lastResultInfo = lastMatch
+                      ? lastMatch.goals_for > lastMatch.goals_against ? { label: 'V', color: '#72e697' }
+                        : lastMatch.goals_for < lastMatch.goals_against ? { label: 'D', color: '#f87171' }
+                        : { label: 'E', color: '#fbbf24' }
+                      : null
+
+                    return (
+                      <AnimatedItem key={team.id} delay={idx * 0.05}>
+                        <div className="flex flex-col rounded-[14px] border border-[#1e2921] p-5 transition-colors hover:border-[#2a342d]"
+                          style={{ backgroundColor: '#111713' }}>
+                          <div className="mb-4 flex items-center gap-3">
+                            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#253028]"
+                              style={{ backgroundColor: '#171f1a' }}>
+                              <TeamLogo name={team.name} logoUrl={team.logo_url} size="md" className="h-9 w-9" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="truncate text-[16px] font-semibold"
+                                style={{ color: '#edf2ee', fontFamily: 'Sora, sans-serif' }}>{team.name}</h3>
+                              <p className="text-[11px]" style={{ color: '#637168' }}>{lastSeason?.name ?? 'Sin temporada'}</p>
+                            </div>
+                            {lastMatch && lastResultInfo && (
+                              <span className="flex-shrink-0 rounded px-2 py-0.5 text-[12px] font-bold"
+                                style={{ color: lastResultInfo.color, backgroundColor: `${lastResultInfo.color}14` }}>
+                                {lastResultInfo.label} {lastMatch.goals_for}-{lastMatch.goals_against}
                               </span>
                             )}
                           </div>
-                          <div className="flex items-end gap-[3px]" style={{ height: 22 }}>
-                            {recentForm.map((m, i) => {
-                              const res = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                              const barH = res === 'V' ? 20 : res === 'E' ? 12 : 6
-                              const col  = res === 'V' ? '#4be277' : res === 'E' ? '#fbbf24' : '#f87171'
-                              return (
-                                <div key={i} className="rounded-t-sm flex-shrink-0"
-                                  style={{ width: 7, height: barH, backgroundColor: col, opacity: 0.35 + (i / Math.max(recentForm.length - 1, 1)) * 0.65 }} />
-                              )
-                            })}
+
+                          {competitive.length > 0 && (
+                            <div className="mb-4 grid grid-cols-4 gap-2">
+                              {[
+                                { label: 'V',   value: wins,   color: '#72e697' },
+                                { label: 'E',   value: draws,  color: '#fbbf24' },
+                                { label: 'D',   value: losses, color: '#f87171' },
+                                { label: 'Pts', value: points, color: '#edf2ee' },
+                              ].map(({ label, value, color }) => (
+                                <div key={label} className="rounded-lg py-2 text-center" style={{ backgroundColor: '#0d120f' }}>
+                                  <span className="block text-[18px] font-bold tabular-nums"
+                                    style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</span>
+                                  <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#3e4942' }}>{label}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {recentForm.length > 0 && (
+                            <div className="mb-4 flex gap-1.5">
+                              {recentForm.map((m, i) => {
+                                const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+                                return (
+                                  <span key={i} className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black"
+                                    style={{
+                                      backgroundColor: res === 'V' ? '#72e697' : res === 'E' ? '#1e2921' : '#2d1414',
+                                      color: res === 'V' ? '#07140c' : res === 'E' ? '#89968e' : '#f87171',
+                                    }}>
+                                    {res}
+                                  </span>
+                                )
+                              })}
+                            </div>
+                          )}
+
+                          <div className="mt-auto flex gap-2.5">
+                            <Link href={`/dashboard/team/${team.id}/players`}
+                              className="flex flex-1 items-center justify-center rounded-lg border text-[13px] font-semibold transition-all active:scale-95"
+                              style={{ borderColor: '#253028', color: '#89968e', minHeight: 40 }}>
+                              Plantilla
+                            </Link>
+                            <Link href={seasonHref}
+                              className="flex flex-1 items-center justify-center rounded-lg text-[13px] font-semibold transition-all active:scale-95"
+                              style={{ backgroundColor: '#72e697', color: '#07140c', fontFamily: 'Sora, sans-serif', minHeight: 40 }}>
+                              Temporada
+                            </Link>
                           </div>
                         </div>
-                      )}
+                      </AnimatedItem>
+                    )
+                  })}
 
-                      {/* Próximo partido */}
-                      {nextMatch && (
-                        <Link
-                          href={`/dashboard/season/${lastSeason.id}/match/${nextMatch.id}`}
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 transition-colors hover:opacity-80"
-                          style={{ backgroundColor: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.18)' }}>
-                          <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#fbbf24', fontSize: 16 }}>sports_soccer</span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#fbbf24' }}>Próximo partido</p>
-                            <p className="text-[11px] truncate" style={{ color: '#adb4ce' }}>
-                              vs {nextMatch.opponent} · {new Date(nextMatch.played_at + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
-                            </p>
-                          </div>
-                          <span className="material-symbols-outlined flex-shrink-0 opacity-40" style={{ fontSize: 14, color: '#fbbf24' }}>chevron_right</span>
-                        </Link>
-                      )}
-
-                      {/* Próximo entrenamiento */}
-                      {nextSession && (
-                        <Link
-                          href={`/dashboard/season/${lastSeason.id}/trainings`}
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3 transition-colors hover:opacity-80"
-                          style={{ backgroundColor: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.12)' }}>
-                          <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#4be277', fontSize: 16 }}>fitness_center</span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#4be277' }}>Próximo entrenamiento</p>
-                            <p className="text-[11px] truncate" style={{ color: '#adb4ce' }}>
-                              {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
-                              {nextSession.title ? ` · ${nextSession.title}` : ''}
-                            </p>
-                          </div>
-                          <span className="material-symbols-outlined flex-shrink-0 opacity-40" style={{ fontSize: 14, color: '#4be277' }}>chevron_right</span>
-                        </Link>
-                      )}
-
-                      {/* Acciones */}
-                      <div className="mt-auto pt-4 flex gap-3">
-                        <Link
-                          href={`/dashboard/team/${team.id}/players`}
-                          className="flex-1 flex items-center justify-center rounded-lg text-[13px] font-semibold transition-all active:scale-95 cursor-pointer hover:brightness-110"
-                          style={{ backgroundColor: '#22c55e', color: '#003915', fontFamily: 'Sora, sans-serif', minHeight: 44 }}
-                        >
-                          Plantilla
-                        </Link>
-                        <Link
-                          href={seasons.length === 1 ? `/dashboard/season/${seasons[0].id}` : `/dashboard/team/${team.id}/seasons`}
-                          className="flex-1 flex items-center justify-center rounded-lg text-[13px] font-semibold border transition-all active:scale-95 cursor-pointer hover:bg-[#2e3447]/30"
-                          style={{ borderColor: '#2e3447', color: '#dce1fb', fontFamily: 'Sora, sans-serif', minHeight: 44 }}
-                        >
-                          Temporada
-                        </Link>
-                      </div>
-                    </div>
+                  <AnimatedItem delay={teams.length * 0.05}>
+                    <Link href="/dashboard/team/new"
+                      className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-[14px] border border-dashed text-center transition-all hover:border-[#72e697]/40"
+                      style={{ borderColor: '#253028' }}>
+                      <span className="material-symbols-outlined text-[32px]" style={{ color: '#3e4942' }}>add_circle</span>
+                      <p className="text-[14px] font-semibold" style={{ color: '#637168' }}>Añadir equipo</p>
+                    </Link>
                   </AnimatedItem>
-                )
-              })}
-
-              {/* Add team placeholder */}
-              <AnimatedItem delay={teams.length * 0.05}>
-                <Link
-                  href="/dashboard/team/new"
-                  className="border-2 border-dashed border-[#2e3447]/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-green-500/50 hover:bg-[#191f31]/20 transition-all group min-h-[200px]"
-                >
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 group-hover:bg-[#22c55e]/10 transition-colors" style={{ backgroundColor: '#23293c' }}>
-                    <span className="material-symbols-outlined text-4xl group-hover:text-green-400 transition-colors" style={{ color: '#869585' }}>add_circle</span>
-                  </div>
-                  <p className="text-[20px] font-semibold" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>Nuevo equipo</p>
-                  <p className="text-sm mt-2 max-w-[200px]" style={{ color: '#adb4ce' }}>Añade otro equipo para gestionar sus estadísticas</p>
-                </Link>
-              </AnimatedItem>
-            </AnimatedList>
+                </AnimatedList>
+              </>
+            )}
           </>
         )}
       </main>

@@ -61,9 +61,9 @@ export function getTeamTerms(gender: string | null | undefined) {
     posBadge(pos: string | null | undefined): { bg: string; text: string; border: string } {
       const blue   = { bg: 'rgba(59,130,246,0.1)',  text: '#60a5fa', border: 'rgba(59,130,246,0.2)'  }
       const yellow = { bg: 'rgba(234,179,8,0.1)',   text: '#facc15', border: 'rgba(234,179,8,0.2)'   }
-      const green  = { bg: 'rgba(34,197,94,0.1)',   text: '#4be277', border: 'rgba(34,197,94,0.2)'   }
+      const green  = { bg: 'rgba(34,197,94,0.1)',   text: '#72e697', border: 'rgba(34,197,94,0.2)'   }
       const red    = { bg: 'rgba(239,68,68,0.1)',   text: '#f87171', border: 'rgba(239,68,68,0.2)'   }
-      const grey   = { bg: '#23293c',               text: '#adb4ce', border: '#2e3447'               }
+      const grey   = { bg: '#1a231d',               text: '#89968e', border: '#2a342d'               }
       const map: Record<string, typeof blue> = {
         Portera: blue, Portero: blue,
         Defensa: yellow,

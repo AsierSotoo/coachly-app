@@ -21,7 +21,7 @@ export function DeleteTrainingButton({ id, seasonId }: { id: string; seasonId: s
         }
       }}
       className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer hover:border-red-500/40 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
-      style={{ borderColor: '#2e3447', color: '#64748b', backgroundColor: 'transparent' }}
+      style={{ borderColor: '#2a342d', color: '#637168', backgroundColor: 'transparent' }}
     >
       <span className="material-symbols-outlined" style={{ fontSize: 14 }}>delete</span>
       {isPending ? 'Eliminando…' : 'Eliminar'}

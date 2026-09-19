@@ -21,7 +21,7 @@ export default async function NewConvocatoriaPage({
 
   return (
     <PageTransition>
-      <main className="mx-auto max-w-lg px-4 py-6">
+      <main className="mx-auto max-w-lg px-4 py-6 pb-32 md:pb-10">
 
         <Link href={`/dashboard/season/${seasonId}/convocatorias`} className="mb-5 flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
           <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> Convocatorias
@@ -34,7 +34,7 @@ export default async function NewConvocatoriaPage({
 
         <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur">
           <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-3">
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#4be277' }}>group</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#72e697' }}>group</span>
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Datos del partido</p>
           </div>
 

@@ -14,13 +14,13 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         <h1 className="text-xl font-bold text-white mb-2" style={{ fontFamily: 'Sora, sans-serif' }}>
           Algo salió mal
         </h1>
-        <p className="text-sm mb-8" style={{ color: '#adb4ce' }}>
+        <p className="text-sm mb-8" style={{ color: '#89968e' }}>
           {error.message || 'Error inesperado. Inténtalo de nuevo.'}
         </p>
         <button
           onClick={reset}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
-          style={{ backgroundColor: '#22c55e', color: '#003915' }}
+          style={{ backgroundColor: '#72e697', color: '#07140c' }}
         >
           <span className="material-symbols-outlined">refresh</span>
           Intentar de nuevo

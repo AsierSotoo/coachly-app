@@ -30,7 +30,7 @@ export function GoalRaceChart({ players, matchLabels }: { players: GoalRaceLine[
         <line key={f}
           x1={pL} y1={pT + (1 - f) * cH}
           x2={W - pR} y2={pT + (1 - f) * cH}
-          stroke="#1e293b" strokeWidth="1" />
+          stroke="#253028" strokeWidth="1" />
       ))}
       {/* Y labels */}
       {[0.25, 0.5, 0.75, 1].map(f => {
@@ -73,11 +73,11 @@ export function GoalRaceChart({ players, matchLabels }: { players: GoalRaceLine[
         return (
           <g pointerEvents="none">
             <rect x={tx} y={cy - 22} width={98} height={38} rx="6"
-              fill="#151b2d" stroke={p.color} strokeWidth="1" opacity="0.97" />
+              fill="#111713" stroke={p.color} strokeWidth="1" opacity="0.97" />
             <text x={tx + 49} y={cy - 7} textAnchor="middle" fill={p.color} fontSize="10" fontWeight="700">
               {p.name.split(' ')[0]}
             </text>
-            <text x={tx + 49} y={cy + 10} textAnchor="middle" fill="#dce1fb" fontSize="11" fontWeight="700">
+            <text x={tx + 49} y={cy + 10} textAnchor="middle" fill="#edf2ee" fontSize="11" fontWeight="700">
               {g} gol{g !== 1 ? 'es' : ''}
             </text>
           </g>
@@ -90,7 +90,7 @@ export function GoalRaceChart({ players, matchLabels }: { players: GoalRaceLine[
         const show = i === 0 || i === n - 1 || i % step === 0
         if (!show) return null
         return (
-          <text key={i} x={x(i)} y={H - 4} textAnchor="middle" fill="#475569" fontSize="9">
+          <text key={i} x={x(i)} y={H - 4} textAnchor="middle" fill="#637168" fontSize="9">
             {lbl.slice(0, 5)}
           </text>
         )

@@ -21,9 +21,9 @@ export function ShareButton({ token }: { token: string }) {
       onClick={handleShare}
       className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold border transition-all active:scale-95 cursor-pointer"
       style={{
-        backgroundColor: copied ? 'rgba(34,197,94,0.15)' : '#191f31',
-        borderColor: copied ? 'rgba(34,197,94,0.4)' : '#2e3447',
-        color: copied ? '#4be277' : '#dce1fb',
+        backgroundColor: copied ? 'rgba(34,197,94,0.15)' : '#171f1a',
+        borderColor: copied ? 'rgba(34,197,94,0.4)' : '#2a342d',
+        color: copied ? '#72e697' : '#edf2ee',
       }}
     >
       <span className="material-symbols-outlined" style={{ fontSize: 18 }}>

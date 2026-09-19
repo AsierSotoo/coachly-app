@@ -176,7 +176,7 @@ export default async function StatsPage({
                     : currentStreakType === 'loss' ? `${currentStreakCount} derrotas seguidas`
                     : currentStreakCount > 1       ? `${currentStreakCount} empates seguidos`
                     : null
-  const streakColor = currentStreakType === 'win' ? '#4be277' : currentStreakType === 'loss' ? '#f87171' : '#fbbf24'
+  const streakColor = currentStreakType === 'win' ? '#72e697' : currentStreakType === 'loss' ? '#f87171' : '#fbbf24'
 
   // Racha invicta (sin perder consecutivos, puede mezclar V y E)
   let unbeatenRun = 0
@@ -282,7 +282,7 @@ export default async function StatsPage({
 
   // Carrera goleadora — siempre usa Liga + Copa (no amistosos); top 5 goles acumulados partido a partido
   const competitiveMatchesChrono = [...competitiveFinished].sort((a, b) => a.played_at.localeCompare(b.played_at))
-  const RACE_COLORS = ['#4be277', '#60a5fa', '#facc15', '#f472b6', '#a78bfa']
+  const RACE_COLORS = ['#72e697', '#60a5fa', '#facc15', '#f472b6', '#a78bfa']
   const top5Scorers = byGoals.slice(0, 5)
   const goalRacePlayers: GoalRaceLine[] = top5Scorers.map((scorer, i) => {
     let cum = 0
@@ -329,14 +329,14 @@ export default async function StatsPage({
         {/* Header */}
         <header className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-xl flex items-center justify-center border border-[#2e3447] overflow-hidden" style={{ backgroundColor: '#191f31' }}>
+            <div className="w-16 h-16 rounded-xl flex items-center justify-center border overflow-hidden" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
               <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" className="h-12 w-12" />
             </div>
             <div>
-              <h2 className="text-[32px] font-extrabold leading-10 tracking-tight text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              <h2 className="text-[22px] md:text-[32px] font-extrabold leading-tight md:leading-10 tracking-tight" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                 Estadísticas de Temporada
               </h2>
-              <p className="text-sm mt-0.5" style={{ color: '#adb4ce' }}>
+              <p className="text-sm mt-0.5" style={{ color: 'var(--tx-2)' }}>
                 Análisis detallado del rendimiento competitivo · {season.name}
               </p>
             </div>
@@ -353,8 +353,8 @@ export default async function StatsPage({
               />
             )}
             {shareToken && <ShareButton token={shareToken} />}
-            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Temporada:</span>
-            <span className="px-4 py-2 rounded-lg border text-sm font-bold" style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}>
+            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Temporada:</span>
+            <span className="px-4 py-2 rounded-lg border text-sm font-bold" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}>
               {season.name}
             </span>
           </div>
@@ -377,14 +377,14 @@ export default async function StatsPage({
                   className="px-4 py-2 rounded-xl text-[11px] font-bold border transition-all"
                   style={{
                     backgroundColor: active ? `${color}15` : 'transparent',
-                    borderColor: active ? `${color}40` : '#2e3447',
-                    color: active ? color : '#64748b',
+                    borderColor: active ? `${color}40` : 'var(--bdr-strong)',
+                    color: active ? color : 'var(--tx-3)',
                   }}>
                   {label}
                 </a>
               )
             })}
-            <span className="text-[10px]" style={{ color: '#334155' }}>
+            <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>
               {total} partido{total !== 1 ? 's' : ''}
               {ctParam === 'copa' ? ' de copa' : ctParam === 'liga' ? ' de liga' : ctParam === 'competitive' ? ' competitivos' : ''}
             </span>
@@ -392,16 +392,16 @@ export default async function StatsPage({
         )}
 
         {total === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
-            <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: '#2e3447' }}>leaderboard</span>
-            <p className="text-sm" style={{ color: '#adb4ce' }}>Sin partidos registrados en esta temporada</p>
+          <div className="rounded-2xl border-2 border-dashed py-16 text-center" style={{ borderColor: 'var(--bdr-strong)' }}>
+            <span className="material-symbols-outlined text-5xl block mb-3" style={{ color: 'var(--bdr-strong)' }}>leaderboard</span>
+            <p className="text-sm" style={{ color: 'var(--tx-2)' }}>Sin partidos registrados en esta temporada</p>
           </div>
         ) : (
           <>
             {/* Hero: donut + métricas + racha */}
             <section
               className="mb-8 p-6 rounded-2xl border flex flex-col md:flex-row gap-8 items-center relative overflow-hidden"
-              style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
             >
               {/* Decoración de fondo */}
               <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none select-none">
@@ -413,10 +413,10 @@ export default async function StatsPage({
                 <div className="relative w-48 h-48">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 192 192">
                     {/* Track */}
-                    <circle cx="96" cy="96" r="80" fill="transparent" stroke="#1e293b" strokeWidth="16" />
+                    <circle cx="96" cy="96" r="80" fill="transparent" strokeWidth="16" style={{ stroke: 'var(--bdr-strong)' }} />
                     {/* Victorias */}
                     {winPct > 0 && (
-                      <circle cx="96" cy="96" r="80" fill="transparent" stroke="#22c55e"
+                      <circle cx="96" cy="96" r="80" fill="transparent" stroke="#72e697"
                         strokeDasharray={CIRCUM} strokeDashoffset={winOffset}
                         strokeWidth="16" />
                     )}
@@ -437,22 +437,22 @@ export default async function StatsPage({
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="font-extrabold leading-none"
-                      style={{ color: '#4be277', fontFamily: 'Sora, sans-serif', fontSize: winRate === 100 ? 36 : winRate >= 10 ? 44 : 48 }}>
+                      style={{ color: '#72e697', fontFamily: 'Sora, sans-serif', fontSize: winRate === 100 ? 36 : winRate >= 10 ? 44 : 48 }}>
                       {winRate}%
                     </span>
-                    <span className="text-[12px] font-bold uppercase tracking-widest mt-1" style={{ color: '#adb4ce' }}>Victorias</span>
+                    <span className="text-[12px] font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--tx-2)' }}>Victorias</span>
                   </div>
                 </div>
                 <div className="flex gap-4 mt-4">
-                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-green-500" /><span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>V</span></div>
-                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#fbbf24' }} /><span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>E</span></div>
-                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#f87171' }} /><span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>D</span></div>
+                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-green-500" /><span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>V</span></div>
+                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#fbbf24' }} /><span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>E</span></div>
+                  <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#f87171' }} /><span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>D</span></div>
                 </div>
                 {ligaFinished.length > 0 && (
                   <div className="mt-3 flex items-center gap-2 px-3 py-1.5 rounded-lg border" style={{ borderColor: 'rgba(75,226,119,0.2)', backgroundColor: 'rgba(75,226,119,0.06)' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 13, color: '#4be277' }}>emoji_events</span>
-                    <span className="text-[10px] font-bold tabular-nums" style={{ color: '#4be277' }}>{ligaPts} pts</span>
-                    <span className="text-[9px]" style={{ color: '#334155' }}>liga</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 13, color: '#72e697' }}>emoji_events</span>
+                    <span className="text-[10px] font-bold tabular-nums" style={{ color: '#72e697' }}>{ligaPts} pts</span>
+                    <span className="text-[9px]" style={{ color: 'var(--tx-3)' }}>liga</span>
                   </div>
                 )}
               </div>
@@ -460,15 +460,15 @@ export default async function StatsPage({
               {/* 4 métricas */}
               <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
                 {([
-                  { label: 'Total Victorias', value: wins,         icon: 'trending_up',   sub: `${winRate}% partidos`,    subColor: '#4be277' },
-                  { label: 'Goles a Favor',   value: goalsFor,     icon: 'sports_soccer', sub: `${avgFor} p/partido`,      subColor: '#4be277' },
-                  { label: 'Goles en Contra', value: goalsAgainst, icon: 'security',      sub: `${avgAgainst} p/partido`, subColor: '#adb4ce' },
-                  { label: 'Diferencia',       value: goalDiff > 0 ? `+${goalDiff}` : String(goalDiff), icon: goalDiff >= 0 ? 'add_circle' : 'remove_circle', sub: `${cleanSheets} portería${cleanSheets !== 1 ? 's' : ''} a cero`, subColor: goalDiff > 0 ? '#4be277' : goalDiff < 0 ? '#f87171' : '#adb4ce' },
+                  { label: 'Total Victorias', value: wins,         icon: 'trending_up',   sub: `${winRate}% partidos`,    subColor: '#72e697' },
+                  { label: 'Goles a Favor',   value: goalsFor,     icon: 'sports_soccer', sub: `${avgFor} p/partido`,      subColor: '#72e697' },
+                  { label: 'Goles en Contra', value: goalsAgainst, icon: 'security',      sub: `${avgAgainst} p/partido`, subColor: '#89968e' },
+                  { label: 'Diferencia',       value: goalDiff > 0 ? `+${goalDiff}` : String(goalDiff), icon: goalDiff >= 0 ? 'add_circle' : 'remove_circle', sub: `${cleanSheets} portería${cleanSheets !== 1 ? 's' : ''} a cero`, subColor: goalDiff > 0 ? '#72e697' : goalDiff < 0 ? '#f87171' : '#89968e' },
                 ] as const).map(({ label, value, icon, sub, subColor }) => (
                   <div key={label} className="p-4 rounded-lg border"
-                    style={{ backgroundColor: 'rgba(7,13,31,0.5)', borderColor: 'rgba(61,74,61,0.3)' }}>
-                    <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: '#adb4ce' }}>{label}</p>
-                    <p className="text-[40px] font-extrabold leading-none text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{value}</p>
+                    style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-subtle)' }}>
+                    <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--tx-2)' }}>{label}</p>
+                    <p className="text-[40px] font-extrabold leading-none" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>{value}</p>
                     <p className="text-[10px] font-bold mt-2 flex items-center gap-1" style={{ color: subColor }}>
                       <span className="material-symbols-outlined" style={{ fontSize: 14 }}>{icon}</span>
                       {sub}
@@ -480,7 +480,7 @@ export default async function StatsPage({
               {/* Racha reciente */}
               {streak.length > 0 && (
                 <div className="flex flex-col gap-2 flex-shrink-0">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-center md:text-left" style={{ color: '#adb4ce' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-center md:text-left" style={{ color: 'var(--tx-2)' }}>
                     Racha Reciente
                   </p>
                   <div className="flex md:flex-col gap-2">
@@ -489,8 +489,8 @@ export default async function StatsPage({
                         className="w-10 h-10 flex items-center justify-center font-bold rounded-lg text-sm border"
                         style={{
                           backgroundColor: s.win ? 'rgba(75,226,119,0.12)' : s.draw ? 'rgba(251,191,36,0.08)' : 'rgba(248,113,113,0.1)',
-                          borderColor:     s.win ? '#22c55e' : s.draw ? 'rgba(251,191,36,0.4)' : 'rgba(248,113,113,0.4)',
-                          color:           s.win ? '#4be277' : s.draw ? '#fbbf24' : '#f87171',
+                          borderColor:     s.win ? '#72e697' : s.draw ? 'rgba(251,191,36,0.4)' : 'rgba(248,113,113,0.4)',
+                          color:           s.win ? '#72e697' : s.draw ? '#fbbf24' : '#f87171',
                           boxShadow: s.win && i === 0 ? '0 0 10px rgba(34,197,94,0.3)' : 'none',
                         }}
                       >
@@ -504,7 +504,7 @@ export default async function StatsPage({
                     </p>
                   )}
                   {showUnbeaten && (
-                    <p className="text-[10px] font-bold text-center md:text-left" style={{ color: '#4be277' }}>
+                    <p className="text-[10px] font-bold text-center md:text-left" style={{ color: '#72e697' }}>
                       Sin perder en {unbeatenRun}
                     </p>
                   )}
@@ -515,59 +515,59 @@ export default async function StatsPage({
             {/* Callout máximo goleador */}
             {byGoals.length > 0 && (
               <div className="mb-6 rounded-2xl border p-5 flex items-center gap-5 relative overflow-hidden"
-                style={{ backgroundColor: '#0f172a', borderColor: 'rgba(34,197,94,0.25)', background: 'linear-gradient(135deg, #0f172a 0%, rgba(34,197,94,0.04) 100%)' }}>
+                style={{ borderColor: 'rgba(34,197,94,0.25)', background: 'linear-gradient(135deg, var(--bg-card) 0%, rgba(34,197,94,0.04) 100%)' }}>
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-green-500/40 to-transparent" />
                 <div className="absolute top-0 right-0 p-5 opacity-[0.04] pointer-events-none select-none">
                   <span className="material-symbols-outlined" style={{ fontSize: 96 }}>emoji_events</span>
                 </div>
                 <PlayerAvatar name={byGoals[0].name} photoUrl={byGoals[0].photoUrl} position={byGoals[0].position} size="lg" className="h-16 w-16 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#4be277' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#72e697' }}>
                     Máxim{terms.p === 'jugador' ? 'o' : 'a'} Goleador{terms.p === 'jugador' ? '' : 'a'}
                   </p>
-                  <p className="text-[22px] font-extrabold text-white leading-tight truncate" style={{ fontFamily: 'Sora, sans-serif' }}>
+                  <p className="text-[22px] font-extrabold leading-tight truncate" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                     {shortName(byGoals[0].name)}
                   </p>
-                  <p className="text-xs mt-0.5" style={{ color: '#adb4ce' }}>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--tx-2)' }}>
                     {byGoals[0].gamesPlayed} partidos · {byGoals[0].assists} asistencia{byGoals[0].assists !== 1 ? 's' : ''}
                   </p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-[52px] font-extrabold leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+                  <p className="text-[52px] font-extrabold leading-none" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>
                     {byGoals[0].goals}
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#4be277' }}>goles</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#72e697' }}>goles</p>
                 </div>
               </div>
             )}
 
             {/* Ranking de goleadoras con barras horizontales */}
             {byGoals.length > 1 && (
-              <section className="mb-8 rounded-2xl border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-                <div className="px-6 py-4 border-b border-[#1e293b] flex items-center justify-between">
-                  <h3 className="text-[16px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              <section className="mb-8 rounded-2xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                <div className="px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--bdr-strong)' }}>
+                  <h3 className="text-[16px] font-semibold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                     Ranking Goleadoras
                   </h3>
-                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#475569' }}>
+                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-3)' }}>
                     {byGoals.length} {byGoals.length === 1 ? terms.p : terms.pp} con goles
                   </span>
                 </div>
                 <div className="px-6 py-4 flex flex-col gap-3">
                   {byGoals.slice(0, 8).map((s, i) => {
                     const pct = byGoals[0].goals > 0 ? Math.max((s.goals / byGoals[0].goals) * 100, 6) : 0
-                    const medal = i === 0 ? '#fbbf24' : i === 1 ? '#adb4ce' : i === 2 ? '#9d8050' : '#475569'
-                    const barColor = i === 0 ? '#4be277' : i === 1 ? 'rgba(75,226,119,0.65)' : i === 2 ? 'rgba(75,226,119,0.45)' : 'rgba(75,226,119,0.25)'
+                    const medal = i === 0 ? '#fbbf24' : i === 1 ? '#89968e' : i === 2 ? '#9d8050' : '#637168'
+                    const barColor = i === 0 ? '#72e697' : i === 1 ? 'rgba(75,226,119,0.65)' : i === 2 ? 'rgba(75,226,119,0.45)' : 'rgba(75,226,119,0.25)'
                     return (
                       <div key={s.playerId} className="flex items-center gap-3">
                         <span className="w-4 text-center text-[11px] font-black flex-shrink-0 tabular-nums" style={{ color: medal }}>{i + 1}</span>
                         <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" className="w-7 h-7 flex-shrink-0" />
-                        <span className="text-[12px] font-semibold text-white truncate flex-shrink-0" style={{ width: 'clamp(64px, 25%, 130px)' }}>{shortName(s.name)}</span>
-                        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                        <span className="text-[12px] font-semibold truncate flex-shrink-0" style={{ width: 'clamp(64px, 25%, 130px)', color: 'var(--tx)' }}>{shortName(s.name)}</span>
+                        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bdr-strong)' }}>
                           <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: barColor }} />
                         </div>
                         <div className="flex-shrink-0 flex items-baseline gap-1.5">
-                          <span className="text-[18px] font-extrabold tabular-nums" style={{ color: i === 0 ? '#4be277' : '#adb4ce', fontFamily: 'Sora, sans-serif' }}>{s.goals}</span>
-                          {s.assists > 0 && <span className="text-[10px] font-bold" style={{ color: '#475569' }}>+{s.assists}A</span>}
+                          <span className="text-[18px] font-extrabold tabular-nums" style={{ color: i === 0 ? '#72e697' : 'var(--tx-2)', fontFamily: 'Sora, sans-serif' }}>{s.goals}</span>
+                          {s.assists > 0 && <span className="text-[10px] font-bold" style={{ color: 'var(--tx-3)' }}>+{s.assists}A</span>}
                         </div>
                       </div>
                     )
@@ -577,7 +577,7 @@ export default async function StatsPage({
             )}
 
             {/* Líderes del Equipo */}
-            <h3 className="text-[20px] font-semibold mb-4 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+            <h3 className="text-[20px] font-semibold mb-4 pl-4 border-l-4" style={{ borderColor: 'var(--accent)', fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
               Líderes del Equipo
             </h3>
             <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
@@ -640,8 +640,8 @@ export default async function StatsPage({
 
             {/* Casa vs Fuera */}
             {total > 0 && (homeM.length > 0 || awayM.length > 0) && (
-              <section className="mb-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-                <h3 className="text-[20px] font-semibold mb-5 text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              <section className="mb-8 rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                <h3 className="text-[20px] font-semibold mb-5" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                   Rendimiento por Campo
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -654,31 +654,31 @@ export default async function StatsPage({
                     const gf = ms.reduce((s, m) => s + m.goals_for, 0)
                     const ga = ms.reduce((s, m) => s + m.goals_against, 0)
                     return (
-                      <div key={label} className="rounded-xl border p-4" style={{ backgroundColor: '#070d1f', borderColor: '#1e293b' }}>
+                      <div key={label} className="rounded-xl border p-4" style={{ backgroundColor: 'var(--bg-card-2)', borderColor: 'var(--bdr-strong)' }}>
                         <div className="flex items-center gap-2 mb-3">
-                          <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 18 }}>{emoji}</span>
-                          <p className="text-sm font-bold text-white">{label}</p>
-                          <span className="ml-auto text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>{t} partido{t !== 1 ? 's' : ''}</span>
+                          <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 18 }}>{emoji}</span>
+                          <p className="text-sm font-bold" style={{ color: 'var(--tx)' }}>{label}</p>
+                          <span className="ml-auto text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>{t} partido{t !== 1 ? 's' : ''}</span>
                         </div>
                         {t === 0 ? (
-                          <p className="text-xs" style={{ color: '#2e3447' }}>Sin datos</p>
+                          <p className="text-xs" style={{ color: 'var(--tx-3)' }}>Sin datos</p>
                         ) : (
                           <>
                             <div className="flex gap-2 mb-3">
                               {[
-                                { v: w, label: 'V', color: '#4be277', bg: 'rgba(75,226,119,0.08)',  border: 'rgba(75,226,119,0.2)' },
+                                { v: w, label: 'V', color: '#72e697', bg: 'rgba(75,226,119,0.08)',  border: 'rgba(75,226,119,0.2)' },
                                 { v: d, label: 'E', color: '#fbbf24', bg: 'rgba(251,191,36,0.07)', border: 'rgba(251,191,36,0.2)' },
                                 { v: l, label: 'D', color: '#f87171', bg: 'rgba(248,113,113,0.05)', border: 'rgba(248,113,113,0.2)' },
                               ].map(({ v, label: lbl, color, bg, border }) => (
                                 <div key={lbl} className="flex-1 text-center rounded-lg border py-1.5" style={{ backgroundColor: bg, borderColor: border }}>
                                   <p className="text-lg font-extrabold" style={{ color, fontFamily: 'Sora, sans-serif' }}>{v}</p>
-                                  <p className="text-[9px] font-bold uppercase" style={{ color: '#adb4ce' }}>{lbl}</p>
+                                  <p className="text-[9px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>{lbl}</p>
                                 </div>
                               ))}
                             </div>
-                            <div className="flex justify-between text-[11px]" style={{ color: '#adb4ce' }}>
-                              <span>GF <span style={{ color: '#4be277' }}>{gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{ga}</span></span>
-                              <span style={{ color: rate >= 50 ? '#4be277' : '#adb4ce' }}>{rate}% victorias</span>
+                            <div className="flex justify-between text-[11px]" style={{ color: 'var(--tx-2)' }}>
+                              <span>GF <span style={{ color: '#72e697' }}>{gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{ga}</span></span>
+                              <span style={{ color: rate >= 50 ? '#72e697' : 'var(--tx-2)' }}>{rate}% victorias</span>
                             </div>
                           </>
                         )}
@@ -691,24 +691,24 @@ export default async function StatsPage({
 
             {/* Goles por partido — gráfico de barras */}
             {last10.length > 0 && (
-              <section className="rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
                 <div className="flex flex-col md:flex-row md:items-start justify-between mb-6 gap-4">
                   <div>
-                    <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    <h4 className="text-[20px] font-semibold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                       Goles por Partido
                     </h4>
-                    <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>
+                    <p className="text-sm mt-1" style={{ color: 'var(--tx-2)' }}>
                       Rendimiento ofensivo/defensivo · Últimos {last10.length} partidos
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <span className="w-3 h-3 rounded-sm bg-green-500" />
-                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>A Favor</span>
+                      <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>A Favor</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'rgba(255,180,171,0.5)' }} />
-                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>En Contra</span>
+                      <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>En Contra</span>
                     </div>
                   </div>
                 </div>
@@ -728,14 +728,14 @@ export default async function StatsPage({
                         <div className="flex items-end gap-[2px] h-48 w-full justify-center">
                           <div
                             className="w-4 rounded-t-sm transition-all duration-300 group-hover:brightness-125"
-                            style={{ height: `${gfPct}%`, backgroundColor: '#22c55e' }}
+                            style={{ height: `${gfPct}%`, backgroundColor: '#72e697' }}
                           />
                           <div
                             className="w-4 rounded-t-sm transition-all duration-300 group-hover:brightness-125"
                             style={{ height: `${gaPct}%`, backgroundColor: 'rgba(255,180,171,0.4)' }}
                           />
                         </div>
-                        <span className="text-[9px] font-bold uppercase truncate max-w-full px-0.5" style={{ color: '#adb4ce' }}>
+                        <span className="text-[9px] font-bold uppercase truncate max-w-full px-0.5" style={{ color: 'var(--tx-2)' }}>
                           {label}
                         </span>
                       </div>
@@ -747,29 +747,29 @@ export default async function StatsPage({
 
             {/* Gráfico de evolución de puntos */}
             {chartPoints.length >= 2 && (
-              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
                 <div className="flex items-start justify-between mb-6 gap-4">
                   <div>
-                    <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    <h4 className="text-[20px] font-semibold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                       Evolución de Puntos
                     </h4>
-                    <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>
+                    <p className="text-sm mt-1" style={{ color: 'var(--tx-2)' }}>
                       Puntos acumulados partido a partido · {cumPts} pts totales
-                      <span className="ml-2 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ backgroundColor: '#1e293b', color: '#64748b' }}>Solo Liga</span>
+                      <span className="ml-2 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--tx-3)' }}>Solo Liga</span>
                     </p>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <div className="flex items-center gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>Victoria</span>
+                      <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>Victoria</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
-                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>Empate</span>
+                      <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>Empate</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#f87171' }} />
-                      <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>Derrota</span>
+                      <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>Derrota</span>
                     </div>
                   </div>
                 </div>
@@ -779,22 +779,22 @@ export default async function StatsPage({
 
             {/* Carrera goleadora */}
             {goalRacePlayers.length >= 2 && raceMatchLabels.length >= 2 && (
-              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-6 gap-4">
                   <div>
-                    <h4 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+                    <h4 className="text-[20px] font-semibold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                       Carrera Goleadora
                     </h4>
-                    <p className="text-sm mt-1" style={{ color: '#adb4ce' }}>
+                    <p className="text-sm mt-1" style={{ color: 'var(--tx-2)' }}>
                       Goles acumulados partido a partido · Top {goalRacePlayers.length} goleadoras
-                      <span className="ml-2 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ backgroundColor: '#1e293b', color: '#64748b' }}>Liga + Copa</span>
+                      <span className="ml-2 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--tx-3)' }}>Liga + Copa</span>
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                     {goalRacePlayers.map(p => (
                       <div key={p.name} className="flex items-center gap-1.5">
                         <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: p.color }} />
-                        <span className="text-[10px] font-bold uppercase" style={{ color: '#adb4ce' }}>
+                        <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>
                           {p.name.split(' ')[0]}
                         </span>
                       </div>
@@ -807,34 +807,34 @@ export default async function StatsPage({
 
             {/* Desglose por competición */}
             {competitions.length >= 2 && (
-              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-                <h3 className="text-[20px] font-semibold mb-5 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                <h3 className="text-[20px] font-semibold mb-5 pl-4 border-l-4" style={{ borderColor: 'var(--accent)', fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                   Por Competición
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {competitions.map(c => {
                     const rate = c.played > 0 ? Math.round((c.W / c.played) * 100) : 0
                     return (
-                      <div key={c.name} className="rounded-xl border p-4" style={{ backgroundColor: '#070d1f', borderColor: '#1e293b' }}>
+                      <div key={c.name} className="rounded-xl border p-4" style={{ backgroundColor: 'var(--bg-card-2)', borderColor: 'var(--bdr-strong)' }}>
                         <div className="flex items-center justify-between mb-3">
-                          <p className="text-sm font-bold text-white truncate">{c.name}</p>
-                          <span className="text-[10px] font-bold uppercase flex-shrink-0 ml-2" style={{ color: '#adb4ce' }}>{c.played} PJ</span>
+                          <p className="text-sm font-bold truncate" style={{ color: 'var(--tx)' }}>{c.name}</p>
+                          <span className="text-[10px] font-bold uppercase flex-shrink-0 ml-2" style={{ color: 'var(--tx-2)' }}>{c.played} PJ</span>
                         </div>
                         <div className="flex gap-2 mb-2">
                           {[
-                            { v: c.W, lbl: 'V', color: '#4be277',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
+                            { v: c.W, lbl: 'V', color: '#72e697',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
                             { v: c.E, lbl: 'E', color: '#fbbf24',  bg: 'rgba(251,191,36,0.07)',    border: 'rgba(251,191,36,0.2)' },
                             { v: c.D, lbl: 'D', color: '#f87171',  bg: 'rgba(248,113,113,0.05)',   border: 'rgba(248,113,113,0.2)' },
                           ].map(({ v, lbl, color, bg, border }) => (
                             <div key={lbl} className="flex-1 text-center rounded-lg border py-1.5" style={{ backgroundColor: bg, borderColor: border }}>
                               <p className="text-base font-extrabold" style={{ color, fontFamily: 'Sora, sans-serif' }}>{v}</p>
-                              <p className="text-[9px] font-bold uppercase" style={{ color: '#adb4ce' }}>{lbl}</p>
+                              <p className="text-[9px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>{lbl}</p>
                             </div>
                           ))}
                         </div>
-                        <div className="flex justify-between text-[11px]" style={{ color: '#adb4ce' }}>
-                          <span>GF <span style={{ color: '#4be277' }}>{c.gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{c.ga}</span></span>
-                          <span style={{ color: rate >= 50 ? '#4be277' : '#adb4ce' }}>{rate}% vic.</span>
+                        <div className="flex justify-between text-[11px]" style={{ color: 'var(--tx-2)' }}>
+                          <span>GF <span style={{ color: '#72e697' }}>{c.gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{c.ga}</span></span>
+                          <span style={{ color: rate >= 50 ? '#72e697' : 'var(--tx-2)' }}>{rate}% vic.</span>
                         </div>
                       </div>
                     )
@@ -845,8 +845,8 @@ export default async function StatsPage({
 
             {/* ── Rendimiento por posición ──────────────────── */}
             {byPosition.length >= 2 && (
-              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-                <h3 className="text-[20px] font-semibold mb-5 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                <h3 className="text-[20px] font-semibold mb-5 pl-4 border-l-4" style={{ borderColor: 'var(--accent)', fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                   Rendimiento por Posición
                 </h3>
                 <div className="flex flex-col gap-3">
@@ -854,24 +854,24 @@ export default async function StatsPage({
                     const barPct = Math.round((p.goals / maxPosGoals) * 100)
                     const avgMin = p.players.size > 0 ? Math.round(p.minutes / p.players.size) : 0
                     return (
-                      <div key={p.position} className="rounded-xl border p-4" style={{ backgroundColor: '#070d1f', borderColor: '#1e293b' }}>
+                      <div key={p.position} className="rounded-xl border p-4" style={{ backgroundColor: 'var(--bg-card-2)', borderColor: 'var(--bdr-strong)' }}>
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-white">{p.position}</span>
+                            <span className="text-sm font-bold" style={{ color: 'var(--tx)' }}>{p.position}</span>
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                              style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#4be277', border: '1px solid rgba(75,226,119,0.15)' }}>
+                              style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#72e697', border: '1px solid rgba(75,226,119,0.15)' }}>
                               {p.players.size} {terms.pp}
                             </span>
                           </div>
-                          <div className="flex items-center gap-4 text-xs" style={{ color: '#adb4ce' }}>
-                            <span><span style={{ color: '#4be277', fontWeight: 700 }}>{p.goals}</span> G</span>
+                          <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--tx-2)' }}>
+                            <span><span style={{ color: '#72e697', fontWeight: 700 }}>{p.goals}</span> G</span>
                             <span><span style={{ color: '#facc15', fontWeight: 700 }}>{p.assists}</span> A</span>
                             <span className="hidden sm:inline"><span style={{ color: '#60a5fa', fontWeight: 700 }}>{avgMin}&apos;</span> media</span>
                           </div>
                         </div>
-                        <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bdr-strong)' }}>
                           <div className="h-full rounded-full transition-all duration-500"
-                            style={{ width: `${barPct}%`, backgroundColor: '#22c55e' }} />
+                            style={{ width: `${barPct}%`, backgroundColor: '#72e697' }} />
                         </div>
                       </div>
                     )
@@ -883,32 +883,35 @@ export default async function StatsPage({
             {/* ── H2H por rival ──────────────────────────────── */}
             {h2h.length > 0 && (
               <section className="mt-8">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#adb4ce' }}>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: 'var(--tx-2)' }}>
                   Historial por rival
                 </h3>
-                <div className="overflow-hidden rounded-[20px] border border-[#1e293b]" style={{ backgroundColor: '#0f172a' }}>
+                <div className="overflow-hidden rounded-[20px] border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-[#1e293b]" style={{ backgroundColor: '#151b2d' }}>
+                      <tr className="border-b" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
                         {['Rival', 'PJ', 'V', 'E', 'D', 'GF', 'GC', 'Últ.'].map((h, i) => (
                           <th key={h} className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest"
-                            style={{ color: '#adb4ce', textAlign: i === 0 ? 'left' : 'center' }}>{h}</th>
+                            style={{ color: 'var(--tx-2)', textAlign: i === 0 ? 'left' : 'center' }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {h2h.map(r => {
-                        const lastColor = r.lastResult === 'V' ? '#4be277' : r.lastResult === 'D' ? '#f87171' : '#fbbf24'
+                        const lastColor = r.lastResult === 'V' ? '#72e697' : r.lastResult === 'D' ? '#f87171' : '#fbbf24'
                         const lastBg = r.lastResult === 'V' ? 'rgba(75,226,119,0.12)' : r.lastResult === 'D' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.08)'
                         return (
-                          <tr key={r.opponent} className="border-b border-[#1e293b] last:border-0 hover:bg-[#23293c]/30 transition-colors">
+                          <tr key={r.opponent} className="border-b last:border-0 transition-colors" style={{ borderColor: 'var(--bdr-strong)' }}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'}
+                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'}
+                          >
                             <td className="px-4 py-3">
-                              <p className="text-sm font-semibold text-white">{r.opponent}</p>
+                              <p className="text-sm font-semibold" style={{ color: 'var(--tx)' }}>{r.opponent}</p>
                             </td>
                             {[r.played, r.W, r.E, r.D, r.gf, r.ga].map((v, i) => (
                               <td key={i} className="px-4 py-3 text-center">
                                 <span className="text-sm font-bold" style={{
-                                  color: i === 1 ? '#4be277' : i === 2 ? '#fbbf24' : i === 3 ? '#f87171' : '#dce1fb'
+                                  color: i === 1 ? '#72e697' : i === 2 ? '#fbbf24' : i === 3 ? '#f87171' : 'var(--tx)'
                                 }}>{v}</span>
                               </td>
                             ))}
@@ -928,12 +931,12 @@ export default async function StatsPage({
             )}
             {/* ── Tabla completa de estadísticas ── */}
             {stats.filter(s => s.gamesPlayed > 0).length > 0 && (
-              <section className="mt-8 rounded-2xl border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-                <div className="px-6 py-4 border-b border-[#1e293b]">
-                  <h3 className="text-[20px] font-semibold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              <section className="mt-8 rounded-2xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                <div className="px-6 py-4 border-b" style={{ borderColor: 'var(--bdr-strong)' }}>
+                  <h3 className="text-[20px] font-semibold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                     Tabla de rendimiento
                   </h3>
-                  <p className="text-sm mt-0.5" style={{ color: '#adb4ce' }}>
+                  <p className="text-sm mt-0.5" style={{ color: 'var(--tx-2)' }}>
                     Haz clic en una columna para ordenar · G/90 para {terms.pp} con más de 45 min
                   </p>
                 </div>
@@ -947,11 +950,11 @@ export default async function StatsPage({
 
             {/* Comparar jugadoras */}
             {compareStats.length >= 2 && (
-              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
-                <h3 className="text-[20px] font-semibold mb-1 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+              <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                <h3 className="text-[20px] font-semibold mb-1 pl-4 border-l-4" style={{ borderColor: 'var(--accent)', fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
                   Comparar Jugadoras
                 </h3>
-                <p className="text-sm mb-6 ml-4" style={{ color: '#adb4ce' }}>
+                <p className="text-sm mb-6 ml-4" style={{ color: 'var(--tx-2)' }}>
                   Selecciona dos jugadoras para ver sus estadísticas cara a cara
                 </p>
                 <PlayerCompare players={compareStats} />
@@ -963,31 +966,31 @@ export default async function StatsPage({
         {/* ── Asistencia a Entrenamientos — independiente del filtro de partidos ── */}
         {attStats.length > 0 && (
           <section className="mt-8">
-            <h3 className="text-[20px] font-semibold mb-1 pl-4 border-l-4 border-[#22c55e] text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+            <h3 className="text-[20px] font-semibold mb-1 pl-4 border-l-4" style={{ borderColor: 'var(--accent)', fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
               Asistencia a Entrenamientos
             </h3>
-            <p className="text-sm mb-4 ml-4" style={{ color: '#adb4ce' }}>
+            <p className="text-sm mb-4 ml-4" style={{ color: 'var(--tx-2)' }}>
               {sessionIds.length} sesión{sessionIds.length !== 1 ? 'es' : ''} · {avgAttPct}% asistencia media del equipo
             </p>
-            <div className="overflow-hidden rounded-[20px] border" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+            <div className="overflow-hidden rounded-[20px] border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
               {attStats.map((s, i) => {
                 const pct = Math.round((s.attended / s.total) * 100)
-                const barColor  = pct >= 80 ? '#22c55e' : pct >= 60 ? '#eab308' : '#ef4444'
-                const textColor = pct >= 80 ? '#4be277' : pct >= 60 ? '#facc15' : '#f87171'
+                const barColor  = pct >= 80 ? '#72e697' : pct >= 60 ? '#eab308' : '#ef4444'
+                const textColor = pct >= 80 ? '#72e697' : pct >= 60 ? '#facc15' : '#f87171'
                 return (
                   <div key={s.playerId}
                     className="flex items-center gap-3 px-4 py-3 border-b last:border-0"
-                    style={{ borderColor: '#1e293b' }}>
+                    style={{ borderColor: 'var(--bdr-strong)' }}>
                     <span className="w-5 text-center text-[11px] font-black flex-shrink-0"
-                      style={{ color: i === 0 ? '#4be277' : i < 3 ? '#adb4ce' : '#475569' }}>
+                      style={{ color: i === 0 ? '#72e697' : i < 3 ? 'var(--tx-2)' : 'var(--tx-3)' }}>
                       {i + 1}
                     </span>
                     <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" />
-                    <p className="flex-1 min-w-0 truncate text-sm font-semibold text-white">
+                    <p className="flex-1 min-w-0 truncate text-sm font-semibold" style={{ color: 'var(--tx)' }}>
                       {shortName(s.name)}
                     </p>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <div className="w-16 sm:w-28 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+                      <div className="w-16 sm:w-28 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bdr-strong)' }}>
                         <div className="h-full rounded-full transition-all"
                           style={{ width: `${pct}%`, backgroundColor: barColor }} />
                       </div>
@@ -1035,15 +1038,15 @@ function RankCard({
   const fmt = formatValue ?? String
 
   return (
-    <div className="rounded-[16px] border p-4 transition-all duration-200 hover:border-[#22c55e]/40"
-      style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+    <div className="rounded-[16px] border p-4 transition-all duration-200"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
       <div className="flex items-center justify-between mb-4">
-        <h4 className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>{title}</h4>
-        <span className="material-symbols-outlined" style={{ color: '#4be277', fontSize: 20 }}>{icon}</span>
+        <h4 className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>{title}</h4>
+        <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 20 }}>{icon}</span>
       </div>
 
       {players.length === 0 ? (
-        <p className="text-[11px] text-center py-3" style={{ color: '#adb4ce' }}>Sin datos</p>
+        <p className="text-[11px] text-center py-3" style={{ color: 'var(--tx-2)' }}>Sin datos</p>
       ) : (
         <div className="flex flex-col gap-3">
           {players.map((p, i) => {
@@ -1053,7 +1056,7 @@ function RankCard({
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2 min-w-0">
                     <PlayerAvatar name={p.name} photoUrl={p.photoUrl} position={p.position ?? undefined} size="sm" />
-                    <span className="text-sm truncate" style={{ color: '#dce1fb' }}>{shortName(p.name)}</span>
+                    <span className="text-sm truncate" style={{ color: 'var(--tx)' }}>{shortName(p.name)}</span>
                   </div>
 
                   {showCards ? (
@@ -1061,30 +1064,30 @@ function RankCard({
                       {(p.yellowCards ?? 0) > 0 && (
                         <div className="flex items-center gap-1">
                           <span className="w-3 h-4 rounded-sm bg-yellow-400" style={{ boxShadow: p.warnCards ? '0 0 6px rgba(250,204,21,0.5)' : 'none' }} />
-                          <span className="text-sm font-bold" style={{ color: '#dce1fb' }}>{p.yellowCards}</span>
+                          <span className="text-sm font-bold" style={{ color: 'var(--tx)' }}>{p.yellowCards}</span>
                         </div>
                       )}
                       {(p.redCards ?? 0) > 0 && (
                         <div className="flex items-center gap-1 ml-1">
                           <span className="w-3 h-4 rounded-sm bg-red-500" />
-                          <span className="text-sm font-bold" style={{ color: '#dce1fb' }}>{p.redCards}</span>
+                          <span className="text-sm font-bold" style={{ color: 'var(--tx)' }}>{p.redCards}</span>
                         </div>
                       )}
                     </div>
                   ) : (
                     <div className="flex flex-col items-end flex-shrink-0">
-                      <span className="text-[20px] font-bold leading-none" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+                      <span className="text-[20px] font-bold leading-none" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>
                         {fmt(p.primary)}
                       </span>
                       {p.sublabel && (
-                        <span className="text-[9px] font-bold uppercase mt-0.5" style={{ color: '#4be277', opacity: 0.6 }}>{p.sublabel}</span>
+                        <span className="text-[9px] font-bold uppercase mt-0.5" style={{ color: '#72e697', opacity: 0.6 }}>{p.sublabel}</span>
                       )}
                     </div>
                   )}
                 </div>
                 {!showCards && (
-                  <div className="h-[2px] rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
-                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: '#22c55e', opacity: i === 0 ? 0.7 : i === 1 ? 0.5 : 0.35 }} />
+                  <div className="h-[2px] rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bdr-strong)' }}>
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: '#72e697', opacity: i === 0 ? 0.7 : i === 1 ? 0.5 : 0.35 }} />
                   </div>
                 )}
               </div>

@@ -10,10 +10,16 @@ import { HeaderTitle } from '@/components/ui/header-title'
 import { WhatsNewModal } from '@/components/ui/whats-new-modal'
 import { PwaInstallButton } from '@/components/ui/pwa-install-button'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { LanguageToggle } from '@/components/ui/language-toggle'
+import { getLocale } from '@/lib/i18n'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const [{ data: { user } }, locale] = await Promise.all([
+    supabase.auth.getUser(),
+    getLocale(),
+  ])
 
   if (!user) redirect('/login')
 
@@ -43,10 +49,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <div className="flex flex-1 flex-col min-w-0 md:ml-64">
 
         {/* Header desktop */}
-        <header className="sticky top-0 z-20 hidden md:flex items-center justify-between h-14 px-10 border-b border-[#1e293b]" style={{ backgroundColor: 'rgba(12,19,36,0.95)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+        <header className="sticky top-0 z-20 hidden md:flex items-center justify-between h-16 px-10 border-b" style={{ backgroundColor: 'var(--bg)', borderColor: 'var(--bdr-strong)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
           <HeaderTitle teams={teams} />
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <HeaderSearch teams={teams} />
+            <ThemeToggle />
+            <LanguageToggle current={locale} />
             <Link href="/dashboard/profile" className="flex items-center gap-2 cursor-pointer">
               <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-green-500/20">
                 {avatarUrl
@@ -62,22 +70,24 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
         {/* Header móvil */}
         <header
-          className="md:hidden sticky top-0 z-20 flex items-center justify-between border-b border-[#2e3447] px-4"
-          style={{ backgroundColor: '#0c1324', height: 'calc(56px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}
+          className="md:hidden sticky top-0 z-20 flex items-center justify-between border-b px-4"
+          style={{ backgroundColor: 'var(--bg)', borderColor: 'var(--bdr-strong)', height: 'calc(56px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}
         >
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
               <Image src="/logo.png" alt="Coachly" width={32} height={32} className="w-full h-full object-cover" />
             </div>
-            <span className="font-extrabold text-[17px] leading-none" style={{ color: '#dce1fb', fontFamily: 'Sora, sans-serif' }}>
-              Coach<span style={{ color: '#4be277' }}>ly</span>
+            <span className="font-extrabold text-[17px] leading-none" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+              Coach<span style={{ color: 'var(--accent)' }}>ly</span>
             </span>
           </Link>
 
           <div className="flex items-center gap-2">
             <PwaInstallButton compact />
+            <ThemeToggle />
+            <LanguageToggle current={locale} />
             <Link href="/dashboard/profile"
-              className="flex items-center justify-center rounded-full overflow-hidden border border-[#2e3447] active:opacity-70 transition-opacity"
+              className="flex items-center justify-center rounded-full overflow-hidden border border-[#2a342d] active:opacity-70 transition-opacity"
               style={{ width: 40, height: 40 }}>
               {avatarUrl
                 ? <Image src={avatarUrl} alt={displayName} width={40} height={40} className="object-cover" unoptimized />
@@ -88,8 +98,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </Link>
             <form action={logout}>
               <button type="submit"
-                className="flex items-center justify-center rounded-xl border border-[#2e3447] active:opacity-70 transition-opacity"
-                style={{ width: 40, height: 40, backgroundColor: '#151b2d', color: '#adb4ce' }}
+                className="flex items-center justify-center rounded-xl border active:opacity-70 transition-opacity"
+                style={{ width: 40, height: 40, backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}
                 aria-label="Cerrar sesión">
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }}>logout</span>
               </button>

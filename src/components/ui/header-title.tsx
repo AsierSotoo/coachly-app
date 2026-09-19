@@ -8,7 +8,7 @@ export function HeaderTitle({ teams }: { teams: Team[] }) {
   const pathname = usePathname()
   const active = resolveActiveTeam(teams, pathname)
   return (
-    <h2 className="text-[20px] font-bold" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+    <h2 className="text-[20px] font-bold" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>
       {active?.name ?? 'Mis equipos'}
     </h2>
   )

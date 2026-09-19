@@ -44,7 +44,7 @@ export function DownloadImageButton({ targetClass, filename }: { targetClass: st
       onClick={handleDownload}
       disabled={loading}
       className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold border active:scale-95 transition-all cursor-pointer disabled:opacity-60"
-      style={{ backgroundColor: '#23293c', borderColor: '#2e3447', color: '#dce1fb' }}
+      style={{ backgroundColor: '#1a231d', borderColor: '#2a342d', color: '#edf2ee' }}
     >
       <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
         {loading ? 'hourglass_empty' : 'image'}

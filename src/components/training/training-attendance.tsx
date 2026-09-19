@@ -32,11 +32,11 @@ function PlayerRow({
   const selectValue = isOther ? 'Otra...' : (entry.reason ?? '')
 
   return (
-    <li className="px-4 py-3 border-b last:border-0" style={{ borderColor: '#1e293b' }}>
+    <li className="px-4 py-3 border-b last:border-0" style={{ borderColor: '#253028' }}>
       {/* Fila principal */}
       <div className="flex items-center gap-3">
         {/* Avatar */}
-        <div className="w-9 h-9 rounded-lg overflow-hidden border flex-shrink-0" style={{ borderColor: '#2e3447', backgroundColor: '#23293c' }}>
+        <div className="w-9 h-9 rounded-lg overflow-hidden border flex-shrink-0" style={{ borderColor: '#2a342d', backgroundColor: '#1a231d' }}>
           <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position ?? undefined} size="sm" />
         </div>
 
@@ -44,19 +44,19 @@ function PlayerRow({
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-white truncate">{player.name}</p>
           {player.number !== null && (
-            <p className="text-[10px]" style={{ color: '#475569' }}>#{player.number}</p>
+            <p className="text-[10px]" style={{ color: '#637168' }}>#{player.number}</p>
           )}
         </div>
 
         {/* Toggles Presente / Ausente */}
-        <div className="flex rounded-xl overflow-hidden border flex-shrink-0" style={{ borderColor: '#2e3447' }}>
+        <div className="flex rounded-xl overflow-hidden border flex-shrink-0" style={{ borderColor: '#2a342d' }}>
           <button
             type="button"
             onClick={() => onChange({ attended: true, reason: null })}
             className="flex items-center gap-1 px-3 py-2.5 text-xs font-bold transition-all"
             style={{
-              backgroundColor: entry.attended ? '#22c55e' : '#151b2d',
-              color: entry.attended ? 'white' : '#475569',
+              backgroundColor: entry.attended ? '#72e697' : '#111713',
+              color: entry.attended ? 'white' : '#637168',
               minHeight: 44,
             }}
           >
@@ -70,9 +70,9 @@ function PlayerRow({
             onClick={() => onChange({ attended: false, reason: null })}
             className="flex items-center gap-1 px-3 py-2.5 text-xs font-bold transition-all border-l"
             style={{
-              backgroundColor: !entry.attended ? 'rgba(239,68,68,0.15)' : '#151b2d',
-              color: !entry.attended ? '#f87171' : '#475569',
-              borderColor: '#2e3447',
+              backgroundColor: !entry.attended ? 'rgba(239,68,68,0.15)' : '#111713',
+              color: !entry.attended ? '#f87171' : '#637168',
+              borderColor: '#2a342d',
               minHeight: 44,
             }}
           >
@@ -95,9 +95,9 @@ function PlayerRow({
               onClick={() => onChange({ attended: false, reason: r })}
               className="px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all"
               style={{
-                backgroundColor: selectValue === r ? 'rgba(239,68,68,0.15)' : '#151b2d',
-                borderColor: selectValue === r ? 'rgba(239,68,68,0.4)' : '#2e3447',
-                color: selectValue === r ? '#f87171' : '#475569',
+                backgroundColor: selectValue === r ? 'rgba(239,68,68,0.15)' : '#111713',
+                borderColor: selectValue === r ? 'rgba(239,68,68,0.4)' : '#2a342d',
+                color: selectValue === r ? '#f87171' : '#637168',
               }}
             >
               {r}
@@ -110,9 +110,9 @@ function PlayerRow({
             onClick={() => onChange({ attended: false, reason: isOther ? entry.reason : '' })}
             className="px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all"
             style={{
-              backgroundColor: isOther ? 'rgba(239,68,68,0.15)' : '#151b2d',
-              borderColor: isOther ? 'rgba(239,68,68,0.4)' : '#2e3447',
-              color: isOther ? '#f87171' : '#475569',
+              backgroundColor: isOther ? 'rgba(239,68,68,0.15)' : '#111713',
+              borderColor: isOther ? 'rgba(239,68,68,0.4)' : '#2a342d',
+              color: isOther ? '#f87171' : '#637168',
             }}
           >
             Otra...
@@ -128,7 +128,7 @@ function PlayerRow({
               onChange={e => onChange({ attended: false, reason: e.target.value })}
               className="mt-1 w-full rounded-xl border px-3 py-2 text-sm focus:outline-none transition-colors"
               style={{
-                backgroundColor: '#151b2d', borderColor: '#2e3447', color: '#dce1fb',
+                backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee',
                 minHeight: 'auto', fontSize: 14,
               }}
             />
@@ -166,16 +166,16 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
   }
 
   return (
-    <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+    <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#111713', borderColor: '#253028' }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3.5 border-b" style={{ borderColor: '#1e293b', backgroundColor: '#151b2d' }}>
+      <div className="flex items-center justify-between px-4 py-3.5 border-b" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined" style={{ color: '#adb4ce', fontSize: 18 }}>groups</span>
-          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Asistencia</p>
+          <span className="material-symbols-outlined" style={{ color: '#89968e', fontSize: 18 }}>groups</span>
+          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Asistencia</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#4be277' }}>
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#22c55e' }} />
+          <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#72e697' }}>
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#72e697' }} />
             {presentCount} presentes
           </span>
           {absentCount > 0 && (
@@ -184,7 +184,7 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
               {absentCount} ausentes
             </span>
           )}
-          {saved && <span className="text-xs font-bold" style={{ color: '#4be277' }}>✓ Guardado</span>}
+          {saved && <span className="text-xs font-bold" style={{ color: '#72e697' }}>✓ Guardado</span>}
         </div>
       </div>
 
@@ -201,13 +201,13 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
       </ul>
 
       {/* Footer guardar */}
-      <div className="px-4 py-3 border-t" style={{ borderColor: '#1e293b' }}>
+      <div className="px-4 py-3 border-t" style={{ borderColor: '#253028' }}>
         <button
           type="button"
           onClick={handleSave}
           disabled={pending}
           className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all active:scale-[0.98] cursor-pointer disabled:opacity-60"
-          style={{ backgroundColor: '#22c55e', color: '#003915' }}
+          style={{ backgroundColor: '#72e697', color: '#07140c' }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
           {pending ? 'Guardando…' : 'Guardar asistencia'}

@@ -43,18 +43,18 @@ export default async function CalendarPage({
 
   return (
     <PageTransition>
-      <main className="max-w-3xl mx-auto px-4 py-6 pb-16">
+      <main className="max-w-3xl mx-auto px-4 py-6 pb-32 md:pb-10">
         <div className="mb-6">
           <Link href={`/dashboard/season/${seasonId}`}
             className="flex items-center gap-1 text-xs mb-3 hover:text-slate-300 transition-colors"
-            style={{ color: '#64748b' }}>
+            style={{ color: '#637168' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
             {season.name}
           </Link>
           <h1 className="text-2xl font-black text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
             Calendario
           </h1>
-          <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>{team.name} · {season.name}</p>
+          <p className="text-xs mt-0.5" style={{ color: '#637168' }}>{team.name} · {season.name}</p>
         </div>
 
         <TrainingCalendar

@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Sora, Geist } from 'next/font/google'
 import Script from 'next/script'
 import { Toaster } from 'sonner'
+import { InstallPrompt } from '@/components/ui/install-prompt'
+import { ThemeProvider } from '@/components/ui/theme-provider'
 import './globals.css'
 
 const sora = Sora({ subsets: ['latin'], variable: '--font-heading', weight: ['400','600','700','800'] })
@@ -9,16 +11,17 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-body', weight: ['400
 
 export const metadata: Metadata = {
   title: { default: 'Coachly', template: '%s · Coachly' },
-  description: 'Las estadísticas de tu equipo de fútbol, en un sitio. Goleadoras, minutos, tarjetas y más.',
+  description: 'Planifica partidos, prepara convocatorias y sigue la evolución de tu equipo.',
+  manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Coachly' },
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/icons/icon-192.png',
+    apple: '/icons/icon-192.png',
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: '#020617',
+  themeColor: '#090e0b',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -32,14 +35,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        {/* Prevent flash of wrong theme */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('coachly-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()` }} />
       </head>
-      <body className="min-h-full flex flex-col text-slate-50 font-[family-name:var(--font-body)] antialiased">
+      <body className="min-h-full flex flex-col font-[family-name:var(--font-body)] antialiased" style={{ color: 'var(--tx)' }}>
+        <ThemeProvider>
         {children}
+        <InstallPrompt />
         <Toaster
-          theme="dark"
           position="bottom-center"
           toastOptions={{
-            style: { background: '#1e293b', border: '1px solid #334155', color: '#f8fafc' },
+            style: { background: 'var(--bg-card)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)' },
           }}
         />
         <Script id="sw-register" strategy="afterInteractive">{`
@@ -47,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             navigator.serviceWorker.register('/sw.js');
           }
         `}</Script>
+        </ThemeProvider>
       </body>
     </html>
   )

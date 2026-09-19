@@ -87,19 +87,19 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#020617' }}>
       {/* Dot pattern */}
-      <div className="fixed inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#1e293b 1px, transparent 1px)', backgroundSize: '24px 24px', zIndex: 0 }} />
+      <div className="fixed inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#253028 1px, transparent 1px)', backgroundSize: '24px 24px', zIndex: 0 }} />
 
       <div className="relative z-10 max-w-3xl mx-auto px-4 py-10 pb-20">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-[#2e3447] overflow-hidden" style={{ backgroundColor: '#191f31' }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-[#2a342d] overflow-hidden" style={{ backgroundColor: '#171f1a' }}>
               <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
             </div>
             <div>
               <h1 className="text-xl font-extrabold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{team.name}</h1>
-              <p className="text-xs" style={{ color: '#adb4ce' }}>{season.name}</p>
+              <p className="text-xs" style={{ color: '#89968e' }}>{season.name}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -108,30 +108,30 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
               <div className="w-8 h-8 rounded-lg overflow-hidden">
                 <Image src="/logo.png" alt="Coachly" width={32} height={32} className="w-full h-full object-cover" />
               </div>
-              <span className="text-sm font-bold group-hover:underline" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
+              <span className="text-sm font-bold group-hover:underline" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
             </Link>
           </div>
         </div>
 
         {total === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-[#2e3447]/50 py-16 text-center">
-            <p className="text-sm" style={{ color: '#adb4ce' }}>Sin partidos registrados aún en esta temporada.</p>
+          <div className="rounded-2xl border-2 border-dashed border-[#2a342d]/50 py-16 text-center">
+            <p className="text-sm" style={{ color: '#89968e' }}>Sin partidos registrados aún en esta temporada.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-6">
 
             {/* Resumen */}
-            <section className="rounded-2xl border border-[#1e293b] p-6" style={{ backgroundColor: '#0f172a' }}>
-              <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#adb4ce' }}>Resumen de temporada</p>
+            <section className="rounded-2xl border border-[#253028] p-6" style={{ backgroundColor: '#111713' }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#89968e' }}>Resumen de temporada</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
-                  { label: 'Partidos', value: total, color: '#dce1fb' },
-                  { label: 'Victorias', value: `${wins} (${winRate}%)`, color: '#4be277' },
-                  { label: 'Goles', value: `${gf}`, color: '#4be277' },
+                  { label: 'Partidos', value: total, color: '#edf2ee' },
+                  { label: 'Victorias', value: `${wins} (${winRate}%)`, color: '#72e697' },
+                  { label: 'Goles', value: `${gf}`, color: '#72e697' },
                   { label: 'G. recibidos', value: `${ga}`, color: '#ffb4ab' },
                 ].map(({ label, value, color }) => (
-                  <div key={label} className="rounded-xl border border-[#1e293b] px-4 py-3 text-center" style={{ backgroundColor: '#151b2d' }}>
-                    <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: '#adb4ce' }}>{label}</p>
+                  <div key={label} className="rounded-xl border border-[#253028] px-4 py-3 text-center" style={{ backgroundColor: '#111713' }}>
+                    <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: '#89968e' }}>{label}</p>
                     <p className="text-2xl font-extrabold" style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</p>
                   </div>
                 ))}
@@ -139,53 +139,53 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
               {/* Racha */}
               {recentForm.length > 0 && (
-                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[#1e293b]">
-                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Forma reciente</span>
+                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[#253028]">
+                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Forma reciente</span>
                   <div className="flex gap-1.5">
                     {recentForm.map((r, i) => (
                       <div key={i} className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black border"
                         style={{
                           backgroundColor: r === 'V' ? 'rgba(34,197,94,0.15)' : r === 'D' ? 'rgba(255,180,171,0.1)' : 'rgba(148,163,184,0.1)',
                           borderColor: r === 'V' ? 'rgba(34,197,94,0.4)' : r === 'D' ? 'rgba(255,180,171,0.3)' : 'rgba(148,163,184,0.3)',
-                          color: r === 'V' ? '#4be277' : r === 'D' ? '#ffb4ab' : '#94a3b8',
+                          color: r === 'V' ? '#72e697' : r === 'D' ? '#ffb4ab' : '#94a3b8',
                         }}>
                         {r}
                       </div>
                     ))}
                   </div>
-                  <span className="text-[11px]" style={{ color: '#adb4ce' }}>{wins}V {draws}E {losses}D</span>
+                  <span className="text-[11px]" style={{ color: '#89968e' }}>{wins}V {draws}E {losses}D</span>
                 </div>
               )}
             </section>
 
             {/* Tarjeta para compartir como imagen */}
-            <div id="stats-share-card" style={{ backgroundColor: '#0f172a', borderRadius: 20, padding: 28, width: '100%', fontFamily: 'system-ui, sans-serif' }}>
+            <div id="stats-share-card" style={{ backgroundColor: '#111713', borderRadius: 20, padding: 28, width: '100%', fontFamily: 'system-ui, sans-serif' }}>
               {/* Header de la tarjeta */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: '#191f31', border: '1px solid #2e3447', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 10, backgroundColor: '#171f1a', border: '1px solid #2a342d', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" />
                   </div>
                   <div>
                     <p style={{ color: '#ffffff', fontWeight: 800, fontSize: 16, margin: 0 }}>{team.name}</p>
-                    <p style={{ color: '#adb4ce', fontSize: 11, margin: 0 }}>{season.name}</p>
+                    <p style={{ color: '#89968e', fontSize: 11, margin: 0 }}>{season.name}</p>
                   </div>
                 </div>
-                <p style={{ color: '#4be277', fontWeight: 800, fontSize: 13 }}>Coachly</p>
+                <p style={{ color: '#72e697', fontWeight: 800, fontSize: 13 }}>Coachly</p>
               </div>
 
               {/* Resultado */}
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                 {[
-                  { label: 'V', value: wins, color: '#4be277', bg: 'rgba(34,197,94,0.12)' },
-                  { label: 'E', value: draws, color: '#adb4ce', bg: 'rgba(46,52,71,0.4)' },
+                  { label: 'V', value: wins, color: '#72e697', bg: 'rgba(34,197,94,0.12)' },
+                  { label: 'E', value: draws, color: '#89968e', bg: 'rgba(46,52,71,0.4)' },
                   { label: 'D', value: losses, color: '#f87171', bg: 'rgba(248,113,113,0.08)' },
-                  { label: 'GF', value: gf, color: '#4be277', bg: 'rgba(34,197,94,0.08)' },
+                  { label: 'GF', value: gf, color: '#72e697', bg: 'rgba(34,197,94,0.08)' },
                   { label: 'GC', value: ga, color: '#f87171', bg: 'rgba(248,113,113,0.08)' },
                 ].map(({ label, value, color, bg }) => (
                   <div key={label} style={{ flex: 1, backgroundColor: bg, borderRadius: 10, padding: '10px 4px', textAlign: 'center' }}>
                     <p style={{ color, fontWeight: 800, fontSize: 22, margin: 0 }}>{value}</p>
-                    <p style={{ color: '#64748b', fontSize: 9, fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>{label}</p>
+                    <p style={{ color: '#637168', fontSize: 9, fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>{label}</p>
                   </div>
                 ))}
               </div>
@@ -193,13 +193,13 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
               {/* Top goleadoras */}
               {byGoals.slice(0, 3).length > 0 && (
                 <div style={{ marginBottom: 14 }}>
-                  <p style={{ color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Goleadoras</p>
+                  <p style={{ color: '#637168', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Goleadoras</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {byGoals.slice(0, 3).map((p, i) => (
                       <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ color: i === 0 ? '#4be277' : '#475569', fontSize: 11, fontWeight: 700, width: 14 }}>{i + 1}</span>
-                        <span style={{ color: '#dce1fb', fontSize: 13, fontWeight: 600, flex: 1 }}>{p.name}</span>
-                        <span style={{ color: '#4be277', fontSize: 16, fontWeight: 800 }}>{p.goals}</span>
+                        <span style={{ color: i === 0 ? '#72e697' : '#637168', fontSize: 11, fontWeight: 700, width: 14 }}>{i + 1}</span>
+                        <span style={{ color: '#edf2ee', fontSize: 13, fontWeight: 600, flex: 1 }}>{p.name}</span>
+                        <span style={{ color: '#72e697', fontSize: 16, fontWeight: 800 }}>{p.goals}</span>
                       </div>
                     ))}
                   </div>
@@ -208,14 +208,14 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
               {/* Forma reciente */}
               {recentForm.length > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 12, borderTop: '1px solid #1e293b' }}>
-                  <p style={{ color: '#475569', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Forma</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 12, borderTop: '1px solid #253028' }}>
+                  <p style={{ color: '#637168', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>Forma</p>
                   <div style={{ display: 'flex', gap: 4 }}>
                     {recentForm.map((r, i) => (
                       <div key={i} style={{
                         width: 24, height: 24, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800,
                         backgroundColor: r === 'V' ? 'rgba(34,197,94,0.2)' : r === 'D' ? 'rgba(248,113,113,0.15)' : 'rgba(148,163,184,0.15)',
-                        color: r === 'V' ? '#4be277' : r === 'D' ? '#f87171' : '#94a3b8',
+                        color: r === 'V' ? '#72e697' : r === 'D' ? '#f87171' : '#94a3b8',
                       }}>{r}</div>
                     ))}
                   </div>
@@ -225,18 +225,18 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
             {/* Líderes */}
             {(topScorer || topAssist || topMinutes) && (
-              <section className="rounded-2xl border border-[#1e293b] p-6" style={{ backgroundColor: '#0f172a' }}>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#adb4ce' }}>Líderes de temporada</p>
+              <section className="rounded-2xl border border-[#253028] p-6" style={{ backgroundColor: '#111713' }}>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#89968e' }}>Líderes de temporada</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
-                    { label: 'Máxima goleadora', player: topScorer, value: topScorer?.goals, icon: 'sports_soccer', color: '#4be277' },
+                    { label: 'Máxima goleadora', player: topScorer, value: topScorer?.goals, icon: 'sports_soccer', color: '#72e697' },
                     { label: 'Más asistencias', player: topAssist, value: topAssist?.assists, icon: 'electric_bolt', color: '#facc15' },
                     { label: 'Más minutos', player: topMinutes, value: topMinutes?.minutes, unit: "'", icon: 'schedule', color: '#60a5fa' },
                   ].filter(l => l.player && (l.value ?? 0) > 0).map(({ label, player, value, unit, icon, color }) => (
-                    <div key={label} className="flex items-center gap-3 rounded-xl border border-[#1e293b] px-4 py-3" style={{ backgroundColor: '#151b2d' }}>
+                    <div key={label} className="flex items-center gap-3 rounded-xl border border-[#253028] px-4 py-3" style={{ backgroundColor: '#111713' }}>
                       <PlayerAvatar name={player!.name} photoUrl={player!.photoUrl} position={player!.position} size="sm" className="w-10 h-10 rounded-xl flex-shrink-0" />
                       <div className="min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-wider truncate" style={{ color: '#adb4ce' }}>{label}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider truncate" style={{ color: '#89968e' }}>{label}</p>
                         <p className="text-sm font-bold truncate text-white">{player!.name}</p>
                         <p className="text-base font-extrabold" style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}{unit ?? ''}</p>
                       </div>
@@ -248,18 +248,18 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
             {/* Tabla de goleadoras */}
             {byGoals.length > 0 && (
-              <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
-                <div className="px-6 py-4 border-b border-[#1e293b]">
-                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Goleadoras</p>
+              <section className="rounded-2xl border border-[#253028] overflow-hidden" style={{ backgroundColor: '#111713' }}>
+                <div className="px-6 py-4 border-b border-[#253028]">
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Goleadoras</p>
                 </div>
-                <div className="divide-y divide-[#1e293b]">
+                <div className="divide-y divide-[#253028]">
                   {byGoals.map((p, i) => (
                     <div key={p.name} className="flex items-center gap-4 px-6 py-3">
-                      <span className="w-5 text-center text-xs font-bold" style={{ color: i === 0 ? '#4be277' : '#adb4ce' }}>{i + 1}</span>
+                      <span className="w-5 text-center text-xs font-bold" style={{ color: i === 0 ? '#72e697' : '#89968e' }}>{i + 1}</span>
                       <PlayerAvatar name={p.name} photoUrl={p.photoUrl} position={p.position} size="sm" className="w-8 h-8 rounded-lg flex-shrink-0" />
                       <span className="flex-1 text-sm font-semibold text-white truncate">{p.name}</span>
-                      <span className="text-xl font-extrabold" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>{p.goals}</span>
-                      <span className="text-xs" style={{ color: '#adb4ce' }}>gol{p.goals !== 1 ? 'es' : ''}</span>
+                      <span className="text-xl font-extrabold" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>{p.goals}</span>
+                      <span className="text-xs" style={{ color: '#89968e' }}>gol{p.goals !== 1 ? 'es' : ''}</span>
                     </div>
                   ))}
                 </div>
@@ -268,18 +268,18 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
             {/* Tabla asistencias */}
             {byAssists.length > 0 && (
-              <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
-                <div className="px-6 py-4 border-b border-[#1e293b]">
-                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Asistencias</p>
+              <section className="rounded-2xl border border-[#253028] overflow-hidden" style={{ backgroundColor: '#111713' }}>
+                <div className="px-6 py-4 border-b border-[#253028]">
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Asistencias</p>
                 </div>
-                <div className="divide-y divide-[#1e293b]">
+                <div className="divide-y divide-[#253028]">
                   {byAssists.map((p, i) => (
                     <div key={p.name + 'a'} className="flex items-center gap-4 px-6 py-3">
-                      <span className="w-5 text-center text-xs font-bold" style={{ color: i === 0 ? '#facc15' : '#adb4ce' }}>{i + 1}</span>
+                      <span className="w-5 text-center text-xs font-bold" style={{ color: i === 0 ? '#facc15' : '#89968e' }}>{i + 1}</span>
                       <PlayerAvatar name={p.name} photoUrl={p.photoUrl} position={p.position} size="sm" className="w-8 h-8 rounded-lg flex-shrink-0" />
                       <span className="flex-1 text-sm font-semibold text-white truncate">{p.name}</span>
                       <span className="text-xl font-extrabold" style={{ color: '#facc15', fontFamily: 'Sora, sans-serif' }}>{p.assists}</span>
-                      <span className="text-xs" style={{ color: '#adb4ce' }}>ast</span>
+                      <span className="text-xs" style={{ color: '#89968e' }}>ast</span>
                     </div>
                   ))}
                 </div>
@@ -288,14 +288,14 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
             {/* Tabla completa de estadísticas */}
             {allPlayers.length > 0 && (
-              <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
-                <div className="px-6 py-4 border-b border-[#1e293b]">
-                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Estadísticas completas</p>
+              <section className="rounded-2xl border border-[#253028] overflow-hidden" style={{ backgroundColor: '#111713' }}>
+                <div className="px-6 py-4 border-b border-[#253028]">
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Estadísticas completas</p>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="border-b border-[#1e293b]" style={{ backgroundColor: '#151b2d' }}>
+                      <tr className="border-b border-[#253028]" style={{ backgroundColor: '#111713' }}>
                         {[
                           { h: terms.p.charAt(0).toUpperCase() + terms.p.slice(1), align: 'left' },
                           { h: 'PJ', align: 'center' },
@@ -305,13 +305,13 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                           { h: "Min'", align: 'center' },
                         ].map(({ h, align }) => (
                           <th key={h} className="px-3 py-3 text-[10px] font-bold uppercase tracking-widest"
-                            style={{ color: '#adb4ce', textAlign: align as 'left' | 'center' }}>{h}</th>
+                            style={{ color: '#89968e', textAlign: align as 'left' | 'center' }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {allPlayers.map((p, i) => (
-                        <tr key={p.name} className="border-b border-[#1e293b] last:border-0"
+                        <tr key={p.name} className="border-b border-[#253028] last:border-0"
                           style={{ backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.4)' }}>
                           <td className="px-3 py-2.5">
                             <div className="flex items-center gap-2">
@@ -319,11 +319,11 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                               <span className="text-xs font-semibold text-white truncate max-w-[120px]">{p.name}</span>
                             </div>
                           </td>
-                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: '#adb4ce' }}>{p.gamesPlayed}</td>
-                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals > 0 ? '#4be277' : '#475569' }}>{p.goals}</td>
-                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.assists > 0 ? '#facc15' : '#475569' }}>{p.assists}</td>
-                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals + p.assists > 0 ? '#dce1fb' : '#475569' }}>{p.goals + p.assists}</td>
-                          <td className="px-3 py-2.5 text-center text-xs" style={{ color: '#adb4ce' }}>{p.minutes}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: '#89968e' }}>{p.gamesPlayed}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals > 0 ? '#72e697' : '#637168' }}>{p.goals}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.assists > 0 ? '#facc15' : '#637168' }}>{p.assists}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals + p.assists > 0 ? '#edf2ee' : '#637168' }}>{p.goals + p.assists}</td>
+                          <td className="px-3 py-2.5 text-center text-xs" style={{ color: '#89968e' }}>{p.minutes}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -333,14 +333,14 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
             )}
 
             {/* Últimos 5 partidos */}
-            <section className="rounded-2xl border border-[#1e293b] overflow-hidden" style={{ backgroundColor: '#0f172a' }}>
-              <div className="px-6 py-4 border-b border-[#1e293b]">
-                <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#adb4ce' }}>Últimos partidos</p>
+            <section className="rounded-2xl border border-[#253028] overflow-hidden" style={{ backgroundColor: '#111713' }}>
+              <div className="px-6 py-4 border-b border-[#253028]">
+                <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Últimos partidos</p>
               </div>
-              <div className="divide-y divide-[#1e293b]">
+              <div className="divide-y divide-[#253028]">
                 {[...(matches ?? [])].sort((a, b) => b.played_at.localeCompare(a.played_at)).slice(0, 5).map(m => {
                   const r = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                  const rColor = r === 'V' ? '#4be277' : r === 'D' ? '#ffb4ab' : '#94a3b8'
+                  const rColor = r === 'V' ? '#72e697' : r === 'D' ? '#ffb4ab' : '#94a3b8'
                   const rBg = r === 'V' ? 'rgba(34,197,94,0.15)' : r === 'D' ? 'rgba(255,180,171,0.1)' : 'rgba(148,163,184,0.1)'
                   return (
                     <div key={m.id} className="flex items-center gap-4 px-6 py-3">
@@ -348,9 +348,9 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                         style={{ backgroundColor: rBg, color: rColor }}>{r}</div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-white truncate">vs {m.opponent}</p>
-                        <p className="text-[11px]" style={{ color: '#adb4ce' }}>{dateStr(m.played_at)} · {m.home ? 'Local' : 'Visitante'}</p>
+                        <p className="text-[11px]" style={{ color: '#89968e' }}>{dateStr(m.played_at)} · {m.home ? 'Local' : 'Visitante'}</p>
                       </div>
-                      <span className="text-sm font-bold tabular-nums" style={{ color: '#4be277', fontFamily: 'Sora, sans-serif' }}>
+                      <span className="text-sm font-bold tabular-nums" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>
                         {m.goals_for}–{m.goals_against}
                       </span>
                     </div>
@@ -364,9 +364,9 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
         {/* Footer */}
         <div className="mt-10 text-center">
-          <p className="text-xs" style={{ color: '#475569' }}>
+          <p className="text-xs" style={{ color: '#637168' }}>
             Estadísticas generadas con{' '}
-            <Link href="/" className="font-semibold hover:underline" style={{ color: '#4be277' }}>Coachly</Link>
+            <Link href="/" className="font-semibold hover:underline" style={{ color: '#72e697' }}>Coachly</Link>
             {' '}· La app de estadísticas para entrenadores
           </p>
         </div>

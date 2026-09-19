@@ -50,8 +50,8 @@ export function DownloadPlayersCsv({
   return (
     <button
       onClick={download}
-      className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold border transition-colors hover:bg-[#23293c] cursor-pointer"
-      style={{ backgroundColor: '#191f31', borderColor: '#2e3447', color: '#dce1fb' }}
+      className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold border transition-colors hover:bg-[#1a231d] cursor-pointer"
+      style={{ backgroundColor: '#171f1a', borderColor: '#2a342d', color: '#edf2ee' }}
       title="Exportar plantilla a CSV"
     >
       <span className="material-symbols-outlined" style={{ fontSize: 18 }}>download</span>

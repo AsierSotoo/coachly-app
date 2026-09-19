@@ -59,7 +59,7 @@ export function PlayerPhotoUpload({ playerId, currentUrl, playerName, size = 'lg
       style={style}
     >
       {uploading ? (
-        <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: '#4be277' }}>progress_activity</span>
+        <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: '#72e697' }}>progress_activity</span>
       ) : url ? (
         <>
           <Image src={url} alt={playerName} fill className="object-cover" unoptimized />

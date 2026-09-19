@@ -36,7 +36,7 @@ export function AlertsModal({ alerts }: { alerts: Alert[] }) {
     >
       <div
         className="w-full max-w-md rounded-2xl border shadow-2xl overflow-hidden"
-        style={{ backgroundColor: '#151b2d', borderColor: '#2e3447' }}
+        style={{ backgroundColor: '#111713', borderColor: '#2a342d' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -53,7 +53,7 @@ export function AlertsModal({ alerts }: { alerts: Alert[] }) {
             <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
               Sanciones por acumulación
             </h2>
-            <p className="text-sm mt-0.5" style={{ color: '#adb4ce' }}>
+            <p className="text-sm mt-0.5" style={{ color: '#89968e' }}>
               {alerts.length === 1
                 ? '1 jugadora con 4 o más amarillas'
                 : `${alerts.length} jugadoras con 4 o más amarillas`}
@@ -62,7 +62,7 @@ export function AlertsModal({ alerts }: { alerts: Alert[] }) {
           <button
             onClick={dismiss}
             className="flex items-center justify-center w-8 h-8 rounded-full border transition-colors hover:bg-slate-700 cursor-pointer flex-shrink-0"
-            style={{ borderColor: '#2e3447', color: '#64748b' }}
+            style={{ borderColor: '#2a342d', color: '#637168' }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
           </button>
@@ -85,7 +85,7 @@ export function AlertsModal({ alerts }: { alerts: Alert[] }) {
                 </span>
               </span>
 
-              <p className="text-sm flex-1 font-semibold leading-tight" style={{ color: '#dce1fb' }}>
+              <p className="text-sm flex-1 font-semibold leading-tight" style={{ color: '#edf2ee' }}>
                 {a.name}
               </p>
 
@@ -109,7 +109,7 @@ export function AlertsModal({ alerts }: { alerts: Alert[] }) {
           ))}
         </ul>
 
-        <p className="px-6 pb-4 text-xs leading-snug" style={{ color: '#475569' }}>
+        <p className="px-6 pb-4 text-xs leading-snug" style={{ color: '#637168' }}>
           En categoría autonómica, 4 amarillas acumuladas suponen 1 partido de sanción.
         </p>
 

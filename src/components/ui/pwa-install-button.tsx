@@ -49,7 +49,7 @@ export function PwaInstallButton({ compact = false }: { compact?: boolean }) {
       <button
         onClick={install}
         className="flex items-center justify-center rounded-xl border border-green-500/30 transition-all active:scale-95"
-        style={{ width: 40, height: 40, backgroundColor: 'rgba(34,197,94,0.08)', color: '#4be277' }}
+        style={{ width: 40, height: 40, backgroundColor: 'rgba(34,197,94,0.08)', color: '#72e697' }}
         title="Instalar Coachly en tu teléfono"
       >
         <span className="material-symbols-outlined" style={{ fontSize: 20 }}>install_mobile</span>
@@ -61,7 +61,7 @@ export function PwaInstallButton({ compact = false }: { compact?: boolean }) {
     <button
       onClick={install}
       className="flex items-center gap-2 w-full px-4 py-2.5 rounded-xl border border-green-500/20 transition-all active:scale-95 hover:border-green-500/40"
-      style={{ backgroundColor: 'rgba(34,197,94,0.06)', color: '#4be277' }}
+      style={{ backgroundColor: 'rgba(34,197,94,0.06)', color: '#72e697' }}
     >
       <span className="material-symbols-outlined" style={{ fontSize: 18 }}>install_mobile</span>
       <div className="text-left">

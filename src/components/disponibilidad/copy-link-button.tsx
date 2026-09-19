@@ -24,9 +24,9 @@ export function CopyLinkButton({ url, className }: { url: string; className?: st
       onClick={handleCopy}
       className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-[11px] font-bold uppercase tracking-wide transition-all active:scale-95 ${className ?? ''}`}
       style={{
-        backgroundColor: copied ? 'rgba(75,226,119,0.15)' : '#1e293b',
-        color: copied ? '#4be277' : '#adb4ce',
-        border: `1px solid ${copied ? 'rgba(75,226,119,0.3)' : '#2e3447'}`,
+        backgroundColor: copied ? 'rgba(75,226,119,0.15)' : '#253028',
+        color: copied ? '#72e697' : '#89968e',
+        border: `1px solid ${copied ? 'rgba(75,226,119,0.3)' : '#2a342d'}`,
       }}
     >
       <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
