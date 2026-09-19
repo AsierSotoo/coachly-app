@@ -43,7 +43,7 @@ export default async function DashboardPage() {
 
   const { data: raw } = await supabase
     .from('teams')
-    .select('*, seasons(id, name, created_at, league_position, league_total_teams, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home), training_sessions(id, date, title, location)), players(id, active)')
+    .select('*, seasons(id, name, created_at, league_position, league_total_teams, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home), training_sessions(id, date, title)), players(id, active)')
     .order('created_at', { ascending: true })
 
   const teams = (raw ?? []) as Team[]
@@ -461,9 +461,6 @@ export default async function DashboardPage() {
                           <p className="text-[11px] font-bold truncate" style={{ color: 'var(--tx)' }}>
                             Entreno · {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' }).replace(/^\w/, c => c.toUpperCase())}
                           </p>
-                          {(nextSession as { location?: string | null }).location && (
-                            <p className="text-[10px] truncate mt-0.5" style={{ color: 'var(--tx-3)' }}>{(nextSession as { location?: string | null }).location}</p>
-                          )}
                         </div>
                       </Link>
                     )}
