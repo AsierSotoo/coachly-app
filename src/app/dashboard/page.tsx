@@ -581,15 +581,33 @@ export default async function DashboardPage() {
 
                     {/* Quick nav cards */}
                     <div className="grid grid-cols-1 gap-2 mt-1">
-                      <Link href={`/dashboard/team/${team.id}/players`}
-                        className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>group</span>
-                        <div>
-                          <p className="text-[12px] font-semibold" style={{ color: 'var(--tx)' }}>Plantilla</p>
-                          <p className="text-[10px]" style={{ color: 'var(--tx-4)' }}>{playerCount > 0 ? `${playerCount} jugadoras activas` : '—'}</p>
-                        </div>
-                      </Link>
+                      {nextSession
+                        ? (
+                          <Link href={`/dashboard/season/${lastSeason!.id}/trainings`}
+                            className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
+                            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
+                            <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>fitness_center</span>
+                            <div className="min-w-0">
+                              <p className="text-[12px] font-semibold" style={{ color: 'var(--tx)' }}>
+                                {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase())}
+                              </p>
+                              <p className="text-[10px]" style={{ color: 'var(--tx-4)' }}>
+                                {nextSession.title ? nextSession.title : 'Próximo entreno'}
+                              </p>
+                            </div>
+                          </Link>
+                        ) : (
+                          <Link href={lastSeason ? `/dashboard/season/${lastSeason.id}/trainings/new` : '#'}
+                            className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
+                            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
+                            <span className="material-symbols-outlined" style={{ color: 'var(--tx-4)', fontSize: 18 }}>fitness_center</span>
+                            <div>
+                              <p className="text-[12px] font-semibold" style={{ color: 'var(--tx-2)' }}>Sin entrenos planificados</p>
+                              <p className="text-[10px]" style={{ color: 'var(--tx-4)' }}>Añadir entrenamiento</p>
+                            </div>
+                          </Link>
+                        )
+                      }
                       <Link href={seasonHref}
                         className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
                         style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
