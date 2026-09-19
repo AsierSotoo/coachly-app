@@ -151,7 +151,7 @@ export default async function PlayersPage({
         {/* Formulario rápido */}
         <section
           className="mb-8 p-6 rounded-2xl border transition-all duration-200 hover:border-[var(--accent)] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
-          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}
         >
           <div className="flex items-center gap-3 mb-6">
             <span className="material-symbols-outlined" style={{ color: 'var(--accent)' }}>add_circle</span>
@@ -318,7 +318,7 @@ export default async function PlayersPage({
                 return (
                   <div key={player.id}
                     className="relative group overflow-hidden rounded-2xl border p-6 flex flex-col items-center transition-all duration-200 hover:border-[var(--accent)] hover:shadow-[0_0_12px_rgba(34,197,94,0.1)]"
-                    style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
+                    style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}
                   >
                     {/* Dorsal fantasma de fondo */}
                     {player.number !== null && (

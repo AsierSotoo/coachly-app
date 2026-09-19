@@ -175,7 +175,7 @@ export default async function SeasonPage({
           </div>
           {total > 0 && (
             <div className="flex items-center rounded-xl border overflow-hidden flex-shrink-0"
-              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
               <div className="px-2.5 py-2 sm:px-4 sm:py-2.5 text-center border-r" style={{ borderColor: 'var(--bdr)' }}>
                 <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>PJ</p>
                 <p className="text-[15px] sm:text-[18px] font-black tabular-nums leading-tight" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>{total}</p>
@@ -200,7 +200,7 @@ export default async function SeasonPage({
 
         {/* ── Balance competitivo ─────────────────────────────────────── */}
         <section className="mb-6 overflow-hidden rounded-[14px] border md:mb-8"
-          style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+          style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)', boxShadow: 'var(--shadow-card)' }}>
           <div className="flex flex-col gap-4 border-b px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
             style={{ borderColor: 'var(--bdr-strong)' }}>
             <div>
@@ -441,7 +441,7 @@ export default async function SeasonPage({
         {showForm && (
           <section
             className="mb-8 rounded-2xl border overflow-hidden"
-            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}
           >
             <div className="flex items-center gap-3 px-6 py-4 border-b" style={{ borderColor: 'var(--bdr-strong)' }}>
               <span className="material-symbols-outlined" style={{ color: 'var(--accent)' }}>calendar_month</span>
@@ -526,7 +526,7 @@ export default async function SeasonPage({
         {/* ── Próximos partidos (programados) ─────────────────────────── */}
         {scheduledMatches.length > 0 && (
           <section className="mb-6 rounded-2xl border overflow-hidden"
-            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
             <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b"
               style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
               <div className="flex items-center gap-3">
@@ -626,7 +626,7 @@ export default async function SeasonPage({
         {/* ── Tabla de Partidos ────────────────────────────────────────── */}
         <section
           className="rounded-2xl border overflow-hidden"
-          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}
         >
           {/* Cabecera de la tabla */}
           <div
