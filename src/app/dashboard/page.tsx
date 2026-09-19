@@ -218,31 +218,50 @@ export default async function DashboardPage() {
                       <TeamLogo name={team.name} logoUrl={team.logo_url} size="lg" className="h-10 w-10" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h1 className="truncate text-[20px] font-extrabold leading-tight tracking-[-0.03em]"
-                        style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
-                        {team.name}
-                      </h1>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h1 className="truncate text-[20px] font-extrabold leading-tight tracking-[-0.03em]"
+                          style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                          {team.name}
+                        </h1>
+                        {streakLabel && (
+                          <span className="flex-shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold"
+                            style={{ backgroundColor: `${streakColor}18`, color: streakColor, border: `1px solid ${streakColor}30` }}>
+                            {streakLabel}
+                          </span>
+                        )}
+                      </div>
                       <p className="mt-0.5 text-[11px]" style={{ color: 'var(--tx-3)' }}>
                         {lastSeason?.name ?? 'Sin temporada activa'}
                         {(team.category ?? team.gender) ? ` · ${team.category ?? team.gender}` : ''}
                       </p>
                     </div>
-                    {streakLabel && (
-                      <span className="flex-shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold"
-                        style={{ backgroundColor: `${streakColor}18`, color: streakColor, border: `1px solid ${streakColor}30` }}>
-                        {streakLabel}
-                      </span>
+                    {/* Desktop: 2 botones inline */}
+                    {lastSeason && (
+                      <div className="hidden lg:flex gap-2 flex-shrink-0">
+                        <Link href={`/dashboard/season/${lastSeason.id}/convocatorias/new`}
+                          className="flex items-center gap-1.5 rounded-[10px] border px-3.5 text-[12px] font-semibold transition-all hover:border-[var(--bdr-strong)] active:scale-[.97]"
+                          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', color: 'var(--tx-2)', height: 36 }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: 15, color: 'var(--accent)' }}>assignment</span>
+                          Convocatoria
+                        </Link>
+                        <Link href={`/dashboard/season/${lastSeason.id}/trainings/new`}
+                          className="flex items-center gap-1.5 rounded-[10px] border px-3.5 text-[12px] font-semibold transition-all hover:border-[var(--bdr-strong)] active:scale-[.97]"
+                          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', color: 'var(--tx-2)', height: 36 }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: 15, color: 'var(--accent)' }}>fitness_center</span>
+                          Entrenamiento
+                        </Link>
+                      </div>
                     )}
                   </div>
 
-                  {/* ── Quick actions ─────────────────────────── */}
+                  {/* ── Quick actions (solo móvil) ─────────────── */}
                   {lastSeason && (
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 gap-2 lg:hidden">
                       {[
                         { icon: 'assignment', label: 'Convocar', href: `/dashboard/season/${lastSeason.id}/convocatorias/new` },
                         { icon: 'fitness_center', label: 'Entreno', href: `/dashboard/season/${lastSeason.id}/trainings/new` },
                         { icon: 'bar_chart', label: 'Stats', href: `/dashboard/season/${lastSeason.id}/stats` },
-                        { icon: 'people', label: 'Plantilla', href: `/dashboard/team/${team.id}/players` },
+                        { icon: 'people', label: 'Disponib.', href: `/dashboard/season/${lastSeason.id}/convocatorias/new` },
                       ].map(({ icon, label, href }) => (
                         <Link key={label} href={href}
                           className="flex flex-col items-center gap-1.5 rounded-[12px] border py-3 transition-all active:scale-[.97]"
@@ -318,33 +337,48 @@ export default async function DashboardPage() {
                           </div>
                         </div>
 
-                        {/* Disponibles */}
-                        {availCount > 0 && (
+                        {/* Disponibles — siempre visible */}
+                        {totalActive > 0 && (
                           <div className="mt-4 flex items-center justify-between rounded-[10px] border px-3.5 py-2.5"
-                            style={{ backgroundColor: 'rgba(114,230,151,0.06)', borderColor: 'rgba(114,230,151,0.18)' }}>
+                            style={availCount > 0
+                              ? { backgroundColor: 'rgba(114,230,151,0.08)', borderColor: 'rgba(114,230,151,0.25)' }
+                              : { backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr)' }}>
                             <div className="flex items-center gap-2">
-                              <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#72e697' }}>group</span>
-                              <span className="text-[12px] font-bold" style={{ color: '#72e697' }}>
-                                {availCount} de {totalActive} disponibles
+                              <span className="material-symbols-outlined" style={{ fontSize: 15, color: availCount > 0 ? '#72e697' : 'var(--tx-4)' }}>group</span>
+                              <span className="text-[12px] font-bold" style={{ color: availCount > 0 ? '#72e697' : 'var(--tx-3)' }}>
+                                {availCount > 0 ? `${availCount} de ${totalActive} disponibles` : 'Sin respuestas de disponibilidad'}
                               </span>
                             </div>
-                            <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#72e697' }}>chevron_right</span>
-                          </div>
-                        )}
-                        {availCount === 0 && totalActive > 0 && (
-                          <div className="mt-4 flex items-center justify-between rounded-[10px] border px-3.5 py-2.5"
-                            style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr)' }}>
-                            <span className="text-[11px] font-medium" style={{ color: 'var(--tx-4)' }}>
-                              Sin respuestas de disponibilidad
+                            <span className="text-[11px] font-semibold" style={{ color: availCount > 0 ? '#72e697' : 'var(--tx-4)' }}>
+                              {availCount > 0 ? 'Preparar convocatoria →' : 'Convocar →'}
                             </span>
-                            <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--tx-4)' }}>chevron_right</span>
                           </div>
                         )}
                       </div>
                     </Link>
                   )}
 
-                  {/* ── Último resultado ──────────────────────── */}
+                  {/* ── Último partido (fila compacta, cuando hay próximo) ── */}
+                  {nextMatch && lastMatch && lastSeason && (() => {
+                    const lc = lastMatch.goals_for > lastMatch.goals_against ? '#72e697' : lastMatch.goals_for < lastMatch.goals_against ? '#f87171' : '#fbbf24'
+                    const ll = lastMatch.goals_for > lastMatch.goals_against ? 'Victoria' : lastMatch.goals_for < lastMatch.goals_against ? 'Derrota' : 'Empate'
+                    return (
+                      <Link href={`/dashboard/season/${lastSeason.id}/match/${lastMatch.id}`}
+                        className="flex items-center gap-3 rounded-[12px] border px-4 py-2.5 transition-all active:scale-[.99]"
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[9px] font-bold uppercase tracking-wider mb-0.5" style={{ color: 'var(--tx-4)' }}>Último partido</p>
+                          <p className="text-[13px] font-bold">
+                            <span style={{ color: lc }}>{ll} {lastMatch.goals_for}–{lastMatch.goals_against}</span>
+                            {' '}<span style={{ color: 'var(--tx-2)' }}>vs {lastMatch.opponent}</span>
+                          </p>
+                        </div>
+                        <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: 'var(--tx-4)' }}>chevron_right</span>
+                      </Link>
+                    )
+                  })()}
+
+                  {/* ── Último resultado (card grande, sin próximo partido) ── */}
                   {!nextMatch && lastMatch && lastSeason && heroColor && (
                     <Link href={`/dashboard/season/${lastSeason.id}/match/${lastMatch.id}`}
                       className="block overflow-hidden rounded-[16px] border transition-all active:scale-[.99]"
@@ -421,9 +455,40 @@ export default async function DashboardPage() {
                     </div>
                   )}
 
-                  {/* ── Forma reciente ────────────────────────── */}
+                  {/* ── Forma + Entreno (móvil: 2 columnas) ────── */}
+                  {(recentForm.length > 0 || nextSession) && (
+                    <div className="lg:hidden grid gap-2" style={{ gridTemplateColumns: recentForm.length > 0 && nextSession ? '1fr 1fr' : '1fr' }}>
+                      {recentForm.length > 0 && (
+                        <div className="rounded-[12px] border p-3.5" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
+                          <p className="text-[9px] font-bold uppercase tracking-widest mb-2.5" style={{ color: 'var(--tx-4)' }}>Últimos {recentForm.length}</p>
+                          <div className="flex gap-1.5 flex-wrap">
+                            {recentForm.map((m, i) => {
+                              const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+                              const s = { V: { bg: '#72e697', text: '#07140c' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'rgba(248,113,113,0.18)', text: '#f87171' } }[res]
+                              return <span key={i} className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: s.bg, color: s.text }}>{res}</span>
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      {nextSession && lastSeason && (
+                        <Link href={`/dashboard/season/${lastSeason.id}/trainings`}
+                          className="rounded-[12px] border p-3.5 flex flex-col justify-center transition-all active:scale-[.98]"
+                          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
+                          <p className="text-[9px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--tx-4)' }}>Próx. entreno</p>
+                          <p className="text-[12px] font-bold" style={{ color: 'var(--tx)' }}>
+                            {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase())}
+                          </p>
+                          {nextSession.title && (
+                            <p className="text-[10px] mt-0.5 truncate" style={{ color: 'var(--tx-3)' }}>{nextSession.title}</p>
+                          )}
+                        </Link>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ── Forma reciente (solo desktop) ─────────── */}
                   {recentForm.length > 0 && (
-                    <div className="flex items-center justify-between px-1">
+                    <div className="hidden lg:flex items-center justify-between px-1">
                       <div>
                         <p className="mb-2 text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>Forma reciente</p>
                         <div className="flex gap-1.5">
@@ -472,7 +537,7 @@ export default async function DashboardPage() {
                         <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: 'var(--accent)', fontSize: 16 }}>groups</span>
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold" style={{ color: 'var(--tx)' }}>
-                            Disponibilidad · {nextMatchDayShort}
+                            Disponibilidad · {nextMatchDay}
                           </p>
                           <p className="text-[10px] mt-0.5" style={{ color: availCount > 0 ? '#72e697' : 'var(--tx-3)' }}>
                             {availCount > 0 ? `${availCount} de ${totalActive} disponibles` : 'Sin respuestas aún'}
@@ -495,17 +560,22 @@ export default async function DashboardPage() {
                     ))}
 
                     {topScorer && (
-                      <div className="flex items-start gap-2.5 rounded-[12px] border px-3.5 py-3"
+                      <div className="rounded-[12px] border px-3.5 py-3"
                         style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: '#facc15', fontSize: 16 }}>star</span>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[9px] font-extrabold uppercase tracking-widest mb-0.5" style={{ color: 'var(--tx-4)' }}>Máxima goleadora</p>
-                          <p className="text-[12px] font-bold truncate" style={{ color: 'var(--tx)' }}>{topScorer.name}</p>
-                          {topScorer.position && <p className="text-[10px]" style={{ color: 'var(--tx-3)' }}>{topScorer.position}</p>}
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest mb-2" style={{ color: 'var(--tx-4)' }}>Máxima goleadora</p>
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 text-[13px] font-black"
+                            style={{ backgroundColor: 'rgba(114,230,151,0.15)', color: '#72e697', border: '1px solid rgba(114,230,151,0.25)' }}>
+                            {topScorer.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[12px] font-bold truncate" style={{ color: 'var(--tx)' }}>{topScorer.name}</p>
+                            {topScorer.position && <p className="text-[10px]" style={{ color: 'var(--tx-3)' }}>{topScorer.position}</p>}
+                          </div>
+                          <span className="text-[28px] font-black tabular-nums leading-none flex-shrink-0" style={{ color: '#facc15', fontFamily: 'Sora, sans-serif' }}>
+                            {topScorer.goals}
+                          </span>
                         </div>
-                        <span className="text-[28px] font-black tabular-nums leading-none flex-shrink-0 mt-0.5" style={{ color: '#facc15', fontFamily: 'Sora, sans-serif' }}>
-                          {topScorer.goals}
-                        </span>
                       </div>
                     )}
 

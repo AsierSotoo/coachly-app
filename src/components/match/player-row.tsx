@@ -39,7 +39,7 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
     : convocatoriaStatus === 'titular'      ? 'titular'
     : convocatoriaStatus === 'no_convocada' ? 'no_convocada'
     : convocatoriaStatus === 'convocada'    ? 'suplente'
-    : 'no_convocada'
+    : 'suplente'
 
   const [status, setStatus] = useState<Status>(defaultStatus)
   const [minutes, setMinutes] = useState<number>(() => {
