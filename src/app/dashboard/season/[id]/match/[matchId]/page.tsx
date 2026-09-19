@@ -10,6 +10,7 @@ import { PageTransition } from '@/components/ui/page-transition'
 import { getFormation } from '@/lib/formations'
 import { ShareWhatsAppButton } from '@/components/match/share-whatsapp-button'
 import { MatchPrintSheet } from '@/components/match/match-print-sheet'
+import { PreMatchLineupPicker } from '@/components/match/pre-match-lineup-picker'
 import Link from 'next/link'
 
 export default async function MatchPage({
@@ -200,6 +201,7 @@ export default async function MatchPage({
             <div className="flex items-center gap-1.5">
               <RivalLogoUpload
                 matchId={matchId}
+                seasonId={seasonId}
                 currentUrl={(match as { rival_logo_url?: string | null }).rival_logo_url}
                 opponentName={match.opponent}
               />
@@ -249,10 +251,15 @@ export default async function MatchPage({
             {/* Equipo local */}
             <div className="flex flex-col items-center gap-1.5 flex-1 min-w-0">
               <div className="w-14 h-14 rounded-xl border overflow-hidden flex items-center justify-center"
-                style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
-                <span className="text-[13px] font-black" style={{ color: 'var(--tx)' }}>
-                  {team.name.trim().split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}
-                </span>
+                style={{ backgroundColor: team.logo_url ? 'white' : 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
+                {team.logo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={team.logo_url} alt={team.name} className="w-full h-full object-contain p-1" />
+                ) : (
+                  <span className="text-[13px] font-black" style={{ color: 'var(--tx)' }}>
+                    {team.name.trim().split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase()}
+                  </span>
+                )}
               </div>
               <p className="text-[13px] font-bold text-center leading-tight truncate w-full text-center" style={{ color: 'var(--tx)' }}>{team.name}</p>
               <p className="text-[10px] font-semibold" style={{ color: 'var(--tx-3)' }}>{match.home ? 'Local' : 'Visitante'}</p>
@@ -399,7 +406,24 @@ export default async function MatchPage({
           </div>
         )}
 
-        {/* Picker siempre visible en partidos programados — el entrenador lo rellena él mismo */}
+        {/* Alineación previa — solo en partidos programados */}
+        {isScheduled && players && players.length > 0 && (
+          <PreMatchLineupPicker
+            matchId={matchId}
+            seasonId={seasonId}
+            opponent={match.opponent}
+            playedAt={match.played_at}
+            convocatoriaId={convocatoriaId}
+            players={(players ?? []).map(p => ({ id: p.id, name: p.name, number: p.number, position: p.position }))}
+            initialStatuses={
+              Object.fromEntries(
+                Object.entries(convocatoriaStatuses).map(([k, v]) => [k, v as 'titular' | 'convocada' | 'no_convocada'])
+              )
+            }
+          />
+        )}
+
+        {/* Picker de disponibilidad — solo en partidos programados */}
         {isScheduled && players && players.length > 0 && (
           <div className="mb-6">
             <AvailabilityPicker
@@ -411,32 +435,33 @@ export default async function MatchPage({
           </div>
         )}
 
-        {/* Hoja imprimible — solo en partidos programados */}
-        {isScheduled && (
-          <div className="mb-6 rounded-2xl border p-4" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--tx-3)' }}>
-              Hoja del partido
-            </p>
-            <MatchPrintSheet
-              teamName={team.name}
-              teamLogo={team.logo_url}
-              opponent={match.opponent}
-              rivalLogo={(match as { rival_logo_url?: string | null }).rival_logo_url}
-              dateStr={dateStr}
-              matchTime={matchTimeStr}
-              venue={(match as { venue?: string | null }).venue}
-              matchIndex={matchIndex}
-              seasonName={season.name}
-              players={(sortedPlayers ?? []).map(p => ({
-                id: p.id,
-                name: p.name,
-                number: p.number,
-                position: p.position,
-                status: convocatoriaStatuses[p.id] ?? null,
-              }))}
-            />
-          </div>
-        )}
+        {/* Hoja imprimible — siempre visible */}
+        <div className="mb-6 rounded-2xl border p-4" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--tx-3)' }}>
+            Hoja del partido
+          </p>
+          <MatchPrintSheet
+            teamName={team.name}
+            teamLogo={team.logo_url}
+            opponent={match.opponent}
+            rivalLogo={(match as { rival_logo_url?: string | null }).rival_logo_url}
+            dateStr={dateStr}
+            matchTime={matchTimeStr}
+            venue={(match as { venue?: string | null }).venue}
+            matchIndex={matchIndex}
+            seasonName={season.name}
+            players={(sortedPlayers ?? []).map(p => {
+              const convStatus = convocatoriaStatuses[p.id] ?? null
+              if (!convStatus && !isScheduled) {
+                const app = appearances?.find(a => a.player_id === p.id)
+                if (app && (app.minutes ?? 0) > 0) {
+                  return { id: p.id, name: p.name, number: p.number, position: p.position, status: (app.starter ? 'titular' : 'convocada') as 'titular' | 'convocada' }
+                }
+              }
+              return { id: p.id, name: p.name, number: p.number, position: p.position, status: convStatus }
+            })}
+          />
+        </div>
 
         {/* Respuestas del enlace público — solo si la feature está activa y hay datos */}
         {!isScheduled && team.availability_enabled && !!((availRows as { player_id: string; status: string }[] | null)?.length) && players && players.length > 0 && (

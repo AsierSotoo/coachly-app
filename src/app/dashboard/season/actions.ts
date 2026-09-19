@@ -154,6 +154,32 @@ export async function deleteMatch(formData: FormData) {
   redirect(`/dashboard/season/${seasonId}`)
 }
 
+export async function setMatchRivalLogo(matchId: string, url: string, seasonId: string) {
+  const supabase = await createClient()
+  const { error } = await supabase.from('matches').update({ rival_logo_url: url }).eq('id', matchId)
+  if (error) throw new Error(error.message)
+  revalidatePath(`/dashboard/season/${seasonId}/match/${matchId}`)
+}
+
+export async function ensureMatchConvocatoria(
+  matchId: string,
+  seasonId: string,
+  opponent: string,
+  playedAt: string
+): Promise<string> {
+  const supabase = await createClient()
+  const { data: existing } = await supabase
+    .from('convocatorias').select('id').eq('match_id', matchId).maybeSingle()
+  if (existing?.id) return existing.id
+  const { data, error } = await supabase
+    .from('convocatorias')
+    .insert({ season_id: seasonId, match_id: matchId, opponent, played_at: playedAt })
+    .select('id').single()
+  if (error) throw new Error(error.message)
+  revalidatePath(`/dashboard/season/${seasonId}/match/${matchId}`)
+  return data.id
+}
+
 export async function updateSeasonLeague(formData: FormData) {
   const supabase = await createClient()
   const seasonId = formData.get('season_id') as string

@@ -4,14 +4,16 @@ import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import { compressImage } from '@/lib/compress-image'
 import { toast } from 'sonner'
+import { setMatchRivalLogo } from '@/app/dashboard/season/actions'
 
 interface Props {
   matchId: string
+  seasonId: string
   currentUrl?: string | null
   opponentName: string
 }
 
-export function RivalLogoUpload({ matchId, currentUrl, opponentName }: Props) {
+export function RivalLogoUpload({ matchId, seasonId, currentUrl, opponentName }: Props) {
   const [url, setUrl] = useState<string | null>(currentUrl ?? null)
   const [uploading, setUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -32,7 +34,13 @@ export function RivalLogoUpload({ matchId, currentUrl, opponentName }: Props) {
     if (uploadError) { toast.error(uploadError.message); setUploading(false); return }
 
     const { data } = supabase.storage.from('team-logos').getPublicUrl(path)
-    await supabase.from('matches').update({ rival_logo_url: data.publicUrl }).eq('id', matchId)
+    try {
+      await setMatchRivalLogo(matchId, data.publicUrl, seasonId)
+    } catch (e) {
+      toast.error('Error al guardar: ' + (e instanceof Error ? e.message : String(e)))
+      setUploading(false)
+      return
+    }
 
     setUrl(data.publicUrl + '?t=' + Date.now())
     toast.success('Escudo del rival actualizado')
