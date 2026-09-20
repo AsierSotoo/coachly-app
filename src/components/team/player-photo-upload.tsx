@@ -55,8 +55,8 @@ export function PlayerPhotoUpload({ playerId, currentUrl, playerName, size = 'lg
   return (
     <div
       onClick={() => !uploading && inputRef.current?.click()}
-      className={className ?? `relative flex ${dim} ${round} cursor-pointer items-center justify-center overflow-hidden border transition-all hover:border-green-500/50 group`} style={style ?? { borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
-      style={style}
+      className={className ?? `relative flex ${dim} ${round} cursor-pointer items-center justify-center overflow-hidden border transition-all hover:border-green-500/50 group`}
+      style={style ?? { borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
     >
       {uploading ? (
         <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: '#72e697' }}>progress_activity</span>
