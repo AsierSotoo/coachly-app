@@ -514,16 +514,17 @@ export default async function DashboardPage() {
                   </div>
 
                   {/* ── Sidebar: Esta semana ─────────────────── */}
-                  <div className="hidden lg:flex lg:flex-col lg:gap-2.5">
-                    <p className="text-[9px] font-extrabold uppercase tracking-widest mb-1" style={{ color: 'var(--tx-4)' }}>Esta semana</p>
+                  <div className="hidden lg:flex lg:flex-col lg:gap-2">
+                    <p className="text-[9px] font-extrabold uppercase tracking-widest mb-0.5" style={{ color: 'var(--tx-4)' }}>Esta semana</p>
 
-                    {nextSession && (
+                    {/* 1. Entrenamiento (o aviso de que no hay) */}
+                    {nextSession ? (
                       <Link href={`/dashboard/season/${lastSeason!.id}/trainings`}
-                        className="flex items-start gap-2.5 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: 'var(--accent)', fontSize: 16 }}>fitness_center</span>
+                        className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                        <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--accent)', fontSize: 18 }}>fitness_center</span>
                         <div className="min-w-0">
-                          <p className="text-[11px] font-bold truncate" style={{ color: 'var(--tx)' }}>
+                          <p className="text-[12px] font-bold truncate" style={{ color: 'var(--tx)' }}>
                             Entreno · {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase())}
                             {nextSession.start_time ? ` ${nextSession.start_time.slice(0, 5)}h` : ''}
                           </p>
@@ -532,15 +533,26 @@ export default async function DashboardPage() {
                           )}
                         </div>
                       </Link>
+                    ) : lastSeason && (
+                      <Link href={`/dashboard/season/${lastSeason.id}/trainings/new`}
+                        className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                        <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--tx-3)', fontSize: 18 }}>fitness_center</span>
+                        <div>
+                          <p className="text-[12px] font-bold" style={{ color: 'var(--tx-2)' }}>Sin entrenos planificados</p>
+                          <p className="text-[10px] mt-0.5" style={{ color: 'var(--tx-4)' }}>Añadir entrenamiento</p>
+                        </div>
+                      </Link>
                     )}
 
+                    {/* 2. Disponibilidad próximo partido */}
                     {nextMatch && totalActive > 0 && (
                       <Link href={`/dashboard/season/${lastSeason!.id}/match/${nextMatch.id}`}
-                        className="flex items-start gap-2.5 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: 'var(--accent)', fontSize: 16 }}>groups</span>
+                        className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                        <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--accent)', fontSize: 18 }}>groups</span>
                         <div className="min-w-0">
-                          <p className="text-[11px] font-bold" style={{ color: 'var(--tx)' }}>
+                          <p className="text-[12px] font-bold" style={{ color: 'var(--tx)' }}>
                             Disponibilidad · {nextMatchDay}
                           </p>
                           <p className="text-[10px] mt-0.5" style={{ color: availCount > 0 ? '#72e697' : 'var(--tx-3)' }}>
@@ -550,50 +562,39 @@ export default async function DashboardPage() {
                       </Link>
                     )}
 
+                    {/* 3. Alertas amarillas */}
                     {yellowAlerts.slice(0, 2).map(alert => (
                       <Link key={alert.playerId} href={`/dashboard/season/${lastSeason!.id}/stats`}
-                        className="flex items-start gap-2.5 rounded-[12px] border px-3.5 py-3 transition-all"
-                        style={{ backgroundColor: 'rgba(251,191,36,0.04)', borderColor: 'rgba(251,191,36,0.18)' }}>
-                        <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: '#fbbf24', fontSize: 16 }}>warning</span>
+                        className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all"
+                        style={{ backgroundColor: 'rgba(251,191,36,0.04)', borderColor: 'rgba(251,191,36,0.25)' }}>
+                        <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#fbbf24', fontSize: 18 }}>warning</span>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[11px] font-bold truncate" style={{ color: '#fbbf24' }}>{alert.name} · {alert.count} amarillas</p>
+                          <p className="text-[12px] font-bold truncate" style={{ color: '#fbbf24' }}>{alert.name} · {alert.count} amarillas</p>
                           <p className="text-[10px] mt-0.5" style={{ color: '#fde68a', opacity: 0.7 }}>A una sanción de baja</p>
                         </div>
-                        <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 14, color: '#fbbf24', opacity: 0.5 }}>chevron_right</span>
+                        <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: '#fbbf24', opacity: 0.5 }}>chevron_right</span>
                       </Link>
                     ))}
 
+                    {/* 4. Máxima goleadora */}
                     {topScorer && (
                       <div className="rounded-[12px] border px-3.5 py-3"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                        <p className="text-[9px] font-extrabold uppercase tracking-widest mb-2" style={{ color: 'var(--tx-4)' }}>Máxima goleadora</p>
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                        <p className="text-[9px] font-extrabold uppercase tracking-widest mb-2.5" style={{ color: 'var(--tx-4)' }}>Máxima goleadora</p>
                         <div className="flex items-center gap-2.5">
-                          <div className="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 text-[13px] font-black"
+                          <div className="h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0 text-[14px] font-black"
                             style={{ backgroundColor: 'rgba(114,230,151,0.15)', color: '#72e697', border: '1px solid rgba(114,230,151,0.25)' }}>
                             {topScorer.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-[12px] font-bold truncate" style={{ color: 'var(--tx)' }}>{topScorer.name}</p>
-                            {topScorer.position && <p className="text-[10px]" style={{ color: 'var(--tx-3)' }}>{topScorer.position}</p>}
+                            <p className="text-[13px] font-bold truncate" style={{ color: 'var(--tx)' }}>{topScorer.name}</p>
+                            {topScorer.position && <p className="text-[11px]" style={{ color: 'var(--tx-3)' }}>{topScorer.position}</p>}
                           </div>
-                          <span className="text-[28px] font-black tabular-nums leading-none flex-shrink-0" style={{ color: '#facc15', fontFamily: 'Sora, sans-serif' }}>
+                          <span className="text-[32px] font-black tabular-nums leading-none flex-shrink-0" style={{ color: '#facc15', fontFamily: 'Sora, sans-serif' }}>
                             {topScorer.goals}
                           </span>
                         </div>
                       </div>
-                    )}
-
-                    {/* Sin entrenos: solo si no hay ninguna tarjeta de entreno arriba */}
-                    {!nextSession && lastSeason && (
-                      <Link href={`/dashboard/season/${lastSeason.id}/trainings/new`}
-                        className="flex items-start gap-2.5 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: 'var(--tx-4)', fontSize: 16 }}>fitness_center</span>
-                        <div>
-                          <p className="text-[11px] font-bold" style={{ color: 'var(--tx-2)' }}>Sin entrenos planificados</p>
-                          <p className="text-[10px] mt-0.5" style={{ color: 'var(--tx-4)' }}>Añadir entrenamiento</p>
-                        </div>
-                      </Link>
                     )}
                   </div>
 
