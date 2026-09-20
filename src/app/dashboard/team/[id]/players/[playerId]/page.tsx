@@ -260,15 +260,15 @@ export default async function PlayerDetailPage({
                 <div className="flex-1 flex flex-col gap-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Nombre</label>
                   <input name="name" type="text" required defaultValue={player.name}
-                    className="h-10 rounded-xl px-3 text-sm focus:outline-none transition-colors" style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
-                    style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }} />
+                    className="h-10 rounded-xl px-3 text-sm focus:outline-none transition-colors"
+                    style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)', color: 'var(--tx)' }} />
                 </div>
                 <div className="w-20 flex flex-col gap-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Dorsal</label>
                   <input name="number" type="number" min="1" max="99" defaultValue={player.number ?? ''}
                     placeholder="—"
-                    className="h-10 rounded-xl px-3 text-sm text-center focus:outline-none transition-colors" style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
-                    style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }} />
+                    className="h-10 rounded-xl px-3 text-sm text-center focus:outline-none transition-colors"
+                    style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)', color: 'var(--tx)' }} />
                 </div>
               </div>
 
