@@ -33,23 +33,23 @@
 
 /* ── Design tokens — light ────────────────────────────────────── */
 :root[data-theme="light"] {
-  --bg:         #c8d5cb;
-  --bg-card:    #d4dfd6;
-  --bg-card-2:  #cfd9d1;
-  --bg-elevated:#bfcec2;
-  --bg-input:   #ccd7ce;
-  --bdr-strong: #8fa899;
-  --bdr:        #9eb5a6;
-  --bdr-subtle: #b2c4b8;
-  --tx:         #0a1a0e;
-  --tx-2:       #253b2b;
-  --tx-3:       #3d5a47;
-  --tx-4:       #617a6a;
-  --accent:        #0a7a35;
+  --bg:         #8fa99a;
+  --bg-card:    #f0f6f2;
+  --bg-card-2:  #e8f1ea;
+  --bg-elevated:#dfeae1;
+  --bg-input:   #edf4ef;
+  --bdr-strong: #5e8271;
+  --bdr:        #78987f;
+  --bdr-subtle: #9ab5a2;
+  --tx:         #071810;
+  --tx-2:       #1c3826;
+  --tx-3:       #3a5a47;
+  --tx-4:       #5e7a68;
+  --accent:        #097a30;
   --accent-fg:     #ffffff;
-  --accent-subtle: rgba(10,122,53,0.1);
-  --accent-rgb:    10,122,53;
-  --shadow-card: 0 2px 8px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.06);
+  --accent-subtle: rgba(9,122,48,0.1);
+  --accent-rgb:    9,122,48;
+  --shadow-card: 0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
   --background: var(--bg);
   --foreground: var(--tx);
   --card:       var(--bg-card);
