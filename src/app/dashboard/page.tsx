@@ -24,7 +24,7 @@ type Season = {
   league_position?: number | null
   league_total_teams?: number | null
   matches: Match[]
-  training_sessions: { id: string; date: string; title: string | null }[]
+  training_sessions: { id: string; date: string; title: string | null; start_time?: string | null }[]
 }
 
 type Team = {
@@ -43,7 +43,7 @@ export default async function DashboardPage() {
 
   const { data: raw } = await supabase
     .from('teams')
-    .select('*, seasons(id, name, created_at, league_position, league_total_teams, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home), training_sessions(id, date, title)), players(id, active)')
+    .select('*, seasons(id, name, created_at, league_position, league_total_teams, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home), training_sessions(id, date, title, start_time)), players(id, active)')
     .order('created_at', { ascending: true })
 
   const teams = (raw ?? []) as Team[]
@@ -318,7 +318,7 @@ export default async function DashboardPage() {
 
                           {/* Center */}
                           <div className="flex flex-col items-center flex-shrink-0 w-20">
-                            <span className="text-[9px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--tx-4)' }}>J{matchIndex + 1}</span>
+                            <span className="text-[9px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--tx-4)' }}>Jornada {matchIndex + 1}</span>
                             <span className="text-[26px] font-black leading-none" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>VS</span>
                             {nextMatch.home !== undefined && (
                               <span className="text-[9px] mt-1" style={{ color: 'var(--tx-4)' }}>{nextMatch.home ? 'Local' : 'Visitante'}</span>
@@ -525,6 +525,7 @@ export default async function DashboardPage() {
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold truncate" style={{ color: 'var(--tx)' }}>
                             Entreno · {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase())}
+                            {nextSession.start_time ? ` ${nextSession.start_time.slice(0, 5)}h` : ''}
                           </p>
                           {nextSession.title && (
                             <p className="text-[10px] mt-0.5 truncate" style={{ color: 'var(--tx-3)' }}>{nextSession.title}</p>
