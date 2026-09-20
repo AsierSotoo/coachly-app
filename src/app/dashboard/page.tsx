@@ -24,7 +24,7 @@ type Season = {
   league_position?: number | null
   league_total_teams?: number | null
   matches: Match[]
-  training_sessions: { id: string; date: string; title: string | null; start_time?: string | null; location?: string | null }[]
+  training_sessions: { id: string; date: string; title: string | null }[]
 }
 
 type Team = {
@@ -43,7 +43,7 @@ export default async function DashboardPage() {
 
   const { data: raw } = await supabase
     .from('teams')
-    .select('*, seasons(id, name, created_at, league_position, league_total_teams, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home), training_sessions(id, date, title, start_time, location)), players(id, active)')
+    .select('*, seasons(id, name, created_at, league_position, league_total_teams, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home), training_sessions(id, date, title)), players(id, active)')
     .order('created_at', { ascending: true })
 
   const teams = (raw ?? []) as Team[]
@@ -525,12 +525,9 @@ export default async function DashboardPage() {
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold truncate" style={{ color: 'var(--tx)' }}>
                             Entreno · {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase())}
-                            {nextSession.start_time ? ` ${nextSession.start_time.slice(0, 5)}h` : ''}
                           </p>
-                          {(nextSession.title || nextSession.location) && (
-                            <p className="text-[10px] mt-0.5 truncate" style={{ color: 'var(--tx-3)' }}>
-                              {[nextSession.title, nextSession.location].filter(Boolean).join(' · ')}
-                            </p>
+                          {nextSession.title && (
+                            <p className="text-[10px] mt-0.5 truncate" style={{ color: 'var(--tx-3)' }}>{nextSession.title}</p>
                           )}
                         </div>
                       </Link>
