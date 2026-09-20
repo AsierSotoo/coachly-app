@@ -138,7 +138,7 @@ export default async function DashboardPage() {
   }
 
   const firstTeam   = teams[0]
-  const firstSeasons = firstTeam?.seasons ?? []
+  const firstSeasons = [...(firstTeam?.seasons ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at))
   const firstSeason = firstSeasons[0]
 
   return (
