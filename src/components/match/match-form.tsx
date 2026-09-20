@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -148,7 +148,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         {/* Resultado */}
         {(() => {
           const liveResult = liveGoals > liveGoalsAgainst ? 'V' : liveGoals < liveGoalsAgainst ? 'D' : 'E'
-          const resultColor = liveResult === 'V' ? '#72e697' : liveResult === 'D' ? '#f87171' : '#fbbf24'
+          const resultColor = liveResult === 'V' ? 'var(--accent)' : liveResult === 'D' ? '#f87171' : '#fbbf24'
           const resultBg = liveResult === 'V' ? 'rgba(75,226,119,0.08)' : liveResult === 'D' ? 'rgba(248,113,113,0.08)' : 'rgba(251,191,36,0.08)'
           const resultBorder = liveResult === 'V' ? 'rgba(75,226,119,0.2)' : liveResult === 'D' ? 'rgba(248,113,113,0.2)' : 'rgba(251,191,36,0.2)'
           const resultLabel = liveResult === 'V' ? 'Victoria' : liveResult === 'D' ? 'Derrota' : 'Empate'
@@ -173,7 +173,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
                     title="Se calcula automáticamente de los goles individuales">
                     {liveGoals}
                   </div>
-                  <p className="mt-1.5 text-[9px]" style={{ color: '#72e697', opacity: 0.6 }}>Auto ⚽</p>
+                  <p className="mt-1.5 text-[9px]" style={{ color: 'var(--accent)', opacity: 0.6 }}>Auto ⚽</p>
                 </div>
                 <div className="flex flex-col items-center gap-1 flex-shrink-0">
                   <span className="text-2xl font-black" style={{ color: '#334155' }}>:</span>
@@ -306,7 +306,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         <section className="lg:hidden">
           <div className="flex items-center gap-4 text-xs px-1 mb-3" style={{ color: '#637168' }}>
             {([
-              { k: 'T', l: 'Titular',         bg: '#72e697', color: '#07140c' },
+              { k: 'T', l: 'Titular',         bg: 'var(--accent)', color: 'var(--accent-fg)' },
               { k: 'S', l: 'Suplente',        bg: '#2a342d', color: '#89968e' },
               { k: '–', l: `No ${terms.called}`, bg: '#111713', color: '#637168' },
             ]).map(({ k, l, bg, color }) => (
@@ -348,7 +348,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       ) : (
         <button type="submit"
           className="flex h-14 items-center justify-center gap-2 rounded-2xl text-sm font-bold text-white active:scale-[0.98] transition-all cursor-pointer shadow-lg"
-          style={{ backgroundColor: '#72e697', boxShadow: '0 4px 20px rgba(34,197,94,0.2)', color: '#fff' }}>
+          style={{ backgroundColor: 'var(--accent)', boxShadow: '0 4px 20px rgba(34,197,94,0.2)', color: '#fff' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
           Guardar partido
         </button>
@@ -359,7 +359,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         style={{ bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))', paddingBottom: 8 }}>
         <button type="submit" name="new_status" value={isScheduled ? 'finished' : ''}
           className="pointer-events-auto w-full flex items-center justify-center gap-2 rounded-2xl text-sm font-bold shadow-2xl active:scale-[0.98] transition-all cursor-pointer"
-          style={{ height: 52, backgroundColor: isScheduled ? '#f59e0b' : '#72e697', color: isScheduled ? '#1c1203' : '#fff' }}>
+          style={{ height: 52, backgroundColor: isScheduled ? '#f59e0b' : 'var(--accent)', color: isScheduled ? '#1c1203' : '#fff' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
             {isScheduled ? 'check_circle' : 'save'}
           </span>

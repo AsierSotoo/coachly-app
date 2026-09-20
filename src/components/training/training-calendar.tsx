@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -127,8 +127,8 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                 <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: '#f59e0b' }} />
                 {monthMatches.length} partido{monthMatches.length !== 1 ? 's' : ''}
               </span>
-              <span className="flex items-center gap-1.5 text-[11px] font-bold" style={{ color: '#72e697' }}>
-                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: '#72e697' }} />
+              <span className="flex items-center gap-1.5 text-[11px] font-bold" style={{ color: 'var(--accent)' }}>
+                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: 'var(--accent)' }} />
                 {monthSessions.length} entreno{monthSessions.length !== 1 ? 's' : ''}
               </span>
             </div>
@@ -169,8 +169,8 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
 
                 <span className="text-sm flex items-center justify-center w-7 h-7 rounded-full transition-all"
                   style={{
-                    backgroundColor: isToday ? '#72e697' : 'transparent',
-                    color: isToday ? '#07140c' : hasS || hasM ? '#f1f5f9' : isWeekend ? '#b45309' : '#637168',
+                    backgroundColor: isToday ? 'var(--accent)' : 'transparent',
+                    color: isToday ? 'var(--accent-fg)' : hasS || hasM ? '#f1f5f9' : isWeekend ? '#b45309' : '#637168',
                     fontWeight: isToday || hasS || hasM ? 700 : 400,
                   }}>
                   {day}
@@ -181,7 +181,7 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                     <Link href={`/dashboard/season/${seasonId}/trainings/${daySessions[0].id}`}
                       title={daySessions[0].title ?? 'Entrenamiento'}
                       className="flex items-center justify-center w-5 h-5">
-                      <span className="w-2 h-2 rounded-full block" style={{ backgroundColor: '#72e697' }} />
+                      <span className="w-2 h-2 rounded-full block" style={{ backgroundColor: 'var(--accent)' }} />
                     </Link>
                   )}
                   {hasM && (
@@ -197,8 +197,8 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
 
         {/* Leyenda */}
         <div className="flex items-center justify-center gap-6 px-5 py-3 border-t" style={{ borderColor: '#253028', backgroundColor: '#0b100d' }}>
-          <span className="flex items-center gap-2 text-[11px] font-semibold" style={{ color: '#72e697' }}>
-            <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: '#72e697' }} /> Entrenamiento
+          <span className="flex items-center gap-2 text-[11px] font-semibold" style={{ color: 'var(--accent)' }}>
+            <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: 'var(--accent)' }} /> Entrenamiento
           </span>
           <span className="flex items-center gap-2 text-[11px] font-semibold" style={{ color: '#f59e0b' }}>
             <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: '#f59e0b' }} /> Partido
@@ -230,7 +230,7 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
             <Link
               href={`/dashboard/season/${seasonId}/trainings/new?date=${defaultDate}`}
               className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all active:scale-95 min-h-[44px]"
-              style={{ backgroundColor: '#72e697', color: '#07140c' }}>
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 15 }}>add</span>
               Sesión
             </Link>
@@ -264,7 +264,7 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                         <Link href={`/dashboard/season/${seasonId}/match/${m.id}`}
                           className="flex items-center gap-3 px-5 py-3.5 hover:bg-[#111713] transition-colors group">
                           <span className="w-2 h-2 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: isScheduled ? '#f59e0b' : won ? '#72e697' : lost ? '#f87171' : '#94a3b8' }} />
+                            style={{ backgroundColor: isScheduled ? '#f59e0b' : won ? 'var(--accent)' : lost ? '#f87171' : '#94a3b8' }} />
                           <div className="flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
                               <p className="text-sm font-bold text-white">{m.home ? 'vs' : '@'} {m.opponent}</p>
@@ -277,7 +277,7 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                                 <span className="text-[10px] font-black px-2 py-0.5 rounded-full"
                                   style={{
                                     backgroundColor: won ? 'rgba(34,197,94,0.15)' : lost ? 'rgba(248,113,113,0.15)' : 'rgba(148,163,184,0.15)',
-                                    color: won ? '#72e697' : lost ? '#f87171' : '#94a3b8',
+                                    color: won ? 'var(--accent)' : lost ? '#f87171' : '#94a3b8',
                                   }}>
                                   {m.goals_for}-{m.goals_against}
                                 </span>
@@ -298,8 +298,8 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
             {sortedS.length > 0 && (
               <div className={sortedM.length > 0 ? 'border-t' : ''} style={{ borderColor: '#253028' }}>
                 <div className="flex items-center gap-2 px-5 py-2.5 border-b" style={{ borderColor: '#253028', backgroundColor: 'rgba(34,197,94,0.06)' }}>
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#72e697' }} />
-                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#72e697' }}>Entrenamientos</p>
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--accent)' }}>Entrenamientos</p>
                 </div>
                 <ul className="divide-y" style={{ borderColor: '#253028' }}>
                   {sortedS.map(s => {
@@ -309,7 +309,7 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                       <li key={s.id}>
                         <Link href={`/dashboard/season/${seasonId}/trainings/${s.id}`}
                           className="flex items-center gap-3 px-5 py-3.5 hover:bg-[#111713] transition-colors group">
-                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#72e697' }} />
+                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <p className="text-sm font-bold text-white capitalize">
@@ -317,7 +317,7 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                               </p>
                               {s.duration_min && (
                                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                                  style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#72e697' }}>
+                                  style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: 'var(--accent)' }}>
                                   {s.duration_min} min
                                 </span>
                               )}

@@ -1,4 +1,4 @@
-import { PlayerAvatar } from '@/components/team/player-avatar'
+﻿import { PlayerAvatar } from '@/components/team/player-avatar'
 
 type Status = 'available' | 'unavailable' | 'doubt'
 
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const CHIP = {
-  available:   { label: 'Voy',      color: '#72e697', bg: 'rgba(75,226,119,0.12)',  icon: 'check_circle' },
+  available:   { label: 'Voy',      color: 'var(--accent)', bg: 'rgba(75,226,119,0.12)',  icon: 'check_circle' },
   doubt:       { label: 'Duda',     color: '#fbbf24', bg: 'rgba(251,191,36,0.12)',  icon: 'help' },
   unavailable: { label: 'No puedo', color: '#f87171', bg: 'rgba(248,113,113,0.12)', icon: 'cancel' },
 } as const
@@ -41,7 +41,7 @@ export function AvailabilityCoachCard({ players, responses }: Props) {
         </div>
         <div className="flex items-center gap-2 text-[11px] font-bold">
           {yes.length > 0 && (
-            <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#72e697' }}>✓ {yes.length}</span>
+            <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: 'var(--accent)' }}>✓ {yes.length}</span>
           )}
           {doubt.length > 0 && (
             <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(251,191,36,0.1)', color: '#fbbf24' }}>? {doubt.length}</span>

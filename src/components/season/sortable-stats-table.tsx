@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -58,7 +58,7 @@ export function SortableStatsTable({ stats, playerLabel, teamId }: { stats: Play
     const active = sortKey === col
     return (
       <th className={`px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-center cursor-pointer select-none hover:opacity-80 transition-opacity${className ? ` ${className}` : ''}`}
-        style={{ color: active ? '#72e697' : '#89968e' }}
+        style={{ color: active ? 'var(--accent)' : '#89968e' }}
         onClick={() => toggleSort(col)}
         title={title}>
         {label}
@@ -98,7 +98,7 @@ export function SortableStatsTable({ stats, playerLabel, teamId }: { stats: Play
                 style={{ backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.4)' }}>
                 <td className="px-3 py-2.5 text-center">
                   <span className="text-[11px] font-black"
-                    style={{ color: i === 0 ? '#72e697' : i === 1 ? '#89968e' : i === 2 ? '#9d8050' : '#334155' }}>
+                    style={{ color: i === 0 ? 'var(--accent)' : i === 1 ? '#89968e' : i === 2 ? '#9d8050' : '#334155' }}>
                     {i + 1}
                   </span>
                 </td>
@@ -120,7 +120,7 @@ export function SortableStatsTable({ stats, playerLabel, teamId }: { stats: Play
                 </td>
                 <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: '#89968e' }}>{s.gamesPlayed}</td>
                 <td className="hidden sm:table-cell px-3 py-2.5 text-center text-xs" style={{ color: '#637168' }}>{s.minutes}</td>
-                <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.goals > 0 ? '#72e697' : '#334155' }}>{s.goals}</td>
+                <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.goals > 0 ? 'var(--accent)' : '#334155' }}>{s.goals}</td>
                 <td className="hidden sm:table-cell px-3 py-2.5 text-center text-xs font-bold"
                   style={{ color: g90raw >= 0 && s.goals > 0 ? '#a3e635' : '#334155' }}>{g90}</td>
                 <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.assists > 0 ? '#facc15' : '#334155' }}>{s.assists}</td>

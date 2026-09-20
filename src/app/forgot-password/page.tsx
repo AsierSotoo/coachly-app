@@ -15,7 +15,7 @@ export default function ForgotPasswordPage({
         <div className="w-14 h-14 rounded-2xl overflow-hidden transition-transform group-hover:scale-105 shadow-lg shadow-green-500/20">
           <img src="/logo.png" alt="Coachly" className="w-full h-full object-cover" />
         </div>
-        <span className="text-sm font-bold" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
+        <span className="text-sm font-bold" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
       </Link>
 
       {/* Card */}
@@ -23,7 +23,7 @@ export default function ForgotPasswordPage({
         style={{ backgroundColor: '#111713' }}>
 
         <div className="mb-6 text-center">
-          <span className="material-symbols-outlined mb-3 block" style={{ color: '#72e697', fontSize: 36 }}>lock_reset</span>
+          <span className="material-symbols-outlined mb-3 block" style={{ color: 'var(--accent)', fontSize: 36 }}>lock_reset</span>
           <h1 className="text-xl font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
             Recuperar contraseña
           </h1>
@@ -46,7 +46,7 @@ async function FeedbackContent({ searchParams }: { searchParams: Promise<{ error
       <div className="flex flex-col items-center text-center gap-4">
         <div className="flex h-16 w-16 items-center justify-center rounded-full"
           style={{ backgroundColor: 'rgba(34,197,94,0.1)', border: '2px solid rgba(34,197,94,0.3)' }}>
-          <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 32, fontVariationSettings: "'FILL' 1" }}>
+          <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 32, fontVariationSettings: "'FILL' 1" }}>
             mark_email_read
           </span>
         </div>
@@ -58,7 +58,7 @@ async function FeedbackContent({ searchParams }: { searchParams: Promise<{ error
         </div>
         <Link href="/login"
           className="mt-2 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition-all active:scale-95 w-full"
-          style={{ backgroundColor: '#72e697', color: '#07140c', minHeight: 44 }}>
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', minHeight: 44 }}>
           <span className="material-symbols-outlined text-lg">arrow_back</span>
           Volver al login
         </Link>
@@ -87,7 +87,7 @@ async function FeedbackContent({ searchParams }: { searchParams: Promise<{ error
 
       <button type="submit"
         className="flex items-center justify-center rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
-        style={{ backgroundColor: '#72e697', color: '#07140c', minHeight: 44, boxShadow: '0 0 12px rgba(34,197,94,0.2)' }}>
+        style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', minHeight: 44, boxShadow: '0 0 12px rgba(34,197,94,0.2)' }}>
         Enviar enlace
       </button>
 

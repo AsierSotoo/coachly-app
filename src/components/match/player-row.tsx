@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -101,7 +101,7 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
         <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position} size="sm" />
         <div
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-[family-name:var(--font-heading)] text-xs font-black"
-          style={{ border: '1px solid #2a342d', backgroundColor: '#111713', color: '#72e697' }}
+          style={{ border: '1px solid #2a342d', backgroundColor: '#111713', color: 'var(--accent)' }}
         >
           {player.number ?? '—'}
         </div>
@@ -122,10 +122,10 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
               className="flex h-11 w-10 items-center justify-center text-xs font-bold transition-all active:scale-95"
               style={{
                 backgroundColor: status === s
-                  ? s === 'no_convocada' ? '#253028' : '#72e697'
+                  ? s === 'no_convocada' ? '#253028' : 'var(--accent)'
                   : 'transparent',
                 color: status === s
-                  ? s === 'no_convocada' ? '#94a3b8' : '#07140c'
+                  ? s === 'no_convocada' ? '#94a3b8' : 'var(--accent-fg)'
                   : '#637168',
               }}
             >
@@ -157,7 +157,7 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
                   type="number" min="0" max={120}
                   value={minutes}
                   onChange={e => setMinutes(Number(e.target.value))}
-                  className="h-10 w-full text-center text-base font-bold tabular-nums focus:outline-none transition-colors border-[#2a342d] focus:border-[#72e697]/60"
+                  className="h-10 w-full text-center text-base font-bold tabular-nums focus:outline-none transition-colors border-[#2a342d] focus:border-[var(--accent)]/60"
                   style={{
                     border: '1px solid',
                     borderBottomWidth: 0,

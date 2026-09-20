@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
@@ -59,7 +59,7 @@ export function PlayerPhotoUpload({ playerId, currentUrl, playerName, size = 'lg
       style={style ?? { borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
     >
       {uploading ? (
-        <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: '#72e697' }}>progress_activity</span>
+        <span className="material-symbols-outlined animate-spin" style={{ fontSize: 20, color: 'var(--accent)' }}>progress_activity</span>
       ) : url ? (
         <>
           <Image src={url} alt={playerName} fill className="object-cover" unoptimized />

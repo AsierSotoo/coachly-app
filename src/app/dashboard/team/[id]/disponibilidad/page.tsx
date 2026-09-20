@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { createAdminClient } from '@/lib/supabase-admin'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -186,7 +186,7 @@ export default async function DisponibilidadPage({
               backgroundColor: isMatch ? 'rgba(75,226,119,0.1)' : 'rgba(251,191,36,0.1)',
               border: `1px solid ${isMatch ? 'rgba(75,226,119,0.2)' : 'rgba(251,191,36,0.2)'}`,
             }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 16, color: isMatch ? '#72e697' : '#fbbf24', fontVariationSettings: "'FILL' 1" }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16, color: isMatch ? 'var(--accent)' : '#fbbf24', fontVariationSettings: "'FILL' 1" }}>
               {isMatch ? 'sports_soccer' : 'fitness_center'}
             </span>
           </div>
@@ -201,8 +201,8 @@ export default async function DisponibilidadPage({
         {total > 0 ? (
           <div className="flex items-center gap-5 px-4 py-3">
             <div className="flex items-center gap-1.5">
-              <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#72e697', fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-              <span className="text-sm font-bold" style={{ color: '#72e697' }}>{ev.counts.y}</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--accent)', fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              <span className="text-sm font-bold" style={{ color: 'var(--accent)' }}>{ev.counts.y}</span>
               <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>Voy</span>
             </div>
             <div className="flex items-center gap-1.5">

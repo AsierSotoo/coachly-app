@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 
@@ -41,8 +41,8 @@ export function EvolutionChart({ points }: { points: ChartMatch[] }) {
       >
         <defs>
           <linearGradient id="evoGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#72e697" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#72e697" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -64,11 +64,11 @@ export function EvolutionChart({ points }: { points: ChartMatch[] }) {
         <path d={areaPath} fill="url(#evoGrad)" />
 
         {/* Línea */}
-        <path d={linePath} fill="none" stroke="#72e697" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <path d={linePath} fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
 
         {/* Puntos */}
         {points.map((p, i) => {
-          const dotColor = p.result === 'V' ? '#72e697' : p.result === 'D' ? '#f87171' : '#94a3b8'
+          const dotColor = p.result === 'V' ? 'var(--accent)' : p.result === 'D' ? '#f87171' : '#94a3b8'
           const isHov = hovered === i
           return (
             <g key={i}>
@@ -111,7 +111,7 @@ export function EvolutionChart({ points }: { points: ChartMatch[] }) {
               <text x={tipX + 8} y={tipY + 28} fontSize="11" fontWeight="bold" fill="#edf2ee" fontFamily="Sora, sans-serif">
                 {p.gf}–{p.ga} · {p.result}
               </text>
-              <text x={tipX + 8} y={tipY + 43} fontSize="10" fill="#72e697" fontFamily="Sora, sans-serif">
+              <text x={tipX + 8} y={tipY + 43} fontSize="10" fill="var(--accent)" fontFamily="Sora, sans-serif">
                 {p.cumPoints} pts acumulados
               </text>
             </g>

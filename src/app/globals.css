@@ -17,6 +17,7 @@
   --accent:        #72e697;
   --accent-fg:     #07140c;
   --accent-subtle: rgba(114,230,151,0.09);
+  --accent-rgb:    114,230,151;
   --shadow-card: 0 4px 20px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
   /* Legacy aliases */
   --background: var(--bg);
@@ -47,6 +48,7 @@
   --accent:        #0d8c3e;
   --accent-fg:     #ffffff;
   --accent-subtle: rgba(13,140,62,0.08);
+  --accent-rgb:    13,140,62;
   --shadow-card: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
   --background: var(--bg);
   --foreground: var(--tx);

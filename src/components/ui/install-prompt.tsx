@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 
@@ -62,7 +62,7 @@ export function InstallPrompt() {
     >
       {/* Icono */}
       <div className="w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden"
-        style={{ backgroundColor: '#72e697' }}>
+        style={{ backgroundColor: 'var(--accent)' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/icons/icon-192.png" alt="Coachly" className="w-full h-full object-cover" />
       </div>
@@ -85,7 +85,7 @@ export function InstallPrompt() {
           <button
             onClick={handleInstall}
             className="px-3 py-2 rounded-xl text-xs font-bold active:scale-95 transition-transform"
-            style={{ backgroundColor: '#72e697', color: '#07140c' }}
+            style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}
           >
             Instalar
           </button>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useTransition, useState } from 'react'
 import { setPlayerAvailability } from '@/lib/availability-actions'
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const BUTTONS: { status: 'available' | 'doubt' | 'unavailable'; label: string; icon: string; color: string; bg: string; border: string }[] = [
-  { status: 'available',   label: 'Disponible',    icon: 'check', color: '#72e697', bg: 'rgba(75,226,119,0.15)',  border: 'rgba(75,226,119,0.35)'  },
+  { status: 'available',   label: 'Disponible',    icon: 'check', color: 'var(--accent)', bg: 'rgba(75,226,119,0.15)',  border: 'rgba(75,226,119,0.35)'  },
   { status: 'doubt',       label: 'Duda',          icon: 'help',  color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.35)'  },
   { status: 'unavailable', label: 'No disponible', icon: 'close', color: '#f87171', bg: 'rgba(248,113,113,0.15)', border: 'rgba(248,113,113,0.35)' },
 ]
@@ -55,7 +55,7 @@ export function AvailabilityPicker({ matchId, seasonId, players, initialAvailabi
         </div>
         <div className="flex items-center gap-2 text-[11px] font-bold">
           {available.length > 0 && (
-            <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#72e697' }}>
+            <span className="px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: 'var(--accent)' }}>
               ✓ {available.length}
             </span>
           )}

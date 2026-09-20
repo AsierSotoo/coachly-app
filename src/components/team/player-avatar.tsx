@@ -1,11 +1,11 @@
-import Image from 'next/image'
+﻿import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 const POSITION_STYLES: Record<string, { bg: string; color: string }> = {
   Portera:        { bg: 'rgba(251,191,36,0.18)',  color: '#fbbf24' },
   Portero:        { bg: 'rgba(251,191,36,0.18)',  color: '#fbbf24' },
   Defensa:        { bg: 'rgba(96,165,250,0.18)',  color: '#60a5fa' },
-  Centrocampista: { bg: 'rgba(114,230,151,0.18)', color: '#72e697' },
+  Centrocampista: { bg: 'rgba(var(--accent-rgb),0.18)', color: 'var(--accent)' },
   Delantera:      { bg: 'rgba(248,113,113,0.18)', color: '#f87171' },
   Delantero:      { bg: 'rgba(248,113,113,0.18)', color: '#f87171' },
 }

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import Image from 'next/image'
@@ -10,28 +10,28 @@ const steps = [
     icon: 'event_available',
     action: 'Disponibilidad abierta',
     detail: '16 / 18 confirmadas en 2 horas',
-    color: '#72e697',
+    color: 'var(--accent)',
   },
   {
     day: 'Jueves',
     icon: 'groups',
     action: 'Convocatoria lista',
     detail: 'Once elegido, PDF listo para compartir',
-    color: '#72e697',
+    color: 'var(--accent)',
   },
   {
     day: 'Sábado',
     icon: 'sports_soccer',
     action: 'Partido registrado',
     detail: 'Goles, minutos y tarjetas en 4 minutos',
-    color: '#72e697',
+    color: 'var(--accent)',
   },
   {
     day: 'Domingo',
     icon: 'query_stats',
     action: 'Rankings actualizados',
     detail: 'Goleadoras, carga y sanciones solos',
-    color: '#72e697',
+    color: 'var(--accent)',
   },
 ]
 
@@ -44,26 +44,26 @@ export default function LandingPage() {
         <Link href="/" className="flex items-center gap-3" aria-label="Coachly, inicio">
           <Image src="/logo.png" alt="" width={38} height={38} className="h-9 w-9 rounded-[10px] object-cover" priority />
           <span className="font-[family-name:var(--font-heading)] text-[17px] font-extrabold tracking-[-0.03em] text-white">
-            Coach<span className="text-[#72e697]">ly</span>
+            Coach<span className="text-[var(--accent)]">ly</span>
           </span>
         </Link>
         <div className="flex items-center gap-2 sm:gap-3">
           <Link href="/login" className="px-3 py-2 text-sm font-semibold text-[#bdc7c1] transition-colors hover:text-white sm:px-4">Entrar</Link>
-          <Link href="/register" className="landing-primary rounded-[10px] px-4 py-2.5 text-sm font-bold text-[#07140c] transition-transform active:scale-[.98] sm:px-5">Probar Coachly</Link>
+          <Link href="/register" className="landing-primary rounded-[10px] px-4 py-2.5 text-sm font-bold text-[var(--accent-fg)] transition-transform active:scale-[.98] sm:px-5">Probar Coachly</Link>
         </div>
       </nav>
 
       {/* ── Hero ──────────────────────────────────────────────── */}
       <section className="mx-auto grid w-full max-w-[1180px] gap-12 px-5 pb-16 pt-12 sm:px-8 sm:pt-18 lg:grid-cols-[0.88fr_1.12fr] lg:items-center lg:gap-16 lg:px-10 lg:pb-24 lg:pt-20">
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5 }}>
-          <span className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[#72e697]/20 bg-[#72e697]/8 px-3 py-1 text-[11px] font-semibold text-[#72e697]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#72e697]" />
+          <span className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/8 px-3 py-1 text-[11px] font-semibold text-[var(--accent)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
             Para entrenadores de fútbol
           </span>
           <h1 className="mt-4 max-w-[620px] font-[family-name:var(--font-heading)] text-[42px] font-extrabold leading-[1.02] tracking-[-0.055em] text-[#f4f7f5] sm:text-[58px] lg:text-[68px]">Menos hojas.<br />Más fútbol.</h1>
           <p className="mt-6 max-w-[500px] text-[16px] leading-7 text-[#9aa7a0] sm:text-[17px]">Planifica partidos, prepara convocatorias y entiende la evolución de tu equipo sin perder tiempo entre archivos y grupos de WhatsApp.</p>
           <div className="mt-8 flex flex-col gap-3 min-[420px]:flex-row">
-            <Link href="/register" className="landing-primary flex min-h-[48px] items-center justify-center rounded-[10px] px-6 text-sm font-bold text-[#07140c] transition-transform active:scale-[.98]">
+            <Link href="/register" className="landing-primary flex min-h-[48px] items-center justify-center rounded-[10px] px-6 text-sm font-bold text-[var(--accent-fg)] transition-transform active:scale-[.98]">
               Crear mi primer equipo
               <span className="material-symbols-outlined ml-2" style={{ fontSize: 17 }}>arrow_forward</span>
             </Link>
@@ -81,11 +81,11 @@ export default function LandingPage() {
                 <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#728078]">Sábado · 16:15</p>
                 <p className="mt-1 font-[family-name:var(--font-heading)] text-lg font-bold text-white">Próximo partido</p>
               </div>
-              <span className="rounded-full bg-[#72e697]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#72e697]">Liga</span>
+              <span className="rounded-full bg-[var(--accent)]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--accent)]">Liga</span>
             </div>
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 py-3 sm:gap-6">
               <div className="text-center">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-[#151c18] text-xl font-black text-[#72e697] sm:h-20 sm:w-20">CDI</div>
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-[#151c18] text-xl font-black text-[var(--accent)] sm:h-20 sm:w-20">CDI</div>
                 <p className="mt-3 text-sm font-bold text-white">CD Ilumberri</p>
               </div>
               <div className="text-center">
@@ -110,13 +110,13 @@ export default function LandingPage() {
               <div className="text-center">
                 <div className="flex h-7 items-center justify-center gap-1">
                   {form.map((item, index) => (
-                    <span key={index} className={`flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-black ${item === 'V' ? 'bg-[#72e697] text-[#07140c]' : item === 'E' ? 'bg-[#6d756f] text-white' : 'bg-[#d76b6b] text-white'}`}>{item}</span>
+                    <span key={index} className={`flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-black ${item === 'V' ? 'bg-[var(--accent)] text-[var(--accent-fg)]' : item === 'E' ? 'bg-[#6d756f] text-white' : 'bg-[#d76b6b] text-white'}`}>{item}</span>
                   ))}
                 </div>
                 <span className="text-[9px] font-bold uppercase tracking-wider text-[#637168]">Últimos 5</span>
               </div>
             </div>
-            <div className="mt-4 flex items-center justify-between rounded-[12px] bg-[#72e697] px-4 py-3 text-[#07140c]">
+            <div className="mt-4 flex items-center justify-between rounded-[12px] bg-[var(--accent)] px-4 py-3 text-[var(--accent-fg)]">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined" style={{ fontSize: 19 }}>group</span>
                 <span className="text-xs font-extrabold">14 de 18 disponibles</span>
@@ -127,7 +127,7 @@ export default function LandingPage() {
           <div className="mt-3 hidden items-center gap-3 sm:flex">
             <div className="rounded-[10px] border border-white/10 bg-[#121915] px-4 py-2.5">
               <p className="text-[10px] uppercase tracking-wider text-[#637168]">Último partido</p>
-              <p className="mt-0.5 text-sm font-bold text-white"><span className="mr-2 text-[#72e697]">Victoria</span> 3–1</p>
+              <p className="mt-0.5 text-sm font-bold text-white"><span className="mr-2 text-[var(--accent)]">Victoria</span> 3–1</p>
             </div>
             <p className="text-xs text-[#3e4942]">vs Mutilva CF · Liga</p>
           </div>
@@ -162,7 +162,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[13px] text-[#637168]">Sin Excel. Sin grupos de WhatsApp para convocar. Sin olvidos.</p>
-            <Link href="/register" className="landing-primary rounded-[10px] px-5 py-2.5 text-sm font-bold text-[#07140c] transition-transform active:scale-[.98] whitespace-nowrap">
+            <Link href="/register" className="landing-primary rounded-[10px] px-5 py-2.5 text-sm font-bold text-[var(--accent-fg)] transition-transform active:scale-[.98] whitespace-nowrap">
               Empezar ahora
             </Link>
           </div>

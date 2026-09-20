@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
@@ -83,7 +83,7 @@ export function OnboardingGuide({ hasTeam, hasPlayers, hasSeason, hasMatches, te
 
       <div className="flex items-start justify-between mb-5 gap-4">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#72e697' }}>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--accent)' }}>
             Guía de inicio
           </p>
           <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
@@ -96,10 +96,10 @@ export function OnboardingGuide({ hasTeam, hasPlayers, hasSeason, hasMatches, te
         <div className="flex items-start gap-3 flex-shrink-0">
           {/* Barra de progreso */}
           <div className="flex flex-col items-end gap-1.5 mt-0.5">
-            <span className="text-[10px] font-bold" style={{ color: '#72e697' }}>{doneCount}/4</span>
+            <span className="text-[10px] font-bold" style={{ color: 'var(--accent)' }}>{doneCount}/4</span>
             <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#253028' }}>
               <div className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${(doneCount / 4) * 100}%`, backgroundColor: '#72e697' }} />
+                style={{ width: `${(doneCount / 4) * 100}%`, backgroundColor: 'var(--accent)' }} />
             </div>
           </div>
           {/* Botón cerrar */}
@@ -133,16 +133,16 @@ export function OnboardingGuide({ hasTeam, hasPlayers, hasSeason, hasMatches, te
                 <div className="flex items-center justify-center w-8 h-8 rounded-lg"
                   style={{ backgroundColor: step.done ? 'rgba(34,197,94,0.15)' : 'rgba(46,52,71,0.5)' }}>
                   <span className="material-symbols-outlined"
-                    style={{ fontSize: 18, color: step.done ? '#72e697' : isNext ? '#edf2ee' : '#637168',
+                    style={{ fontSize: 18, color: step.done ? 'var(--accent)' : isNext ? '#edf2ee' : '#637168',
                       fontVariationSettings: step.done ? "'FILL' 1" : "'FILL' 0" }}>
                     {step.done ? 'check_circle' : step.icon}
                   </span>
                 </div>
-                <span className="text-[10px] font-black" style={{ color: step.done ? '#72e697' : '#637168' }}>
+                <span className="text-[10px] font-black" style={{ color: step.done ? 'var(--accent)' : '#637168' }}>
                   {step.done ? '✓' : `Paso ${step.num}`}
                 </span>
               </div>
-              <p className="text-sm font-bold" style={{ color: step.done ? '#72e697' : isNext ? '#edf2ee' : '#637168' }}>
+              <p className="text-sm font-bold" style={{ color: step.done ? 'var(--accent)' : isNext ? '#edf2ee' : '#637168' }}>
                 {step.label}
               </p>
               <p className="text-[11px] leading-snug" style={{ color: '#637168' }}>

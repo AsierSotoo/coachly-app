@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { PageTransition } from '@/components/ui/page-transition'
 import { TeamLogo } from '@/components/team/team-logo'
@@ -176,7 +176,7 @@ export default async function StatsPage({
                     : currentStreakType === 'loss' ? `${currentStreakCount} derrotas seguidas`
                     : currentStreakCount > 1       ? `${currentStreakCount} empates seguidos`
                     : null
-  const streakColor = currentStreakType === 'win' ? '#72e697' : currentStreakType === 'loss' ? '#f87171' : '#fbbf24'
+  const streakColor = currentStreakType === 'win' ? 'var(--accent)' : currentStreakType === 'loss' ? '#f87171' : '#fbbf24'
 
   // Racha invicta (sin perder consecutivos, puede mezclar V y E)
   let unbeatenRun = 0
@@ -282,7 +282,7 @@ export default async function StatsPage({
 
   // Carrera goleadora — siempre usa Liga + Copa (no amistosos); top 5 goles acumulados partido a partido
   const competitiveMatchesChrono = [...competitiveFinished].sort((a, b) => a.played_at.localeCompare(b.played_at))
-  const RACE_COLORS = ['#72e697', '#60a5fa', '#facc15', '#f472b6', '#a78bfa']
+  const RACE_COLORS = ['var(--accent)', '#60a5fa', '#facc15', '#f472b6', '#a78bfa']
   const top5Scorers = byGoals.slice(0, 5)
   const goalRacePlayers: GoalRaceLine[] = top5Scorers.map((scorer, i) => {
     let cum = 0
@@ -416,7 +416,7 @@ export default async function StatsPage({
                     <circle cx="96" cy="96" r="80" fill="transparent" strokeWidth="16" style={{ stroke: 'var(--bdr-strong)' }} />
                     {/* Victorias */}
                     {winPct > 0 && (
-                      <circle cx="96" cy="96" r="80" fill="transparent" stroke="#72e697"
+                      <circle cx="96" cy="96" r="80" fill="transparent" stroke="var(--accent)"
                         strokeDasharray={CIRCUM} strokeDashoffset={winOffset}
                         strokeWidth="16" />
                     )}
@@ -437,7 +437,7 @@ export default async function StatsPage({
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="font-extrabold leading-none"
-                      style={{ color: '#72e697', fontFamily: 'Sora, sans-serif', fontSize: winRate === 100 ? 36 : winRate >= 10 ? 44 : 48 }}>
+                      style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif', fontSize: winRate === 100 ? 36 : winRate >= 10 ? 44 : 48 }}>
                       {winRate}%
                     </span>
                     <span className="text-[12px] font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--tx-2)' }}>Victorias</span>
@@ -450,8 +450,8 @@ export default async function StatsPage({
                 </div>
                 {ligaFinished.length > 0 && (
                   <div className="mt-3 flex items-center gap-2 px-3 py-1.5 rounded-lg border" style={{ borderColor: 'rgba(75,226,119,0.2)', backgroundColor: 'rgba(75,226,119,0.06)' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 13, color: '#72e697' }}>emoji_events</span>
-                    <span className="text-[10px] font-bold tabular-nums" style={{ color: '#72e697' }}>{ligaPts} pts</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 13, color: 'var(--accent)' }}>emoji_events</span>
+                    <span className="text-[10px] font-bold tabular-nums" style={{ color: 'var(--accent)' }}>{ligaPts} pts</span>
                     <span className="text-[9px]" style={{ color: 'var(--tx-3)' }}>liga</span>
                   </div>
                 )}
@@ -460,10 +460,10 @@ export default async function StatsPage({
               {/* 4 métricas */}
               <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
                 {([
-                  { label: 'Total Victorias', value: wins,         icon: 'trending_up',   sub: `${winRate}% partidos`,    subColor: '#72e697' },
-                  { label: 'Goles a Favor',   value: goalsFor,     icon: 'sports_soccer', sub: `${avgFor} p/partido`,      subColor: '#72e697' },
+                  { label: 'Total Victorias', value: wins,         icon: 'trending_up',   sub: `${winRate}% partidos`,    subColor: 'var(--accent)' },
+                  { label: 'Goles a Favor',   value: goalsFor,     icon: 'sports_soccer', sub: `${avgFor} p/partido`,      subColor: 'var(--accent)' },
                   { label: 'Goles en Contra', value: goalsAgainst, icon: 'security',      sub: `${avgAgainst} p/partido`, subColor: '#89968e' },
-                  { label: 'Diferencia',       value: goalDiff > 0 ? `+${goalDiff}` : String(goalDiff), icon: goalDiff >= 0 ? 'add_circle' : 'remove_circle', sub: `${cleanSheets} portería${cleanSheets !== 1 ? 's' : ''} a cero`, subColor: goalDiff > 0 ? '#72e697' : goalDiff < 0 ? '#f87171' : '#89968e' },
+                  { label: 'Diferencia',       value: goalDiff > 0 ? `+${goalDiff}` : String(goalDiff), icon: goalDiff >= 0 ? 'add_circle' : 'remove_circle', sub: `${cleanSheets} portería${cleanSheets !== 1 ? 's' : ''} a cero`, subColor: goalDiff > 0 ? 'var(--accent)' : goalDiff < 0 ? '#f87171' : '#89968e' },
                 ] as const).map(({ label, value, icon, sub, subColor }) => (
                   <div key={label} className="p-4 rounded-lg border"
                     style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-subtle)' }}>
@@ -489,8 +489,8 @@ export default async function StatsPage({
                         className="w-10 h-10 flex items-center justify-center font-bold rounded-lg text-sm border"
                         style={{
                           backgroundColor: s.win ? 'rgba(75,226,119,0.12)' : s.draw ? 'rgba(251,191,36,0.08)' : 'rgba(248,113,113,0.1)',
-                          borderColor:     s.win ? '#72e697' : s.draw ? 'rgba(251,191,36,0.4)' : 'rgba(248,113,113,0.4)',
-                          color:           s.win ? '#72e697' : s.draw ? '#fbbf24' : '#f87171',
+                          borderColor:     s.win ? 'var(--accent)' : s.draw ? 'rgba(251,191,36,0.4)' : 'rgba(248,113,113,0.4)',
+                          color:           s.win ? 'var(--accent)' : s.draw ? '#fbbf24' : '#f87171',
                           boxShadow: s.win && i === 0 ? '0 0 10px rgba(34,197,94,0.3)' : 'none',
                         }}
                       >
@@ -504,7 +504,7 @@ export default async function StatsPage({
                     </p>
                   )}
                   {showUnbeaten && (
-                    <p className="text-[10px] font-bold text-center md:text-left" style={{ color: '#72e697' }}>
+                    <p className="text-[10px] font-bold text-center md:text-left" style={{ color: 'var(--accent)' }}>
                       Sin perder en {unbeatenRun}
                     </p>
                   )}
@@ -522,7 +522,7 @@ export default async function StatsPage({
                 </div>
                 <PlayerAvatar name={byGoals[0].name} photoUrl={byGoals[0].photoUrl} position={byGoals[0].position} size="lg" className="h-16 w-16 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#72e697' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--accent)' }}>
                     Máxim{terms.p === 'jugador' ? 'o' : 'a'} Goleador{terms.p === 'jugador' ? '' : 'a'}
                   </p>
                   <p className="text-[22px] font-extrabold leading-tight truncate" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
@@ -533,10 +533,10 @@ export default async function StatsPage({
                   </p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-[52px] font-extrabold leading-none" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>
+                  <p className="text-[52px] font-extrabold leading-none" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>
                     {byGoals[0].goals}
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#72e697' }}>goles</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--accent)' }}>goles</p>
                 </div>
               </div>
             )}
@@ -556,7 +556,7 @@ export default async function StatsPage({
                   {byGoals.slice(0, 8).map((s, i) => {
                     const pct = byGoals[0].goals > 0 ? Math.max((s.goals / byGoals[0].goals) * 100, 6) : 0
                     const medal = i === 0 ? '#fbbf24' : i === 1 ? '#89968e' : i === 2 ? '#9d8050' : '#637168'
-                    const barColor = i === 0 ? '#72e697' : i === 1 ? 'rgba(75,226,119,0.65)' : i === 2 ? 'rgba(75,226,119,0.45)' : 'rgba(75,226,119,0.25)'
+                    const barColor = i === 0 ? 'var(--accent)' : i === 1 ? 'rgba(75,226,119,0.65)' : i === 2 ? 'rgba(75,226,119,0.45)' : 'rgba(75,226,119,0.25)'
                     return (
                       <div key={s.playerId} className="flex items-center gap-3">
                         <span className="w-4 text-center text-[11px] font-black flex-shrink-0 tabular-nums" style={{ color: medal }}>{i + 1}</span>
@@ -566,7 +566,7 @@ export default async function StatsPage({
                           <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: barColor }} />
                         </div>
                         <div className="flex-shrink-0 flex items-baseline gap-1.5">
-                          <span className="text-[18px] font-extrabold tabular-nums" style={{ color: i === 0 ? '#72e697' : 'var(--tx-2)', fontFamily: 'Sora, sans-serif' }}>{s.goals}</span>
+                          <span className="text-[18px] font-extrabold tabular-nums" style={{ color: i === 0 ? 'var(--accent)' : 'var(--tx-2)', fontFamily: 'Sora, sans-serif' }}>{s.goals}</span>
                           {s.assists > 0 && <span className="text-[10px] font-bold" style={{ color: 'var(--tx-3)' }}>+{s.assists}A</span>}
                         </div>
                       </div>
@@ -656,7 +656,7 @@ export default async function StatsPage({
                     return (
                       <div key={label} className="rounded-xl border p-4" style={{ backgroundColor: 'var(--bg-card-2)', borderColor: 'var(--bdr-strong)' }}>
                         <div className="flex items-center gap-2 mb-3">
-                          <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 18 }}>{emoji}</span>
+                          <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>{emoji}</span>
                           <p className="text-sm font-bold" style={{ color: 'var(--tx)' }}>{label}</p>
                           <span className="ml-auto text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>{t} partido{t !== 1 ? 's' : ''}</span>
                         </div>
@@ -666,7 +666,7 @@ export default async function StatsPage({
                           <>
                             <div className="flex gap-2 mb-3">
                               {[
-                                { v: w, label: 'V', color: '#72e697', bg: 'rgba(75,226,119,0.08)',  border: 'rgba(75,226,119,0.2)' },
+                                { v: w, label: 'V', color: 'var(--accent)', bg: 'rgba(75,226,119,0.08)',  border: 'rgba(75,226,119,0.2)' },
                                 { v: d, label: 'E', color: '#fbbf24', bg: 'rgba(251,191,36,0.07)', border: 'rgba(251,191,36,0.2)' },
                                 { v: l, label: 'D', color: '#f87171', bg: 'rgba(248,113,113,0.05)', border: 'rgba(248,113,113,0.2)' },
                               ].map(({ v, label: lbl, color, bg, border }) => (
@@ -677,8 +677,8 @@ export default async function StatsPage({
                               ))}
                             </div>
                             <div className="flex justify-between text-[11px]" style={{ color: 'var(--tx-2)' }}>
-                              <span>GF <span style={{ color: '#72e697' }}>{gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{ga}</span></span>
-                              <span style={{ color: rate >= 50 ? '#72e697' : 'var(--tx-2)' }}>{rate}% victorias</span>
+                              <span>GF <span style={{ color: 'var(--accent)' }}>{gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{ga}</span></span>
+                              <span style={{ color: rate >= 50 ? 'var(--accent)' : 'var(--tx-2)' }}>{rate}% victorias</span>
                             </div>
                           </>
                         )}
@@ -728,7 +728,7 @@ export default async function StatsPage({
                         <div className="flex items-end gap-[2px] h-48 w-full justify-center">
                           <div
                             className="w-4 rounded-t-sm transition-all duration-300 group-hover:brightness-125"
-                            style={{ height: `${gfPct}%`, backgroundColor: '#72e697' }}
+                            style={{ height: `${gfPct}%`, backgroundColor: 'var(--accent)' }}
                           />
                           <div
                             className="w-4 rounded-t-sm transition-all duration-300 group-hover:brightness-125"
@@ -822,7 +822,7 @@ export default async function StatsPage({
                         </div>
                         <div className="flex gap-2 mb-2">
                           {[
-                            { v: c.W, lbl: 'V', color: '#72e697',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
+                            { v: c.W, lbl: 'V', color: 'var(--accent)',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
                             { v: c.E, lbl: 'E', color: '#fbbf24',  bg: 'rgba(251,191,36,0.07)',    border: 'rgba(251,191,36,0.2)' },
                             { v: c.D, lbl: 'D', color: '#f87171',  bg: 'rgba(248,113,113,0.05)',   border: 'rgba(248,113,113,0.2)' },
                           ].map(({ v, lbl, color, bg, border }) => (
@@ -833,8 +833,8 @@ export default async function StatsPage({
                           ))}
                         </div>
                         <div className="flex justify-between text-[11px]" style={{ color: 'var(--tx-2)' }}>
-                          <span>GF <span style={{ color: '#72e697' }}>{c.gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{c.ga}</span></span>
-                          <span style={{ color: rate >= 50 ? '#72e697' : 'var(--tx-2)' }}>{rate}% vic.</span>
+                          <span>GF <span style={{ color: 'var(--accent)' }}>{c.gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{c.ga}</span></span>
+                          <span style={{ color: rate >= 50 ? 'var(--accent)' : 'var(--tx-2)' }}>{rate}% vic.</span>
                         </div>
                       </div>
                     )
@@ -859,19 +859,19 @@ export default async function StatsPage({
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-bold" style={{ color: 'var(--tx)' }}>{p.position}</span>
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                              style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#72e697', border: '1px solid rgba(75,226,119,0.15)' }}>
+                              style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: 'var(--accent)', border: '1px solid rgba(75,226,119,0.15)' }}>
                               {p.players.size} {terms.pp}
                             </span>
                           </div>
                           <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--tx-2)' }}>
-                            <span><span style={{ color: '#72e697', fontWeight: 700 }}>{p.goals}</span> G</span>
+                            <span><span style={{ color: 'var(--accent)', fontWeight: 700 }}>{p.goals}</span> G</span>
                             <span><span style={{ color: '#facc15', fontWeight: 700 }}>{p.assists}</span> A</span>
                             <span className="hidden sm:inline"><span style={{ color: '#60a5fa', fontWeight: 700 }}>{avgMin}&apos;</span> media</span>
                           </div>
                         </div>
                         <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bdr-strong)' }}>
                           <div className="h-full rounded-full transition-all duration-500"
-                            style={{ width: `${barPct}%`, backgroundColor: '#72e697' }} />
+                            style={{ width: `${barPct}%`, backgroundColor: 'var(--accent)' }} />
                         </div>
                       </div>
                     )
@@ -898,7 +898,7 @@ export default async function StatsPage({
                     </thead>
                     <tbody>
                       {h2h.map(r => {
-                        const lastColor = r.lastResult === 'V' ? '#72e697' : r.lastResult === 'D' ? '#f87171' : '#fbbf24'
+                        const lastColor = r.lastResult === 'V' ? 'var(--accent)' : r.lastResult === 'D' ? '#f87171' : '#fbbf24'
                         const lastBg = r.lastResult === 'V' ? 'rgba(75,226,119,0.12)' : r.lastResult === 'D' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.08)'
                         return (
                           <tr key={r.opponent} className="border-b last:border-0 transition-colors hover:bg-[var(--bg-elevated)]" style={{ borderColor: 'var(--bdr-strong)' }}>
@@ -908,7 +908,7 @@ export default async function StatsPage({
                             {[r.played, r.W, r.E, r.D, r.gf, r.ga].map((v, i) => (
                               <td key={i} className="px-4 py-3 text-center">
                                 <span className="text-sm font-bold" style={{
-                                  color: i === 1 ? '#72e697' : i === 2 ? '#fbbf24' : i === 3 ? '#f87171' : 'var(--tx)'
+                                  color: i === 1 ? 'var(--accent)' : i === 2 ? '#fbbf24' : i === 3 ? '#f87171' : 'var(--tx)'
                                 }}>{v}</span>
                               </td>
                             ))}
@@ -972,14 +972,14 @@ export default async function StatsPage({
             <div className="overflow-hidden rounded-[20px] border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
               {attStats.map((s, i) => {
                 const pct = Math.round((s.attended / s.total) * 100)
-                const barColor  = pct >= 80 ? '#72e697' : pct >= 60 ? '#eab308' : '#ef4444'
-                const textColor = pct >= 80 ? '#72e697' : pct >= 60 ? '#facc15' : '#f87171'
+                const barColor  = pct >= 80 ? 'var(--accent)' : pct >= 60 ? '#eab308' : '#ef4444'
+                const textColor = pct >= 80 ? 'var(--accent)' : pct >= 60 ? '#facc15' : '#f87171'
                 return (
                   <div key={s.playerId}
                     className="flex items-center gap-3 px-4 py-3 border-b last:border-0"
                     style={{ borderColor: 'var(--bdr-strong)' }}>
                     <span className="w-5 text-center text-[11px] font-black flex-shrink-0"
-                      style={{ color: i === 0 ? '#72e697' : i < 3 ? 'var(--tx-2)' : 'var(--tx-3)' }}>
+                      style={{ color: i === 0 ? 'var(--accent)' : i < 3 ? 'var(--tx-2)' : 'var(--tx-3)' }}>
                       {i + 1}
                     </span>
                     <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" />
@@ -1073,18 +1073,18 @@ function RankCard({
                     </div>
                   ) : (
                     <div className="flex flex-col items-end flex-shrink-0">
-                      <span className="text-[20px] font-bold leading-none" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>
+                      <span className="text-[20px] font-bold leading-none" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>
                         {fmt(p.primary)}
                       </span>
                       {p.sublabel && (
-                        <span className="text-[9px] font-bold uppercase mt-0.5" style={{ color: '#72e697', opacity: 0.6 }}>{p.sublabel}</span>
+                        <span className="text-[9px] font-bold uppercase mt-0.5" style={{ color: 'var(--accent)', opacity: 0.6 }}>{p.sublabel}</span>
                       )}
                     </div>
                   )}
                 </div>
                 {!showCards && (
                   <div className="h-[2px] rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bdr-strong)' }}>
-                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: '#72e697', opacity: i === 0 ? 0.7 : i === 1 ? 0.5 : 0.35 }} />
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: 'var(--accent)', opacity: i === 0 ? 0.7 : i === 1 ? 0.5 : 0.35 }} />
                   </div>
                 )}
               </div>

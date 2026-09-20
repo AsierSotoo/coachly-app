@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase-admin'
 import { TeamLogo } from '@/components/team/team-logo'
 import { PlayerAvatar } from '@/components/team/player-avatar'
@@ -108,7 +108,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
               <div className="w-8 h-8 rounded-lg overflow-hidden">
                 <Image src="/logo.png" alt="Coachly" width={32} height={32} className="w-full h-full object-cover" />
               </div>
-              <span className="text-sm font-bold group-hover:underline" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
+              <span className="text-sm font-bold group-hover:underline" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
             </Link>
           </div>
         </div>
@@ -126,8 +126,8 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
                   { label: 'Partidos', value: total, color: '#edf2ee' },
-                  { label: 'Victorias', value: `${wins} (${winRate}%)`, color: '#72e697' },
-                  { label: 'Goles', value: `${gf}`, color: '#72e697' },
+                  { label: 'Victorias', value: `${wins} (${winRate}%)`, color: 'var(--accent)' },
+                  { label: 'Goles', value: `${gf}`, color: 'var(--accent)' },
                   { label: 'G. recibidos', value: `${ga}`, color: '#ffb4ab' },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="rounded-xl border border-[#253028] px-4 py-3 text-center" style={{ backgroundColor: '#111713' }}>
@@ -147,7 +147,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                         style={{
                           backgroundColor: r === 'V' ? 'rgba(34,197,94,0.15)' : r === 'D' ? 'rgba(255,180,171,0.1)' : 'rgba(148,163,184,0.1)',
                           borderColor: r === 'V' ? 'rgba(34,197,94,0.4)' : r === 'D' ? 'rgba(255,180,171,0.3)' : 'rgba(148,163,184,0.3)',
-                          color: r === 'V' ? '#72e697' : r === 'D' ? '#ffb4ab' : '#94a3b8',
+                          color: r === 'V' ? 'var(--accent)' : r === 'D' ? '#ffb4ab' : '#94a3b8',
                         }}>
                         {r}
                       </div>
@@ -171,16 +171,16 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                     <p style={{ color: '#89968e', fontSize: 11, margin: 0 }}>{season.name}</p>
                   </div>
                 </div>
-                <p style={{ color: '#72e697', fontWeight: 800, fontSize: 13 }}>Coachly</p>
+                <p style={{ color: 'var(--accent)', fontWeight: 800, fontSize: 13 }}>Coachly</p>
               </div>
 
               {/* Resultado */}
               <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
                 {[
-                  { label: 'V', value: wins, color: '#72e697', bg: 'rgba(34,197,94,0.12)' },
+                  { label: 'V', value: wins, color: 'var(--accent)', bg: 'rgba(34,197,94,0.12)' },
                   { label: 'E', value: draws, color: '#89968e', bg: 'rgba(46,52,71,0.4)' },
                   { label: 'D', value: losses, color: '#f87171', bg: 'rgba(248,113,113,0.08)' },
-                  { label: 'GF', value: gf, color: '#72e697', bg: 'rgba(34,197,94,0.08)' },
+                  { label: 'GF', value: gf, color: 'var(--accent)', bg: 'rgba(34,197,94,0.08)' },
                   { label: 'GC', value: ga, color: '#f87171', bg: 'rgba(248,113,113,0.08)' },
                 ].map(({ label, value, color, bg }) => (
                   <div key={label} style={{ flex: 1, backgroundColor: bg, borderRadius: 10, padding: '10px 4px', textAlign: 'center' }}>
@@ -197,9 +197,9 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {byGoals.slice(0, 3).map((p, i) => (
                       <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ color: i === 0 ? '#72e697' : '#637168', fontSize: 11, fontWeight: 700, width: 14 }}>{i + 1}</span>
+                        <span style={{ color: i === 0 ? 'var(--accent)' : '#637168', fontSize: 11, fontWeight: 700, width: 14 }}>{i + 1}</span>
                         <span style={{ color: '#edf2ee', fontSize: 13, fontWeight: 600, flex: 1 }}>{p.name}</span>
-                        <span style={{ color: '#72e697', fontSize: 16, fontWeight: 800 }}>{p.goals}</span>
+                        <span style={{ color: 'var(--accent)', fontSize: 16, fontWeight: 800 }}>{p.goals}</span>
                       </div>
                     ))}
                   </div>
@@ -215,7 +215,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                       <div key={i} style={{
                         width: 24, height: 24, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800,
                         backgroundColor: r === 'V' ? 'rgba(34,197,94,0.2)' : r === 'D' ? 'rgba(248,113,113,0.15)' : 'rgba(148,163,184,0.15)',
-                        color: r === 'V' ? '#72e697' : r === 'D' ? '#f87171' : '#94a3b8',
+                        color: r === 'V' ? 'var(--accent)' : r === 'D' ? '#f87171' : '#94a3b8',
                       }}>{r}</div>
                     ))}
                   </div>
@@ -229,7 +229,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                 <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: '#89968e' }}>Líderes de temporada</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
-                    { label: 'Máxima goleadora', player: topScorer, value: topScorer?.goals, icon: 'sports_soccer', color: '#72e697' },
+                    { label: 'Máxima goleadora', player: topScorer, value: topScorer?.goals, icon: 'sports_soccer', color: 'var(--accent)' },
                     { label: 'Más asistencias', player: topAssist, value: topAssist?.assists, icon: 'electric_bolt', color: '#facc15' },
                     { label: 'Más minutos', player: topMinutes, value: topMinutes?.minutes, unit: "'", icon: 'schedule', color: '#60a5fa' },
                   ].filter(l => l.player && (l.value ?? 0) > 0).map(({ label, player, value, unit, icon, color }) => (
@@ -255,10 +255,10 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                 <div className="divide-y divide-[#253028]">
                   {byGoals.map((p, i) => (
                     <div key={p.name} className="flex items-center gap-4 px-6 py-3">
-                      <span className="w-5 text-center text-xs font-bold" style={{ color: i === 0 ? '#72e697' : '#89968e' }}>{i + 1}</span>
+                      <span className="w-5 text-center text-xs font-bold" style={{ color: i === 0 ? 'var(--accent)' : '#89968e' }}>{i + 1}</span>
                       <PlayerAvatar name={p.name} photoUrl={p.photoUrl} position={p.position} size="sm" className="w-8 h-8 rounded-lg flex-shrink-0" />
                       <span className="flex-1 text-sm font-semibold text-white truncate">{p.name}</span>
-                      <span className="text-xl font-extrabold" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>{p.goals}</span>
+                      <span className="text-xl font-extrabold" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>{p.goals}</span>
                       <span className="text-xs" style={{ color: '#89968e' }}>gol{p.goals !== 1 ? 'es' : ''}</span>
                     </div>
                   ))}
@@ -320,7 +320,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                             </div>
                           </td>
                           <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: '#89968e' }}>{p.gamesPlayed}</td>
-                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals > 0 ? '#72e697' : '#637168' }}>{p.goals}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals > 0 ? 'var(--accent)' : '#637168' }}>{p.goals}</td>
                           <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.assists > 0 ? '#facc15' : '#637168' }}>{p.assists}</td>
                           <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals + p.assists > 0 ? '#edf2ee' : '#637168' }}>{p.goals + p.assists}</td>
                           <td className="px-3 py-2.5 text-center text-xs" style={{ color: '#89968e' }}>{p.minutes}</td>
@@ -340,7 +340,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
               <div className="divide-y divide-[#253028]">
                 {[...(matches ?? [])].sort((a, b) => b.played_at.localeCompare(a.played_at)).slice(0, 5).map(m => {
                   const r = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                  const rColor = r === 'V' ? '#72e697' : r === 'D' ? '#ffb4ab' : '#94a3b8'
+                  const rColor = r === 'V' ? 'var(--accent)' : r === 'D' ? '#ffb4ab' : '#94a3b8'
                   const rBg = r === 'V' ? 'rgba(34,197,94,0.15)' : r === 'D' ? 'rgba(255,180,171,0.1)' : 'rgba(148,163,184,0.1)'
                   return (
                     <div key={m.id} className="flex items-center gap-4 px-6 py-3">
@@ -350,7 +350,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                         <p className="text-sm font-semibold text-white truncate">vs {m.opponent}</p>
                         <p className="text-[11px]" style={{ color: '#89968e' }}>{dateStr(m.played_at)} · {m.home ? 'Local' : 'Visitante'}</p>
                       </div>
-                      <span className="text-sm font-bold tabular-nums" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>
+                      <span className="text-sm font-bold tabular-nums" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>
                         {m.goals_for}–{m.goals_against}
                       </span>
                     </div>
@@ -366,7 +366,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
         <div className="mt-10 text-center">
           <p className="text-xs" style={{ color: '#637168' }}>
             Estadísticas generadas con{' '}
-            <Link href="/" className="font-semibold hover:underline" style={{ color: '#72e697' }}>Coachly</Link>
+            <Link href="/" className="font-semibold hover:underline" style={{ color: 'var(--accent)' }}>Coachly</Link>
             {' '}· La app de estadísticas para entrenadores
           </p>
         </div>

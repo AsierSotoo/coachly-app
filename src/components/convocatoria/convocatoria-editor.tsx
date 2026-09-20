@@ -172,14 +172,14 @@ export function ConvocatoriaEditor({
         <button type="button" onClick={handleCopy}
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold border active:scale-95 transition-all cursor-pointer"
           style={{ backgroundColor: '#1a231d', borderColor: '#2a342d', color: '#edf2ee' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: copied ? '#72e697' : undefined }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: copied ? 'var(--accent)' : undefined }}>
             {copied ? 'check' : 'content_copy'}
           </span>
           {copied ? 'Copiado' : 'Copiar lista'}
         </button>
         <button type="button" onClick={handleSave} disabled={savePending}
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold active:scale-95 transition-all cursor-pointer disabled:opacity-60"
-          style={{ backgroundColor: '#72e697', color: '#07140c', boxShadow: '0 0 15px rgba(34,197,94,0.25)' }}>
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', boxShadow: '0 0 15px rgba(34,197,94,0.25)' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
           {savePending ? 'Guardando…' : 'Guardar Convocatoria'}
         </button>
@@ -197,7 +197,7 @@ export function ConvocatoriaEditor({
               type="time"
               value={localMeetingTime}
               onChange={e => setLocalMeetingTime(e.target.value)}
-              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[#72e697] transition-colors"
+              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[var(--accent)] transition-colors"
               style={{ backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee' }}
             />
           </div>
@@ -213,7 +213,7 @@ export function ConvocatoriaEditor({
               value={localLocation}
               onChange={e => setLocalLocation(e.target.value)}
               placeholder="Campo Municipal de Pamplona…"
-              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[#72e697] transition-colors"
+              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[var(--accent)] transition-colors"
               style={{ backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee' }}
             />
           </div>
@@ -259,7 +259,7 @@ export function ConvocatoriaEditor({
               <input
                 type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="Buscar jugadora..."
-                className="border rounded-lg pl-9 pr-4 py-2 text-sm outline-none focus:border-[#72e697] transition-colors w-52"
+                className="border rounded-lg pl-9 pr-4 py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors w-52"
                 style={{ backgroundColor: '#171f1a', borderColor: '#2a342d', color: '#edf2ee' }}
               />
             </div>
@@ -315,7 +315,7 @@ export function ConvocatoriaEditor({
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold"
                           style={{
                             backgroundColor: inSquad ? 'rgba(34,197,94,0.1)' : '#1a231d',
-                            color: inSquad ? '#72e697' : '#89968e',
+                            color: inSquad ? 'var(--accent)' : '#89968e',
                           }}>
                           {terms.posAbbr(p.position)}
                         </span>
@@ -324,7 +324,7 @@ export function ConvocatoriaEditor({
                       {/* Status */}
                       <td className="px-4 py-3 text-center">
                         {inSquad ? (
-                          <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 20, fontVariationSettings: "'FILL' 1" }}>
+                          <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 20, fontVariationSettings: "'FILL' 1" }}>
                             check_circle
                           </span>
                         ) : (
@@ -341,7 +341,7 @@ export function ConvocatoriaEditor({
                           onClick={() => inSquad ? remove(p.id) : add(p.id)}
                           className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all active:scale-95 cursor-pointer"
                           style={inSquad
-                            ? { color: '#72e697', backgroundColor: 'transparent' }
+                            ? { color: 'var(--accent)', backgroundColor: 'transparent' }
                             : { color: '#89968e', backgroundColor: 'transparent' }
                           }
                         >
@@ -368,7 +368,7 @@ export function ConvocatoriaEditor({
                 Convocadas
               </h3>
               <div className="flex items-center gap-1">
-                <span className="text-[24px] font-bold" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>{squadCount}</span>
+                <span className="text-[24px] font-bold" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>{squadCount}</span>
                 <span className="text-sm" style={{ color: '#89968e' }}>/ {players.length}</span>
               </div>
             </div>
@@ -407,7 +407,7 @@ export function ConvocatoriaEditor({
               <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>
                 Distribución Táctica
               </p>
-              <span className="text-[10px] font-bold" style={{ color: '#72e697' }}>
+              <span className="text-[10px] font-bold" style={{ color: 'var(--accent)' }}>
                 {gkCount}-{dfCount}-{mcCount}-{dlCount}
               </span>
             </div>
@@ -424,7 +424,7 @@ export function ConvocatoriaEditor({
               {/* GK */}
               {Array.from({ length: Math.min(gkCount, 1) }).map((_, i) => (
                 <div key={`gk${i}`} className="absolute w-4 h-4 rounded-full"
-                  style={{ backgroundColor: '#72e697', boxShadow: '0 0 8px rgba(34,197,94,0.6)', bottom: 8, left: '50%', transform: 'translateX(-50%)' }} />
+                  style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px rgba(34,197,94,0.6)', bottom: 8, left: '50%', transform: 'translateX(-50%)' }} />
               ))}
               {/* DF */}
               {Array.from({ length: Math.min(dfCount, 5) }).map((_, i, arr) => (
@@ -457,7 +457,7 @@ export function ConvocatoriaEditor({
           <div key={label} className="flex items-center gap-4 rounded-xl border p-4"
             style={{ backgroundColor: '#111713', borderColor: '#2a342d' }}>
             <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(34,197,94,0.1)' }}>
-              <span className="material-symbols-outlined" style={{ color: '#72e697', fontSize: 20 }}>{icon}</span>
+              <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 20 }}>{icon}</span>
             </div>
             <div>
               <p className="text-[20px] font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{value}</p>
@@ -478,7 +478,7 @@ export function ConvocatoriaEditor({
             <div className="flex items-center justify-between rounded-xl border px-4 py-3"
               style={{ backgroundColor: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.2)' }}>
               <div>
-                <p className="text-xs font-semibold" style={{ color: '#72e697' }}>Partido vinculado</p>
+                <p className="text-xs font-semibold" style={{ color: 'var(--accent)' }}>Partido vinculado</p>
                 <p className="text-[11px] mt-0.5" style={{ color: '#89968e' }}>El partido usará esta convocatoria al registrar estadísticas</p>
               </div>
               <button type="button" onClick={handleUnlink} disabled={linkPending}
@@ -490,7 +490,7 @@ export function ConvocatoriaEditor({
           ) : availableMatches.length > 0 ? (
             <div className="flex gap-3">
               <select value={selectedMatch} onChange={e => setSelectedMatch(e.target.value)}
-                className="flex-1 border rounded-xl px-4 py-2.5 text-sm outline-none appearance-none focus:border-[#72e697] transition-colors"
+                className="flex-1 border rounded-xl px-4 py-2.5 text-sm outline-none appearance-none focus:border-[var(--accent)] transition-colors"
                 style={{ backgroundColor: '#090e0b', borderColor: '#2a342d', color: '#edf2ee' }}>
                 <option value="">Selecciona un partido…</option>
                 {availableMatches.map(m => (
@@ -501,7 +501,7 @@ export function ConvocatoriaEditor({
               </select>
               <button type="button" onClick={handleLink} disabled={!selectedMatch || linkPending}
                 className="flex items-center gap-2 px-5 rounded-xl text-sm font-bold cursor-pointer disabled:opacity-40 transition-all active:scale-95"
-                style={{ backgroundColor: '#72e697', color: '#07140c' }}>
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }}>link</span> Vincular
               </button>
             </div>

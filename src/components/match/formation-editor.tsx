@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { FORMATIONS, getFormation } from '@/lib/formations'
@@ -88,7 +88,7 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
           </h2>
         </div>
         {formationDef && (
-          <span className="text-[10px] font-bold tabular-nums" style={{ color: assigned === total ? '#72e697' : '#637168' }}>
+          <span className="text-[10px] font-bold tabular-nums" style={{ color: assigned === total ? 'var(--accent)' : '#637168' }}>
             {assigned}/{total}
           </span>
         )}
@@ -105,7 +105,7 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
             style={{
               backgroundColor: formation === f.id ? 'rgba(75,226,119,0.1)' : 'transparent',
               borderColor: formation === f.id ? 'rgba(75,226,119,0.4)' : '#2a342d',
-              color: formation === f.id ? '#72e697' : '#637168',
+              color: formation === f.id ? 'var(--accent)' : '#637168',
             }}
           >
             {f.id}
@@ -129,7 +129,7 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
                   <div key={slot.id} className="flex-1 min-w-0 flex flex-col gap-1">
                     <span
                       className="text-[9px] font-bold text-center uppercase tracking-wider"
-                      style={{ color: isAssigned ? '#72e697' : '#334155' }}
+                      style={{ color: isAssigned ? 'var(--accent)' : '#334155' }}
                     >
                       {slot.label}
                     </span>

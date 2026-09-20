@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { createMatch, updateSeasonLeague } from '../actions'
 import Link from 'next/link'
@@ -154,7 +154,7 @@ export default async function SeasonPage({
     streakType === 'D' ? `${streakCount} derrotas seguidas` :
     `${streakCount} empates seguidos`
   ) : null
-  const streakColor = streakType === 'V' ? '#72e697' : streakType === 'D' ? '#f87171' : '#fbbf24'
+  const streakColor = streakType === 'V' ? 'var(--accent)' : streakType === 'D' ? '#f87171' : '#fbbf24'
 
   return (
     <PageTransition>
@@ -233,7 +233,7 @@ export default async function SeasonPage({
                   style={{
                     backgroundColor: r === 'V' ? 'rgba(75,226,119,0.12)' : r === 'D' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.08)',
                     borderColor:     r === 'V' ? 'rgba(75,226,119,0.35)' : r === 'D' ? 'rgba(248,113,113,0.3)' : 'rgba(251,191,36,0.25)',
-                    color:           r === 'V' ? '#72e697' : r === 'D' ? '#f87171' : '#fbbf24',
+                    color:           r === 'V' ? 'var(--accent)' : r === 'D' ? '#f87171' : '#fbbf24',
                   }}>
                   {r}
                 </div>
@@ -372,7 +372,7 @@ export default async function SeasonPage({
                   { label: `D ${losses}`, r: 'D', count: losses },
                 ] as { label: string; r: string; count: number }[]).filter(c => c.r === '' || c.count > 0).map(({ label, r }) => {
                   const active = resultFilter === r || (!resultFilter && r === '')
-                  const color = r === 'V' ? '#72e697' : r === 'D' ? '#f87171' : r === 'E' ? '#fbbf24' : 'var(--tx)'
+                  const color = r === 'V' ? 'var(--accent)' : r === 'D' ? '#f87171' : r === 'E' ? '#fbbf24' : 'var(--tx)'
                   const ctPart = ctFilter ? `&ct=${ctFilter}` : ''
                   const qPart = sp.q ? `&q=${sp.q}` : ''
                   return (
@@ -580,7 +580,7 @@ export default async function SeasonPage({
                     return (
                       <div className="flex items-center gap-1 flex-shrink-0">
                         {av.available > 0 && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: '#72e697' }}>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: 'var(--accent)' }}>
                             ✓{av.available}
                           </span>
                         )}
@@ -678,7 +678,7 @@ export default async function SeasonPage({
                 const gf = match.goals_for ?? 0
                 const ga = match.goals_against ?? 0
                 const res = gf > ga ? 'V' : gf < ga ? 'D' : 'E'
-                const resColor = res === 'V' ? '#72e697' : res === 'D' ? '#ef4444' : '#f59e0b'
+                const resColor = res === 'V' ? 'var(--accent)' : res === 'D' ? '#ef4444' : '#f59e0b'
                 const apps = match.appearances as AppRow[]
                 const hasData = apps.length > 0
                 const scorers = apps
@@ -769,7 +769,7 @@ export default async function SeasonPage({
                   {filtered.length} partido{filtered.length !== 1 ? 's' : ''}
                 </p>
                 <div className="flex items-center gap-3 text-[11px] font-bold tabular-nums">
-                  {wins > 0 && <span style={{ color: '#72e697' }}>{wins}V</span>}
+                  {wins > 0 && <span style={{ color: 'var(--accent)' }}>{wins}V</span>}
                   {draws > 0 && <span style={{ color: '#f59e0b' }}>{draws}E</span>}
                   {losses > 0 && <span style={{ color: '#ef4444' }}>{losses}D</span>}
                 </div>

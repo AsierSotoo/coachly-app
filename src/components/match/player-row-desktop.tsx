@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import { PlayerAvatar } from '@/components/team/player-avatar'
@@ -69,7 +69,7 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
   }
 
   const statusBtns: { s: Status; label: string; activeBg: string; activeColor: string }[] = [
-    { s: 'titular',      label: 'T', activeBg: '#72e697', activeColor: '#07140c' },
+    { s: 'titular',      label: 'T', activeBg: 'var(--accent)', activeColor: 'var(--accent-fg)' },
     { s: 'suplente',     label: 'S', activeBg: '#2a342d', activeColor: '#89968e' },
     { s: 'no_convocada', label: '–', activeBg: '#171f1a', activeColor: '#637168' },
   ]

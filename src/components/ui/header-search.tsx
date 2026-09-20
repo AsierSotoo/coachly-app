@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useRouter, usePathname } from 'next/navigation'
 import { useRef } from 'react'
@@ -21,7 +21,7 @@ export function HeaderSearch({ teams }: { teams: Team[] }) {
   }
 
   return (
-    <div className="flex items-center gap-2 rounded-full px-4 py-1.5 border border-[#2a342d] focus-within:border-[#72e697] transition-colors"
+    <div className="flex items-center gap-2 rounded-full px-4 py-1.5 border border-[#2a342d] focus-within:border-[var(--accent)] transition-colors"
       style={{ backgroundColor: '#1a231d' }}>
       <span className="material-symbols-outlined" style={{ color: '#89968e', fontSize: 16 }}>search</span>
       <input

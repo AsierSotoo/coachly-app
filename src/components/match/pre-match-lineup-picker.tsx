@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -87,7 +87,7 @@ export function PreMatchLineupPicker({
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-semibold tabular-nums"
-            style={{ color: titulares === 11 ? '#72e697' : titulares > 0 ? 'var(--tx-2)' : 'var(--tx-4)' }}>
+            style={{ color: titulares === 11 ? 'var(--accent)' : titulares > 0 ? 'var(--tx-2)' : 'var(--tx-4)' }}>
             {titulares}/11 titulares
           </span>
           {suplentes > 0 && (
@@ -109,7 +109,7 @@ export function PreMatchLineupPicker({
               className="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors select-none border-b last:border-0"
               style={{
                 borderColor: 'var(--bdr)',
-                backgroundColor: isTitular ? 'rgba(114,230,151,0.06)' : 'transparent',
+                backgroundColor: isTitular ? 'rgba(var(--accent-rgb),0.06)' : 'transparent',
               }}>
               <span className="text-[11px] font-black w-5 text-right tabular-nums shrink-0"
                 style={{ color: 'var(--tx-3)' }}>
@@ -120,8 +120,8 @@ export function PreMatchLineupPicker({
               </span>
               {s ? (
                 <span className="text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0" style={{
-                  color: isTitular ? '#72e697' : isSuplente ? '#60a5fa' : 'var(--tx-4)',
-                  backgroundColor: isTitular ? 'rgba(114,230,151,0.15)' : isSuplente ? 'rgba(96,165,250,0.12)' : 'var(--bg-elevated)',
+                  color: isTitular ? 'var(--accent)' : isSuplente ? '#60a5fa' : 'var(--tx-4)',
+                  backgroundColor: isTitular ? 'rgba(var(--accent-rgb),0.15)' : isSuplente ? 'rgba(96,165,250,0.12)' : 'var(--bg-elevated)',
                 }}>
                   {isTitular ? 'TITULAR' : 'SUPLENTE'}
                 </span>

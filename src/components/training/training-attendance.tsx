@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -55,7 +55,7 @@ function PlayerRow({
             onClick={() => onChange({ attended: true, reason: null })}
             className="flex items-center gap-1 px-3 py-2.5 text-xs font-bold transition-all"
             style={{
-              backgroundColor: entry.attended ? '#72e697' : '#111713',
+              backgroundColor: entry.attended ? 'var(--accent)' : '#111713',
               color: entry.attended ? 'white' : '#637168',
               minHeight: 44,
             }}
@@ -174,8 +174,8 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
           <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Asistencia</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#72e697' }}>
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#72e697' }} />
+          <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: 'var(--accent)' }}>
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
             {presentCount} presentes
           </span>
           {absentCount > 0 && (
@@ -184,7 +184,7 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
               {absentCount} ausentes
             </span>
           )}
-          {saved && <span className="text-xs font-bold" style={{ color: '#72e697' }}>✓ Guardado</span>}
+          {saved && <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>✓ Guardado</span>}
         </div>
       </div>
 
@@ -207,7 +207,7 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
           onClick={handleSave}
           disabled={pending}
           className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all active:scale-[0.98] cursor-pointer disabled:opacity-60"
-          style={{ backgroundColor: '#72e697', color: '#07140c' }}
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
           {pending ? 'Guardando…' : 'Guardar asistencia'}

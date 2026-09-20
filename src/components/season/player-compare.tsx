@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { PlayerAvatar } from '@/components/team/player-avatar'
@@ -115,7 +115,7 @@ export function PlayerCompare({ players }: { players: CompareStat[] }) {
                 className="grid grid-cols-[1fr_auto_1fr] items-center px-4 py-3 border-b last:border-0"
                 style={{ borderColor: '#253028', backgroundColor: i % 2 === 0 ? '#0b100d' : '#090e0b' }}>
                 <span className="text-sm font-bold tabular-nums text-right"
-                  style={{ color: aWins ? '#72e697' : '#edf2ee' }}>
+                  style={{ color: aWins ? 'var(--accent)' : '#edf2ee' }}>
                   {formatVal(row, va)}
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-wide px-3 text-center"
@@ -123,7 +123,7 @@ export function PlayerCompare({ players }: { players: CompareStat[] }) {
                   {row.label}
                 </span>
                 <span className="text-sm font-bold tabular-nums text-left"
-                  style={{ color: bWins ? '#72e697' : '#edf2ee' }}>
+                  style={{ color: bWins ? 'var(--accent)' : '#edf2ee' }}>
                   {formatVal(row, vb)}
                 </span>
               </div>

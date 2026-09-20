@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase-browser'
@@ -86,7 +86,7 @@ export function LogoUpload({ teamId, currentUrl, teamName }: LogoUploadProps) {
         }`}
       >
         {uploading ? (
-          <span className="material-symbols-outlined animate-spin" style={{ fontSize: 32, color: '#72e697' }}>progress_activity</span>
+          <span className="material-symbols-outlined animate-spin" style={{ fontSize: 32, color: 'var(--accent)' }}>progress_activity</span>
         ) : url ? (
           <>
             <Image src={url} alt={`Escudo ${teamName}`} fill className="object-contain p-2" unoptimized />

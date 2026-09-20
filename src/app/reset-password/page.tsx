@@ -15,7 +15,7 @@ export default function ResetPasswordPage({
         <div className="w-14 h-14 rounded-2xl overflow-hidden transition-transform group-hover:scale-105 shadow-lg shadow-green-500/20">
           <img src="/logo.png" alt="Coachly" className="w-full h-full object-cover" />
         </div>
-        <span className="text-sm font-bold" style={{ color: '#72e697', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
+        <span className="text-sm font-bold" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>Coachly</span>
       </Link>
 
       {/* Card */}
@@ -23,7 +23,7 @@ export default function ResetPasswordPage({
         style={{ backgroundColor: '#111713' }}>
 
         <div className="mb-6 text-center">
-          <span className="material-symbols-outlined mb-3 block" style={{ color: '#72e697', fontSize: 36, fontVariationSettings: "'FILL' 1" }}>
+          <span className="material-symbols-outlined mb-3 block" style={{ color: 'var(--accent)', fontSize: 36, fontVariationSettings: "'FILL' 1" }}>
             lock
           </span>
           <h1 className="text-xl font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
@@ -64,7 +64,7 @@ async function FormContent({ searchParams }: { searchParams: Promise<{ error?: s
 
       <button type="submit"
         className="flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
-        style={{ backgroundColor: '#72e697', color: '#07140c', minHeight: 44, boxShadow: '0 0 12px rgba(34,197,94,0.2)' }}>
+        style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', minHeight: 44, boxShadow: '0 0 12px rgba(34,197,94,0.2)' }}>
         <span className="material-symbols-outlined text-lg">save</span>
         Guardar contraseña
       </button>

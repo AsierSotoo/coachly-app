@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { createSeason } from '../../actions'
 import Link from 'next/link'
@@ -123,7 +123,7 @@ export default async function SeasonsPage({
                       <>
                         <div className="grid grid-cols-3 gap-2">
                           {[
-                            { label: 'Victorias', value: wins,   color: '#72e697',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
+                            { label: 'Victorias', value: wins,   color: 'var(--accent)',  bg: 'rgba(75,226,119,0.08)',    border: 'rgba(75,226,119,0.2)' },
                             { label: 'Empates',   value: draws,  color: '#fbbf24',  bg: 'rgba(251,191,36,0.07)',    border: 'rgba(251,191,36,0.2)' },
                             { label: 'Derrotas',  value: losses, color: '#f87171',  bg: 'rgba(248,113,113,0.05)',   border: 'rgba(248,113,113,0.2)' },
                           ].map(({ label, value, color, bg, border }) => (
@@ -135,11 +135,11 @@ export default async function SeasonsPage({
                           ))}
                         </div>
                         <p className="text-[11px] text-center mt-2" style={{ color: 'var(--tx-2)' }}>
-                          GF&nbsp;<span style={{ color: '#72e697' }}>{goalsFor}</span>
+                          GF&nbsp;<span style={{ color: 'var(--accent)' }}>{goalsFor}</span>
                           &nbsp;·&nbsp;
                           GC&nbsp;<span style={{ color: '#ffb4ab' }}>{goalsAgainst}</span>
                           &nbsp;·&nbsp;
-                          <span style={{ color: diff > 0 ? '#72e697' : diff < 0 ? '#ffb4ab' : 'var(--tx-2)' }}>
+                          <span style={{ color: diff > 0 ? 'var(--accent)' : diff < 0 ? '#ffb4ab' : 'var(--tx-2)' }}>
                             {diff > 0 ? `+${diff}` : diff}
                           </span>
                         </p>

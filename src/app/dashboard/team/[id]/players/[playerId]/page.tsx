@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -312,7 +312,7 @@ export default async function PlayerDetailPage({
             </div>
             <div className="grid grid-cols-3 divide-x" style={{ borderColor: 'var(--bdr-strong)' }}>
               {[
-                { label: 'Goles',       rank: goalsRank,   icon: 'sports_soccer', color: '#72e697' },
+                { label: 'Goles',       rank: goalsRank,   icon: 'sports_soccer', color: 'var(--accent)' },
                 { label: 'Asistencias', rank: assistsRank, icon: 'electric_bolt', color: '#facc15' },
                 { label: 'Minutos',     rank: minutesRank, icon: 'schedule',       color: '#60a5fa' },
               ].map(({ label, rank, icon, color }) => {
@@ -412,7 +412,7 @@ export default async function PlayerDetailPage({
             </div>
             <div className={`grid divide-x ${isGK ? 'grid-cols-3' : 'grid-cols-2'}`} style={{ borderColor: 'var(--bdr-strong)' }}>
               {[
-                { label: 'Como titular', data: starterStats, icon: 'star', color: '#72e697' },
+                { label: 'Como titular', data: starterStats, icon: 'star', color: 'var(--accent)' },
                 { label: 'Como suplente', data: subStats, icon: 'swap_horiz', color: '#60a5fa' },
               ].map(({ label, data, icon, color }) => (
                 <div key={label} className="px-4 py-3">
@@ -568,7 +568,7 @@ export default async function PlayerDetailPage({
                 </div>
                 <div className="w-full h-1.5 rounded-full overflow-hidden mb-2" style={{ backgroundColor: 'var(--bdr-strong)' }}>
                   <div className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((effectiveYellow / SANCTION_THRESHOLD) * 100, 100)}%`, backgroundColor: warnSanction ? '#facc15' : '#72e697' }} />
+                    style={{ width: `${Math.min((effectiveYellow / SANCTION_THRESHOLD) * 100, 100)}%`, backgroundColor: warnSanction ? '#facc15' : 'var(--accent)' }} />
                 </div>
                 <p className="text-xs" style={{ color: 'var(--tx-3)' }}>
                   {cyclesServed > 0 ? `${cyclesServed} sanción${cyclesServed !== 1 ? 'es' : ''} cumplida${cyclesServed !== 1 ? 's' : ''} · ` : ''}
@@ -605,8 +605,8 @@ type AttendanceData = { attended: number; total: number }
 
 function AttendanceBar({ attended, total }: AttendanceData) {
   const pct = Math.round((attended / total) * 100)
-  const barColor  = pct >= 80 ? '#72e697' : pct >= 60 ? '#eab308' : '#ef4444'
-  const textColor = pct >= 80 ? '#72e697' : pct >= 60 ? '#facc15' : '#f87171'
+  const barColor  = pct >= 80 ? 'var(--accent)' : pct >= 60 ? '#eab308' : '#ef4444'
+  const textColor = pct >= 80 ? 'var(--accent)' : pct >= 60 ? '#facc15' : '#f87171'
   return (
     <div className="flex items-center gap-3 border-t px-5 py-2.5" style={{ borderColor: 'var(--bdr)' }}>
       <span className="material-symbols-outlined" style={{ fontSize: 12, color: 'var(--tx-4)' }}>fitness_center</span>

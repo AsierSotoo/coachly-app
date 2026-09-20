@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -83,10 +83,10 @@ export default async function ConvocatoriaDetailPage({
           <div className="absolute top-4 right-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border"
               style={isCompleted
-                ? { backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: '#72e697' }
+                ? { backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: 'var(--accent)' }
                 : { backgroundColor: 'var(--bdr-strong)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}>
               <span className={`w-1.5 h-1.5 rounded-full ${isCompleted ? '' : 'animate-pulse'}`}
-                style={{ backgroundColor: isCompleted ? '#72e697' : 'var(--tx-2)' }} />
+                style={{ backgroundColor: isCompleted ? 'var(--accent)' : 'var(--tx-2)' }} />
               {isCompleted ? 'COMPLETADA' : 'PENDIENTE'}
             </span>
           </div>

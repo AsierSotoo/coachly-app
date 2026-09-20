@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { toPng } from 'html-to-image'
@@ -37,7 +37,7 @@ export function MatchShareCard({
   const [showLineup, setShowLineup] = useState(false)
 
   const result = goalsFor > goalsAgainst ? 'V' : goalsFor < goalsAgainst ? 'D' : 'E'
-  const resultColor = result === 'V' ? '#72e697' : result === 'D' ? '#ffb4ab' : '#89968e'
+  const resultColor = result === 'V' ? 'var(--accent)' : result === 'D' ? '#ffb4ab' : '#89968e'
   const dateLabel = new Date(playedAt + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
 
   async function share() {
@@ -80,7 +80,7 @@ export function MatchShareCard({
             style={{
               backgroundColor: showLineup ? 'rgba(75,226,119,0.1)' : 'transparent',
               borderColor: showLineup ? 'rgba(75,226,119,0.4)' : '#2a342d',
-              color: showLineup ? '#72e697' : '#637168',
+              color: showLineup ? 'var(--accent)' : '#637168',
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: showLineup ? "'FILL' 1" : "'FILL' 0" }}>
@@ -117,7 +117,7 @@ export function MatchShareCard({
               /* eslint-disable-next-line @next/next/no-img-element */
               <img src={logoUrl} alt={teamName} style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 8, backgroundColor: 'white', padding: 4 }} />
             ) : (
-              <div style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: '#72e697' }}>
+              <div style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: 'var(--accent)' }}>
                 {teamInitials(teamName)}
               </div>
             )}
@@ -128,7 +128,7 @@ export function MatchShareCard({
           {/* Marcador */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 52, fontWeight: 900, color: goalsFor > goalsAgainst ? '#72e697' : '#edf2ee', lineHeight: 1 }}>{goalsFor}</span>
+              <span style={{ fontSize: 52, fontWeight: 900, color: goalsFor > goalsAgainst ? 'var(--accent)' : '#edf2ee', lineHeight: 1 }}>{goalsFor}</span>
               <span style={{ fontSize: 28, fontWeight: 700, color: '#334155', lineHeight: 1 }}>–</span>
               <span style={{ fontSize: 52, fontWeight: 900, color: goalsAgainst > goalsFor ? '#ffb4ab' : '#edf2ee', lineHeight: 1 }}>{goalsAgainst}</span>
             </div>
@@ -231,7 +231,7 @@ export function MatchShareCard({
           <p style={{ color: '#637168', fontSize: 10, margin: 0 }}>
             {dateLabel}{competition ? ` · ${competition}` : ''}
           </p>
-          <p style={{ color: '#72e697', fontSize: 10, fontWeight: 800, margin: 0 }}>Coachly</p>
+          <p style={{ color: 'var(--accent)', fontSize: 10, fontWeight: 800, margin: 0 }}>Coachly</p>
         </div>
       </div>
 
@@ -240,7 +240,7 @@ export function MatchShareCard({
         onClick={share}
         disabled={loading}
         className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-        style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: '#72e697', width: 'fit-content' }}
+        style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: 'var(--accent)', width: 'fit-content' }}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
           {loading ? 'hourglass_empty' : 'share'}

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -40,7 +40,7 @@ export function ScrollToTop() {
             color: '#89968e',
             boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
           }}
-          whileHover={{ scale: 1.1, borderColor: '#72e697', color: '#72e697' }}
+          whileHover={{ scale: 1.1, borderColor: 'var(--accent)', color: 'var(--accent)' }}
           whileTap={{ scale: 0.92 }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>keyboard_arrow_up</span>

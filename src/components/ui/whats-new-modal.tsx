@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { CHANGELOG, CURRENT_VERSION } from '@/lib/changelog'
@@ -43,7 +43,7 @@ export function WhatsNewModal() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider"
-                style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: '#72e697', border: '1px solid rgba(34,197,94,0.3)' }}>
+                style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: 'var(--accent)', border: '1px solid rgba(34,197,94,0.3)' }}>
                 {entry.version}
               </span>
               <span className="text-[11px]" style={{ color: '#637168' }}>{entry.date}</span>
@@ -74,7 +74,7 @@ export function WhatsNewModal() {
                   className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg"
                   style={{ backgroundColor: 'rgba(34,197,94,0.1)' }}
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#72e697' }}>{c.icon}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--accent)' }}>{c.icon}</span>
                 </span>
                 <p className="text-sm flex-1 leading-snug" style={{ color: '#edf2ee' }}>{c.text}</p>
                 {c.detail && (
@@ -100,7 +100,7 @@ export function WhatsNewModal() {
           <button
             onClick={dismiss}
             className="w-full h-11 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
-            style={{ backgroundColor: '#72e697', color: '#07140c', fontFamily: 'Sora, sans-serif' }}
+            style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', fontFamily: 'Sora, sans-serif' }}
           >
             ¡Entendido!
           </button>

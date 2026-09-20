@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { MatchForm } from '@/components/match/match-form'
 import { RivalLogoUpload } from '@/components/match/rival-logo-upload'
@@ -284,7 +284,7 @@ export default async function MatchPage({
                     const gf = match.goals_for ?? 0
                     const ga = match.goals_against ?? 0
                     const res = gf > ga ? 'V' : gf < ga ? 'D' : 'E'
-                    const resColor = res === 'V' ? '#72e697' : res === 'D' ? '#ef4444' : '#f59e0b'
+                    const resColor = res === 'V' ? 'var(--accent)' : res === 'D' ? '#ef4444' : '#f59e0b'
                     return (
                       <>
                         <div className="flex items-center gap-1 md:gap-2">
@@ -357,7 +357,7 @@ export default async function MatchPage({
             style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
             {scorerApps.length > 0 && (
               <div className="flex items-center gap-2 text-sm">
-                <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 15, color: '#72e697' }}>sports_soccer</span>
+                <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 15, color: 'var(--accent)' }}>sports_soccer</span>
                 <span style={{ color: 'var(--tx)' }}>
                   {scorerApps.map(a => {
                     const first = playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?'
@@ -549,7 +549,7 @@ export default async function MatchPage({
                     <span key={p.id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] border font-medium" style={{ color: 'var(--tx-2)', backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
                       {p.number != null && <span className="text-[9px]" style={{ color: 'var(--tx-3)' }}>#{p.number}</span>}
                       {p.name.split(' ')[0]}
-                      {p.goals > 0 && <span className="text-[10px]" style={{ color: '#72e697' }}>⚽{p.goals > 1 ? `×${p.goals}` : ''}</span>}
+                      {p.goals > 0 && <span className="text-[10px]" style={{ color: 'var(--accent)' }}>⚽{p.goals > 1 ? `×${p.goals}` : ''}</span>}
                       {p.yellow > 0 && <span className="inline-block w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: '#facc15' }} />}
                       {p.red > 0 && <span className="inline-block w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: '#f87171' }} />}
                     </span>
@@ -567,7 +567,7 @@ export default async function MatchPage({
                       <span className="tabular-nums font-bold w-7 text-right flex-shrink-0" style={{ color: 'var(--tx-3)' }}>{e.minute}&apos;</span>
                       {e.out && <span style={{ color: '#f87171' }}>↓ {e.out}</span>}
                       {e.out && e.in && <span style={{ color: 'var(--tx-3)' }}>·</span>}
-                      {e.in && <span style={{ color: '#72e697' }}>↑ {e.in}</span>}
+                      {e.in && <span style={{ color: 'var(--accent)' }}>↑ {e.in}</span>}
                     </div>
                   ))}
                 </div>
@@ -631,7 +631,7 @@ function PitchPlayer({ p }: { p: { name: string; number: number | null; goals: n
   return (
     <div className="flex flex-col items-center gap-0.5 min-w-[44px]">
       <div className="relative w-9 h-9 rounded-full border-2 flex items-center justify-center text-[11px] font-black"
-        style={{ borderColor: p.isMvp ? '#fbbf24' : '#72e697', backgroundColor: p.isMvp ? 'rgba(251,191,36,0.2)' : 'rgba(75,226,119,0.15)', color: 'white' }}>
+        style={{ borderColor: p.isMvp ? '#fbbf24' : 'var(--accent)', backgroundColor: p.isMvp ? 'rgba(251,191,36,0.2)' : 'rgba(75,226,119,0.15)', color: 'white' }}>
         {p.number ?? '?'}
         {p.isMvp && (
           <span className="absolute -top-1.5 -right-1.5 text-[10px]">★</span>
@@ -639,7 +639,7 @@ function PitchPlayer({ p }: { p: { name: string; number: number | null; goals: n
       </div>
       <p className="text-[9px] font-semibold text-white text-center leading-tight max-w-[50px] truncate">{p.name.split(' ')[0]}</p>
       <div className="flex items-center gap-0.5">
-        {p.goals > 0 && <span className="text-[9px]" style={{ color: '#72e697' }}>⚽{p.goals > 1 ? `×${p.goals}` : ''}</span>}
+        {p.goals > 0 && <span className="text-[9px]" style={{ color: 'var(--accent)' }}>⚽{p.goals > 1 ? `×${p.goals}` : ''}</span>}
         {p.yellow > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px]" style={{ backgroundColor: '#facc15' }} />}
         {p.red > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px]" style={{ backgroundColor: '#f87171' }} />}
       </div>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect } from 'react'
 
@@ -20,7 +20,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         <button
           onClick={reset}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
-          style={{ backgroundColor: '#72e697', color: '#07140c' }}
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}
         >
           <span className="material-symbols-outlined">refresh</span>
           Intentar de nuevo

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
@@ -9,7 +9,7 @@ type StatusKey = 'available' | 'unavailable' | 'doubt'
 type AvailRow = { playerId: string; status: StatusKey }
 
 const STATUS_CONFIG = {
-  available:   { label: 'Voy',      icon: 'check_circle', color: '#72e697', bg: 'rgba(75,226,119,0.15)',  border: 'rgba(75,226,119,0.4)' },
+  available:   { label: 'Voy',      icon: 'check_circle', color: 'var(--accent)', bg: 'rgba(75,226,119,0.15)',  border: 'rgba(75,226,119,0.4)' },
   doubt:       { label: 'Duda',     icon: 'help',         color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.4)' },
   unavailable: { label: 'No puedo', icon: 'cancel',       color: '#f87171', bg: 'rgba(248,113,113,0.15)', border: 'rgba(248,113,113,0.4)' },
 } as const
@@ -78,7 +78,7 @@ export function AvailabilityClient({
           {teamLogo
             ? <Image src={teamLogo} alt={teamName} width={32} height={32} className="rounded-lg object-contain" unoptimized />
             : <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black"
-                style={{ backgroundColor: '#253028', color: '#72e697' }}>{teamName.charAt(0)}</div>
+                style={{ backgroundColor: '#253028', color: 'var(--accent)' }}>{teamName.charAt(0)}</div>
           }
           <div>
             <p className="text-xs font-semibold" style={{ color: '#89968e' }}>{teamName}</p>
@@ -143,13 +143,13 @@ export function AvailabilityClient({
           {teamLogo
             ? <Image src={teamLogo} alt={teamName} width={28} height={28} className="rounded-md object-contain" unoptimized />
             : <div className="w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-black"
-                style={{ backgroundColor: '#253028', color: '#72e697' }}>{teamName.charAt(0)}</div>
+                style={{ backgroundColor: '#253028', color: 'var(--accent)' }}>{teamName.charAt(0)}</div>
           }
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold truncate" style={{ color: '#89968e' }}>{teamName}</p>
           </div>
           <div className="flex items-center gap-2 text-[11px] font-semibold">
-            <span style={{ color: '#72e697' }}>{nAvail}✓</span>
+            <span style={{ color: 'var(--accent)' }}>{nAvail}✓</span>
             <span style={{ color: '#fbbf24' }}>{nDoubt}?</span>
             <span style={{ color: '#f87171' }}>{nUnavail}✗</span>
           </div>
@@ -173,7 +173,7 @@ export function AvailabilityClient({
               {teamLogo
                 ? <Image src={teamLogo} alt={teamName} width={48} height={48} className="rounded-xl object-contain" unoptimized />
                 : <div className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-black"
-                    style={{ backgroundColor: '#253028', color: '#72e697' }}>{teamName.charAt(0)}</div>
+                    style={{ backgroundColor: '#253028', color: 'var(--accent)' }}>{teamName.charAt(0)}</div>
               }
               <p className="text-[10px] font-semibold text-center max-w-[70px] leading-tight" style={{ color: '#89968e' }}>{teamName}</p>
             </div>

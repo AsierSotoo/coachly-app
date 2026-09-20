@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { PageTransition } from '@/components/ui/page-transition'
 import { TeamLogo } from '@/components/team/team-logo'
@@ -134,7 +134,12 @@ export default async function DashboardPage() {
 
     const matchIndex = allMatches.filter(m => m.status !== 'scheduled').length
 
-    return { lastSeason, allMatches, competitive, sorted, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref, leaguePos, matchIndex }
+    // Partidos programados cuya fecha ya pasó y no tienen resultado
+    const pendingMatches = allMatches
+      .filter(m => m.status === 'scheduled' && m.played_at < todayStr)
+      .sort((a, b) => a.played_at.localeCompare(b.played_at))
+
+    return { lastSeason, allMatches, competitive, sorted, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref, leaguePos, matchIndex, pendingMatches }
   }
 
   const firstTeam   = teams[0]
@@ -182,9 +187,9 @@ export default async function DashboardPage() {
             {/* ── SINGLE TEAM ─────────────────────────────── */}
             {teams.length === 1 && (() => {
               const team = teams[0]
-              const { lastSeason, competitive, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref, leaguePos, matchIndex } = processTeam(team)
+              const { lastSeason, competitive, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref, leaguePos, matchIndex, pendingMatches } = processTeam(team)
 
-              const streakColor = streakType === 'V' ? '#72e697' : streakType === 'D' ? '#f87171' : '#fbbf24'
+              const streakColor = streakType === 'V' ? 'var(--accent)' : streakType === 'D' ? '#f87171' : '#fbbf24'
               const streakLabel = streakCount >= 3
                 ? (streakType === 'V' ? `${streakCount}V seguidas` : streakType === 'D' ? `${streakCount}D seguidas` : `${streakCount}E seguidas`)
                 : null
@@ -205,7 +210,7 @@ export default async function DashboardPage() {
 
               const heroLastMatch = !nextMatch && lastMatch
               const heroColor = heroLastMatch
-                ? (lastMatch!.goals_for > lastMatch!.goals_against ? '#72e697' : lastMatch!.goals_for < lastMatch!.goals_against ? '#f87171' : '#fbbf24')
+                ? (lastMatch!.goals_for > lastMatch!.goals_against ? 'var(--accent)' : lastMatch!.goals_for < lastMatch!.goals_against ? '#f87171' : '#fbbf24')
                 : null
 
               return (
@@ -277,6 +282,31 @@ export default async function DashboardPage() {
                     </div>
                   )}
 
+                  {/* ── Partidos sin rellenar ────────────────── */}
+                  {pendingMatches.length > 0 && lastSeason && (
+                    <div className="space-y-1.5">
+                      {pendingMatches.map(pm => {
+                        const pmDate = new Date(pm.played_at + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+                        return (
+                          <Link key={pm.id} href={`/dashboard/season/${lastSeason.id}/match/${pm.id}`}
+                            className="flex items-center gap-3 rounded-[12px] border px-4 py-3 transition-all active:scale-[.99]"
+                            style={{ backgroundColor: 'rgba(248,113,113,0.06)', borderColor: 'rgba(248,113,113,0.35)', boxShadow: 'var(--shadow-card)' }}>
+                            <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#f87171', fontSize: 18 }}>pending</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[12px] font-bold" style={{ color: '#f87171' }}>
+                                Partido sin resultado · {pmDate}
+                              </p>
+                              <p className="text-[11px] mt-0.5 truncate" style={{ color: 'rgba(248,113,113,0.7)' }}>
+                                vs {pm.opponent} — Añadir resultado
+                              </p>
+                            </div>
+                            <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: '#f87171', opacity: 0.6 }}>chevron_right</span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+
                   {/* ── Próximo partido — VS card ─────────────── */}
                   {nextMatch && lastSeason && (
                     <Link href={`/dashboard/season/${lastSeason.id}/match/${nextMatch.id}`}
@@ -289,7 +319,7 @@ export default async function DashboardPage() {
                           {nextMatchDay}{nextMatchTime ? ` · ${nextMatchTime}h` : ''}
                         </p>
                         <span className="text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded border"
-                          style={{ color: '#72e697', borderColor: 'rgba(114,230,151,0.25)', backgroundColor: 'rgba(114,230,151,0.08)' }}>
+                          style={{ color: 'var(--accent)', borderColor: 'rgba(var(--accent-rgb),0.25)', backgroundColor: 'rgba(var(--accent-rgb),0.08)' }}>
                           {nextMatch.competition_type === 'copa' ? 'COPA' : nextMatch.competition_type === 'amistoso' ? 'AMISTOSO' : 'LIGA'}
                         </span>
                       </div>
@@ -341,15 +371,15 @@ export default async function DashboardPage() {
                         {totalActive > 0 && (
                           <div className="mt-4 flex items-center justify-between rounded-[10px] border px-3.5 py-2.5"
                             style={availCount > 0
-                              ? { backgroundColor: 'rgba(114,230,151,0.08)', borderColor: 'rgba(114,230,151,0.25)' }
+                              ? { backgroundColor: 'rgba(var(--accent-rgb),0.08)', borderColor: 'rgba(var(--accent-rgb),0.25)' }
                               : { backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr)' }}>
                             <div className="flex items-center gap-2">
-                              <span className="material-symbols-outlined" style={{ fontSize: 15, color: availCount > 0 ? '#72e697' : 'var(--tx-4)' }}>group</span>
-                              <span className="text-[12px] font-bold" style={{ color: availCount > 0 ? '#72e697' : 'var(--tx-3)' }}>
+                              <span className="material-symbols-outlined" style={{ fontSize: 15, color: availCount > 0 ? 'var(--accent)' : 'var(--tx-4)' }}>group</span>
+                              <span className="text-[12px] font-bold" style={{ color: availCount > 0 ? 'var(--accent)' : 'var(--tx-3)' }}>
                                 {availCount > 0 ? `${availCount} de ${totalActive} disponibles` : 'Sin respuestas de disponibilidad'}
                               </span>
                             </div>
-                            <span className="text-[11px] font-semibold" style={{ color: availCount > 0 ? '#72e697' : 'var(--tx-4)' }}>
+                            <span className="text-[11px] font-semibold" style={{ color: availCount > 0 ? 'var(--accent)' : 'var(--tx-4)' }}>
                               {availCount > 0 ? 'Preparar convocatoria →' : 'Convocar →'}
                             </span>
                           </div>
@@ -360,7 +390,7 @@ export default async function DashboardPage() {
 
                   {/* ── Último partido (fila compacta, cuando hay próximo) ── */}
                   {nextMatch && lastMatch && lastSeason && (() => {
-                    const lc = lastMatch.goals_for > lastMatch.goals_against ? '#72e697' : lastMatch.goals_for < lastMatch.goals_against ? '#f87171' : '#fbbf24'
+                    const lc = lastMatch.goals_for > lastMatch.goals_against ? 'var(--accent)' : lastMatch.goals_for < lastMatch.goals_against ? '#f87171' : '#fbbf24'
                     const ll = lastMatch.goals_for > lastMatch.goals_against ? 'Victoria' : lastMatch.goals_for < lastMatch.goals_against ? 'Derrota' : 'Empate'
                     return (
                       <Link href={`/dashboard/season/${lastSeason.id}/match/${lastMatch.id}`}
@@ -432,7 +462,7 @@ export default async function DashboardPage() {
                           <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>PUNTOS</span>
                         </div>
                         <div className="flex flex-col items-center py-5 border-x" style={{ borderColor: 'var(--bdr)' }}>
-                          <span className="text-[40px] font-black tabular-nums leading-none" style={{ color: diff > 0 ? '#72e697' : diff < 0 ? '#f87171' : 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                          <span className="text-[40px] font-black tabular-nums leading-none" style={{ color: diff > 0 ? 'var(--accent)' : diff < 0 ? '#f87171' : 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                             {diff > 0 ? '+' : ''}{diff}
                           </span>
                           <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>DIFERENCIA</span>
@@ -447,7 +477,7 @@ export default async function DashboardPage() {
                       {/* Barra de forma */}
                       {(wins + draws + losses) > 0 && (
                         <div className="flex h-[3px]">
-                          {wins   > 0 && <div style={{ flex: wins,   backgroundColor: '#72e697' }} />}
+                          {wins   > 0 && <div style={{ flex: wins,   backgroundColor: 'var(--accent)' }} />}
                           {draws  > 0 && <div style={{ flex: draws,  backgroundColor: '#fbbf24', opacity: 0.8 }} />}
                           {losses > 0 && <div style={{ flex: losses, backgroundColor: '#f87171', opacity: 0.7 }} />}
                         </div>
@@ -464,7 +494,7 @@ export default async function DashboardPage() {
                           <div className="flex gap-1.5 flex-wrap">
                             {recentForm.map((m, i) => {
                               const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                              const s = { V: { bg: '#72e697', text: '#07140c' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'rgba(248,113,113,0.18)', text: '#f87171' } }[res]
+                              const s = { V: { bg: 'var(--accent)', text: 'var(--accent-fg)' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'rgba(248,113,113,0.18)', text: '#f87171' } }[res]
                               return <span key={i} className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: s.bg, color: s.text }}>{res}</span>
                             })}
                           </div>
@@ -494,7 +524,7 @@ export default async function DashboardPage() {
                         <div className="flex gap-1.5">
                           {recentForm.map((m, i) => {
                             const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                            const s = { V: { bg: '#72e697', text: '#07140c' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'rgba(248,113,113,0.18)', text: '#f87171' } }[res]
+                            const s = { V: { bg: 'var(--accent)', text: 'var(--accent-fg)' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'rgba(248,113,113,0.18)', text: '#f87171' } }[res]
                             return <span key={i} className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: s.bg, color: s.text, border: `1px solid ${s.bg}40` }}>{res}</span>
                           })}
                         </div>
@@ -502,7 +532,7 @@ export default async function DashboardPage() {
                       <div className="text-right">
                         <p className="mb-1 text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>Goles</p>
                         <p className="font-extrabold tabular-nums leading-none" style={{ fontFamily: 'Sora, sans-serif', fontSize: 18 }}>
-                          <span style={{ color: '#72e697' }}>{goalsFor}</span>
+                          <span style={{ color: 'var(--accent)' }}>{goalsFor}</span>
                           <span style={{ color: 'var(--bdr-strong)' }}> — </span>
                           <span style={{ color: '#f87171' }}>{goalsAgainst}</span>
                         </p>
@@ -516,6 +546,23 @@ export default async function DashboardPage() {
                   {/* ── Sidebar: Esta semana ─────────────────── */}
                   <div className="hidden lg:flex lg:flex-col lg:gap-2">
                     <p className="text-[9px] font-extrabold uppercase tracking-widest mb-0.5" style={{ color: 'var(--tx-4)' }}>Esta semana</p>
+
+                    {/* 0. Partidos sin resultado (urgente) */}
+                    {pendingMatches.length > 0 && lastSeason && pendingMatches.map(pm => {
+                      const pmDateShort = new Date(pm.played_at + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+                      return (
+                        <Link key={pm.id} href={`/dashboard/season/${lastSeason.id}/match/${pm.id}`}
+                          className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all"
+                          style={{ backgroundColor: 'rgba(248,113,113,0.06)', borderColor: 'rgba(248,113,113,0.35)', boxShadow: 'var(--shadow-card)' }}>
+                          <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#f87171', fontSize: 18 }}>pending</span>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[12px] font-bold truncate" style={{ color: '#f87171' }}>Sin resultado · {pmDateShort}</p>
+                            <p className="text-[10px] mt-0.5 truncate" style={{ color: 'rgba(248,113,113,0.7)' }}>vs {pm.opponent}</p>
+                          </div>
+                          <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 14, color: '#f87171', opacity: 0.6 }}>chevron_right</span>
+                        </Link>
+                      )
+                    })}
 
                     {/* 1. Entrenamiento (o aviso de que no hay) */}
                     {nextSession ? (
@@ -555,7 +602,7 @@ export default async function DashboardPage() {
                           <p className="text-[12px] font-bold" style={{ color: 'var(--tx)' }}>
                             Disponibilidad · {nextMatchDay}
                           </p>
-                          <p className="text-[10px] mt-0.5" style={{ color: availCount > 0 ? '#72e697' : 'var(--tx-3)' }}>
+                          <p className="text-[10px] mt-0.5" style={{ color: availCount > 0 ? 'var(--accent)' : 'var(--tx-3)' }}>
                             {availCount > 0 ? `${availCount} de ${totalActive} disponibles` : 'Sin respuestas aún'}
                           </p>
                         </div>
@@ -583,7 +630,7 @@ export default async function DashboardPage() {
                         <p className="text-[9px] font-extrabold uppercase tracking-widest mb-2.5" style={{ color: 'var(--tx-4)' }}>Máxima goleadora</p>
                         <div className="flex items-center gap-2.5">
                           <div className="h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0 text-[14px] font-black"
-                            style={{ backgroundColor: 'rgba(114,230,151,0.15)', color: '#72e697', border: '1px solid rgba(114,230,151,0.25)' }}>
+                            style={{ backgroundColor: 'rgba(var(--accent-rgb),0.15)', color: 'var(--accent)', border: '1px solid rgba(var(--accent-rgb),0.25)' }}>
                             {topScorer.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0 flex-1">

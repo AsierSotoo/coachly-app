@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -34,7 +34,7 @@ export default async function NewConvocatoriaPage({
 
         <div className="overflow-hidden rounded-3xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
           <div className="flex items-center gap-2 border-b px-4 py-3" style={{ borderColor: 'var(--bdr-strong)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#72e697' }}>group</span>
+            <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--accent)' }}>group</span>
             <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--tx-3)' }}>Datos del partido</p>
           </div>
 

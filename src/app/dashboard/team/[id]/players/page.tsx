@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { addPlayer, togglePlayerActive, updatePlayer } from '../../actions'
 import Link from 'next/link'
@@ -140,7 +140,7 @@ export default async function PlayersPage({
             <Link
               href={`/dashboard/team/${teamId}/seasons`}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-opacity hover:opacity-90"
-              style={{ backgroundColor: '#72e697', color: '#07140c' }}
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}
             >
               <span className="material-symbols-outlined text-lg">calendar_today</span>
               Temporadas
@@ -183,7 +183,7 @@ export default async function PlayersPage({
             <div className="flex items-end">
               <button type="submit"
                 className="w-full h-[50px] rounded-xl flex items-center justify-center gap-2 text-sm font-bold active:scale-95 transition-transform cursor-pointer"
-                style={{ backgroundColor: '#72e697', color: '#07140c' }}>
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)' }}>
                 Confirmar {terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}
               </button>
             </div>

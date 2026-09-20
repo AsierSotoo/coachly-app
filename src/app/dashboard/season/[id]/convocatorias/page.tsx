@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -263,8 +263,8 @@ export default async function ConvocatoriasPage({
                         <td className="px-6 py-5">
                           {c.completed ? (
                             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold border"
-                              style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: '#72e697' }}>
-                              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#72e697' }} />
+                              style={{ backgroundColor: 'rgba(34,197,94,0.1)', borderColor: 'rgba(34,197,94,0.3)', color: 'var(--accent)' }}>
+                              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
                               COMPLETADA
                             </span>
                           ) : (
