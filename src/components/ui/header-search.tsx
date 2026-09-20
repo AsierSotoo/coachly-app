@@ -21,15 +21,15 @@ export function HeaderSearch({ teams }: { teams: Team[] }) {
   }
 
   return (
-    <div className="flex items-center gap-2 rounded-full px-4 py-1.5 border border-[#2a342d] focus-within:border-[var(--accent)] transition-colors"
-      style={{ backgroundColor: '#1a231d' }}>
-      <span className="material-symbols-outlined" style={{ color: '#89968e', fontSize: 16 }}>search</span>
+    <div className="flex items-center gap-2 rounded-full px-4 py-1.5 border focus-within:border-[var(--accent)] transition-colors"
+      style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
+      <span className="material-symbols-outlined" style={{ color: 'var(--tx-3)', fontSize: 16 }}>search</span>
       <input
         ref={inputRef}
         placeholder="Buscar jugador/a..."
         onKeyDown={handleKeyDown}
         className="bg-transparent border-none focus:ring-0 text-sm w-36"
-        style={{ color: '#edf2ee', outline: 'none', fontSize: '14px', padding: 0, minHeight: 'auto' }}
+        style={{ color: 'var(--tx)', outline: 'none', fontSize: '14px', padding: 0, minHeight: 'auto' }}
       />
     </div>
   )

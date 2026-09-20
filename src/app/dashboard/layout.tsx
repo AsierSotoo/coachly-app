@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { NavBar } from '@/components/ui/nav-bar'
 import { DesktopSidebar } from '@/components/ui/desktop-sidebar'
-import { HeaderSearch } from '@/components/ui/header-search'
 import { HeaderTitle } from '@/components/ui/header-title'
 import { WhatsNewModal } from '@/components/ui/whats-new-modal'
 import { PwaInstallButton } from '@/components/ui/pwa-install-button'
@@ -52,7 +51,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <header className="sticky top-0 z-20 hidden md:flex items-center justify-between h-16 px-10 border-b" style={{ backgroundColor: 'var(--bg)', borderColor: 'var(--bdr-strong)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
           <HeaderTitle teams={teams} />
           <div className="flex items-center gap-3">
-            <HeaderSearch teams={teams} />
             <ThemeToggle />
             <LanguageToggle current={locale} />
             <Link href="/dashboard/profile" className="flex items-center gap-2 cursor-pointer">
