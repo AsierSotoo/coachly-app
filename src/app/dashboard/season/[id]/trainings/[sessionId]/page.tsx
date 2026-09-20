@@ -89,6 +89,16 @@ export default async function TrainingSessionPage({
 
                 <div className="flex flex-col gap-1 px-5 py-4">
                   <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>
+                    Hora <span style={{ color: 'var(--tx-3)' }}>(opcional)</span>
+                  </label>
+                  <input name="start_time" type="time"
+                    defaultValue={session.start_time?.slice(0, 5) ?? ''}
+                    className="bg-transparent text-sm focus:outline-none"
+                    style={{ color: 'var(--tx)', colorScheme: 'dark' }} />
+                </div>
+
+                <div className="flex flex-col gap-1 px-5 py-4">
+                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>
                     Título <span style={{ color: 'var(--tx-3)' }}>(opcional)</span>
                   </label>
                   <input name="title" type="text" placeholder="Ej: Táctica, Físico, Rondos..."

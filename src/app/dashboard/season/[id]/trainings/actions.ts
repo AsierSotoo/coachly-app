@@ -15,6 +15,7 @@ export async function createTrainingSession(formData: FormData) {
       season_id:    seasonId,
       team_id:      teamId,
       date:         formData.get('date') as string,
+      start_time:   formData.get('start_time') as string || null,
       title:        formData.get('title') as string || null,
       notes:        formData.get('notes') as string || null,
       duration_min: formData.get('duration_min') ? Number(formData.get('duration_min')) : null,
@@ -36,6 +37,7 @@ export async function updateTrainingSession(formData: FormData) {
     .from('training_sessions')
     .update({
       date:         formData.get('date') as string,
+      start_time:   formData.get('start_time') as string || null,
       title:        formData.get('title') as string || null,
       notes:        formData.get('notes') as string || null,
       duration_min: formData.get('duration_min') ? Number(formData.get('duration_min')) : null,

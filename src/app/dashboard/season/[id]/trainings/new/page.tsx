@@ -63,6 +63,16 @@ export default async function NewTrainingPage({
               style={{ color: 'var(--tx)', colorScheme: 'dark' }} />
           </div>
 
+          {/* Hora */}
+          <div className="rounded-2xl border p-5" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+            <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--tx-3)' }}>
+              Hora <span style={{ color: 'var(--tx-4)' }}>(opcional)</span>
+            </label>
+            <input name="start_time" type="time"
+              className="bg-transparent text-base font-semibold focus:outline-none"
+              style={{ color: 'var(--tx)', colorScheme: 'dark' }} />
+          </div>
+
           {/* Título con chips rápidos */}
           <div className="rounded-2xl border p-5" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
             <label className="block text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--tx-3)' }}>
