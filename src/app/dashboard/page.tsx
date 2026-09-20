@@ -521,7 +521,7 @@ export default async function DashboardPage() {
                     {nextSession ? (
                       <Link href={`/dashboard/season/${lastSeason!.id}/trainings`}
                         className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
                         <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--accent)', fontSize: 18 }}>fitness_center</span>
                         <div className="min-w-0">
                           <p className="text-[12px] font-bold truncate" style={{ color: 'var(--tx)' }}>
@@ -536,7 +536,7 @@ export default async function DashboardPage() {
                     ) : lastSeason && (
                       <Link href={`/dashboard/season/${lastSeason.id}/trainings/new`}
                         className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
                         <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--tx-3)', fontSize: 18 }}>fitness_center</span>
                         <div>
                           <p className="text-[12px] font-bold" style={{ color: 'var(--tx-2)' }}>Sin entrenos planificados</p>
@@ -549,7 +549,7 @@ export default async function DashboardPage() {
                     {nextMatch && totalActive > 0 && (
                       <Link href={`/dashboard/season/${lastSeason!.id}/match/${nextMatch.id}`}
                         className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
                         <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--accent)', fontSize: 18 }}>groups</span>
                         <div className="min-w-0">
                           <p className="text-[12px] font-bold" style={{ color: 'var(--tx)' }}>
@@ -566,7 +566,7 @@ export default async function DashboardPage() {
                     {yellowAlerts.slice(0, 2).map(alert => (
                       <Link key={alert.playerId} href={`/dashboard/season/${lastSeason!.id}/stats`}
                         className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all"
-                        style={{ backgroundColor: 'rgba(251,191,36,0.04)', borderColor: 'rgba(251,191,36,0.25)' }}>
+                        style={{ backgroundColor: 'rgba(251,191,36,0.04)', borderColor: 'rgba(251,191,36,0.25)', boxShadow: 'var(--shadow-card)' }}>
                         <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#fbbf24', fontSize: 18 }}>warning</span>
                         <div className="min-w-0 flex-1">
                           <p className="text-[12px] font-bold truncate" style={{ color: '#fbbf24' }}>{alert.name} · {alert.count} amarillas</p>
@@ -579,7 +579,7 @@ export default async function DashboardPage() {
                     {/* 4. Máxima goleadora */}
                     {topScorer && (
                       <div className="rounded-[12px] border px-3.5 py-3"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
                         <p className="text-[9px] font-extrabold uppercase tracking-widest mb-2.5" style={{ color: 'var(--tx-4)' }}>Máxima goleadora</p>
                         <div className="flex items-center gap-2.5">
                           <div className="h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0 text-[14px] font-black"

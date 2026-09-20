@@ -17,7 +17,7 @@
   --accent:        #72e697;
   --accent-fg:     #07140c;
   --accent-subtle: rgba(114,230,151,0.09);
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.03);
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
   /* Legacy aliases */
   --background: var(--bg);
   --foreground: var(--tx);
