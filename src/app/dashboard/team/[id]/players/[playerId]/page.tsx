@@ -275,8 +275,8 @@ export default async function PlayerDetailPage({
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Posición</label>
                 <select name="position" defaultValue={player.position ?? ''}
-                  className="h-10 rounded-xl px-3 text-sm focus:outline-none transition-colors appearance-none" style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
-                  style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }}>
+                  className="h-10 rounded-xl px-3 text-sm focus:outline-none transition-colors appearance-none"
+                  style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)', color: 'var(--tx)' }}>
                   <option value="">Sin posición</option>
                   {terms.positions.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
@@ -286,8 +286,8 @@ export default async function PlayerDetailPage({
                 <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Descripción / notas</label>
                 <textarea name="bio" rows={5} defaultValue={player.bio ?? ''}
                   placeholder="Perfil, puntos fuertes, notas del entrenador..."
-                  className="w-full rounded-xl px-3 py-2 text-sm resize-y focus:outline-none transition-colors leading-relaxed" style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
-                  style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }} />
+                  className="w-full rounded-xl px-3 py-2 text-sm resize-y focus:outline-none transition-colors leading-relaxed"
+                  style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)', color: 'var(--tx)' }} />
               </div>
 
               <div className="flex items-center justify-between">
@@ -550,8 +550,8 @@ export default async function PlayerDetailPage({
 
         {/* ── SEGUIMIENTO DE SANCIONES ──────────────────────── */}
         {totalYellow > 0 && (
-          <div className={`mt-5 overflow-hidden rounded-3xl border ${warnSanction ? 'border-yellow-500/40' : ''}`} style={{ borderColor: warnSanction ? undefined : 'var(--bdr-strong)' }}
-            style={{ backgroundColor: warnSanction ? 'rgba(234,179,8,0.04)' : 'var(--bg-base)' }}>
+          <div className={`mt-5 overflow-hidden rounded-3xl border ${warnSanction ? 'border-yellow-500/40' : ''}`}
+            style={{ borderColor: warnSanction ? undefined : 'var(--bdr-strong)', backgroundColor: warnSanction ? 'rgba(234,179,8,0.04)' : 'var(--bg-base)' }}>
             <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: warnSanction ? 'rgba(234,179,8,0.15)' : 'var(--bdr-strong)' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 16, color: warnSanction ? '#facc15' : 'var(--tx-3)' }}>gavel</span>
               <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: warnSanction ? '#facc15' : 'var(--tx-3)' }}>
