@@ -82,7 +82,7 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
               </label>
               <input id="category" name="category" type="text"
                 placeholder="ej. Primera Autonómica"
-                className="rounded-xl px-4 text-sm focus:outline-none focus:border-[var(--accent)] placeholder:text-slate-600"
+                className="rounded-xl px-4 text-sm focus:outline-none focus:border-[var(--accent)] placeholder:text-[#3e4d42]"
                 style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)' }}
               />
             </div>

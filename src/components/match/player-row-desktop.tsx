@@ -90,7 +90,7 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
       ]
 
   const isOut = status === 'no_convocada'
-  const posColor = player.position ? (POSITION_COLORS[player.position] ?? 'text-slate-400') : 'text-slate-400'
+  const posColor = player.position ? (POSITION_COLORS[player.position] ?? 'text-[#89968e]') : 'text-[#89968e]'
 
   return (
     <div className={`grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 px-4 py-2.5 transition-colors ${!isLast ? 'border-b' : ''}`}

@@ -72,7 +72,7 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
   const total = formationDef ? formationDef.lines.flat().length : 0
 
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+    <section className="rounded-2xl border p-5" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
       {/* Inputs ocultos para el form */}
       <input type="hidden" name="formation" value={formation} />
       {formationDef && formationDef.lines.flat().map(slot => (
@@ -81,10 +81,10 @@ export function FormationEditor({ players, defaultFormation, defaultPositions = 
 
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 16 }}>sports</span>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--accent)' }}>sports</span>
+          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>
             Táctica{' '}
-            <span className="normal-case font-normal tracking-normal" style={{ color: '#334155' }}>(opcional)</span>
+            <span className="normal-case font-normal tracking-normal" style={{ color: 'var(--tx-4)' }}>(opcional)</span>
           </h2>
         </div>
         {formationDef && (

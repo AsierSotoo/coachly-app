@@ -52,7 +52,7 @@ export default async function TrainingSessionPage({
     <PageTransition>
       <main className="max-w-xl mx-auto px-4 py-6 pb-32 md:pb-10">
         <Link href={`/dashboard/season/${seasonId}/trainings`}
-          className="flex items-center gap-1 text-xs mb-5 hover:text-slate-300 transition-colors"
+          className="flex items-center gap-1 text-xs mb-5 hover:text-green-400 transition-colors"
           style={{ color: 'var(--tx-3)' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
           Entrenamientos
@@ -93,7 +93,7 @@ export default async function TrainingSessionPage({
                   </label>
                   <input name="title" type="text" placeholder="Ej: Táctica, Físico, Rondos..."
                     defaultValue={session.title ?? ''}
-                    className="bg-transparent text-sm focus:outline-none placeholder:text-slate-700"
+                    className="bg-transparent text-sm focus:outline-none placeholder:text-[#3e4d42]"
                     style={{ color: 'var(--tx)' }} />
                 </div>
 
@@ -103,7 +103,7 @@ export default async function TrainingSessionPage({
                   </label>
                   <input name="duration_min" type="number" min="1" max="300" placeholder="90"
                     defaultValue={session.duration_min ?? ''}
-                    className="bg-transparent text-sm focus:outline-none placeholder:text-slate-700 w-24"
+                    className="bg-transparent text-sm focus:outline-none placeholder:text-[#3e4d42] w-24"
                     style={{ color: 'var(--tx)' }} />
                 </div>
 
@@ -112,7 +112,7 @@ export default async function TrainingSessionPage({
                   <textarea name="notes" rows={5}
                     placeholder="Qué se entrenó, sensaciones del equipo, notas para el próximo día..."
                     defaultValue={session.notes ?? ''}
-                    className="bg-transparent text-sm resize-y focus:outline-none placeholder:text-slate-700 leading-relaxed"
+                    className="bg-transparent text-sm resize-y focus:outline-none placeholder:text-[#3e4d42] leading-relaxed"
                     style={{ color: 'var(--tx)' }} />
                 </div>
 

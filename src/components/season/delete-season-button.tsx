@@ -21,7 +21,7 @@ export function DeleteSeasonButton({ seasonId, teamId, matchCount }: {
       <input type="hidden" name="team_id" value={teamId} />
       <button
         type="submit"
-        className="flex items-center gap-1.5 rounded-xl border border-slate-700 px-3 py-1.5 text-xs text-slate-600 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 transition-colors cursor-pointer"
+        className="flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 transition-colors cursor-pointer" style={{ borderColor: 'var(--bdr-strong)', color: 'var(--tx-4)' }}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 14 }}>delete</span> Eliminar
       </button>

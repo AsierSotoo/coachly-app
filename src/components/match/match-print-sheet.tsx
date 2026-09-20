@@ -88,8 +88,8 @@ function FieldRow({ players, topPct, circleSize = 28 }: {
 }
 
 const C = '#111'
-const FW = 272
-const FH = 520
+const FW = 315
+const FH = 575
 
 export function MatchPrintSheet({
   teamName, teamLogo, opponent,
@@ -100,12 +100,24 @@ export function MatchPrintSheet({
   const titulares = players.filter(p => p.status === 'titular').sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
   const convocadas = players.filter(p => p.status === 'convocada').sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
   const hasConv = titulares.length > 0 || convocadas.length > 0
-  const allAvail = hasConv
-    ? [...titulares, ...convocadas]
-    : players.filter(p => p.status !== 'no_convocada').sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
+  const allAvail = players.filter(p => p.status !== 'no_convocada').sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
 
-  const eleven  = hasConv ? titulares : allAvail.slice(0, 11)
-  const subs    = hasConv ? convocadas : allAvail.slice(11)
+  // Prioridad: 1) pitchPositions (slots reales guardados) 2) convocatoria 3) primeros 11 por dorsal
+  const assignedIds = pitchPositions && Object.keys(pitchPositions).length > 0
+    ? new Set(Object.keys(pitchPositions))
+    : null
+
+  const eleven = assignedIds
+    ? players.filter(p => assignedIds.has(p.id)).sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
+    : hasConv
+      ? titulares
+      : allAvail.slice(0, 11)
+
+  const subs = assignedIds
+    ? players.filter(p => !assignedIds.has(p.id) && p.status !== 'no_convocada').sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
+    : hasConv
+      ? convocadas
+      : allAvail.slice(11)
   const numbered = assignSeq(eleven)
   const subsNum  = subs.map((p, i) => ({ ...p, seqNum: eleven.length + 1 + i }))
 
@@ -179,11 +191,11 @@ export function MatchPrintSheet({
         {/* CABECERA */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <div style={{ fontSize: 13, fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', color: '#111' }}>
-            PLANTILLA PARTIDOS
+            {teamName}
           </div>
           {teamLogo
             // eslint-disable-next-line @next/next/no-img-element
-            ? <img src={teamLogo} alt={teamName} style={{ width: 42, height: 42, objectFit: 'contain' }} />
+            ? <img src={teamLogo} alt={teamName} style={{ width: 42, height: 42, objectFit: 'contain', filter: 'grayscale(100%)' }} />
             : <div style={{ width: 42, height: 42, border: '2px solid #111', borderRadius: 4,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 11, fontWeight: 900, color: '#111' }}>
@@ -220,11 +232,11 @@ export function MatchPrintSheet({
         </table>
 
         {/* CUERPO */}
-        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
 
           {/* CAMPO */}
           <div style={{
-            position: 'relative', width: FW, height: FH, flexShrink: 0,
+            position: 'relative', flex: 1, height: FH, minWidth: 0,
             background: 'white', border: `2.5px solid ${C}`, overflow: 'hidden',
           }}>
             {/* Portería arriba */}
@@ -271,21 +283,21 @@ export function MatchPrintSheet({
           </div>
 
           {/* LISTA */}
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ width: 230, flexShrink: 0 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <tbody>
                 {numbered.map((p, i) => {
                   const isLastStarter = i === numbered.length - 1 && subsNum.length > 0
+                  const sepBorder = isLastStarter ? '2.5px solid #111' : '1px solid #ddd'
                   return (
                     <tr key={p.id}>
                       <td style={{ border: '1px solid #bbb',
-                        borderBottom: isLastStarter ? '3px solid #111' : '1px solid #bbb',
+                        borderBottom: isLastStarter ? '2.5px solid #111' : '1px solid #bbb',
                         padding: '0 4px', width: 20, textAlign: 'center', height: ROW_H,
                         fontSize: 8, fontWeight: 900, color: '#111' }}>
                         {p.seqNum}
                       </td>
-                      <td style={{ border: '1px solid #bbb',
-                        borderBottom: isLastStarter ? '3px solid #111' : '1px solid #bbb',
+                      <td style={{ borderBottom: sepBorder,
                         padding: '0 6px', height: ROW_H,
                         fontSize: 9.5, fontWeight: 600, color: '#111' }}>
                         {p.name}
@@ -296,11 +308,11 @@ export function MatchPrintSheet({
                 {subsNum.map(p => (
                   <tr key={p.id}>
                     <td style={{ border: '1px solid #bbb', padding: '0 4px', width: 20,
-                      textAlign: 'center', height: ROW_H, fontSize: 8, fontWeight: 900, color: '#555' }}>
+                      textAlign: 'center', height: ROW_H, fontSize: 8, fontWeight: 900, color: '#111' }}>
                       {p.seqNum}
                     </td>
-                    <td style={{ border: '1px solid #bbb', padding: '0 6px', height: ROW_H,
-                      fontSize: 9.5, fontWeight: 500, color: '#333' }}>
+                    <td style={{ borderBottom: '1px solid #ddd', padding: '0 6px', height: ROW_H,
+                      fontSize: 9.5, fontWeight: 600, color: '#111' }}>
                       {p.name}
                     </td>
                   </tr>

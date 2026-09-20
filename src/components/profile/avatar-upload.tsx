@@ -87,7 +87,7 @@ export function AvatarUpload({ userId, currentUrl, name, size = 96 }: AvatarUplo
         <div className="absolute inset-0 rounded-full ring-2 ring-green-500/0 group-hover:ring-green-500/60 transition-all" />
       </button>
 
-      <p className="text-[10px] text-slate-600">Haz clic para cambiar · PNG, JPG · Se comprime automáticamente</p>
+      <p className="text-[10px]" style={{ color: 'var(--tx-4)' }}>Haz clic para cambiar · PNG, JPG · Se comprime automáticamente</p>
 
       <input ref={inputRef} type="file" accept="image/*" className="hidden"
         onChange={e => { const f = e.target.files?.[0]; if (f) upload(f) }} />

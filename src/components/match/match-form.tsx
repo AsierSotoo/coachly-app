@@ -216,8 +216,8 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
           rows={3}
           defaultValue={match.notes ?? ''}
           placeholder="¿Cómo fue el partido? Pressing, errores defensivos, momentos clave, sensaciones del equipo..."
-          className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 resize-none focus:border-green-500/60 focus:outline-none transition-colors leading-relaxed"
-          style={{ color: '#edf2ee', minHeight: 'auto' }}
+          className="w-full rounded-xl px-4 py-3 resize-none focus:outline-none transition-colors leading-relaxed"
+          style={{ color: 'var(--tx)', border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)', minHeight: 'auto' }}
         />
       </section>
 
@@ -228,8 +228,8 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
           <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#637168' }}>{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)} del partido</h2>
         </div>
         <select name="mvp_player_id" defaultValue={match.mvp_player_id ?? ''}
-          className="w-full h-11 rounded-xl border border-slate-700 bg-slate-800 px-3 appearance-none focus:border-green-500/60 focus:outline-none transition-colors"
-          style={{ color: '#edf2ee' }}>
+          className="w-full h-11 rounded-xl px-3 appearance-none focus:outline-none transition-colors"
+          style={{ color: 'var(--tx)', border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
           <option value="">Sin seleccionar</option>
           {players.map(p => (
             <option key={p.id} value={p.id}>

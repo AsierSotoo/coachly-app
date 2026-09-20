@@ -55,7 +55,7 @@ export function PlayerPhotoUpload({ playerId, currentUrl, playerName, size = 'lg
   return (
     <div
       onClick={() => !uploading && inputRef.current?.click()}
-      className={className ?? `relative flex ${dim} ${round} cursor-pointer items-center justify-center overflow-hidden border border-slate-700 bg-slate-800 transition-all hover:border-green-500/50 group`}
+      className={className ?? `relative flex ${dim} ${round} cursor-pointer items-center justify-center overflow-hidden border transition-all hover:border-green-500/50 group`} style={style ?? { borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
       style={style}
     >
       {uploading ? (
@@ -69,7 +69,7 @@ export function PlayerPhotoUpload({ playerId, currentUrl, playerName, size = 'lg
         </>
       ) : (
         <>
-          <span className="font-[family-name:var(--font-heading)] text-sm font-black text-slate-400">{initials}</span>
+          <span className="font-[family-name:var(--font-heading)] text-sm font-black" style={{ color: 'var(--tx-3)' }}>{initials}</span>
           <div className={`absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity ${round}`}>
             <span className="material-symbols-outlined text-white" style={{ fontSize: size === 'sm' ? 14 : 24 }}>photo_camera</span>
           </div>

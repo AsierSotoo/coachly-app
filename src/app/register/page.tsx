@@ -65,7 +65,7 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
 
           {/* Hero móvil */}
           <div className="mb-10 lg:hidden">
-            <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-[#071a07] to-[#0a2a0a] p-6 text-center">
+            <div className="relative overflow-hidden rounded-2xl border p-6 text-center" style={{ borderColor: 'var(--bdr-strong)', background: 'linear-gradient(135deg, var(--bg-card) 0%, #0a1f0a 100%)' }}>
               <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-28 w-28 rounded-full border border-white/50" />
                 <div className="absolute top-1/2 left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60" />
@@ -77,21 +77,21 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
                   <Image src="/logo.png" alt="Coachly" width={56} height={56} className="w-full h-full object-cover" />
                 </div>
                 <span className="font-[family-name:var(--font-heading)] text-2xl font-bold text-green-400 tracking-tight">Coachly</span>
-                <p className="text-sm text-slate-400">Estadísticas para entrenadores</p>
+                <p className="text-sm" style={{ color: 'var(--tx-3)' }}>Estadísticas para entrenadores</p>
               </div>
             </div>
           </div>
 
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-white">Crea tu cuenta</h1>
-            <p className="mt-1 text-sm text-slate-500">Tarda menos de un minuto</p>
+            <p className="mt-1 text-sm" style={{ color: 'var(--tx-4)' }}>Tarda menos de un minuto</p>
           </div>
 
           {/* Google */}
           <form action={signInWithGoogle}>
             <button
               type="submit"
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-700/80 bg-slate-800/80 h-11 text-sm font-medium text-white transition-all hover:bg-slate-700 hover:border-slate-600 active:scale-[0.98] cursor-pointer"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border h-11 text-sm font-medium transition-all active:scale-[0.98] cursor-pointer hover:bg-[var(--bg-elevated)]" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)', color: 'var(--tx)' }}
             >
               <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -104,14 +104,14 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
           </form>
 
           <div className="my-5 flex items-center gap-3">
-            <div className="h-px flex-1 bg-slate-800" />
-            <span className="text-[11px] text-slate-600 uppercase tracking-wider">o</span>
-            <div className="h-px flex-1 bg-slate-800" />
+            <div className="h-px flex-1" style={{ backgroundColor: 'var(--bdr-strong)' }} />
+            <span className="text-[11px] uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>o</span>
+            <div className="h-px flex-1" style={{ backgroundColor: 'var(--bdr-strong)' }} />
           </div>
 
           <form action={register} className="flex flex-col gap-3.5">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="name" className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Tu nombre</label>
+              <label htmlFor="name" className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Tu nombre</label>
               <input
                 id="name" name="name" type="text" required
                 autoComplete="name" placeholder="Ej: Carlos García"
@@ -119,7 +119,7 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="email" className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Email</label>
+              <label htmlFor="email" className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Email</label>
               <input
                 id="email" name="email" type="email" required
                 autoComplete="email" placeholder="tu@email.com"
@@ -127,7 +127,7 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="password" className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Contraseña</label>
+              <label htmlFor="password" className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Contraseña</label>
               <input
                 id="password" name="password" type="password" required
                 autoComplete="new-password" minLength={6}
@@ -146,7 +146,7 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-600">
+          <p className="mt-6 text-center text-sm" style={{ color: 'var(--tx-4)' }}>
             ¿Ya tienes cuenta?{' '}
             <Link href="/login" className="font-semibold text-green-400 hover:text-green-300 transition-colors">
               Inicia sesión

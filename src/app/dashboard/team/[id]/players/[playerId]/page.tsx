@@ -184,14 +184,14 @@ export default async function PlayerDetailPage({
       <main className="mx-auto max-w-2xl px-4 py-6 pb-32 md:pb-10">
 
         <div className="mb-5 flex items-center justify-between">
-          <Link href={`/dashboard/team/${teamId}/players`} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors">
+          <Link href={`/dashboard/team/${teamId}/players`} className="flex items-center gap-1 text-xs hover:text-green-400 transition-colors" style={{ color: 'var(--tx-4)' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> Plantilla
           </Link>
           {allPlayers && allPlayers.length > 1 && (
             <div className="flex items-center gap-1">
               {prevPlayer ? (
                 <Link href={`/dashboard/team/${teamId}/players/${prevPlayer.id}`}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-[var(--bg-elevated)]"
                   style={{ borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }} title={prevPlayer.name}>
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
                   <span className="hidden sm:inline max-w-[80px] truncate">{prevPlayer.name.split(' ')[0]}</span>
@@ -207,7 +207,7 @@ export default async function PlayerDetailPage({
               </span>
               {nextPlayer ? (
                 <Link href={`/dashboard/team/${teamId}/players/${nextPlayer.id}`}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-colors hover:bg-[var(--bg-elevated)]"
                   style={{ borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }} title={nextPlayer.name}>
                   <span className="hidden sm:inline max-w-[80px] truncate">{nextPlayer.name.split(' ')[0]}</span>
                   <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
@@ -229,10 +229,10 @@ export default async function PlayerDetailPage({
         )}
 
         {/* ── FICHA EDITABLE ───────────────────────────────── */}
-        <div className="mb-5 overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950">
-          <div className="flex items-center gap-2 border-b border-slate-800 px-5 py-3">
-            <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 16 }}>edit</span>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Ficha del {terms.p}</p>
+        <div className="mb-5 overflow-hidden rounded-3xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+          <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: 'var(--bdr-strong)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--accent)' }}>edit</span>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-3)' }}>Ficha del {terms.p}</p>
             {sp.saved && (
               <span className="ml-auto text-[10px] font-bold" style={{ color: 'var(--accent)' }}>✓ Guardado</span>
             )}
@@ -246,9 +246,9 @@ export default async function PlayerDetailPage({
                 currentUrl={player.photo_url}
                 playerName={player.name}
                 circular
-                className="relative flex h-24 w-24 rounded-full cursor-pointer items-center justify-center overflow-hidden border-2 border-slate-700 bg-slate-800 hover:border-green-500/50 transition-all group"
+                className="relative flex h-24 w-24 rounded-full cursor-pointer items-center justify-center overflow-hidden border-2 hover:border-green-500/50 transition-all group" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
               />
-              <p className="text-[9px] text-slate-600 text-center">Toca para cambiar foto</p>
+              <p className="text-[9px] text-center" style={{ color: 'var(--tx-4)' }}>Toca para cambiar foto</p>
             </div>
 
             {/* Campos */}
@@ -258,24 +258,24 @@ export default async function PlayerDetailPage({
 
               <div className="flex gap-3">
                 <div className="flex-1 flex flex-col gap-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Nombre</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Nombre</label>
                   <input name="name" type="text" required defaultValue={player.name}
-                    className="h-10 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm focus:border-green-500/60 focus:outline-none transition-colors"
+                    className="h-10 rounded-xl px-3 text-sm focus:outline-none transition-colors" style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
                     style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }} />
                 </div>
                 <div className="w-20 flex flex-col gap-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Dorsal</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Dorsal</label>
                   <input name="number" type="number" min="1" max="99" defaultValue={player.number ?? ''}
                     placeholder="—"
-                    className="h-10 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm text-center focus:border-green-500/60 focus:outline-none transition-colors"
+                    className="h-10 rounded-xl px-3 text-sm text-center focus:outline-none transition-colors" style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
                     style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }} />
                 </div>
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Posición</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Posición</label>
                 <select name="position" defaultValue={player.position ?? ''}
-                  className="h-10 rounded-xl border border-slate-700 bg-slate-800 px-3 text-sm focus:border-green-500/60 focus:outline-none transition-colors appearance-none"
+                  className="h-10 rounded-xl px-3 text-sm focus:outline-none transition-colors appearance-none" style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
                   style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }}>
                   <option value="">Sin posición</option>
                   {terms.positions.map(p => <option key={p} value={p}>{p}</option>)}
@@ -283,10 +283,10 @@ export default async function PlayerDetailPage({
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Descripción / notas</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Descripción / notas</label>
                 <textarea name="bio" rows={5} defaultValue={player.bio ?? ''}
                   placeholder="Perfil, puntos fuertes, notas del entrenador..."
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm resize-y focus:border-green-500/60 focus:outline-none transition-colors leading-relaxed"
+                  className="w-full rounded-xl px-3 py-2 text-sm resize-y focus:outline-none transition-colors leading-relaxed" style={{ border: '1px solid var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}
                   style={{ color: 'var(--tx)', minHeight: 'auto', fontSize: 14 }} />
               </div>
 
@@ -304,13 +304,13 @@ export default async function PlayerDetailPage({
 
         {/* ── Ranking en plantilla ─────────────────────────────────── */}
         {rankTotal > 1 && current && (
-          <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
-            <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
-              <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 14 }}>leaderboard</span>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Ranking en plantilla · {current.seasonName}</p>
+          <div className="mb-4 overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
+            <div className="flex items-center gap-2 border-b px-4 py-2.5" style={{ borderColor: 'var(--bdr-strong)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--accent)' }}>leaderboard</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-3)' }}>Ranking en plantilla · {current.seasonName}</p>
               <span className="ml-auto text-[10px]" style={{ color: 'var(--bdr-strong)' }}>{rankTotal} jugadoras</span>
             </div>
-            <div className="grid grid-cols-3 divide-x divide-slate-800">
+            <div className="grid grid-cols-3 divide-x" style={{ borderColor: 'var(--bdr-strong)' }}>
               {[
                 { label: 'Goles',       rank: goalsRank,   icon: 'sports_soccer', color: '#72e697' },
                 { label: 'Asistencias', rank: assistsRank, icon: 'electric_bolt', color: '#facc15' },
@@ -335,10 +335,10 @@ export default async function PlayerDetailPage({
 
         {/* ── Valoración media ─────────────────────────────────────── */}
         {avgRating !== null && (
-          <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
-            <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
+          <div className="mb-4 overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
+            <div className="flex items-center gap-2 border-b px-4 py-2.5" style={{ borderColor: 'var(--bdr-strong)' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>star</span>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Valoración del entrenador</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-3)' }}>Valoración del entrenador</p>
               <span className="ml-auto text-[10px]" style={{ color: 'var(--bdr-strong)' }}>{ratingCount} partido{ratingCount !== 1 ? 's' : ''}</span>
             </div>
             <div className="px-4 py-3 flex items-center gap-4">
@@ -357,10 +357,10 @@ export default async function PlayerDetailPage({
 
         {/* ── Racha reciente ────────────────────────────────────────── */}
         {last5.length > 0 && (
-          <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
-            <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
-              <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 14 }}>trending_up</span>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Últimos partidos</p>
+          <div className="mb-4 overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
+            <div className="flex items-center gap-2 border-b px-4 py-2.5" style={{ borderColor: 'var(--bdr-strong)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--accent)' }}>trending_up</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-3)' }}>Últimos partidos</p>
             </div>
             <div className="flex items-center gap-2 px-4 py-3">
               {last5.map((app, i) => {
@@ -405,12 +405,12 @@ export default async function PlayerDetailPage({
 
         {/* ── Titular vs Suplente + Portería a cero ─────────────────── */}
         {T.games > 0 && (
-          <div className="mb-4 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
-            <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-2.5">
-              <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 14 }}>switch_access_shortcut</span>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Uso</p>
+          <div className="mb-4 overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
+            <div className="flex items-center gap-2 border-b px-4 py-2.5" style={{ borderColor: 'var(--bdr-strong)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--accent)' }}>switch_access_shortcut</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-3)' }}>Uso</p>
             </div>
-            <div className={`grid divide-x divide-slate-800 ${isGK ? 'grid-cols-3' : 'grid-cols-2'}`}>
+            <div className={`grid divide-x ${isGK ? 'grid-cols-3' : 'grid-cols-2'}`} style={{ borderColor: 'var(--bdr-strong)' }}>
               {[
                 { label: 'Como titular', data: starterStats, icon: 'star', color: '#72e697' },
                 { label: 'Como suplente', data: subStats, icon: 'swap_horiz', color: '#60a5fa' },
@@ -441,8 +441,8 @@ export default async function PlayerDetailPage({
         )}
 
         {seasons.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-700 bg-slate-900/40 py-14 text-center">
-            <p className="text-sm text-slate-500">Sin partidos registrados aún.</p>
+          <div className="rounded-3xl border border-dashed py-14 text-center" style={{ borderColor: 'var(--bdr)', backgroundColor: 'var(--bg-elevated)' }}>
+            <p className="text-sm" style={{ color: 'var(--tx-4)' }}>Sin partidos registrados aún.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
@@ -464,11 +464,11 @@ export default async function PlayerDetailPage({
 
             {/* ── CARRERA TOTAL (solo si hay más de 1 temporada) ── */}
             {seasons.length > 1 && (
-              <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur">
-                <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-3">
-                  <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 18 }}>sports_score</span>
-                  <h2 className="text-xs font-bold uppercase tracking-widest text-slate-300">Total carrera</h2>
-                  <span className="ml-auto text-[10px] text-slate-600">{seasons.length} temporadas</span>
+              <div className="overflow-hidden rounded-3xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+                <div className="flex items-center gap-2 border-b px-4 py-3" style={{ borderColor: 'var(--bdr-strong)' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--accent)' }}>sports_score</span>
+                  <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Total carrera</h2>
+                  <span className="ml-auto text-[10px]" style={{ color: 'var(--tx-4)' }}>{seasons.length} temporadas</span>
                 </div>
                 <StatGrid data={T} attendance={totalAtt.total > 0 ? totalAtt : undefined} />
               </div>
@@ -476,16 +476,16 @@ export default async function PlayerDetailPage({
 
             {/* ── TEMPORADAS ANTERIORES ────────────────────── */}
             {rest.length > 0 && (
-              <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur">
-                <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-3">
-                  <span className="material-symbols-outlined text-slate-400" style={{ fontSize: 18 }}>bar_chart</span>
-                  <h2 className="text-xs font-bold uppercase tracking-widest text-slate-300">Temporadas anteriores</h2>
+              <div className="overflow-hidden rounded-3xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+                <div className="flex items-center gap-2 border-b px-4 py-3" style={{ borderColor: 'var(--bdr-strong)' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--accent)' }}>bar_chart</span>
+                  <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Temporadas anteriores</h2>
                 </div>
-                <div className="divide-y divide-slate-800">
+                <div className="divide-y" style={{ borderColor: 'var(--bdr-strong)' }}>
                   {rest.map(s => (
                     <div key={s.seasonId}>
                       <div className="flex items-center justify-between px-4 pt-3 pb-1">
-                        <p className="text-xs font-bold text-slate-400">{s.seasonName}</p>
+                        <p className="text-xs font-bold" style={{ color: 'var(--tx-3)' }}>{s.seasonName}</p>
                         <Link
                           href={`/dashboard/season/${s.seasonId}/stats`}
                           className="text-[10px] text-green-400/60 hover:text-green-400 transition-colors"
@@ -513,13 +513,13 @@ export default async function PlayerDetailPage({
 
         {/* ── Historial de tarjetas ─────────────────────────── */}
         {cardHistory.length > 0 && (
-          <div className="mt-5 overflow-hidden rounded-3xl border border-slate-800" style={{ backgroundColor: 'var(--bg-base)' }}>
-            <div className="flex items-center gap-2 border-b border-slate-800 px-5 py-3">
-              <span className="material-symbols-outlined text-slate-500" style={{ fontSize: 16 }}>style</span>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Historial de tarjetas</p>
+          <div className="mt-5 overflow-hidden rounded-3xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+            <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: 'var(--bdr-strong)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--tx-3)' }}>style</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-3)' }}>Historial de tarjetas</p>
               <span className="ml-auto text-[10px]" style={{ color: 'var(--bdr-strong)' }}>{cardHistory.length} partidos</span>
             </div>
-            <div className="divide-y divide-slate-800/40">
+            <div className="divide-y" style={{ borderColor: 'var(--bdr)' }}>
               {cardHistory.map((app, i) => {
                 const m = app.matches as MatchExt | null
                 const date = m?.played_at
@@ -530,7 +530,7 @@ export default async function PlayerDetailPage({
                   <div key={i} className="flex items-center gap-3 px-5 py-2.5">
                     <span className="text-[11px] tabular-nums flex-shrink-0 w-16" style={{ color: 'var(--tx-3)' }}>{date}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-slate-400 truncate">vs {m?.opponent ?? '?'}</p>
+                      <p className="text-sm truncate" style={{ color: 'var(--tx-3)' }}>vs {m?.opponent ?? '?'}</p>
                       {season && <p className="text-[10px]" style={{ color: 'var(--bdr-strong)' }}>{season}</p>}
                     </div>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -550,7 +550,7 @@ export default async function PlayerDetailPage({
 
         {/* ── SEGUIMIENTO DE SANCIONES ──────────────────────── */}
         {totalYellow > 0 && (
-          <div className={`mt-5 overflow-hidden rounded-3xl border ${warnSanction ? 'border-yellow-500/40' : 'border-slate-800'}`}
+          <div className={`mt-5 overflow-hidden rounded-3xl border ${warnSanction ? 'border-yellow-500/40' : ''}`} style={{ borderColor: warnSanction ? undefined : 'var(--bdr-strong)' }}
             style={{ backgroundColor: warnSanction ? 'rgba(234,179,8,0.04)' : 'var(--bg-base)' }}>
             <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: warnSanction ? 'rgba(234,179,8,0.15)' : 'var(--bdr-strong)' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 16, color: warnSanction ? '#facc15' : 'var(--tx-3)' }}>gavel</span>
@@ -608,9 +608,9 @@ function AttendanceBar({ attended, total }: AttendanceData) {
   const barColor  = pct >= 80 ? '#72e697' : pct >= 60 ? '#eab308' : '#ef4444'
   const textColor = pct >= 80 ? '#72e697' : pct >= 60 ? '#facc15' : '#f87171'
   return (
-    <div className="flex items-center gap-3 border-t border-slate-800/60 px-5 py-2.5">
-      <span className="material-symbols-outlined text-slate-700" style={{ fontSize: 12 }}>fitness_center</span>
-      <span className="text-[10px] text-slate-700 uppercase tracking-wide mr-auto">Entrenos</span>
+    <div className="flex items-center gap-3 border-t px-5 py-2.5" style={{ borderColor: 'var(--bdr)' }}>
+      <span className="material-symbols-outlined" style={{ fontSize: 12, color: 'var(--tx-4)' }}>fitness_center</span>
+      <span className="text-[10px] uppercase tracking-wide mr-auto" style={{ color: 'var(--tx-4)' }}>Entrenos</span>
       <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bdr-strong)' }}>
         <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
       </div>
@@ -623,11 +623,11 @@ function AttendanceBar({ attended, total }: AttendanceData) {
 
 function StatCard({ title, seasonId, data, highlight, attendance }: { title: string; seasonId: string; data: StatData; highlight?: boolean; attendance?: AttendanceData }) {
   return (
-    <div className={`overflow-hidden rounded-3xl border bg-slate-900/80 backdrop-blur ${highlight ? 'border-green-500/20' : 'border-slate-800'}`}>
-      <div className={`flex items-center justify-between border-b px-4 py-3 ${highlight ? 'border-green-500/10 bg-green-500/5' : 'border-slate-800'}`}>
+    <div className={`overflow-hidden rounded-3xl border ${highlight ? 'border-green-500/20' : ''}`} style={{ borderColor: highlight ? undefined : 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+      <div className={`flex items-center justify-between border-b px-4 py-3 ${highlight ? 'border-green-500/10 bg-green-500/5' : ''}`} style={{ borderColor: highlight ? undefined : 'var(--bdr-strong)' }}>
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: highlight ? 'var(--accent)' : '#94a3b8' }}>target</span>
-          <h2 className={`text-xs font-bold uppercase tracking-widest ${highlight ? 'text-green-300' : 'text-slate-300'}`}>{title}</h2>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: highlight ? 'var(--accent)' : 'var(--tx-3)' }}>target</span>
+          <h2 className={`text-xs font-bold uppercase tracking-widest ${highlight ? 'text-green-300' : ''}`} style={{ color: highlight ? undefined : 'var(--tx-2)' }}>{title}</h2>
         </div>
         <Link
           href={`/dashboard/season/${seasonId}/stats`}
@@ -657,33 +657,33 @@ function StatGrid({ data, compact, attendance }: { data: StatData; compact?: boo
 
   return (
     <>
-      <div className={`grid grid-cols-4 divide-x divide-slate-800 ${py}`}>
+      <div className={`grid grid-cols-4 divide-x ${py}`} style={{ borderColor: 'var(--bdr-strong)' }}>
         {items.map(({ icon, label, value, color }) => (
           <div key={label} className="flex flex-col items-center gap-1.5">
             <span className={`material-symbols-outlined ${color} opacity-50`} style={{ fontSize: 14 }}>{icon}</span>
             <p className={`font-[family-name:var(--font-heading)] font-black leading-none ${sz} ${color}`}>{value}</p>
-            <p className="text-[9px] uppercase tracking-wide text-slate-600">{label}</p>
+            <p className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--tx-4)' }}>{label}</p>
           </div>
         ))}
       </div>
 
       {!compact && data.minutes > 0 && (
-        <div className="grid grid-cols-2 divide-x divide-slate-800 border-t border-slate-800/60">
+        <div className="grid grid-cols-2 divide-x border-t" style={{ borderColor: 'var(--bdr-strong)' }}>
           <div className="flex items-center justify-center gap-2 py-2.5">
-            <span className="text-[10px] text-slate-600 uppercase tracking-wide">G/90</span>
+            <span className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--tx-4)' }}>G/90</span>
             <span className="text-sm font-bold text-green-400 font-sans tabular-nums">{goalsPer90}</span>
           </div>
           <div className="flex items-center justify-center gap-2 py-2.5">
-            <span className="text-[10px] text-slate-600 uppercase tracking-wide">Min/PJ</span>
+            <span className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--tx-4)' }}>Min/PJ</span>
             <span className="text-sm font-bold text-blue-400 font-sans tabular-nums">{avgMin}</span>
           </div>
         </div>
       )}
 
       {(data.yellow > 0 || data.red > 0) && (
-        <div className="flex items-center gap-4 border-t border-slate-800/60 px-5 py-2.5">
-          <span className="material-symbols-outlined text-slate-700" style={{ fontSize: 12 }}>warning</span>
-          <span className="text-[10px] text-slate-700 mr-auto">Tarjetas</span>
+        <div className="flex items-center gap-4 border-t px-5 py-2.5" style={{ borderColor: 'var(--bdr)' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 12, color: 'var(--tx-4)' }}>warning</span>
+          <span className="text-[10px] mr-auto" style={{ color: 'var(--tx-4)' }}>Tarjetas</span>
           {data.yellow > 0 && (
             <div className="flex items-center gap-1.5">
               <span className="h-4 w-3 rounded-[3px] bg-yellow-400 shadow shadow-yellow-400/20" />
@@ -699,21 +699,21 @@ function StatGrid({ data, compact, attendance }: { data: StatData; compact?: boo
         </div>
       )}
       {data.mvp > 0 && (
-        <div className="flex items-center gap-4 border-t border-slate-800/60 px-5 py-2.5">
+        <div className="flex items-center gap-4 border-t px-5 py-2.5" style={{ borderColor: 'var(--bdr)' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#facc15' }}>star</span>
-          <span className="text-[10px] text-slate-500 uppercase tracking-wide mr-auto">Del partido</span>
+          <span className="text-[10px] uppercase tracking-wide mr-auto" style={{ color: 'var(--tx-4)' }}>Del partido</span>
           <span className="text-sm font-bold tabular-nums" style={{ color: '#facc15' }}>
             {data.mvp} vez{data.mvp !== 1 ? 'es' : ''}
           </span>
         </div>
       )}
       {data.avgRating != null && (
-        <div className="flex items-center gap-3 border-t border-slate-800/60 px-5 py-2.5">
+        <div className="flex items-center gap-3 border-t px-5 py-2.5" style={{ borderColor: 'var(--bdr)' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>star</span>
-          <span className="text-[10px] text-slate-500 uppercase tracking-wide mr-auto">Valoración</span>
+          <span className="text-[10px] uppercase tracking-wide mr-auto" style={{ color: 'var(--tx-4)' }}>Valoración</span>
           <span className="text-sm font-bold tabular-nums" style={{ color: '#fbbf24' }}>{data.avgRating.toFixed(1)}</span>
-          <span className="text-[10px] text-slate-600">/ 5</span>
-          {data.ratingCount != null && <span className="text-[9px] text-slate-700">({data.ratingCount} PJ)</span>}
+          <span className="text-[10px]" style={{ color: 'var(--tx-4)' }}>/ 5</span>
+          {data.ratingCount != null && <span className="text-[9px]" style={{ color: 'var(--tx-4)' }}>({data.ratingCount} PJ)</span>}
         </div>
       )}
       {attendance && attendance.total > 0 && <AttendanceBar attended={attendance.attended} total={attendance.total} />}

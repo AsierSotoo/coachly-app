@@ -57,7 +57,7 @@ export default async function SeasonsPage({
             <input
               name="name" type="text" required
               placeholder="ej. 2025/26"
-              className="flex-1 rounded-xl px-4 text-sm focus:outline-none placeholder:text-slate-600 focus:border-[var(--accent)]"
+              className="flex-1 rounded-xl px-4 text-sm focus:outline-none placeholder:text-[#3e4d42] focus:border-[var(--accent)]"
               style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)' }}
             />
             <button

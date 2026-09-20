@@ -764,7 +764,7 @@ export default async function StatsPage({
                       <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>Victoria</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#89968e' }} />
                       <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>Empate</span>
                     </div>
                     <div className="flex items-center gap-1.5">

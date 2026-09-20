@@ -211,6 +211,10 @@ export default async function DashboardPage() {
               return (
                 <div className="space-y-3">
 
+                  {/* ── Layout con sidebar ───────────────────── */}
+                  <div className="lg:grid lg:grid-cols-[1fr_296px] lg:gap-5 lg:items-start space-y-3 lg:space-y-0">
+                  <div className="space-y-3">
+
                   {/* ── Identidad del equipo ─────────────────── */}
                   <div className="flex items-center gap-3">
                     <div className="h-[52px] w-[52px] flex-shrink-0 overflow-hidden rounded-[13px] border flex items-center justify-center"
@@ -272,10 +276,6 @@ export default async function DashboardPage() {
                       ))}
                     </div>
                   )}
-
-                  {/* ── Layout con sidebar ───────────────────── */}
-                  <div className="lg:grid lg:grid-cols-[1fr_296px] lg:gap-5 lg:items-start space-y-3 lg:space-y-0">
-                  <div className="space-y-3">
 
                   {/* ── Próximo partido — VS card ─────────────── */}
                   {nextMatch && lastSeason && (

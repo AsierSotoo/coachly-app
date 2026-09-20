@@ -42,7 +42,7 @@ export function DownloadStatsCsv({ stats, seasonName }: { stats: StatRow[]; seas
   return (
     <button
       onClick={handleDownload}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[11px] font-bold transition-colors hover:bg-slate-800 cursor-pointer"
+      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[11px] font-bold transition-colors hover:bg-[var(--bg-elevated)] cursor-pointer"
       style={{ borderColor: '#2a342d', color: '#89968e' }}
       title="Exportar estadísticas a Excel/CSV"
     >

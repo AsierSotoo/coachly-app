@@ -61,7 +61,7 @@ export function AlertsModal({ alerts }: { alerts: Alert[] }) {
           </div>
           <button
             onClick={dismiss}
-            className="flex items-center justify-center w-8 h-8 rounded-full border transition-colors hover:bg-slate-700 cursor-pointer flex-shrink-0"
+            className="flex items-center justify-center w-8 h-8 rounded-full border transition-colors cursor-pointer flex-shrink-0"
             style={{ borderColor: '#2a342d', color: '#637168' }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
@@ -74,7 +74,7 @@ export function AlertsModal({ alerts }: { alerts: Alert[] }) {
             <li
               key={a.playerId}
               className="flex items-center gap-3 py-3 px-3 rounded-xl"
-              style={{ backgroundColor: '#1e2740' }}
+              style={{ backgroundColor: 'var(--bg-elevated)' }}
             >
               <span
                 className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg"

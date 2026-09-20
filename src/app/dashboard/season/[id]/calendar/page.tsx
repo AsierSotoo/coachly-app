@@ -46,7 +46,7 @@ export default async function CalendarPage({
       <main className="max-w-3xl mx-auto px-4 py-6 pb-32 md:pb-10">
         <div className="mb-6">
           <Link href={`/dashboard/season/${seasonId}`}
-            className="flex items-center gap-1 text-xs mb-3 hover:text-slate-300 transition-colors"
+            className="flex items-center gap-1 text-xs mb-3 hover:text-green-400 transition-colors"
             style={{ color: '#637168' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
             {season.name}
