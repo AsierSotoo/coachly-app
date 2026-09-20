@@ -524,8 +524,12 @@ export default async function DashboardPage() {
                         <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: 'var(--accent)', fontSize: 16 }}>fitness_center</span>
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold truncate" style={{ color: 'var(--tx)' }}>
-                            Entreno · {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' }).replace(/^\w/, c => c.toUpperCase())}
+                            Entreno · {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase())}
+                            {nextSession.title ? ` · ${nextSession.title}` : ''}
                           </p>
+                          {nextSession.location && (
+                            <p className="text-[10px] mt-0.5 truncate" style={{ color: 'var(--tx-3)' }}>{nextSession.location}</p>
+                          )}
                         </div>
                       </Link>
                     )}
@@ -579,45 +583,18 @@ export default async function DashboardPage() {
                       </div>
                     )}
 
-                    {/* Quick nav cards */}
-                    <div className="grid grid-cols-1 gap-2 mt-1">
-                      {nextSession
-                        ? (
-                          <Link href={`/dashboard/season/${lastSeason!.id}/trainings`}
-                            className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                            <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>fitness_center</span>
-                            <div className="min-w-0">
-                              <p className="text-[12px] font-semibold" style={{ color: 'var(--tx)' }}>
-                                {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase())}
-                              </p>
-                              <p className="text-[10px]" style={{ color: 'var(--tx-4)' }}>
-                                {nextSession.title ? nextSession.title : 'Próximo entreno'}
-                              </p>
-                            </div>
-                          </Link>
-                        ) : (
-                          <Link href={lastSeason ? `/dashboard/season/${lastSeason.id}/trainings/new` : '#'}
-                            className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                            <span className="material-symbols-outlined" style={{ color: 'var(--tx-4)', fontSize: 18 }}>fitness_center</span>
-                            <div>
-                              <p className="text-[12px] font-semibold" style={{ color: 'var(--tx-2)' }}>Sin entrenos planificados</p>
-                              <p className="text-[10px]" style={{ color: 'var(--tx-4)' }}>Añadir entrenamiento</p>
-                            </div>
-                          </Link>
-                        )
-                      }
-                      <Link href={seasonHref}
-                        className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
+                    {/* Sin entrenos: solo si no hay ninguna tarjeta de entreno arriba */}
+                    {!nextSession && lastSeason && (
+                      <Link href={`/dashboard/season/${lastSeason.id}/trainings/new`}
+                        className="flex items-start gap-2.5 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
                         style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 18 }}>calendar_today</span>
+                        <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: 'var(--tx-4)', fontSize: 16 }}>fitness_center</span>
                         <div>
-                          <p className="text-[12px] font-semibold" style={{ color: 'var(--tx)' }}>Temporada</p>
-                          <p className="text-[10px]" style={{ color: 'var(--tx-4)' }}>{competitive.length > 0 ? `${competitive.length} partidos jugados` : 'Sin datos'}</p>
+                          <p className="text-[11px] font-bold" style={{ color: 'var(--tx-2)' }}>Sin entrenos planificados</p>
+                          <p className="text-[10px] mt-0.5" style={{ color: 'var(--tx-4)' }}>Añadir entrenamiento</p>
                         </div>
                       </Link>
-                    </div>
+                    )}
                   </div>
 
                   </div>
