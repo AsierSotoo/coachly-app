@@ -120,9 +120,23 @@ export function ConvocatoriaEditor({
     if (b) posBuckets[b].push(p)
     else printNumMap.set(p.id, p.number)
   }
+  // Primera pasada: asignar números posicionales de PRINT_NUMS
+  const usedPrintNums = new Set<number>()
+  const printOverflow: Player[] = []
   for (const [b, ps] of Object.entries(posBuckets)) {
-    ps.forEach((p, i) => printNumMap.set(p.id, PRINT_NUMS[b][i] ?? p.number))
+    const nums = PRINT_NUMS[b]
+    ps.forEach((p, i) => {
+      if (i < nums.length) {
+        usedPrintNums.add(nums[i])
+        printNumMap.set(p.id, nums[i])
+      } else {
+        printOverflow.push(p)
+      }
+    })
   }
+  // Segunda pasada: overflow usa el primer número libre del pool 1-30
+  const printPool = Array.from({ length: 30 }, (_, i) => i + 1).filter(n => !usedPrintNums.has(n))
+  printOverflow.forEach((p, i) => { printNumMap.set(p.id, printPool[i] ?? null) })
 
   const handleSave = () => {
     startSave(async () => {

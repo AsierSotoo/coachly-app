@@ -50,13 +50,30 @@ function assignSeq(starters: Player[]): PlayerWithSeq[] {
   const byLine: Record<string, Player[]> = { gk: [], def: [], mid: [], fwd: [] }
   for (const p of starters) byLine[posLine(p.position)].push(p)
   for (const k of Object.keys(byLine)) byLine[k].sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
+
+  // Primera pasada: asignar números posicionales de POS_NUMS
+  const used = new Set<number>()
   const out: PlayerWithSeq[] = []
+  const overflow: Array<{ p: Player; line: 'gk' | 'def' | 'mid' | 'fwd' }> = []
+
   for (const line of ['gk', 'def', 'mid', 'fwd'] as const) {
     const nums = POS_NUMS[line]
     byLine[line].forEach((p, i) => {
-      out.push({ ...p, seqNum: nums[i] ?? (p.number ?? 99), line })
+      if (i < nums.length) {
+        used.add(nums[i])
+        out.push({ ...p, seqNum: nums[i], line })
+      } else {
+        overflow.push({ p, line })
+      }
     })
   }
+
+  // Segunda pasada: overflow usa el primer número 1-11 libre
+  const pool = [1,2,3,4,5,6,7,8,9,10,11].filter(n => !used.has(n))
+  overflow.forEach(({ p, line }, i) => {
+    out.push({ ...p, seqNum: pool[i] ?? (i + 12), line })
+  })
+
   return out.sort((a, b) => a.seqNum - b.seqNum)
 }
 
