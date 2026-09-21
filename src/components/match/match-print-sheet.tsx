@@ -41,9 +41,29 @@ function posLine(pos: string | null): 'gk' | 'def' | 'mid' | 'fwd' {
 
 const POS_NUMS: Record<string, number[]> = {
   gk:  [1, 13, 25],
-  def: [2, 3, 4, 5],   // LD, LI, central, central
-  mid: [6, 8, 10],     // pivote, interior, mediapunta
-  fwd: [7, 9, 11],     // ED, delantero, EI
+  def: [2, 3, 4, 5],
+  mid: [6, 8, 10],
+  fwd: [7, 9, 11],
+}
+
+// Número posicional fijo por slot de formación (siempre el mismo, independiente del jugador)
+const SLOT_NUM: Record<string, number> = {
+  PO: 1,
+  LD: 2,  LI: 3,
+  DFC1: 4, DFC2: 5, DFC3: 3,
+  MCD: 6,  MCD1: 6, MCD2: 8,
+  MC1: 8,  MC2: 10, MC3: 6,
+  MCO: 10, MCO1: 10, MCO2: 8,
+  MD: 7,   MI: 11,
+  ED: 7,   EI: 11,
+  DC: 9,   DC1: 9, DC2: 11,
+}
+
+function lineFromSlot(slotId: string): 'gk' | 'def' | 'mid' | 'fwd' {
+  if (slotId === 'PO') return 'gk'
+  if (['LD','LI','DFC1','DFC2','DFC3'].includes(slotId)) return 'def'
+  if (['MCD','MCD1','MCD2','MC1','MC2','MC3','MCO','MCO1','MCO2','MD','MI'].includes(slotId)) return 'mid'
+  return 'fwd'
 }
 
 function assignSeq(starters: Player[]): PlayerWithSeq[] {
@@ -145,13 +165,20 @@ export function MatchPrintSheet({
     : hasConv
       ? convocadas
       : allAvail.slice(11)
-  const numbered = assignSeq(eleven)
-  const subsNum  = subs.map(p => ({ ...p, seqNum: p.number ?? 0 }))
-
   // Construir filas del campo
-  const seqById = new Map(numbered.map(p => [p.id, p]))
   const formationDef = formation ? FORMATIONS.find(f => f.id === formation) ?? null : null
   const hasPitch = formationDef && pitchPositions && Object.keys(pitchPositions).length > 0
+
+  // Cuando hay slots reales, cada slot tiene su número fijo (no depende del dorsal del jugador)
+  const numbered: PlayerWithSeq[] = hasPitch
+    ? eleven.map(p => {
+        const slot = pitchPositions![p.id] ?? ''
+        return { ...p, seqNum: SLOT_NUM[slot] ?? 99, line: lineFromSlot(slot) }
+      }).sort((a, b) => a.seqNum - b.seqNum)
+    : assignSeq(eleven)
+  const subsNum  = subs.map(p => ({ ...p, seqNum: p.number ?? 0 }))
+
+  const seqById = new Map(numbered.map(p => [p.id, p]))
 
   let fieldRows: PlayerWithSeq[][]
   if (hasPitch) {
