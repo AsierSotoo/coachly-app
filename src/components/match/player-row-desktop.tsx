@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import { PlayerAvatar } from '@/components/team/player-avatar'
@@ -69,9 +69,9 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
   }
 
   const statusBtns: { s: Status; label: string; activeBg: string; activeColor: string }[] = [
-    { s: 'titular',      label: 'T', activeBg: 'var(--accent)', activeColor: 'var(--accent-fg)' },
-    { s: 'suplente',     label: 'S', activeBg: '#2a342d', activeColor: '#89968e' },
-    { s: 'no_convocada', label: '–', activeBg: '#171f1a', activeColor: '#637168' },
+    { s: 'titular',      label: 'T', activeBg: 'var(--accent)',    activeColor: 'var(--accent-fg)' },
+    { s: 'suplente',     label: 'S', activeBg: 'var(--bg-elevated)', activeColor: 'var(--tx-2)' },
+    { s: 'no_convocada', label: '–', activeBg: 'var(--bg-card-2)', activeColor: 'var(--tx-3)' },
   ]
 
   // Para GK: GC (goles concedidos) en lugar de Gol
@@ -90,17 +90,17 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
       ]
 
   const isOut = status === 'no_convocada'
-  const posColor = player.position ? (POSITION_COLORS[player.position] ?? 'text-[#89968e]') : 'text-[#89968e]'
+  const posColor = player.position ? (POSITION_COLORS[player.position] ?? '') : ''
 
   return (
     <div className={`grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 px-4 py-2.5 transition-colors ${!isLast ? 'border-b' : ''}`}
-      style={{ opacity: isOut ? 0.4 : 1, borderColor: '#1e2921' }}>
+      style={{ opacity: isOut ? 0.4 : 1, borderColor: 'var(--bdr)' }}>
 
       <input type="hidden" name={`status_${player.id}`} value={status} />
 
       {/* # */}
-      <span className={`font-[family-name:var(--font-heading)] text-sm font-black ${player.number !== null ? posColor : ''}`}
-        style={player.number === null ? { color: '#2a342d' } : undefined}>
+      <span className={`font-[family-name:var(--font-heading)] text-sm font-black ${posColor}`}
+        style={player.number === null ? { color: 'var(--bdr-strong)' } : undefined}>
         {player.number ?? '—'}
       </span>
 
@@ -108,21 +108,21 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
       <div className="flex items-center gap-2.5 min-w-0">
         <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position} size="sm" />
         <div className="min-w-0">
-          <p className="text-sm font-semibold truncate leading-tight" style={{ color: '#edf2ee' }}>{player.name}</p>
+          <p className="text-sm font-semibold truncate leading-tight" style={{ color: 'var(--tx)' }}>{player.name}</p>
           {player.position && (
-            <p className={`text-[10px] uppercase tracking-wide ${posColor} opacity-70`}>{player.position}</p>
+            <p className={`text-[10px] uppercase tracking-wide opacity-70 ${posColor}`}>{player.position}</p>
           )}
         </div>
       </div>
 
       {/* Estado */}
-      <div className="flex justify-center rounded-lg overflow-hidden border" style={{ borderColor: '#2a342d' }}>
+      <div className="flex justify-center rounded-lg overflow-hidden border" style={{ borderColor: 'var(--bdr)' }}>
         {statusBtns.map(({ s, label, activeBg, activeColor }) => (
           <button key={s} type="button" onClick={() => setStatus(s)}
             className="flex h-8 w-[calc(100%/3)] items-center justify-center text-xs font-black transition-all cursor-pointer"
             style={{
               backgroundColor: status === s ? activeBg : 'transparent',
-              color: status === s ? activeColor : '#3e4d42',
+              color: status === s ? activeColor : 'var(--tx-4)',
             }}>
             {label}
           </button>
@@ -138,7 +138,7 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
           onChange={e => setMinutes(Number(e.target.value))}
           disabled={isOut}
           className="w-full text-center font-bold tabular-nums focus:outline-none disabled:opacity-30"
-          style={{ height: 24, borderRadius: '0.375rem 0.375rem 0 0', borderWidth: 1, borderColor: '#2a342d', backgroundColor: '#161e18', color: '#edf2ee', fontSize: 12, minHeight: 'unset', padding: 0 }}
+          style={{ height: 24, borderRadius: '0.375rem 0.375rem 0 0', borderWidth: 1, borderColor: 'var(--bdr)', backgroundColor: 'var(--bg-elevated)', color: 'var(--tx)', fontSize: 12, minHeight: 'unset', padding: 0 }}
         />
         <input
           name={`sub_minute_${player.id}`}
@@ -149,7 +149,7 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
           placeholder={status === 'titular' ? '↓' : '↑'}
           title={status === 'titular' ? 'Minuto de sustitución (salida)' : 'Minuto de entrada'}
           className="w-full text-center font-bold tabular-nums focus:outline-none disabled:opacity-30"
-          style={{ height: 20, borderRadius: '0 0 0.375rem 0.375rem', borderWidth: 1, borderColor: '#2a342d', backgroundColor: '#111713', color: '#637168', fontSize: 10, minHeight: 'unset', padding: 0 }}
+          style={{ height: 20, borderRadius: '0 0 0.375rem 0.375rem', borderWidth: 1, borderColor: 'var(--bdr)', backgroundColor: 'var(--bg-card-2)', color: 'var(--tx-3)', fontSize: 10, minHeight: 'unset', padding: 0 }}
         />
       </div>
 
@@ -159,7 +159,7 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
           defaultValue={def}
           disabled={isOut}
           className={`w-full rounded-lg text-center font-bold tabular-nums focus:outline-none disabled:opacity-30 ${color} ${focus}`}
-          style={{ height: 36, borderWidth: 1, borderColor: '#2a342d', backgroundColor: '#161e18', fontSize: 14, minHeight: 'unset', padding: 0 }}
+          style={{ height: 36, borderWidth: 1, borderColor: 'var(--bdr)', backgroundColor: 'var(--bg-elevated)', fontSize: 14, minHeight: 'unset', padding: 0 }}
         />
       ))}
 

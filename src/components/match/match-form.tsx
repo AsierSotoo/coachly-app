@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -107,9 +107,9 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
 
       {isScheduled && (
         <div className="rounded-xl border px-4 py-3 flex items-start gap-3"
-          style={{ borderColor: 'rgba(251,191,36,0.2)', backgroundColor: 'rgba(251,191,36,0.04)' }}>
-          <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: '#fbbf24', fontSize: 18 }}>schedule</span>
-          <p className="text-sm leading-relaxed" style={{ color: '#fde68a' }}>
+          style={{ borderColor: 'var(--c-warn-bdr)', backgroundColor: 'var(--c-warn-bg)' }}>
+          <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: 'var(--c-warn)', fontSize: 18 }}>schedule</span>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--c-warn)' }}>
             Este partido está programado pero no jugado aún. Rellena el resultado y las estadísticas cuando acabe y pulsa <strong>Finalizar partido</strong>.
           </p>
         </div>
@@ -119,8 +119,8 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Datos del partido */}
-        <section className="rounded-2xl border p-5 flex flex-col gap-3" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
-          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#637168' }}>Datos del partido</h2>
+        <section className="rounded-2xl border p-5 flex flex-col gap-3" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>Datos del partido</h2>
           <div className="flex flex-col gap-2">
             <input name="opponent" type="text" required defaultValue={match.opponent} placeholder="Rival"
               className="w-full h-11 px-3" />
@@ -148,27 +148,28 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         {/* Resultado */}
         {(() => {
           const liveResult = liveGoals > liveGoalsAgainst ? 'V' : liveGoals < liveGoalsAgainst ? 'D' : 'E'
-          const resultColor = liveResult === 'V' ? 'var(--accent)' : liveResult === 'D' ? '#f87171' : '#fbbf24'
-          const resultBg = liveResult === 'V' ? 'rgba(75,226,119,0.08)' : liveResult === 'D' ? 'rgba(248,113,113,0.08)' : 'rgba(251,191,36,0.08)'
-          const resultBorder = liveResult === 'V' ? 'rgba(75,226,119,0.2)' : liveResult === 'D' ? 'rgba(248,113,113,0.2)' : 'rgba(251,191,36,0.2)'
+          const resultColor = liveResult === 'V' ? 'var(--accent)' : liveResult === 'D' ? 'var(--c-danger)' : 'var(--c-warn)'
+          const resultBg    = liveResult === 'V' ? 'rgba(var(--accent-rgb),0.08)' : liveResult === 'D' ? 'var(--c-danger-bg)' : 'var(--c-warn-bg)'
+          const resultBdr   = liveResult === 'V' ? 'rgba(var(--accent-rgb),0.2)'  : liveResult === 'D' ? 'var(--c-danger-bdr)' : 'var(--c-warn-bdr)'
           const resultLabel = liveResult === 'V' ? 'Victoria' : liveResult === 'D' ? 'Derrota' : 'Empate'
           return (
-            <section className="rounded-2xl border p-5" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
+            <section className="rounded-2xl border p-5" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#637168' }}>Resultado final</h2>
+                <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>Resultado final</h2>
                 <span className="text-[10px] font-bold px-2.5 py-1 rounded-full border"
-                  style={{ color: resultColor, backgroundColor: resultBg, borderColor: resultBorder }}>
+                  style={{ color: resultColor, backgroundColor: resultBg, borderColor: resultBdr }}>
                   {resultLabel}
                 </span>
               </div>
               <div className="flex items-center justify-center gap-4">
                 <div className="flex-1 text-center">
-                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: '#89968e' }}>{teamName}</p>
-                  <div className="h-20 w-full max-w-[88px] mx-auto rounded-2xl border flex items-center justify-center text-5xl font-black text-white"
+                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: 'var(--tx-2)' }}>{teamName}</p>
+                  <div className="h-20 w-full max-w-[88px] mx-auto rounded-2xl border flex items-center justify-center text-5xl font-black"
                     style={{
                       fontFamily: 'Sora, sans-serif',
-                      backgroundColor: liveGoals > liveGoalsAgainst ? 'rgba(75,226,119,0.08)' : '#171f1a',
-                      borderColor: liveGoals > liveGoalsAgainst ? 'rgba(75,226,119,0.3)' : '#2a342d',
+                      color: 'var(--tx)',
+                      backgroundColor: liveGoals > liveGoalsAgainst ? 'rgba(var(--accent-rgb),0.08)' : 'var(--bg-elevated)',
+                      borderColor: liveGoals > liveGoalsAgainst ? 'rgba(var(--accent-rgb),0.3)' : 'var(--bdr)',
                     }}
                     title="Se calcula automáticamente de los goles individuales">
                     {liveGoals}
@@ -176,26 +177,27 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
                   <p className="mt-1.5 text-[9px]" style={{ color: 'var(--accent)', opacity: 0.6 }}>Auto ⚽</p>
                 </div>
                 <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                  <span className="text-2xl font-black" style={{ color: '#334155' }}>:</span>
+                  <span className="text-2xl font-black" style={{ color: 'var(--bdr-strong)' }}>:</span>
                 </div>
                 <div className="flex-1 text-center">
-                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: '#89968e' }}>{match.opponent}</p>
+                  <p className="mb-2 text-[11px] font-semibold truncate" style={{ color: 'var(--tx-2)' }}>{match.opponent}</p>
                   <input type="hidden" name="goals_against" value={liveGoalsAgainst} />
-                  <div className="h-20 w-full max-w-[88px] mx-auto rounded-2xl border flex items-center justify-center text-5xl font-black text-white select-none"
+                  <div className="h-20 w-full max-w-[88px] mx-auto rounded-2xl border flex items-center justify-center text-5xl font-black select-none"
                     style={{
                       fontFamily: 'Sora, sans-serif',
-                      backgroundColor: liveGoalsAgainst > liveGoals ? 'rgba(248,113,113,0.08)' : '#171f1a',
-                      borderColor: liveGoalsAgainst > liveGoals ? 'rgba(248,113,113,0.3)' : '#2a342d',
+                      color: 'var(--tx)',
+                      backgroundColor: liveGoalsAgainst > liveGoals ? 'var(--c-danger-bg)' : 'var(--bg-elevated)',
+                      borderColor: liveGoalsAgainst > liveGoals ? 'var(--c-danger-bdr)' : 'var(--bdr)',
                     }}>
                     {liveGoalsAgainst}
                   </div>
                   <div className="mt-2 flex items-center justify-center gap-3">
                     <button type="button" onClick={() => setLiveGoalsAgainst(v => Math.max(0, v - 1))}
                       className="w-7 h-7 rounded-full border flex items-center justify-center text-sm font-bold transition-colors cursor-pointer"
-                      style={{ borderColor: '#2a342d', color: '#89968e', backgroundColor: '#171f1a' }}>−</button>
+                      style={{ borderColor: 'var(--bdr)', color: 'var(--tx-2)', backgroundColor: 'var(--bg-elevated)' }}>−</button>
                     <button type="button" onClick={() => setLiveGoalsAgainst(v => v + 1)}
                       className="w-7 h-7 rounded-full border flex items-center justify-center text-sm font-bold transition-colors cursor-pointer"
-                      style={{ borderColor: '#2a342d', color: '#89968e', backgroundColor: '#171f1a' }}>+</button>
+                      style={{ borderColor: 'var(--bdr)', color: 'var(--tx-2)', backgroundColor: 'var(--bg-elevated)' }}>+</button>
                   </div>
                 </div>
               </div>
@@ -206,10 +208,10 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       </div>
 
       {/* Notas del partido */}
-      <section className="rounded-2xl border p-5" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
+      <section className="rounded-2xl border p-5" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
         <div className="flex items-center gap-2 mb-3">
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#637168' }}>edit_note</span>
-          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#637168' }}>Análisis post-partido</h2>
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--tx-3)' }}>edit_note</span>
+          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>Análisis post-partido</h2>
         </div>
         <textarea
           name="notes"
@@ -222,10 +224,10 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       </section>
 
       {/* Jugadora del partido */}
-      <section className="rounded-2xl border p-5" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
+      <section className="rounded-2xl border p-5" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
         <div className="flex items-center gap-2 mb-3">
-          <span className="material-symbols-outlined" style={{ color: '#facc15', fontSize: 18 }}>star</span>
-          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: '#637168' }}>{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)} del partido</h2>
+          <span className="material-symbols-outlined" style={{ color: 'var(--c-goals)', fontSize: 18 }}>star</span>
+          <h2 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)} del partido</h2>
         </div>
         <select name="mvp_player_id" defaultValue={match.mvp_player_id ?? ''}
           className="w-full h-11 rounded-xl px-3 appearance-none focus:outline-none transition-colors"
@@ -259,9 +261,10 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
 
       {/* Aviso primera vez sin convocatoria */}
       {isFirstEntry && (
-        <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 px-4 py-3 flex items-start gap-3">
-          <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: '#60a5fa', fontSize: 18 }}>info</span>
-          <p className="text-xs leading-relaxed" style={{ color: '#93c5fd' }}>
+        <div className="rounded-xl border px-4 py-3 flex items-start gap-3"
+          style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
+          <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: 'var(--tx-3)', fontSize: 18 }}>info</span>
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--tx-2)' }}>
             Sin convocatoria previa — todas las {terms.pp} aparecen como <strong>Suplentes</strong>.
             Marca como <strong>T</strong> a las titulares, y como <strong>–</strong> a las que no participaron.
           </p>
@@ -272,18 +275,18 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       {/* Solo se renderiza en desktop para evitar inputs duplicados con nombres iguales */}
       {(isMobile === null || !isMobile) && (
         <section className="hidden lg:block">
-          <div className="overflow-hidden rounded-2xl border" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
+          <div className="overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
             {/* Cabecera tabla */}
-            <div className="grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 border-b px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
-              <span style={{ color: '#334155' }}>#</span>
-              <span style={{ color: '#637168' }}>{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}</span>
-              <span className="text-center" style={{ color: '#637168' }}>Estado</span>
-              <span className="text-center" style={{ color: '#637168' }}>Min/Sub</span>
-              <span className="text-center" style={{ color: '#637168' }}>G/GC</span>
-              <span className="text-center text-blue-400/70">Ast</span>
-              <span className="text-center text-yellow-400/70">Am</span>
-              <span className="text-center text-red-400/70">Rj</span>
-              <span className="text-center text-amber-400/70">Val</span>
+            <div className="grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 border-b px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest" style={{ borderColor: 'var(--bdr)', backgroundColor: 'var(--bg-card-2)' }}>
+              <span style={{ color: 'var(--tx-4)' }}>#</span>
+              <span style={{ color: 'var(--tx-3)' }}>{terms.p.charAt(0).toUpperCase() + terms.p.slice(1)}</span>
+              <span className="text-center" style={{ color: 'var(--tx-3)' }}>Estado</span>
+              <span className="text-center" style={{ color: 'var(--tx-3)' }}>Min/Sub</span>
+              <span className="text-center" style={{ color: 'var(--tx-3)' }}>G/GC</span>
+              <span className="text-center" style={{ color: 'var(--accent)', opacity: 0.7 }}>Ast</span>
+              <span className="text-center" style={{ color: 'var(--c-warn)' }}>Am</span>
+              <span className="text-center" style={{ color: 'var(--c-danger)' }}>Rj</span>
+              <span className="text-center" style={{ color: 'var(--c-goals)' }}>Val</span>
             </div>
             <div>
               {players.map((player, i) => (
@@ -304,11 +307,11 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       {/* Solo se renderiza en móvil para evitar inputs duplicados con nombres iguales */}
       {(isMobile === null || isMobile) && (
         <section className="lg:hidden">
-          <div className="flex items-center gap-4 text-xs px-1 mb-3" style={{ color: '#637168' }}>
+          <div className="flex items-center gap-4 text-xs px-1 mb-3" style={{ color: 'var(--tx-3)' }}>
             {([
-              { k: 'T', l: 'Titular',         bg: 'var(--accent)', color: 'var(--accent-fg)' },
-              { k: 'S', l: 'Suplente',        bg: '#2a342d', color: '#89968e' },
-              { k: '–', l: `No ${terms.called}`, bg: '#111713', color: '#637168' },
+              { k: 'T', l: 'Titular',            bg: 'var(--accent)',    color: 'var(--accent-fg)' },
+              { k: 'S', l: 'Suplente',           bg: 'var(--bdr)',       color: 'var(--tx-2)' },
+              { k: '–', l: `No ${terms.called}`, bg: 'var(--bg-card)',   color: 'var(--tx-3)' },
             ]).map(({ k, l, bg, color }) => (
               <span key={k} className="flex items-center gap-1.5">
                 <span className="flex h-5 w-6 items-center justify-center rounded text-[10px] font-bold"
@@ -333,7 +336,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
           {/* Guardar alineación sin finalizar */}
           <button type="submit" name="new_status" value=""
             className="flex h-12 items-center justify-center gap-2 rounded-2xl text-sm font-bold active:scale-[0.98] transition-all cursor-pointer border"
-            style={{ borderColor: '#253028', backgroundColor: '#111713', color: '#89968e' }}>
+            style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)', color: 'var(--tx-2)' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
             Guardar alineación previa
           </button>
@@ -347,8 +350,8 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         </div>
       ) : (
         <button type="submit"
-          className="flex h-14 items-center justify-center gap-2 rounded-2xl text-sm font-bold text-white active:scale-[0.98] transition-all cursor-pointer shadow-lg"
-          style={{ backgroundColor: 'var(--accent)', boxShadow: '0 4px 20px rgba(34,197,94,0.2)', color: '#fff' }}>
+          className="flex h-14 items-center justify-center gap-2 rounded-2xl text-sm font-bold active:scale-[0.98] transition-all cursor-pointer shadow-lg"
+          style={{ backgroundColor: 'var(--accent)', boxShadow: '0 4px 20px rgba(var(--accent-rgb),0.2)', color: 'var(--accent-fg)' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>save</span>
           Guardar partido
         </button>
@@ -359,7 +362,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         style={{ bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))', paddingBottom: 8 }}>
         <button type="submit" name="new_status" value={isScheduled ? 'finished' : ''}
           className="pointer-events-auto w-full flex items-center justify-center gap-2 rounded-2xl text-sm font-bold shadow-2xl active:scale-[0.98] transition-all cursor-pointer"
-          style={{ height: 52, backgroundColor: isScheduled ? '#f59e0b' : 'var(--accent)', color: isScheduled ? '#1c1203' : '#fff' }}>
+          style={{ height: 52, backgroundColor: isScheduled ? '#f59e0b' : 'var(--accent)', color: isScheduled ? '#1c1203' : 'var(--accent-fg)' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
             {isScheduled ? 'check_circle' : 'save'}
           </span>

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -92,8 +92,8 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
     <div
       className="rounded-2xl border p-4 transition-colors"
       style={{
-        borderColor: isActive ? '#2a342d' : '#253028',
-        backgroundColor: isActive ? '#111713' : '#080d1e',
+        borderColor: isActive ? 'var(--bdr)' : 'var(--bdr-strong)',
+        backgroundColor: isActive ? 'var(--bg-card)' : 'var(--bg-card-2)',
       }}
     >
       {/* Header */}
@@ -101,19 +101,19 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
         <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position} size="sm" />
         <div
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-[family-name:var(--font-heading)] text-xs font-black"
-          style={{ border: '1px solid #2a342d', backgroundColor: '#111713', color: 'var(--accent)' }}
+          style={{ border: '1px solid var(--bdr)', backgroundColor: 'var(--bg-elevated)', color: 'var(--accent)' }}
         >
           {player.number ?? '—'}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate" style={{ color: '#edf2ee' }}>{player.name}</p>
+          <p className="text-sm font-semibold truncate" style={{ color: 'var(--tx)' }}>{player.name}</p>
           {player.position && (
-            <p className="text-xs truncate" style={{ color: '#637168' }}>{player.position}</p>
+            <p className="text-xs truncate" style={{ color: 'var(--tx-3)' }}>{player.position}</p>
           )}
         </div>
 
         {/* T / S / – toggle */}
-        <div className="flex rounded-xl overflow-hidden flex-shrink-0" style={{ border: '1px solid #2a342d' }}>
+        <div className="flex rounded-xl overflow-hidden flex-shrink-0" style={{ border: '1px solid var(--bdr)' }}>
           {(['titular', 'suplente', 'no_convocada'] as Status[]).map((s) => (
             <button
               key={s}
@@ -122,11 +122,11 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
               className="flex h-11 w-10 items-center justify-center text-xs font-bold transition-all active:scale-95"
               style={{
                 backgroundColor: status === s
-                  ? s === 'no_convocada' ? '#253028' : 'var(--accent)'
+                  ? s === 'no_convocada' ? 'var(--bdr-strong)' : 'var(--accent)'
                   : 'transparent',
                 color: status === s
-                  ? s === 'no_convocada' ? '#94a3b8' : 'var(--accent-fg)'
-                  : '#637168',
+                  ? s === 'no_convocada' ? 'var(--tx-2)' : 'var(--accent-fg)'
+                  : 'var(--tx-3)',
               }}
             >
               {s === 'titular' ? 'T' : s === 'suplente' ? 'S' : '–'}
@@ -147,23 +147,23 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
             className="overflow-hidden"
           >
             {/* Stats grid */}
-            <div className="mt-3 grid grid-cols-5 gap-2 pt-3 border-t" style={{ borderColor: '#253028' }}>
+            <div className="mt-3 grid grid-cols-5 gap-2 pt-3 border-t" style={{ borderColor: 'var(--bdr)' }}>
 
               {/* Min + Sub stacked */}
               <div className="flex flex-col items-center gap-0.5">
-                <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: '#637168' }}>Min&apos;</span>
+                <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--tx-3)' }}>Min&apos;</span>
                 <input
                   name={`minutes_${player.id}`}
                   type="number" min="0" max={120}
                   value={minutes}
                   onChange={e => setMinutes(Number(e.target.value))}
-                  className="h-10 w-full text-center text-base font-bold tabular-nums focus:outline-none transition-colors border-[#2a342d] focus:border-[var(--accent)]/60"
+                  className="h-10 w-full text-center text-base font-bold tabular-nums focus:outline-none transition-colors focus:border-[var(--accent)]"
                   style={{
-                    border: '1px solid',
+                    border: '1px solid var(--bdr)',
                     borderBottomWidth: 0,
                     borderRadius: '8px 8px 0 0',
-                    backgroundColor: '#171f1a',
-                    color: '#edf2ee',
+                    backgroundColor: 'var(--bg-elevated)',
+                    color: 'var(--tx)',
                   }}
                 />
                 <input
@@ -175,10 +175,10 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
                   title={status === 'titular' ? 'Minuto de sustitución (salida)' : 'Minuto de entrada'}
                   className="h-7 w-full text-center text-[11px] font-bold tabular-nums focus:outline-none"
                   style={{
-                    border: '1px solid #2a342d',
+                    border: '1px solid var(--bdr)',
                     borderRadius: '0 0 8px 8px',
-                    backgroundColor: '#090e0b',
-                    color: '#637168',
+                    backgroundColor: 'var(--bg-card-2)',
+                    color: 'var(--tx-3)',
                   }}
                 />
               </div>
@@ -192,15 +192,15 @@ export function PlayerRow({ player, appearance, convocatoriaStatus }: {
                     type="number" min="0" max={f.max}
                     defaultValue={f.defaultVal}
                     className={`h-10 w-full rounded-xl text-center text-base font-bold tabular-nums focus:outline-none transition-colors ${f.color} ${f.focus}`}
-                    style={{ border: '1px solid #2a342d', backgroundColor: '#171f1a' }}
+                    style={{ border: '1px solid var(--bdr)', backgroundColor: 'var(--bg-elevated)' }}
                   />
                 </div>
               ))}
             </div>
 
             {/* Valoración */}
-            <div className="mt-3 pt-3 border-t flex items-center justify-between" style={{ borderColor: '#253028' }}>
-              <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: '#637168' }}>Valoración</span>
+            <div className="mt-3 pt-3 border-t flex items-center justify-between" style={{ borderColor: 'var(--bdr)' }}>
+              <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: 'var(--tx-3)' }}>Valoración</span>
               <StarRating name={`rating_${player.id}`} defaultValue={appearance?.rating} />
             </div>
           </motion.div>
