@@ -178,11 +178,11 @@ export default async function MatchPage({
     <PageTransition>
       <main className="mx-auto max-w-5xl px-4 py-6 pb-32 md:pb-10">
         {sp.error && (
-          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 flex items-start gap-3">
-            <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ fontSize: 18, color: '#f87171' }}>error</span>
+          <div className="mb-4 rounded-xl border px-4 py-3 flex items-start gap-3" style={{ backgroundColor: 'var(--c-danger-bg)', borderColor: 'var(--c-danger-bdr)' }}>
+            <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ fontSize: 18, color: 'var(--c-danger)' }}>error</span>
             <div>
-              <p className="text-sm font-bold" style={{ color: '#f87171' }}>Error al guardar las estadísticas</p>
-              <p className="text-xs mt-0.5" style={{ color: '#fca5a5' }}>{sp.error}</p>
+              <p className="text-sm font-bold" style={{ color: 'var(--c-danger)' }}>Error al guardar las estadísticas</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--c-danger)' }}>{sp.error}</p>
             </div>
           </div>
         )}
@@ -368,7 +368,7 @@ export default async function MatchPage({
             )}
             {yellowApps.length > 0 && (
               <div className="flex items-center gap-2 text-sm">
-                <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: '#facc15' }} />
+                <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: 'var(--c-warn)' }} />
                 <span style={{ color: 'var(--tx)' }}>
                   {yellowApps.map(a => {
                     const first = playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?'
@@ -379,7 +379,7 @@ export default async function MatchPage({
             )}
             {redApps.length > 0 && (
               <div className="flex items-center gap-2 text-sm">
-                <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: '#f87171' }} />
+                <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: 'var(--c-danger)' }} />
                 <span style={{ color: 'var(--tx)' }}>
                   {redApps.map(a => playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?').join(' · ')}
                 </span>
@@ -387,8 +387,8 @@ export default async function MatchPage({
             )}
             {mvpPlayer && (
               <div className="flex items-center gap-1.5 text-sm">
-                <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 15, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>star</span>
-                <span style={{ color: '#fbbf24' }}>{mvpPlayer.name.split(' ')[0]}</span>
+                <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 15, color: 'var(--c-goals)', fontVariationSettings: "'FILL' 1" }}>star</span>
+                <span style={{ color: 'var(--c-goals)' }}>{mvpPlayer.name.split(' ')[0]}</span>
               </div>
             )}
           </div>
@@ -550,8 +550,8 @@ export default async function MatchPage({
                       {p.number != null && <span className="text-[9px]" style={{ color: 'var(--tx-3)' }}>#{p.number}</span>}
                       {p.name.split(' ')[0]}
                       {p.goals > 0 && <span className="text-[10px]" style={{ color: 'var(--accent)' }}>⚽{p.goals > 1 ? `×${p.goals}` : ''}</span>}
-                      {p.yellow > 0 && <span className="inline-block w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: '#facc15' }} />}
-                      {p.red > 0 && <span className="inline-block w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: '#f87171' }} />}
+                      {p.yellow > 0 && <span className="inline-block w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: 'var(--c-warn)' }} />}
+                      {p.red > 0 && <span className="inline-block w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: 'var(--c-danger)' }} />}
                     </span>
                   ))}
                 </div>
@@ -565,7 +565,7 @@ export default async function MatchPage({
                   {subEvents.map((e, i) => (
                     <div key={i} className="flex items-center gap-2 text-[11px]">
                       <span className="tabular-nums font-bold w-7 text-right flex-shrink-0" style={{ color: 'var(--tx-3)' }}>{e.minute}&apos;</span>
-                      {e.out && <span style={{ color: '#f87171' }}>↓ {e.out}</span>}
+                      {e.out && <span style={{ color: 'var(--c-danger)' }}>↓ {e.out}</span>}
                       {e.out && e.in && <span style={{ color: 'var(--tx-3)' }}>·</span>}
                       {e.in && <span style={{ color: 'var(--accent)' }}>↑ {e.in}</span>}
                     </div>
@@ -640,8 +640,8 @@ function PitchPlayer({ p }: { p: { name: string; number: number | null; goals: n
       <p className="text-[9px] font-semibold text-white text-center leading-tight max-w-[50px] truncate">{p.name.split(' ')[0]}</p>
       <div className="flex items-center gap-0.5">
         {p.goals > 0 && <span className="text-[9px]" style={{ color: 'var(--accent)' }}>⚽{p.goals > 1 ? `×${p.goals}` : ''}</span>}
-        {p.yellow > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px]" style={{ backgroundColor: '#facc15' }} />}
-        {p.red > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px]" style={{ backgroundColor: '#f87171' }} />}
+        {p.yellow > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px] bg-yellow-400" />}
+        {p.red > 0 && <span className="inline-block w-1.5 h-2 rounded-[1px] bg-red-400" />}
       </div>
     </div>
   )

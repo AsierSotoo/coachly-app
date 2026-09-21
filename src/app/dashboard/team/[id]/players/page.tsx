@@ -188,7 +188,7 @@ export default async function PlayersPage({
               </button>
             </div>
           </form>
-          {sp.error && <p className="mt-3 text-sm" style={{ color: '#ffb4ab' }}>{sp.error}</p>}
+          {sp.error && <p className="mt-3 text-sm" style={{ color: 'var(--c-danger)' }}>{sp.error}</p>}
         </section>
 
         {/* Grid de jugadores/as activos/as */}
@@ -226,7 +226,7 @@ export default async function PlayersPage({
                 <Link href={`/dashboard/team/${teamId}/players?${sp.q ? `q=${encodeURIComponent(sp.q)}&` : ''}${sp.sort ? `sort=${sp.sort}&` : ''}` }
                   className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border transition-colors"
                   style={!filterPos
-                    ? { backgroundColor: 'rgba(96,165,250,0.15)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.3)' }
+                    ? { backgroundColor: 'rgba(var(--accent-rgb),0.12)', color: 'var(--accent)', borderColor: 'rgba(var(--accent-rgb),0.3)' }
                     : { backgroundColor: 'transparent', color: 'var(--tx-3)', borderColor: 'var(--bdr-strong)' }
                   }>Todas</Link>
                 {presentPositions.map(pos => {
@@ -236,7 +236,7 @@ export default async function PlayersPage({
                     <Link key={pos} href={href}
                       className="px-3 py-1 rounded-full text-[10px] font-bold uppercase border transition-colors"
                       style={isActive
-                        ? { backgroundColor: 'rgba(96,165,250,0.15)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.3)' }
+                        ? { backgroundColor: 'rgba(var(--accent-rgb),0.12)', color: 'var(--accent)', borderColor: 'rgba(var(--accent-rgb),0.3)' }
                         : { backgroundColor: 'transparent', color: 'var(--tx-3)', borderColor: 'var(--bdr-strong)' }
                       }>{pos}</Link>
                   )
@@ -341,7 +341,7 @@ export default async function PlayersPage({
                         <input type="hidden" name="team_id" value={teamId} />
                         <input type="hidden" name="active" value="true" />
                         <button type="submit"
-                          className="w-8 h-8 rounded-full flex items-center justify-center border transition-colors cursor-pointer hover:text-[#ffb4ab]"
+                          className="w-8 h-8 rounded-full flex items-center justify-center border transition-colors cursor-pointer hover:text-[var(--c-danger)]"
                           style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}
                         >
                           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>block</span>
@@ -400,7 +400,7 @@ export default async function PlayersPage({
                     {/* Alerta sanción amarillas */}
                     {warnYellow && (
                       <div className="mb-3 flex items-center gap-2 rounded-xl px-3 py-2 text-[11px] font-bold animate-pulse"
-                        style={{ backgroundColor: 'rgba(250,204,21,0.15)', border: '1.5px solid rgba(250,204,21,0.5)', color: '#facc15' }}>
+                        style={{ backgroundColor: 'var(--c-warn-bg)', border: '1.5px solid var(--c-warn-bdr)', color: 'var(--c-warn)' }}>
                         <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1" }}>warning</span>
                         <span>{stat.yellowCards} amarillas — <span className="uppercase tracking-wide">riesgo de sanción</span></span>
                       </div>
@@ -411,8 +411,8 @@ export default async function PlayersPage({
                       {([
                         { label: 'PJ', value: stat.games,       color: stat.games > 0 ? 'var(--tx-2)' : 'var(--bdr-strong)' },
                         { label: 'G',  value: stat.goals,       color: stat.goals > 0 ? 'var(--accent)' : 'var(--bdr-strong)' },
-                        { label: 'A',  value: stat.assists,     color: stat.assists > 0 ? '#60a5fa' : 'var(--bdr-strong)' },
-                        { label: 'AM', value: stat.yellowCards, color: stat.yellowCards >= 4 ? '#facc15' : stat.yellowCards > 0 ? 'var(--tx-2)' : 'var(--bdr-strong)' },
+                        { label: 'A',  value: stat.assists,     color: stat.assists > 0 ? 'var(--accent)' : 'var(--bdr-strong)' },
+                        { label: 'AM', value: stat.yellowCards, color: stat.yellowCards >= 4 ? 'var(--c-warn)' : stat.yellowCards > 0 ? 'var(--tx-2)' : 'var(--bdr-strong)' },
                       ] as { label: string; value: number; color: string }[]).map(({ label, value, color }) => (
                         <div key={label} className="rounded-lg py-1.5 text-center" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                           <span className="block text-[15px] font-bold tabular-nums leading-none" style={{ color, fontFamily: 'Sora, sans-serif' }}>{value}</span>

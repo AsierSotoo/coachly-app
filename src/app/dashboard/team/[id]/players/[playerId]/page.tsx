@@ -223,7 +223,7 @@ export default async function PlayerDetailPage({
         </div>
 
         {sp.error === 'has_appearances' && (
-          <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm" style={{ color: '#f87171' }}>
+          <div className="mb-4 rounded-xl border px-4 py-3 text-sm" style={{ backgroundColor: 'var(--c-danger-bg)', borderColor: 'var(--c-danger-bdr)', color: 'var(--c-danger)' }}>
             Esta jugadora tiene partidos registrados. Para retirarla de la plantilla sin perder su historial, usa el botón <strong>Inactiva</strong> en la lista de jugadoras.
           </div>
         )}
@@ -313,7 +313,7 @@ export default async function PlayerDetailPage({
             <div className="grid grid-cols-3 divide-x" style={{ borderColor: 'var(--bdr-strong)' }}>
               {[
                 { label: 'Goles',       rank: goalsRank,   icon: 'sports_soccer', color: 'var(--accent)' },
-                { label: 'Asistencias', rank: assistsRank, icon: 'electric_bolt', color: '#facc15' },
+                { label: 'Asistencias', rank: assistsRank, icon: 'electric_bolt', color: 'var(--c-goals)' },
                 { label: 'Minutos',     rank: minutesRank, icon: 'schedule',       color: '#60a5fa' },
               ].map(({ label, rank, icon, color }) => {
                 const isTop = rank <= 3 && rank > 0
@@ -337,16 +337,16 @@ export default async function PlayerDetailPage({
         {avgRating !== null && (
           <div className="mb-4 overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
             <div className="flex items-center gap-2 border-b px-4 py-2.5" style={{ borderColor: 'var(--bdr-strong)' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>star</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--c-goals)', fontVariationSettings: "'FILL' 1" }}>star</span>
               <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-3)' }}>Valoración del entrenador</p>
               <span className="ml-auto text-[10px]" style={{ color: 'var(--bdr-strong)' }}>{ratingCount} partido{ratingCount !== 1 ? 's' : ''}</span>
             </div>
             <div className="px-4 py-3 flex items-center gap-4">
-              <p className="text-[40px] font-extrabold leading-none tabular-nums" style={{ color: '#fbbf24', fontFamily: 'Sora, sans-serif' }}>{avgRating.toFixed(1)}</p>
+              <p className="text-[40px] font-extrabold leading-none tabular-nums" style={{ color: 'var(--c-goals)', fontFamily: 'Sora, sans-serif' }}>{avgRating.toFixed(1)}</p>
               <div>
                 <div className="flex items-center gap-0.5">
                   {Array.from({ length: 5 }, (_, i) => (
-                    <span key={i} className="material-symbols-outlined" style={{ fontSize: 20, color: '#fbbf24', fontVariationSettings: `'FILL' ${i < Math.round(avgRating) ? 1 : 0}` }}>star</span>
+                    <span key={i} className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--c-goals)', fontVariationSettings: `'FILL' ${i < Math.round(avgRating) ? 1 : 0}` }}>star</span>
                   ))}
                 </div>
                 <p className="text-[10px] mt-1" style={{ color: 'var(--tx-3)' }}>valoración media de {ratingCount} partido{ratingCount !== 1 ? 's' : ''}</p>
@@ -380,7 +380,7 @@ export default async function PlayerDetailPage({
                     </div>
                     <p className="text-[8px] uppercase tracking-wide truncate max-w-[36px] text-center" style={{ color: 'var(--tx-3)' }}>{opp}</p>
                     {(yellow || red) && (
-                      <div className="w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: red ? '#ef4444' : '#facc15' }} />
+                      <div className="w-2 h-2.5 rounded-[2px]" style={{ backgroundColor: red ? 'var(--c-danger)' : 'var(--c-warn)' }} />
                     )}
                   </div>
                 )
@@ -535,10 +535,10 @@ export default async function PlayerDetailPage({
                     </div>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       {Array.from({ length: app.yellow_cards ?? 0 }).map((_, j) => (
-                        <span key={`y${j}`} className="w-3 h-4 rounded-[2px]" style={{ backgroundColor: '#facc15' }} />
+                        <span key={`y${j}`} className="w-3 h-4 rounded-[2px]" style={{ backgroundColor: 'var(--c-warn)' }} />
                       ))}
                       {Array.from({ length: app.red_cards ?? 0 }).map((_, j) => (
-                        <span key={`r${j}`} className="w-3 h-4 rounded-[2px]" style={{ backgroundColor: '#ef4444' }} />
+                        <span key={`r${j}`} className="w-3 h-4 rounded-[2px]" style={{ backgroundColor: 'var(--c-danger)' }} />
                       ))}
                     </div>
                   </div>
@@ -550,25 +550,25 @@ export default async function PlayerDetailPage({
 
         {/* ── SEGUIMIENTO DE SANCIONES ──────────────────────── */}
         {totalYellow > 0 && (
-          <div className={`mt-5 overflow-hidden rounded-3xl border ${warnSanction ? 'border-yellow-500/40' : ''}`}
-            style={{ borderColor: warnSanction ? undefined : 'var(--bdr-strong)', backgroundColor: warnSanction ? 'rgba(234,179,8,0.04)' : 'var(--bg-base)' }}>
-            <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: warnSanction ? 'rgba(234,179,8,0.15)' : 'var(--bdr-strong)' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, color: warnSanction ? '#facc15' : 'var(--tx-3)' }}>gavel</span>
-              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: warnSanction ? '#facc15' : 'var(--tx-3)' }}>
+          <div className="mt-5 overflow-hidden rounded-3xl border"
+            style={{ borderColor: warnSanction ? 'var(--c-warn-bdr)' : 'var(--bdr-strong)', backgroundColor: warnSanction ? 'var(--c-warn-bg)' : 'var(--bg-base)' }}>
+            <div className="flex items-center gap-2 border-b px-5 py-3" style={{ borderColor: warnSanction ? 'var(--c-warn-bdr)' : 'var(--bdr-strong)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16, color: warnSanction ? 'var(--c-warn)' : 'var(--tx-3)' }}>gavel</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: warnSanction ? 'var(--c-warn)' : 'var(--tx-3)' }}>
                 Seguimiento de sanciones
               </p>
             </div>
             <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-1">
-                  <span className="text-2xl font-extrabold tabular-nums" style={{ color: warnSanction ? '#facc15' : 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                  <span className="text-2xl font-extrabold tabular-nums" style={{ color: warnSanction ? 'var(--c-warn)' : 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                     {effectiveYellow}/{SANCTION_THRESHOLD}
                   </span>
                   <span className="text-xs" style={{ color: 'var(--tx-3)' }}>amarillas en el ciclo actual</span>
                 </div>
                 <div className="w-full h-1.5 rounded-full overflow-hidden mb-2" style={{ backgroundColor: 'var(--bdr-strong)' }}>
                   <div className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((effectiveYellow / SANCTION_THRESHOLD) * 100, 100)}%`, backgroundColor: warnSanction ? '#facc15' : 'var(--accent)' }} />
+                    style={{ width: `${Math.min((effectiveYellow / SANCTION_THRESHOLD) * 100, 100)}%`, backgroundColor: warnSanction ? 'var(--c-warn)' : 'var(--accent)' }} />
                 </div>
                 <p className="text-xs" style={{ color: 'var(--tx-3)' }}>
                   {cyclesServed > 0 ? `${cyclesServed} sanción${cyclesServed !== 1 ? 'es' : ''} cumplida${cyclesServed !== 1 ? 's' : ''} · ` : ''}
@@ -583,7 +583,7 @@ export default async function PlayerDetailPage({
                   <input type="hidden" name="team_id" value={teamId} />
                   <button type="submit"
                     className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border cursor-pointer transition-all active:scale-95 whitespace-nowrap"
-                    style={{ backgroundColor: 'rgba(234,179,8,0.1)', borderColor: 'rgba(234,179,8,0.3)', color: '#facc15' }}>
+                    style={{ backgroundColor: 'var(--c-warn-bg)', borderColor: 'var(--c-warn-bdr)', color: 'var(--c-warn)' }}>
                     <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check_circle</span>
                     Sanción cumplida
                   </button>
@@ -605,8 +605,8 @@ type AttendanceData = { attended: number; total: number }
 
 function AttendanceBar({ attended, total }: AttendanceData) {
   const pct = Math.round((attended / total) * 100)
-  const barColor  = pct >= 80 ? 'var(--accent)' : pct >= 60 ? '#eab308' : '#ef4444'
-  const textColor = pct >= 80 ? 'var(--accent)' : pct >= 60 ? '#facc15' : '#f87171'
+  const barColor  = pct >= 80 ? 'var(--accent)' : pct >= 60 ? 'var(--c-warn)' : 'var(--c-danger)'
+  const textColor = pct >= 80 ? 'var(--accent)' : pct >= 60 ? 'var(--c-warn)' : 'var(--c-danger)'
   return (
     <div className="flex items-center gap-3 border-t px-5 py-2.5" style={{ borderColor: 'var(--bdr)' }}>
       <span className="material-symbols-outlined" style={{ fontSize: 12, color: 'var(--tx-4)' }}>fitness_center</span>
@@ -649,7 +649,7 @@ function StatGrid({ data, compact, attendance }: { data: StatData; compact?: boo
   const avgMin     = data.games > 0     ? Math.round(data.minutes / data.games)        : 0
 
   const items = [
-    { icon: 'sports_score', label: 'PJ',    value: data.games,   color: 'text-white' },
+    { icon: 'sports_score', label: 'PJ',    value: data.games,   color: 'text-[var(--tx)]' },
     { icon: 'sports_soccer',label: 'Goles', value: data.goals,   color: 'text-green-400' },
     { icon: 'electric_bolt', label: 'Asist', value: data.assists, color: 'text-yellow-400' },
     { icon: 'schedule',      label: "Min'",  value: data.minutes, color: 'text-blue-400' },
@@ -687,31 +687,31 @@ function StatGrid({ data, compact, attendance }: { data: StatData; compact?: boo
           {data.yellow > 0 && (
             <div className="flex items-center gap-1.5">
               <span className="h-4 w-3 rounded-[3px] bg-yellow-400 shadow shadow-yellow-400/20" />
-              <span className="font-[family-name:var(--font-heading)] text-sm font-black text-white">{data.yellow}</span>
+              <span className="font-[family-name:var(--font-heading)] text-sm font-black text-[var(--tx)]">{data.yellow}</span>
             </div>
           )}
           {data.red > 0 && (
             <div className="flex items-center gap-1.5">
               <span className="h-4 w-3 rounded-[3px] bg-red-500 shadow shadow-red-500/20" />
-              <span className="font-[family-name:var(--font-heading)] text-sm font-black text-white">{data.red}</span>
+              <span className="font-[family-name:var(--font-heading)] text-sm font-black text-[var(--tx)]">{data.red}</span>
             </div>
           )}
         </div>
       )}
       {data.mvp > 0 && (
         <div className="flex items-center gap-4 border-t px-5 py-2.5" style={{ borderColor: 'var(--bdr)' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#facc15' }}>star</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 12, color: 'var(--c-goals)' }}>star</span>
           <span className="text-[10px] uppercase tracking-wide mr-auto" style={{ color: 'var(--tx-4)' }}>Del partido</span>
-          <span className="text-sm font-bold tabular-nums" style={{ color: '#facc15' }}>
+          <span className="text-sm font-bold tabular-nums" style={{ color: 'var(--c-goals)' }}>
             {data.mvp} vez{data.mvp !== 1 ? 'es' : ''}
           </span>
         </div>
       )}
       {data.avgRating != null && (
         <div className="flex items-center gap-3 border-t px-5 py-2.5" style={{ borderColor: 'var(--bdr)' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#fbbf24', fontVariationSettings: "'FILL' 1" }}>star</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 12, color: 'var(--c-goals)', fontVariationSettings: "'FILL' 1" }}>star</span>
           <span className="text-[10px] uppercase tracking-wide mr-auto" style={{ color: 'var(--tx-4)' }}>Valoración</span>
-          <span className="text-sm font-bold tabular-nums" style={{ color: '#fbbf24' }}>{data.avgRating.toFixed(1)}</span>
+          <span className="text-sm font-bold tabular-nums" style={{ color: 'var(--c-goals)' }}>{data.avgRating.toFixed(1)}</span>
           <span className="text-[10px]" style={{ color: 'var(--tx-4)' }}>/ 5</span>
           {data.ratingCount != null && <span className="text-[9px]" style={{ color: 'var(--tx-4)' }}>({data.ratingCount} PJ)</span>}
         </div>

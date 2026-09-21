@@ -462,8 +462,8 @@ export default async function StatsPage({
                 {([
                   { label: 'Total Victorias', value: wins,         icon: 'trending_up',   sub: `${winRate}% partidos`,    subColor: 'var(--accent)' },
                   { label: 'Goles a Favor',   value: goalsFor,     icon: 'sports_soccer', sub: `${avgFor} p/partido`,      subColor: 'var(--accent)' },
-                  { label: 'Goles en Contra', value: goalsAgainst, icon: 'security',      sub: `${avgAgainst} p/partido`, subColor: '#89968e' },
-                  { label: 'Diferencia',       value: goalDiff > 0 ? `+${goalDiff}` : String(goalDiff), icon: goalDiff >= 0 ? 'add_circle' : 'remove_circle', sub: `${cleanSheets} portería${cleanSheets !== 1 ? 's' : ''} a cero`, subColor: goalDiff > 0 ? 'var(--accent)' : goalDiff < 0 ? '#f87171' : '#89968e' },
+                  { label: 'Goles en Contra', value: goalsAgainst, icon: 'security',      sub: `${avgAgainst} p/partido`, subColor: 'var(--tx-3)' },
+                  { label: 'Diferencia',       value: goalDiff > 0 ? `+${goalDiff}` : String(goalDiff), icon: goalDiff >= 0 ? 'add_circle' : 'remove_circle', sub: `${cleanSheets} portería${cleanSheets !== 1 ? 's' : ''} a cero`, subColor: goalDiff > 0 ? 'var(--accent)' : goalDiff < 0 ? 'var(--c-danger)' : 'var(--tx-3)' },
                 ] as const).map(({ label, value, icon, sub, subColor }) => (
                   <div key={label} className="p-4 rounded-lg border"
                     style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-subtle)' }}>
@@ -677,7 +677,7 @@ export default async function StatsPage({
                               ))}
                             </div>
                             <div className="flex justify-between text-[11px]" style={{ color: 'var(--tx-2)' }}>
-                              <span>GF <span style={{ color: 'var(--accent)' }}>{gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{ga}</span></span>
+                              <span>GF <span style={{ color: 'var(--accent)' }}>{gf}</span> · GC <span style={{ color: 'var(--c-danger)' }}>{ga}</span></span>
                               <span style={{ color: rate >= 50 ? 'var(--accent)' : 'var(--tx-2)' }}>{rate}% victorias</span>
                             </div>
                           </>
@@ -764,11 +764,11 @@ export default async function StatsPage({
                       <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>Victoria</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#89968e' }} />
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'var(--tx-3)' }} />
                       <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>Empate</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#f87171' }} />
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'var(--c-danger)' }} />
                       <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-2)' }}>Derrota</span>
                     </div>
                   </div>
@@ -833,7 +833,7 @@ export default async function StatsPage({
                           ))}
                         </div>
                         <div className="flex justify-between text-[11px]" style={{ color: 'var(--tx-2)' }}>
-                          <span>GF <span style={{ color: 'var(--accent)' }}>{c.gf}</span> · GC <span style={{ color: '#ffb4ab' }}>{c.ga}</span></span>
+                          <span>GF <span style={{ color: 'var(--accent)' }}>{c.gf}</span> · GC <span style={{ color: 'var(--c-danger)' }}>{c.ga}</span></span>
                           <span style={{ color: rate >= 50 ? 'var(--accent)' : 'var(--tx-2)' }}>{rate}% vic.</span>
                         </div>
                       </div>
@@ -865,7 +865,7 @@ export default async function StatsPage({
                           </div>
                           <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--tx-2)' }}>
                             <span><span style={{ color: 'var(--accent)', fontWeight: 700 }}>{p.goals}</span> G</span>
-                            <span><span style={{ color: '#facc15', fontWeight: 700 }}>{p.assists}</span> A</span>
+                            <span><span style={{ color: 'var(--c-goals)', fontWeight: 700 }}>{p.assists}</span> A</span>
                             <span className="hidden sm:inline"><span style={{ color: '#60a5fa', fontWeight: 700 }}>{avgMin}&apos;</span> media</span>
                           </div>
                         </div>
@@ -898,7 +898,7 @@ export default async function StatsPage({
                     </thead>
                     <tbody>
                       {h2h.map(r => {
-                        const lastColor = r.lastResult === 'V' ? 'var(--accent)' : r.lastResult === 'D' ? '#f87171' : '#fbbf24'
+                        const lastColor = r.lastResult === 'V' ? 'var(--accent)' : r.lastResult === 'D' ? 'var(--c-danger)' : 'var(--c-warn)'
                         const lastBg = r.lastResult === 'V' ? 'rgba(75,226,119,0.12)' : r.lastResult === 'D' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.08)'
                         return (
                           <tr key={r.opponent} className="border-b last:border-0 transition-colors hover:bg-[var(--bg-elevated)]" style={{ borderColor: 'var(--bdr-strong)' }}>
@@ -908,7 +908,7 @@ export default async function StatsPage({
                             {[r.played, r.W, r.E, r.D, r.gf, r.ga].map((v, i) => (
                               <td key={i} className="px-4 py-3 text-center">
                                 <span className="text-sm font-bold" style={{
-                                  color: i === 1 ? 'var(--accent)' : i === 2 ? '#fbbf24' : i === 3 ? '#f87171' : 'var(--tx)'
+                                  color: i === 1 ? 'var(--accent)' : i === 2 ? 'var(--c-warn)' : i === 3 ? 'var(--c-danger)' : 'var(--tx)'
                                 }}>{v}</span>
                               </td>
                             ))}
@@ -972,8 +972,8 @@ export default async function StatsPage({
             <div className="overflow-hidden rounded-[20px] border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
               {attStats.map((s, i) => {
                 const pct = Math.round((s.attended / s.total) * 100)
-                const barColor  = pct >= 80 ? 'var(--accent)' : pct >= 60 ? '#eab308' : '#ef4444'
-                const textColor = pct >= 80 ? 'var(--accent)' : pct >= 60 ? '#facc15' : '#f87171'
+                const barColor  = pct >= 80 ? 'var(--accent)' : pct >= 60 ? 'var(--c-warn)' : 'var(--c-danger)'
+                const textColor = pct >= 80 ? 'var(--accent)' : pct >= 60 ? 'var(--c-warn)' : 'var(--c-danger)'
                 return (
                   <div key={s.playerId}
                     className="flex items-center gap-3 px-4 py-3 border-b last:border-0"
