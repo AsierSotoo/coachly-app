@@ -100,9 +100,9 @@ export function ConvocatoriaEditor({
   // Numeración posicional para el PDF (esquema clásico de fútbol)
   const PRINT_NUMS: Record<string, number[]> = {
     gk:  [1, 13, 25],
-    def: [2, 3, 4, 5],
-    mid: [6, 8, 7, 10],   // 6·8 pivotes, 7·10 interiores/mediapunta
-    fwd: [9, 11, 7],
+    def: [2, 3, 4, 5],    // LD, LI, central, central
+    mid: [6, 8, 10],      // pivote, interior, mediapunta
+    fwd: [7, 9, 11],      // ED, delantero, EI
   }
   const posBucket = (pos: string | null): 'gk' | 'def' | 'mid' | 'fwd' | null => {
     if (!pos) return null
