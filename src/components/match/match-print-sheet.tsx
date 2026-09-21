@@ -39,15 +39,25 @@ function posLine(pos: string | null): 'gk' | 'def' | 'mid' | 'fwd' {
   return 'fwd'
 }
 
+const POS_NUMS: Record<string, number[]> = {
+  gk:  [1, 13, 25],
+  def: [2, 3, 4, 5],   // LD, LI, central, central
+  mid: [6, 8, 10],     // pivote, interior, mediapunta
+  fwd: [7, 9, 11],     // ED, delantero, EI
+}
+
 function assignSeq(starters: Player[]): PlayerWithSeq[] {
   const byLine: Record<string, Player[]> = { gk: [], def: [], mid: [], fwd: [] }
   for (const p of starters) byLine[posLine(p.position)].push(p)
   for (const k of Object.keys(byLine)) byLine[k].sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
-  let n = 1
   const out: PlayerWithSeq[] = []
-  for (const line of ['gk', 'def', 'mid', 'fwd'] as const)
-    for (const p of byLine[line]) out.push({ ...p, seqNum: n++, line })
-  return out
+  for (const line of ['gk', 'def', 'mid', 'fwd'] as const) {
+    const nums = POS_NUMS[line]
+    byLine[line].forEach((p, i) => {
+      out.push({ ...p, seqNum: nums[i] ?? (p.number ?? 99), line })
+    })
+  }
+  return out.sort((a, b) => a.seqNum - b.seqNum)
 }
 
 function FieldRow({ players, topPct, circleSize = 28 }: {
@@ -119,7 +129,7 @@ export function MatchPrintSheet({
       ? convocadas
       : allAvail.slice(11)
   const numbered = assignSeq(eleven)
-  const subsNum  = subs.map((p, i) => ({ ...p, seqNum: eleven.length + 1 + i }))
+  const subsNum  = subs.map(p => ({ ...p, seqNum: p.number ?? 0 }))
 
   // Construir filas del campo
   const seqById = new Map(numbered.map(p => [p.id, p]))
