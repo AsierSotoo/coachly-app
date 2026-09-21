@@ -65,6 +65,16 @@ export default async function MatchPage({
     for (const r of rows ?? []) {
       convocatoriaStatuses[r.player_id] = r.status as 'titular' | 'convocada' | 'no_convocada'
     }
+  } else if ((appearances ?? []).length > 0) {
+    // Sin convocatoria formal pero partido ya guardado: sintetizar desde appearances.
+    // Jugadoras sin appearance = no_convocada; con appearance = titular o convocada.
+    const appearedIds = new Set((appearances ?? []).map(a => a.player_id))
+    const starterIds  = new Set((appearances ?? []).filter(a => a.starter).map(a => a.player_id))
+    for (const p of players ?? []) {
+      convocatoriaStatuses[p.id] = !appearedIds.has(p.id)
+        ? 'no_convocada'
+        : starterIds.has(p.id) ? 'titular' : 'convocada'
+    }
   }
 
   // Si hay convocatoria, reordenar: titulares → convocadas → no_convocadas → sin asignar
