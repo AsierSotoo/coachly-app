@@ -186,7 +186,7 @@ export default async function SeasonPage({
               </div>
               <div className="px-2.5 py-2 sm:px-4 sm:py-2.5 text-center border-r" style={{ borderColor: 'var(--bdr)' }}>
                 <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>GC</p>
-                <p className="text-[15px] sm:text-[18px] font-black tabular-nums leading-tight" style={{ color: '#f87171', fontFamily: 'Sora, sans-serif' }}>{goalsAgainst}</p>
+                <p className="text-[15px] sm:text-[18px] font-black tabular-nums leading-tight" style={{ color: 'var(--c-danger)', fontFamily: 'Sora, sans-serif' }}>{goalsAgainst}</p>
               </div>
               {ligaMatches.length > 0 && (
                 <div className="px-2.5 py-2 sm:px-4 sm:py-2.5 text-center">
@@ -217,7 +217,7 @@ export default async function SeasonPage({
             <div className="flex h-1.5" style={{ backgroundColor: 'var(--bg)' }}>
               {wins > 0 && <div style={{ width: `${winRate}%`, backgroundColor: 'var(--accent)' }} />}
               {draws > 0 && <div style={{ width: `${drawRate}%`, backgroundColor: 'var(--tx-3)' }} />}
-              {losses > 0 && <div style={{ width: `${lossRate}%`, backgroundColor: '#d76b6b' }} />}
+              {losses > 0 && <div style={{ width: `${lossRate}%`, backgroundColor: 'var(--c-danger)' }} />}
             </div>
           )}
         </section>
@@ -231,9 +231,9 @@ export default async function SeasonPage({
                 <div key={i}
                   className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black border"
                   style={{
-                    backgroundColor: r === 'V' ? 'rgba(75,226,119,0.12)' : r === 'D' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.08)',
-                    borderColor:     r === 'V' ? 'rgba(75,226,119,0.35)' : r === 'D' ? 'rgba(248,113,113,0.3)' : 'rgba(251,191,36,0.25)',
-                    color:           r === 'V' ? 'var(--accent)' : r === 'D' ? '#f87171' : '#fbbf24',
+                    backgroundColor: r === 'V' ? 'rgba(var(--accent-rgb),0.1)' : r === 'D' ? 'var(--c-danger-bg)' : 'var(--c-warn-bg)',
+                    borderColor:     r === 'V' ? 'rgba(var(--accent-rgb),0.3)' : r === 'D' ? 'var(--c-danger-bdr)' : 'var(--c-warn-bdr)',
+                    color:           r === 'V' ? 'var(--accent)' : r === 'D' ? 'var(--c-danger)' : 'var(--c-warn)',
                   }}>
                   {r}
                 </div>
@@ -301,7 +301,7 @@ export default async function SeasonPage({
                   borderColor: i === 0 ? 'var(--bdr)' : 'var(--bdr-strong)',
                   color: i === 0 ? 'var(--accent)' : 'var(--tx-2)',
                 }}>
-                <span className="font-black text-[9px]" style={{ color: i === 0 ? '#f59e0b' : i === 1 ? 'var(--tx-3)' : '#b45309' }}>
+                <span className="font-black text-[9px]" style={{ color: i === 0 ? 'var(--c-goals)' : i === 1 ? 'var(--tx-3)' : 'var(--c-warn-sub)' }}>
                   {i + 1}
                 </span>
                 <span className="font-semibold">{s.name.split(' ')[0]}</span>
@@ -328,7 +328,7 @@ export default async function SeasonPage({
             </Link>
             <Link
               href={`/dashboard/team/${team.id}/players`}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all hover:bg-[#1a231d]"
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all"
               style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}
             >
               <span className="material-symbols-outlined text-lg">person_pin</span>
