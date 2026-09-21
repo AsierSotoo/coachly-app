@@ -290,17 +290,17 @@ export default async function DashboardPage() {
                         return (
                           <Link key={pm.id} href={`/dashboard/season/${lastSeason.id}/match/${pm.id}`}
                             className="flex items-center gap-3 rounded-[12px] border px-4 py-3 transition-all active:scale-[.99]"
-                            style={{ backgroundColor: 'rgba(248,113,113,0.06)', borderColor: 'rgba(248,113,113,0.35)', boxShadow: 'var(--shadow-card)' }}>
-                            <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#f87171', fontSize: 18 }}>pending</span>
+                            style={{ backgroundColor: 'var(--c-pending-bg)', borderColor: 'var(--c-pending-bdr)', boxShadow: 'var(--shadow-card)' }}>
+                            <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--c-danger)', fontSize: 18 }}>pending</span>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[12px] font-bold" style={{ color: '#f87171' }}>
+                              <p className="text-[12px] font-bold" style={{ color: 'var(--c-danger)' }}>
                                 Partido sin resultado · {pmDate}
                               </p>
-                              <p className="text-[11px] mt-0.5 truncate" style={{ color: 'rgba(248,113,113,0.7)' }}>
+                              <p className="text-[11px] mt-0.5 truncate" style={{ color: 'var(--c-danger-sub)' }}>
                                 vs {pm.opponent} — Añadir resultado
                               </p>
                             </div>
-                            <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: '#f87171', opacity: 0.6 }}>chevron_right</span>
+                            <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: 'var(--c-danger)', opacity: 0.6 }}>chevron_right</span>
                           </Link>
                         )
                       })}
@@ -325,7 +325,7 @@ export default async function DashboardPage() {
                       </div>
 
                       <div className="px-4 pt-3 pb-4">
-                        <p className="text-[9px] font-extrabold uppercase tracking-[.14em] mb-4" style={{ color: '#fbbf24' }}>
+                        <p className="text-[9px] font-extrabold uppercase tracking-[.14em] mb-4" style={{ color: 'var(--c-warn)' }}>
                           Próximo partido
                         </p>
 
@@ -390,7 +390,7 @@ export default async function DashboardPage() {
 
                   {/* ── Último partido (fila compacta, cuando hay próximo) ── */}
                   {nextMatch && lastMatch && lastSeason && (() => {
-                    const lc = lastMatch.goals_for > lastMatch.goals_against ? 'var(--accent)' : lastMatch.goals_for < lastMatch.goals_against ? '#f87171' : '#fbbf24'
+                    const lc = lastMatch.goals_for > lastMatch.goals_against ? 'var(--accent)' : lastMatch.goals_for < lastMatch.goals_against ? 'var(--c-danger)' : 'var(--c-warn)'
                     const ll = lastMatch.goals_for > lastMatch.goals_against ? 'Victoria' : lastMatch.goals_for < lastMatch.goals_against ? 'Derrota' : 'Empate'
                     return (
                       <Link href={`/dashboard/season/${lastSeason.id}/match/${lastMatch.id}`}
@@ -462,7 +462,7 @@ export default async function DashboardPage() {
                           <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>PUNTOS</span>
                         </div>
                         <div className="flex flex-col items-center py-5 border-x" style={{ borderColor: 'var(--bdr)' }}>
-                          <span className="text-[40px] font-black tabular-nums leading-none" style={{ color: diff > 0 ? 'var(--accent)' : diff < 0 ? '#f87171' : 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                          <span className="text-[40px] font-black tabular-nums leading-none" style={{ color: diff > 0 ? 'var(--accent)' : diff < 0 ? 'var(--c-danger)' : 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                             {diff > 0 ? '+' : ''}{diff}
                           </span>
                           <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>DIFERENCIA</span>
@@ -478,8 +478,8 @@ export default async function DashboardPage() {
                       {(wins + draws + losses) > 0 && (
                         <div className="flex h-[3px]">
                           {wins   > 0 && <div style={{ flex: wins,   backgroundColor: 'var(--accent)' }} />}
-                          {draws  > 0 && <div style={{ flex: draws,  backgroundColor: '#fbbf24', opacity: 0.8 }} />}
-                          {losses > 0 && <div style={{ flex: losses, backgroundColor: '#f87171', opacity: 0.7 }} />}
+                          {draws  > 0 && <div style={{ flex: draws,  backgroundColor: 'var(--c-warn)', opacity: 0.8 }} />}
+                          {losses > 0 && <div style={{ flex: losses, backgroundColor: 'var(--c-danger)', opacity: 0.7 }} />}
                         </div>
                       )}
                     </div>
@@ -494,7 +494,7 @@ export default async function DashboardPage() {
                           <div className="flex gap-1.5 flex-wrap">
                             {recentForm.map((m, i) => {
                               const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                              const s = { V: { bg: 'var(--accent)', text: 'var(--accent-fg)' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'rgba(248,113,113,0.18)', text: '#f87171' } }[res]
+                              const s = { V: { bg: 'var(--accent)', text: 'var(--accent-fg)' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'var(--c-danger-bg)', text: 'var(--c-danger)' } }[res]
                               return <span key={i} className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: s.bg, color: s.text }}>{res}</span>
                             })}
                           </div>
@@ -524,7 +524,7 @@ export default async function DashboardPage() {
                         <div className="flex gap-1.5">
                           {recentForm.map((m, i) => {
                             const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                            const s = { V: { bg: 'var(--accent)', text: 'var(--accent-fg)' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'rgba(248,113,113,0.18)', text: '#f87171' } }[res]
+                            const s = { V: { bg: 'var(--accent)', text: 'var(--accent-fg)' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'var(--c-danger-bg)', text: 'var(--c-danger)' } }[res]
                             return <span key={i} className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: s.bg, color: s.text, border: `1px solid ${s.bg}40` }}>{res}</span>
                           })}
                         </div>
@@ -534,7 +534,7 @@ export default async function DashboardPage() {
                         <p className="font-extrabold tabular-nums leading-none" style={{ fontFamily: 'Sora, sans-serif', fontSize: 18 }}>
                           <span style={{ color: 'var(--accent)' }}>{goalsFor}</span>
                           <span style={{ color: 'var(--bdr-strong)' }}> — </span>
-                          <span style={{ color: '#f87171' }}>{goalsAgainst}</span>
+                          <span style={{ color: 'var(--c-danger)' }}>{goalsAgainst}</span>
                         </p>
                         <p className="text-[9px] mt-0.5" style={{ color: 'var(--tx-4)' }}>a favor — en contra</p>
                       </div>
@@ -553,13 +553,13 @@ export default async function DashboardPage() {
                       return (
                         <Link key={pm.id} href={`/dashboard/season/${lastSeason.id}/match/${pm.id}`}
                           className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all"
-                          style={{ backgroundColor: 'rgba(248,113,113,0.06)', borderColor: 'rgba(248,113,113,0.35)', boxShadow: 'var(--shadow-card)' }}>
-                          <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#f87171', fontSize: 18 }}>pending</span>
+                          style={{ backgroundColor: 'var(--c-pending-bg)', borderColor: 'var(--c-pending-bdr)', boxShadow: 'var(--shadow-card)' }}>
+                          <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--c-danger)', fontSize: 18 }}>pending</span>
                           <div className="min-w-0 flex-1">
-                            <p className="text-[12px] font-bold truncate" style={{ color: '#f87171' }}>Sin resultado · {pmDateShort}</p>
-                            <p className="text-[10px] mt-0.5 truncate" style={{ color: 'rgba(248,113,113,0.7)' }}>vs {pm.opponent}</p>
+                            <p className="text-[12px] font-bold truncate" style={{ color: 'var(--c-danger)' }}>Sin resultado · {pmDateShort}</p>
+                            <p className="text-[10px] mt-0.5 truncate" style={{ color: 'var(--c-danger-sub)' }}>vs {pm.opponent}</p>
                           </div>
-                          <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 14, color: '#f87171', opacity: 0.6 }}>chevron_right</span>
+                          <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 14, color: 'var(--c-danger)', opacity: 0.6 }}>chevron_right</span>
                         </Link>
                       )
                     })}
@@ -613,13 +613,13 @@ export default async function DashboardPage() {
                     {yellowAlerts.slice(0, 2).map(alert => (
                       <Link key={alert.playerId} href={`/dashboard/season/${lastSeason!.id}/stats`}
                         className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all"
-                        style={{ backgroundColor: 'rgba(251,191,36,0.04)', borderColor: 'rgba(251,191,36,0.25)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#fbbf24', fontSize: 18 }}>warning</span>
+                        style={{ backgroundColor: 'var(--c-warn-bg)', borderColor: 'var(--c-warn-bdr)', boxShadow: 'var(--shadow-card)' }}>
+                        <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--c-warn)', fontSize: 18 }}>warning</span>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[12px] font-bold truncate" style={{ color: '#fbbf24' }}>{alert.name} · {alert.count} amarillas</p>
-                          <p className="text-[10px] mt-0.5" style={{ color: '#fde68a', opacity: 0.7 }}>A una sanción de baja</p>
+                          <p className="text-[12px] font-bold truncate" style={{ color: 'var(--c-warn)' }}>{alert.name} · {alert.count} amarillas</p>
+                          <p className="text-[10px] mt-0.5" style={{ color: 'var(--c-warn-sub)' }}>A una sanción de baja</p>
                         </div>
-                        <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: '#fbbf24', opacity: 0.5 }}>chevron_right</span>
+                        <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: 'var(--c-warn)', opacity: 0.5 }}>chevron_right</span>
                       </Link>
                     ))}
 
@@ -637,7 +637,7 @@ export default async function DashboardPage() {
                             <p className="text-[13px] font-bold truncate" style={{ color: 'var(--tx)' }}>{topScorer.name}</p>
                             {topScorer.position && <p className="text-[11px]" style={{ color: 'var(--tx-3)' }}>{topScorer.position}</p>}
                           </div>
-                          <span className="text-[32px] font-black tabular-nums leading-none flex-shrink-0" style={{ color: '#facc15', fontFamily: 'Sora, sans-serif' }}>
+                          <span className="text-[32px] font-black tabular-nums leading-none flex-shrink-0" style={{ color: 'var(--c-goals)', fontFamily: 'Sora, sans-serif' }}>
                             {topScorer.goals}
                           </span>
                         </div>
@@ -653,13 +653,13 @@ export default async function DashboardPage() {
                       {yellowAlerts.slice(0, 2).map(alert => (
                         <Link key={alert.playerId} href={`/dashboard/season/${lastSeason!.id}/stats`}
                           className="flex items-center gap-2.5 rounded-[12px] border px-3.5 py-3 transition-all"
-                          style={{ backgroundColor: 'rgba(251,191,36,0.04)', borderColor: 'rgba(251,191,36,0.18)' }}>
-                          <span className="material-symbols-outlined flex-shrink-0" style={{ color: '#fbbf24', fontSize: 16 }}>warning</span>
+                          style={{ backgroundColor: 'var(--c-warn-bg)', borderColor: 'var(--c-warn-bdr)' }}>
+                          <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--c-warn)', fontSize: 16 }}>warning</span>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[11px] font-bold truncate" style={{ color: '#fbbf24' }}>{alert.name} · {alert.count} amarillas</p>
-                            <p className="text-[10px]" style={{ color: '#fde68a', opacity: 0.7 }}>A una sanción de baja</p>
+                            <p className="text-[11px] font-bold truncate" style={{ color: 'var(--c-warn)' }}>{alert.name} · {alert.count} amarillas</p>
+                            <p className="text-[10px]" style={{ color: 'var(--c-warn-sub)' }}>A una sanción de baja</p>
                           </div>
-                          <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 14, color: '#fbbf24', opacity: 0.5 }}>chevron_right</span>
+                          <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 14, color: 'var(--c-warn)', opacity: 0.5 }}>chevron_right</span>
                         </Link>
                       ))}
                     </div>
@@ -704,7 +704,7 @@ export default async function DashboardPage() {
                           </div>
                           {competitive.length > 0 && (
                             <div className="mb-4 grid grid-cols-4 gap-2">
-                              {[{ l: 'V', v: wins, c: 'var(--accent)' }, { l: 'E', v: draws, c: '#fbbf24' }, { l: 'D', v: losses, c: '#f87171' }, { l: 'Pts', v: points, c: 'var(--tx)' }].map(({ l, v, c }) => (
+                              {[{ l: 'V', v: wins, c: 'var(--accent)' }, { l: 'E', v: draws, c: 'var(--c-warn)' }, { l: 'D', v: losses, c: 'var(--c-danger)' }, { l: 'Pts', v: points, c: 'var(--tx)' }].map(({ l, v, c }) => (
                                 <div key={l} className="rounded-lg py-2 text-center" style={{ backgroundColor: 'var(--bg-base)' }}>
                                   <span className="block text-[18px] font-bold tabular-nums" style={{ color: c, fontFamily: 'Sora, sans-serif' }}>{v}</span>
                                   <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--bdr-strong)' }}>{l}</span>
@@ -716,7 +716,7 @@ export default async function DashboardPage() {
                             <div className="mb-4 flex gap-1.5">
                               {recentForm.map((m, i) => {
                                 const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                                return <span key={i} className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: res === 'V' ? 'var(--accent)' : res === 'E' ? 'var(--bg-elevated)' : '#2d1414', color: res === 'V' ? 'var(--accent-fg)' : res === 'E' ? 'var(--tx-2)' : '#f87171' }}>{res}</span>
+                                return <span key={i} className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: res === 'V' ? 'var(--accent)' : res === 'E' ? 'var(--bg-elevated)' : 'var(--c-danger-bg)', color: res === 'V' ? 'var(--accent-fg)' : res === 'E' ? 'var(--tx-2)' : 'var(--c-danger)' }}>{res}</span>
                               })}
                             </div>
                           )}
