@@ -1,6 +1,6 @@
 ﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import { createMatch, updateSeasonLeague } from '../actions'
+import { createMatch } from '../actions'
 import Link from 'next/link'
 import { DeleteMatchButton } from '@/components/match/delete-match-button'
 import { PageTransition } from '@/components/ui/page-transition'
@@ -254,41 +254,6 @@ export default async function SeasonPage({
           </div>
         )}
 
-        {/* ── Posición en liga ────────────────────────────────────────── */}
-        {(() => {
-          const lp = (season as unknown as { league_position?: number | null }).league_position
-          const lt = (season as unknown as { league_total_teams?: number | null }).league_total_teams
-          const ordinal = (n: number) => n === 1 ? '1ª' : n === 2 ? '2ª' : n === 3 ? '3ª' : `${n}ª`
-          return (
-            <div className="flex flex-wrap items-center gap-2 mb-5 px-1">
-              <span className="text-[10px] font-bold uppercase tracking-widest flex-shrink-0" style={{ color: 'var(--tx-2)' }}>Liga</span>
-              {lp != null && lt != null ? (
-                <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border text-[11px] font-bold"
-                  style={{ backgroundColor: 'var(--accent-subtle)', borderColor: 'var(--bdr)', color: 'var(--accent)' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 12 }}>leaderboard</span>
-                  {ordinal(lp)} de {lt}
-                </span>
-              ) : (
-                <span className="text-[11px]" style={{ color: 'var(--tx-3)' }}>Sin datos</span>
-              )}
-              <form action={updateSeasonLeague} className="flex items-center gap-1.5 ml-auto">
-                <input type="hidden" name="season_id" value={seasonId} />
-                <input name="league_position" type="number" min="1" defaultValue={lp ?? ''} placeholder="Pos"
-                  className="w-14 h-8 rounded-lg border px-1 text-sm text-center outline-none transition-colors"
-                  style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }} />
-                <span className="text-xs flex-shrink-0" style={{ color: 'var(--tx-3)' }}>/</span>
-                <input name="league_total_teams" type="number" min="2" defaultValue={lt ?? ''} placeholder="Tot"
-                  className="w-14 h-8 rounded-lg border px-1 text-sm text-center outline-none transition-colors"
-                  style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }} />
-                <button type="submit"
-                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border transition-colors active:scale-95"
-                  style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check</span>
-                </button>
-              </form>
-            </div>
-          )
-        })()}
 
         {/* ── Mini leaderboard ─────────────────────────────────────────── */}
         {topScorers.length > 0 && (

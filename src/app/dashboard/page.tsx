@@ -21,8 +21,6 @@ type Season = {
   id: string
   name: string
   created_at: string
-  league_position?: number | null
-  league_total_teams?: number | null
   matches: Match[]
   training_sessions: { id: string; date: string; title: string | null; start_time?: string | null }[]
 }
@@ -43,7 +41,7 @@ export default async function DashboardPage() {
 
   const { data: raw } = await supabase
     .from('teams')
-    .select('*, seasons(id, name, created_at, league_position, league_total_teams, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home), training_sessions(id, date, title, start_time)), players(id, active)')
+    .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home), training_sessions(id, date, title, start_time)), players(id, active)')
     .order('created_at', { ascending: true })
 
   const teams = (raw ?? []) as Team[]
@@ -130,8 +128,6 @@ export default async function DashboardPage() {
     const nextMatch = allMatches.filter(m => m.status === 'scheduled').sort((a, b) => a.played_at.localeCompare(b.played_at))[0] ?? null
     const nextSession = [...(lastSeason?.training_sessions ?? [])].filter(s => s.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date))[0] ?? null
     const seasonHref = team.seasons.length === 1 ? `/dashboard/season/${team.seasons[0].id}` : `/dashboard/team/${team.id}/seasons`
-    const leaguePos = lastSeason?.league_position ?? null
-
     const matchIndex = allMatches.filter(m => m.status !== 'scheduled').length
 
     // Partidos programados cuya fecha ya pasó y no tienen resultado
@@ -139,7 +135,7 @@ export default async function DashboardPage() {
       .filter(m => m.status === 'scheduled' && m.played_at < todayStr)
       .sort((a, b) => a.played_at.localeCompare(b.played_at))
 
-    return { lastSeason, allMatches, competitive, sorted, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref, leaguePos, matchIndex, pendingMatches }
+    return { lastSeason, allMatches, competitive, sorted, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref, matchIndex, pendingMatches }
   }
 
   const firstTeam   = teams[0]
@@ -187,7 +183,7 @@ export default async function DashboardPage() {
             {/* ── SINGLE TEAM ─────────────────────────────── */}
             {teams.length === 1 && (() => {
               const team = teams[0]
-              const { lastSeason, competitive, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref, leaguePos, matchIndex, pendingMatches } = processTeam(team)
+              const { lastSeason, competitive, lastMatch, wins, draws, losses, goalsFor, goalsAgainst, points, playerCount, recentForm, streakCount, streakType, nextMatch, nextSession, seasonHref, matchIndex, pendingMatches } = processTeam(team)
 
               const streakColor = streakType === 'V' ? 'var(--accent)' : streakType === 'D' ? '#f87171' : '#fbbf24'
               const streakLabel = streakCount >= 3
@@ -469,9 +465,9 @@ export default async function DashboardPage() {
                         </div>
                         <div className="flex flex-col items-center py-5">
                           <span className="text-[40px] font-black tabular-nums leading-none" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
-                            {leaguePos ? `${leaguePos}°` : '—'}
+                            {wins + draws + losses > 0 ? `${Math.round((wins / (wins + draws + losses)) * 100)}%` : '—'}
                           </span>
-                          <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>POSICIÓN</span>
+                          <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>VICTORIAS</span>
                         </div>
                       </div>
                       {/* Barra de forma */}

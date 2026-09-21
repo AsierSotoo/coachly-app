@@ -112,7 +112,8 @@ export async function saveAppearances(formData: FormData) {
       notes: (formData.get('notes') as string) || null,
       mvp_player_id: (formData.get('mvp_player_id') as string) || null,
       ...(formation ? { formation } : {}),
-      ...(newStatus === 'finished' ? { status: 'finished' } : {}),
+      // Auto-finalizar si hay minutos reales (partido jugado de facto) o si el botón lo pide explícitamente
+      ...(newStatus === 'finished' || appearances.some(a => a.minutes > 0) ? { status: 'finished' } : {}),
     }
     const { error: matchError } = await supabase.from('matches').update(updateData).eq('id', matchId)
     if (matchError) {
