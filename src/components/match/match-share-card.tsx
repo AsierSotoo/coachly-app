@@ -15,6 +15,7 @@ type Props = {
   teamName: string
   logoUrl?: string | null
   opponent: string
+  rivalLogoUrl?: string | null
   goalsFor: number
   goalsAgainst: number
   playedAt: string
@@ -30,7 +31,7 @@ function teamInitials(name: string) {
 }
 
 export function MatchShareCard({
-  teamName, logoUrl, opponent, goalsFor, goalsAgainst,
+  teamName, logoUrl, opponent, rivalLogoUrl, goalsFor, goalsAgainst,
   playedAt, home, scorers, mvpName, competition, lineupData,
 }: Props) {
   const [loading, setLoading] = useState(false)
@@ -110,23 +111,23 @@ export function MatchShareCard({
         }}
       >
         {/* Resultado */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 20 }}>
-          {/* Equipo local */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: 16, marginBottom: 20 }}>
+          {/* Equipo */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
             {logoUrl ? (
               /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={logoUrl} alt={teamName} style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 8, backgroundColor: 'white', padding: 4 }} />
+              <img src={logoUrl} alt={teamName} style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: 10, backgroundColor: 'white', padding: 4 }} />
             ) : (
-              <div style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: 'var(--accent)' }}>
+              <div style={{ width: 52, height: 52, borderRadius: 10, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color: 'var(--accent)' }}>
                 {teamInitials(teamName)}
               </div>
             )}
-            <p style={{ color: '#edf2ee', fontSize: 12, fontWeight: 700, textAlign: 'center', margin: 0, maxWidth: 80 }}>{teamName}</p>
+            <p style={{ color: '#edf2ee', fontSize: 12, fontWeight: 700, textAlign: 'center', margin: 0, maxWidth: 90, lineHeight: 1.3 }}>{teamName}</p>
             <p style={{ color: '#637168', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', margin: 0 }}>{home ? 'Local' : 'Visitante'}</p>
           </div>
 
           {/* Marcador */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, paddingTop: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 52, fontWeight: 900, color: goalsFor > goalsAgainst ? 'var(--accent)' : '#edf2ee', lineHeight: 1 }}>{goalsFor}</span>
               <span style={{ fontSize: 28, fontWeight: 700, color: '#334155', lineHeight: 1 }}>–</span>
@@ -145,10 +146,15 @@ export function MatchShareCard({
 
           {/* Rival */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
-            <div style={{ width: 48, height: 48, borderRadius: 8, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: '#89968e' }}>
-              {teamInitials(opponent)}
-            </div>
-            <p style={{ color: '#edf2ee', fontSize: 12, fontWeight: 700, textAlign: 'center', margin: 0, maxWidth: 80 }}>{opponent}</p>
+            {rivalLogoUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={rivalLogoUrl} alt={opponent} style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: 10, backgroundColor: 'white', padding: 4 }} />
+            ) : (
+              <div style={{ width: 52, height: 52, borderRadius: 10, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color: '#89968e' }}>
+                {teamInitials(opponent)}
+              </div>
+            )}
+            <p style={{ color: '#edf2ee', fontSize: 12, fontWeight: 700, textAlign: 'center', margin: 0, maxWidth: 90, lineHeight: 1.3 }}>{opponent}</p>
             <p style={{ color: '#637168', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', margin: 0 }}>{home ? 'Visitante' : 'Local'}</p>
           </div>
         </div>

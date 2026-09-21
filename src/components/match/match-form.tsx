@@ -62,7 +62,7 @@ interface MatchFormProps {
 export function MatchForm({ match, players, appearances, seasonId, teamName, teamGender, saved, convocatoriaStatuses, isScheduled }: MatchFormProps) {
   const appearanceMap = new Map(appearances.map(a => [a.player_id, a]))
   const terms = getTeamTerms(teamGender)
-  const isFirstEntry = !isScheduled && !convocatoriaStatuses && appearances.length === 0
+  const isFirstEntry = !isScheduled && appearances.length === 0
 
   const formRef = useRef<HTMLFormElement>(null)
   const [liveGoals, setLiveGoals] = useState(() => appearances.reduce((s, a) => s + a.goals, 0))
@@ -265,8 +265,8 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
           style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
           <span className="material-symbols-outlined flex-shrink-0 mt-0.5" style={{ color: 'var(--tx-3)', fontSize: 18 }}>info</span>
           <p className="text-xs leading-relaxed" style={{ color: 'var(--tx-2)' }}>
-            Sin convocatoria previa — todas las {terms.pp} aparecen como <strong>Suplentes</strong>.
-            Marca como <strong>T</strong> a las titulares, y como <strong>–</strong> a las que no participaron.
+            Partido nuevo — todas las {terms.pp} aparecen como <strong>Desconvocadas</strong>.
+            Marca como <strong>T</strong> a las titulares, <strong>S</strong> a las del banquillo, y deja en <strong>–</strong> a las que no participaron.
           </p>
         </div>
       )}

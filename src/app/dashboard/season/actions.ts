@@ -68,8 +68,6 @@ export async function saveAppearances(formData: FormData) {
       const yellowCards   = Number(formData.get(`yellow_${playerId}`) ?? 0)
       const redCards      = Number(formData.get(`red_${playerId}`) ?? 0)
       const goalsConceded = Number(formData.get(`goals_conceded_${playerId}`) ?? 0)
-      // Suplente con todo a cero = no participó; no guardar (evita contarla como jugadora del partido)
-      if (status !== 'titular' && minutes === 0 && goals === 0 && assists === 0 && yellowCards === 0 && redCards === 0 && goalsConceded === 0) return []
       const ratingVal = Number(formData.get(`rating_${playerId}`) ?? 0)
       const subMin = formData.get(`sub_minute_${playerId}`) as string
       return [{

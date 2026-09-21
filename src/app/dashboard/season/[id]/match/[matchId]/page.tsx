@@ -65,9 +65,9 @@ export default async function MatchPage({
     for (const r of rows ?? []) {
       convocatoriaStatuses[r.player_id] = r.status as 'titular' | 'convocada' | 'no_convocada'
     }
-  } else if ((appearances ?? []).length > 0) {
-    // Sin convocatoria formal pero partido ya guardado: sintetizar desde appearances.
-    // Jugadoras sin appearance = no_convocada; con appearance = titular o convocada.
+  } else {
+    // Sin convocatoria formal: sintetizar desde appearances.
+    // Partido nuevo sin appearances = todos no_convocada (el usuario marca quién juega).
     const appearedIds = new Set((appearances ?? []).map(a => a.player_id))
     const starterIds  = new Set((appearances ?? []).filter(a => a.starter).map(a => a.player_id))
     for (const p of players ?? []) {
@@ -611,6 +611,7 @@ export default async function MatchPage({
               teamName={team.name}
               logoUrl={team.logo_url}
               opponent={match.opponent}
+              rivalLogoUrl={(match as { rival_logo_url?: string | null }).rival_logo_url}
               goalsFor={match.goals_for}
               goalsAgainst={match.goals_against}
               playedAt={match.played_at}
