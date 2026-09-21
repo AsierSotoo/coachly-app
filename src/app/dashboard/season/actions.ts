@@ -62,19 +62,27 @@ export async function saveAppearances(formData: FormData) {
     const appearances: Appearance[] = playerIds.flatMap(playerId => {
       const status = formData.get(`status_${playerId}`) as string
       if (status === 'no_convocada') return []
+      const minutes       = Number(formData.get(`minutes_${playerId}`) ?? 0)
+      const goals         = Number(formData.get(`goals_${playerId}`) ?? 0)
+      const assists       = Number(formData.get(`assists_${playerId}`) ?? 0)
+      const yellowCards   = Number(formData.get(`yellow_${playerId}`) ?? 0)
+      const redCards      = Number(formData.get(`red_${playerId}`) ?? 0)
+      const goalsConceded = Number(formData.get(`goals_conceded_${playerId}`) ?? 0)
+      // Suplente con todo a cero = no participó; no guardar (evita contarla como jugadora del partido)
+      if (status !== 'titular' && minutes === 0 && goals === 0 && assists === 0 && yellowCards === 0 && redCards === 0 && goalsConceded === 0) return []
       const ratingVal = Number(formData.get(`rating_${playerId}`) ?? 0)
       const subMin = formData.get(`sub_minute_${playerId}`) as string
       return [{
         match_id: matchId,
         player_id: playerId,
         starter: status === 'titular',
-        minutes: Number(formData.get(`minutes_${playerId}`) ?? 0),
-        goals: Number(formData.get(`goals_${playerId}`) ?? 0),
-        assists: Number(formData.get(`assists_${playerId}`) ?? 0),
-        yellow_cards: Number(formData.get(`yellow_${playerId}`) ?? 0),
-        red_cards: Number(formData.get(`red_${playerId}`) ?? 0),
+        minutes,
+        goals,
+        assists,
+        yellow_cards: yellowCards,
+        red_cards:    redCards,
         rating: ratingVal > 0 ? ratingVal : null,
-        goals_conceded: Number(formData.get(`goals_conceded_${playerId}`) ?? 0),
+        goals_conceded: goalsConceded,
         sub_minute: subMin ? Number(subMin) : null,
         ...(formation ? { pitch_position: pitchPositions[playerId] ?? null } : {}),
       }]
@@ -122,9 +130,11 @@ export async function saveAppearances(formData: FormData) {
       }
     }
 
-    const notCalled = playerIds.filter(id => formData.get(`status_${id}`) === 'no_convocada')
-    if (notCalled.length > 0) {
-      await supabase.from('appearances').delete().eq('match_id', matchId).in('player_id', notCalled)
+    // Borrar appearances de: (a) no_convocadas y (b) suplentes con todo a cero que ya existían antes de este fix
+    const savedIds = new Set(appearances.map(a => a.player_id))
+    const toDelete = playerIds.filter(id => !savedIds.has(id))
+    if (toDelete.length > 0) {
+      await supabase.from('appearances').delete().eq('match_id', matchId).in('player_id', toDelete)
     }
 
     revalidatePath(`/dashboard/season/${seasonId}`)

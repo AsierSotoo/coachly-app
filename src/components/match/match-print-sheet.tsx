@@ -176,7 +176,7 @@ export function MatchPrintSheet({
         return { ...p, seqNum: SLOT_NUM[slot] ?? 99, line: lineFromSlot(slot) }
       }).sort((a, b) => a.seqNum - b.seqNum)
     : assignSeq(eleven)
-  const subsNum  = subs.map(p => ({ ...p, seqNum: p.number ?? 0 }))
+  const subsNum  = subs.map((p, i) => ({ ...p, seqNum: 12 + i }))
 
   const seqById = new Map(numbered.map(p => [p.id, p]))
 
