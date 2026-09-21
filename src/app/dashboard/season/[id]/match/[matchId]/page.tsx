@@ -60,13 +60,17 @@ export default async function MatchPage({
 
   const convocatoriaStatuses: Record<string, 'titular' | 'convocada' | 'no_convocada'> = {}
   const convocatoriaId = (convocatoria as { id?: string } | null)?.id ?? null
-  if (convocatoria) {
+  const hasAppearances = (appearances ?? []).length > 0
+
+  if (convocatoria && !hasAppearances) {
+    // Primera carga con convocatoria previa: usar sus estados como valores iniciales
     const rows = convocatoria.convocatoria_players as { player_id: string; status: string }[]
     for (const r of rows ?? []) {
       convocatoriaStatuses[r.player_id] = r.status as 'titular' | 'convocada' | 'no_convocada'
     }
   } else {
-    // Sin convocatoria formal: sintetizar desde appearances.
+    // Si ya hay appearances guardadas, o no hay convocatoria:
+    // sintetizar desde appearances para reflejar la realidad del partido.
     // Partido nuevo sin appearances = todos no_convocada (el usuario marca quién juega).
     const appearedIds = new Set((appearances ?? []).map(a => a.player_id))
     const starterIds  = new Set((appearances ?? []).filter(a => a.starter).map(a => a.player_id))
