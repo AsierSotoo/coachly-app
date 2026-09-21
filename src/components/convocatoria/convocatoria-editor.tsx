@@ -97,6 +97,33 @@ export function ConvocatoriaEditor({
   const mcCount = squad.filter(p => p.position === 'Centrocampista').length
   const dlCount = squad.filter(p => p.position === 'Delantera' || p.position === 'Delantero').length
 
+  // Numeración posicional para el PDF (esquema clásico de fútbol)
+  const PRINT_NUMS: Record<string, number[]> = {
+    gk:  [1, 13, 25],
+    def: [2, 3, 4, 5],
+    mid: [6, 8, 7, 10],   // 6·8 pivotes, 7·10 interiores/mediapunta
+    fwd: [9, 11, 7],
+  }
+  const posBucket = (pos: string | null): 'gk' | 'def' | 'mid' | 'fwd' | null => {
+    if (!pos) return null
+    const n = pos.toLowerCase()
+    if (n.includes('porter')) return 'gk'
+    if (n.includes('defens')) return 'def'
+    if (n.includes('centrocampist') || n.includes('medio')) return 'mid'
+    if (n.includes('delanter')) return 'fwd'
+    return null
+  }
+  const printNumMap = new Map<string, number | null>()
+  const posBuckets: Record<string, Player[]> = { gk: [], def: [], mid: [], fwd: [] }
+  for (const p of sortedSquad) {
+    const b = posBucket(p.position)
+    if (b) posBuckets[b].push(p)
+    else printNumMap.set(p.id, p.number)
+  }
+  for (const [b, ps] of Object.entries(posBuckets)) {
+    ps.forEach((p, i) => printNumMap.set(p.id, PRINT_NUMS[b][i] ?? p.number))
+  }
+
   const handleSave = () => {
     startSave(async () => {
       await Promise.all([
@@ -565,7 +592,7 @@ export function ConvocatoriaEditor({
         {sortedSquad.map(p => (
           <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.3rem 0.5rem', marginBottom: 2, breakInside: 'avoid' }}>
             <span style={{ width: 24, textAlign: 'right', fontWeight: 700, color: '#94a3b8', fontSize: '0.8rem', flexShrink: 0 }}>
-              {p.number !== null ? p.number : '—'}
+              {printNumMap.get(p.id) ?? '—'}
             </span>
             <span style={{ flex: 1, color: '#111713', fontSize: '0.875rem' }}>
               {p.name}
