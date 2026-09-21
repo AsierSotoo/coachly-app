@@ -116,7 +116,7 @@ export function MatchShareCard({
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
             {logoUrl ? (
               /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={logoUrl} alt={teamName} style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: 10, backgroundColor: 'white', padding: 4 }} />
+              <img src={logoUrl} alt={teamName} crossOrigin="anonymous" style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: 10, backgroundColor: 'white', padding: 4 }} />
             ) : (
               <div style={{ width: 52, height: 52, borderRadius: 10, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color: 'var(--accent)' }}>
                 {teamInitials(teamName)}
@@ -148,7 +148,7 @@ export function MatchShareCard({
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
             {rivalLogoUrl ? (
               /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={rivalLogoUrl} alt={opponent} style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: 10, backgroundColor: 'white', padding: 4 }} />
+              <img src={rivalLogoUrl} alt={opponent} crossOrigin="anonymous" style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: 10, backgroundColor: 'white', padding: 4 }} />
             ) : (
               <div style={{ width: 52, height: 52, borderRadius: 10, backgroundColor: '#1a231d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 800, color: '#89968e' }}>
                 {teamInitials(opponent)}
