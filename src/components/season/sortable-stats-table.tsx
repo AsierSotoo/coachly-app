@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -58,7 +58,7 @@ export function SortableStatsTable({ stats, playerLabel, teamId }: { stats: Play
     const active = sortKey === col
     return (
       <th className={`px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-center cursor-pointer select-none hover:opacity-80 transition-opacity${className ? ` ${className}` : ''}`}
-        style={{ color: active ? 'var(--accent)' : '#89968e' }}
+        style={{ color: active ? 'var(--accent)' : 'var(--tx-3)' }}
         onClick={() => toggleSort(col)}
         title={title}>
         {label}
@@ -71,13 +71,13 @@ export function SortableStatsTable({ stats, playerLabel, teamId }: { stats: Play
     <div className="relative overflow-x-auto">
       {/* Scroll hint gradient */}
       <div className="pointer-events-none absolute right-0 top-0 h-full w-8 sm:hidden"
-        style={{ background: 'linear-gradient(to right, transparent, #111713)' }} />
+        style={{ background: 'linear-gradient(to right, transparent, var(--bg-card))' }} />
       <table className="w-full text-left" style={{ minWidth: 460 }}>
         <thead>
-          <tr className="border-b border-[#253028]" style={{ backgroundColor: '#111713' }}>
-            <th className="px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-center" style={{ color: '#89968e' }}>#</th>
-            <th className="px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: '#89968e' }}>{playerLabel}</th>
-            <th className="hidden sm:table-cell px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-center" style={{ color: '#89968e' }}>Pos</th>
+          <tr className="border-b" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card-2)' }}>
+            <th className="px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-center" style={{ color: 'var(--tx-3)' }}>#</th>
+            <th className="px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-left" style={{ color: 'var(--tx-3)' }}>{playerLabel}</th>
+            <th className="hidden sm:table-cell px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-center" style={{ color: 'var(--tx-3)' }}>Pos</th>
             <ColHeader label="PJ"   col="gamesPlayed" title="Partidos jugados" />
             <ColHeader label="Min'" col="minutes"     title="Minutos totales" className="hidden sm:table-cell" />
             <ColHeader label="G"    col="goals"       title="Goles" />
@@ -93,48 +93,45 @@ export function SortableStatsTable({ stats, playerLabel, teamId }: { stats: Play
             const g90raw = computeG90(s)
             const g90 = g90raw >= 0 ? g90raw.toFixed(1) : '—'
             const posShort = s.position ? s.position.slice(0, 3) : '—'
+            const rankColor = i === 0 ? 'var(--accent)' : i === 1 ? 'var(--tx-2)' : i === 2 ? 'var(--tx-3)' : 'var(--tx-4)'
             return (
-              <tr key={s.playerId} className="border-b border-[#253028] last:border-0"
-                style={{ backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(15,23,42,0.4)' }}>
+              <tr key={s.playerId} className="border-b last:border-0" style={{ borderColor: 'var(--bdr)', backgroundColor: i % 2 === 0 ? 'transparent' : 'var(--bg-card-2)' }}>
                 <td className="px-3 py-2.5 text-center">
-                  <span className="text-[11px] font-black"
-                    style={{ color: i === 0 ? 'var(--accent)' : i === 1 ? '#89968e' : i === 2 ? '#9d8050' : '#334155' }}>
-                    {i + 1}
-                  </span>
+                  <span className="text-[11px] font-black" style={{ color: rankColor }}>{i + 1}</span>
                 </td>
                 <td className="px-3 py-2.5">
                   {teamId ? (
                     <Link href={`/dashboard/team/${teamId}/players/${s.playerId}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                       <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" className="w-7 h-7 rounded-lg flex-shrink-0" />
-                      <span className="text-xs font-semibold text-white truncate hover:underline" style={{ maxWidth: 110 }}>{s.name}</span>
+                      <span className="text-xs font-semibold truncate hover:underline" style={{ maxWidth: 110, color: 'var(--tx)' }}>{s.name}</span>
                     </Link>
                   ) : (
                     <div className="flex items-center gap-2">
                       <PlayerAvatar name={s.name} photoUrl={s.photoUrl} position={s.position} size="sm" className="w-7 h-7 rounded-lg flex-shrink-0" />
-                      <span className="text-xs font-semibold text-white truncate" style={{ maxWidth: 110 }}>{s.name}</span>
+                      <span className="text-xs font-semibold truncate" style={{ maxWidth: 110, color: 'var(--tx)' }}>{s.name}</span>
                     </div>
                   )}
                 </td>
                 <td className="hidden sm:table-cell px-3 py-2.5 text-center">
-                  <span className="text-[10px] font-bold uppercase" style={{ color: '#637168' }}>{posShort}</span>
+                  <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--tx-3)' }}>{posShort}</span>
                 </td>
-                <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: '#89968e' }}>{s.gamesPlayed}</td>
-                <td className="hidden sm:table-cell px-3 py-2.5 text-center text-xs" style={{ color: '#637168' }}>{s.minutes}</td>
-                <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.goals > 0 ? 'var(--accent)' : '#334155' }}>{s.goals}</td>
+                <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: 'var(--tx-3)' }}>{s.gamesPlayed}</td>
+                <td className="hidden sm:table-cell px-3 py-2.5 text-center text-xs" style={{ color: 'var(--tx-3)' }}>{s.minutes}</td>
+                <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.goals > 0 ? 'var(--accent)' : 'var(--tx-4)' }}>{s.goals}</td>
                 <td className="hidden sm:table-cell px-3 py-2.5 text-center text-xs font-bold"
-                  style={{ color: g90raw >= 0 && s.goals > 0 ? '#a3e635' : '#334155' }}>{g90}</td>
-                <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.assists > 0 ? '#facc15' : '#334155' }}>{s.assists}</td>
+                  style={{ color: g90raw >= 0 && s.goals > 0 ? 'var(--accent)' : 'var(--tx-4)' }}>{g90}</td>
+                <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: s.assists > 0 ? 'var(--c-goals)' : 'var(--tx-4)' }}>{s.assists}</td>
                 <td className="px-3 py-2.5 text-center text-xs font-bold"
-                  style={{ color: s.goals + s.assists > 0 ? '#edf2ee' : '#334155' }}>{s.goals + s.assists}</td>
+                  style={{ color: s.goals + s.assists > 0 ? 'var(--tx)' : 'var(--tx-4)' }}>{s.goals + s.assists}</td>
                 <td className="px-3 py-2.5 text-center">
                   {s.yellowCards > 0
-                    ? <span className="text-xs font-bold" style={{ color: s.yellowCards >= YELLOW_WARNING ? '#facc15' : '#89968e' }}>{s.yellowCards}</span>
-                    : <span style={{ color: '#253028' }}>—</span>}
+                    ? <span className="text-xs font-bold" style={{ color: s.yellowCards >= YELLOW_WARNING ? 'var(--c-warn)' : 'var(--tx-3)' }}>{s.yellowCards}</span>
+                    : <span style={{ color: 'var(--bdr-strong)' }}>—</span>}
                 </td>
                 <td className="px-3 py-2.5 text-center">
                   {s.redCards > 0
-                    ? <span className="text-xs font-bold" style={{ color: '#f87171' }}>{s.redCards}</span>
-                    : <span style={{ color: '#253028' }}>—</span>}
+                    ? <span className="text-xs font-bold" style={{ color: 'var(--c-danger)' }}>{s.redCards}</span>
+                    : <span style={{ color: 'var(--bdr-strong)' }}>—</span>}
                 </td>
               </tr>
             )

@@ -60,7 +60,7 @@ export default async function NewTrainingPage({
             </label>
             <input name="date" type="date" required defaultValue={defaultDate}
               className="w-full bg-transparent text-base font-semibold focus:outline-none"
-              style={{ color: 'var(--tx)', colorScheme: 'dark' }} />
+              style={{ color: 'var(--tx)', colorScheme: 'auto' }} />
           </div>
 
           {/* Hora */}
@@ -70,7 +70,7 @@ export default async function NewTrainingPage({
             </label>
             <input name="start_time" type="time"
               className="bg-transparent text-base font-semibold focus:outline-none"
-              style={{ color: 'var(--tx)', colorScheme: 'dark' }} />
+              style={{ color: 'var(--tx)', colorScheme: 'auto' }} />
           </div>
 
           {/* Título con chips rápidos */}

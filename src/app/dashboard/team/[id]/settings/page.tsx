@@ -175,7 +175,7 @@ export default async function TeamSettingsPage({
               </label>
               <select id="gender" name="gender" defaultValue={team.gender ?? ''}
                 className="rounded-xl px-4 text-sm focus:outline-none focus:border-[var(--accent)]"
-                style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)', colorScheme: 'dark' }}>
+                style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)', colorScheme: 'auto' }}>
                 <option value="">Sin especificar (usa femenino por defecto)</option>
                 <option value="Femenino">Femenino — jugadoras, porteras, delanteras...</option>
                 <option value="Masculino">Masculino — jugadores, porteros, delanteros...</option>
@@ -193,13 +193,13 @@ export default async function TeamSettingsPage({
               <input id="category" name="category" type="text"
                 defaultValue={team.category ?? ''}
                 placeholder="ej. Primera Autonómica"
-                className="rounded-xl px-4 text-sm focus:outline-none placeholder:text-[#3e4d42] focus:border-[var(--accent)]"
+                className="rounded-xl px-4 text-sm focus:outline-none placeholder:text-[var(--tx-4)] focus:border-[var(--accent)]"
                 style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)' }}
               />
             </div>
 
             {sp.error && (
-              <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm" style={{ color: '#ffb4ab' }}>
+              <p className="rounded-xl border px-4 py-3 text-sm" style={{ borderColor: 'var(--c-danger-bdr)', backgroundColor: 'var(--c-danger-bg)', color: 'var(--c-danger)' }}>
                 {sp.error}
               </p>
             )}

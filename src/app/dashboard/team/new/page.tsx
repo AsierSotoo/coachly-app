@@ -62,7 +62,7 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
               </label>
               <select id="gender" name="gender" required
                 className="rounded-xl px-4 text-sm focus:outline-none focus:border-[var(--accent)]"
-                style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)', colorScheme: 'dark' }}>
+                style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)', colorScheme: 'auto' }}>
                 <option value="">Selecciona el género...</option>
                 <option value="Femenino">Femenino — jugadoras, porteras, delanteras...</option>
                 <option value="Masculino">Masculino — jugadores, porteros, delanteros...</option>
@@ -82,7 +82,7 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
               </label>
               <input id="category" name="category" type="text"
                 placeholder="ej. Primera Autonómica"
-                className="rounded-xl px-4 text-sm focus:outline-none focus:border-[var(--accent)] placeholder:text-[#3e4d42]"
+                className="rounded-xl px-4 text-sm focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--tx-4)]"
                 style={{ minHeight: 44, backgroundColor: 'var(--bg-input)', border: '1px solid var(--bdr-strong)', color: 'var(--tx)' }}
               />
             </div>

@@ -84,7 +84,7 @@ export default async function TrainingSessionPage({
                   <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Fecha</label>
                   <input name="date" type="date" required defaultValue={session.date}
                     className="bg-transparent text-sm focus:outline-none"
-                    style={{ color: 'var(--tx)', colorScheme: 'dark' }} />
+                    style={{ color: 'var(--tx)', colorScheme: 'auto' }} />
                 </div>
 
                 <div className="flex flex-col gap-1 px-5 py-4">
@@ -94,7 +94,7 @@ export default async function TrainingSessionPage({
                   <input name="start_time" type="time"
                     defaultValue={session.start_time?.slice(0, 5) ?? ''}
                     className="bg-transparent text-sm focus:outline-none"
-                    style={{ color: 'var(--tx)', colorScheme: 'dark' }} />
+                    style={{ color: 'var(--tx)', colorScheme: 'auto' }} />
                 </div>
 
                 <div className="flex flex-col gap-1 px-5 py-4">
@@ -103,7 +103,7 @@ export default async function TrainingSessionPage({
                   </label>
                   <input name="title" type="text" placeholder="Ej: Táctica, Físico, Rondos..."
                     defaultValue={session.title ?? ''}
-                    className="bg-transparent text-sm focus:outline-none placeholder:text-[#3e4d42]"
+                    className="bg-transparent text-sm focus:outline-none placeholder:text-[var(--tx-4)]"
                     style={{ color: 'var(--tx)' }} />
                 </div>
 
@@ -113,7 +113,7 @@ export default async function TrainingSessionPage({
                   </label>
                   <input name="duration_min" type="number" min="1" max="300" placeholder="90"
                     defaultValue={session.duration_min ?? ''}
-                    className="bg-transparent text-sm focus:outline-none placeholder:text-[#3e4d42] w-24"
+                    className="bg-transparent text-sm focus:outline-none placeholder:text-[var(--tx-4)] w-24"
                     style={{ color: 'var(--tx)' }} />
                 </div>
 
@@ -122,7 +122,7 @@ export default async function TrainingSessionPage({
                   <textarea name="notes" rows={5}
                     placeholder="Qué se entrenó, sensaciones del equipo, notas para el próximo día..."
                     defaultValue={session.notes ?? ''}
-                    className="bg-transparent text-sm resize-y focus:outline-none placeholder:text-[#3e4d42] leading-relaxed"
+                    className="bg-transparent text-sm resize-y focus:outline-none placeholder:text-[var(--tx-4)] leading-relaxed"
                     style={{ color: 'var(--tx)' }} />
                 </div>
 
