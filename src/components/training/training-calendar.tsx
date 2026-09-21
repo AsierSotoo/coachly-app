@@ -104,27 +104,27 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
           { label: 'Este mes', value: monthSessions.length + monthMatches.length, sub: 'actividades' },
           { label: 'Tiempo total', value: totalHours, sub: totalMin > 0 ? 'entrenado' : 'sin duración' },
         ].map(({ label, value, sub }) => (
-          <div key={label} className="rounded-2xl border p-4 text-center" style={{ backgroundColor: '#111713', borderColor: '#2a342d' }}>
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#89968e' }}>{label}</p>
-            <p className="text-xl font-black text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{value}</p>
-            <p className="text-[10px]" style={{ color: '#89968e' }}>{sub}</p>
+          <div key={label} className="rounded-2xl border p-4 text-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--tx-2)' }}>{label}</p>
+            <p className="text-xl font-black" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>{value}</p>
+            <p className="text-[10px]" style={{ color: 'var(--tx-2)' }}>{sub}</p>
           </div>
         ))}
       </div>
 
       {/* ── Calendario ── */}
-      <div className="rounded-3xl border overflow-hidden" style={{ backgroundColor: '#111713', borderColor: '#253028' }}>
+      <div className="rounded-3xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)' }}>
 
         {/* Navegación mes */}
-        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: '#253028' }}>
-          <button onClick={prev} type="button" className="p-3 rounded-xl hover:bg-[#253028] transition-colors cursor-pointer" style={{ color: '#637168' }}>
+        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--bdr)' }}>
+          <button onClick={prev} type="button" className="p-3 rounded-xl hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer" style={{ color: 'var(--tx-3)' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 22 }}>chevron_left</span>
           </button>
           <div className="text-center">
-            <p className="text-base font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>{monthLabel}</p>
+            <p className="text-base font-bold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>{monthLabel}</p>
             <div className="flex items-center justify-center gap-4 mt-1">
-              <span className="flex items-center gap-1.5 text-[11px] font-bold" style={{ color: '#f59e0b' }}>
-                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: '#f59e0b' }} />
+              <span className="flex items-center gap-1.5 text-[11px] font-bold" style={{ color: 'var(--c-warn)' }}>
+                <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: 'var(--c-warn)' }} />
                 {monthMatches.length} partido{monthMatches.length !== 1 ? 's' : ''}
               </span>
               <span className="flex items-center gap-1.5 text-[11px] font-bold" style={{ color: 'var(--accent)' }}>
@@ -133,7 +133,7 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
               </span>
             </div>
           </div>
-          <button onClick={next} type="button" className="p-3 rounded-xl hover:bg-[#253028] transition-colors cursor-pointer" style={{ color: '#637168' }}>
+          <button onClick={next} type="button" className="p-3 rounded-xl hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer" style={{ color: 'var(--tx-3)' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 22 }}>chevron_right</span>
           </button>
         </div>
@@ -142,14 +142,14 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
         <div className="grid grid-cols-7">
           {DAYS_ES.map((d, i) => (
             <div key={d} className={`py-2.5 text-center text-[11px] font-bold uppercase border-b ${i < 6 ? 'border-r' : ''}`}
-              style={{ color: i >= 5 ? '#d97706' : '#637168', borderColor: '#253028' }}>{d}</div>
+              style={{ color: i >= 5 ? '#d97706' : 'var(--tx-3)', borderColor: 'var(--bdr)' }}>{d}</div>
           ))}
         </div>
 
         {/* Cuadrícula */}
         <div className="grid grid-cols-7">
           {Array.from({ length: startOffset }).map((_, i) => (
-            <div key={`e${i}`} className={`border-b ${i < 6 ? 'border-r' : ''}`} style={{ borderColor: '#253028', minHeight: 72 }} />
+            <div key={`e${i}`} className={`border-b ${i < 6 ? 'border-r' : ''}`} style={{ borderColor: 'var(--bdr)', minHeight: 72 }} />
           ))}
           {Array.from({ length: daysInMonth }).map((_, i) => {
             const day = i + 1
@@ -160,17 +160,17 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
             const hasM = dayMatches.length > 0
             const isToday    = isThisMonth && day === todayDay
             const isWeekend  = col === 5 || col === 6
-            const bgColor = hasS && hasM ? 'rgba(34,197,94,0.06)' : hasS ? 'rgba(34,197,94,0.06)' : hasM ? 'rgba(245,158,11,0.06)' : 'transparent'
+            const bgColor = hasS && hasM ? 'rgba(var(--accent-rgb),0.06)' : hasS ? 'rgba(var(--accent-rgb),0.06)' : hasM ? 'var(--c-warn-bg)' : 'transparent'
 
             return (
               <div key={day}
                 className={`border-b flex flex-col items-center pt-2.5 pb-2 gap-1 ${col < 6 ? 'border-r' : ''}`}
-                style={{ borderColor: '#253028', minHeight: 72, backgroundColor: bgColor }}>
+                style={{ borderColor: 'var(--bdr)', minHeight: 72, backgroundColor: bgColor }}>
 
                 <span className="text-sm flex items-center justify-center w-7 h-7 rounded-full transition-all"
                   style={{
                     backgroundColor: isToday ? 'var(--accent)' : 'transparent',
-                    color: isToday ? 'var(--accent-fg)' : hasS || hasM ? '#f1f5f9' : isWeekend ? '#b45309' : '#637168',
+                    color: isToday ? 'var(--accent-fg)' : hasS || hasM ? 'var(--tx)' : isWeekend ? '#b45309' : 'var(--tx-3)',
                     fontWeight: isToday || hasS || hasM ? 700 : 400,
                   }}>
                   {day}
@@ -186,7 +186,7 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                   )}
                   {hasM && (
                     <span className="flex items-center justify-center w-5 h-5">
-                      <span className="w-2 h-2 rounded-full block" style={{ backgroundColor: '#f59e0b' }} title={`vs ${dayMatches[0].opponent}`} />
+                      <span className="w-2 h-2 rounded-full block" style={{ backgroundColor: 'var(--c-warn)' }} title={`vs ${dayMatches[0].opponent}`} />
                     </span>
                   )}
                 </div>
@@ -196,20 +196,20 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
         </div>
 
         {/* Leyenda */}
-        <div className="flex items-center justify-center gap-6 px-5 py-3 border-t" style={{ borderColor: '#253028', backgroundColor: '#0b100d' }}>
+        <div className="flex items-center justify-center gap-6 px-5 py-3 border-t" style={{ borderColor: 'var(--bdr)', backgroundColor: 'var(--bg-card-2)' }}>
           <span className="flex items-center gap-2 text-[11px] font-semibold" style={{ color: 'var(--accent)' }}>
             <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: 'var(--accent)' }} /> Entrenamiento
           </span>
-          <span className="flex items-center gap-2 text-[11px] font-semibold" style={{ color: '#f59e0b' }}>
-            <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: '#f59e0b' }} /> Partido
+          <span className="flex items-center gap-2 text-[11px] font-semibold" style={{ color: 'var(--c-warn)' }}>
+            <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: 'var(--c-warn)' }} /> Partido
           </span>
         </div>
       </div>
 
       {/* ── Lista del mes ── */}
-      <div className="rounded-3xl border overflow-hidden" style={{ backgroundColor: '#111713', borderColor: '#253028' }}>
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b" style={{ borderColor: '#253028' }}>
-          <h3 className="text-sm font-bold text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+      <div className="rounded-3xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)' }}>
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b" style={{ borderColor: 'var(--bdr)' }}>
+          <h3 className="text-sm font-bold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
             {monthLabel} &mdash; {sortedM.length + sortedS.length} actividad{(sortedM.length + sortedS.length) !== 1 ? 'es' : ''}
           </h3>
           <div className="flex items-center gap-2 flex-wrap">
@@ -221,7 +221,7 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                 />
                 <button type="button" onClick={handleCopy}
                   className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold border cursor-pointer transition-all active:scale-95 min-h-[44px]"
-                  style={{ backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee' }}>
+                  style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 15 }}>content_copy</span>
                   WhatsApp
                 </button>
@@ -239,19 +239,19 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
 
         {sortedM.length === 0 && sortedS.length === 0 ? (
           <div className="py-14 text-center">
-            <span className="material-symbols-outlined text-5xl block mb-2" style={{ color: '#253028' }}>calendar_month</span>
-            <p className="text-sm" style={{ color: '#637168' }}>Sin actividades este mes</p>
+            <span className="material-symbols-outlined text-5xl block mb-2" style={{ color: 'var(--bdr)' }}>calendar_month</span>
+            <p className="text-sm" style={{ color: 'var(--tx-3)' }}>Sin actividades este mes</p>
           </div>
         ) : (
           <div>
             {/* Partidos */}
             {sortedM.length > 0 && (
               <>
-                <div className="flex items-center gap-2 px-5 py-2.5 border-b" style={{ borderColor: '#253028', backgroundColor: 'rgba(245,158,11,0.06)' }}>
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#f59e0b' }} />
-                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#f59e0b' }}>Partidos</p>
+                <div className="flex items-center gap-2 px-5 py-2.5 border-b" style={{ borderColor: 'var(--bdr)', backgroundColor: 'var(--c-warn-bg)' }}>
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--c-warn)' }} />
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--c-warn)' }}>Partidos</p>
                 </div>
-                <ul className="divide-y" style={{ borderColor: '#253028' }}>
+                <ul className="divide-y" style={{ borderColor: 'var(--bdr)' }}>
                   {sortedM.map(m => {
                     const d = isoDate(m.played_at)
                     const dayStr = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
@@ -262,30 +262,30 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
                     return (
                       <li key={m.id}>
                         <Link href={`/dashboard/season/${seasonId}/match/${m.id}`}
-                          className="flex items-center gap-3 px-5 py-3.5 hover:bg-[#111713] transition-colors group">
+                          className="flex items-center gap-3 px-5 py-3.5 hover:bg-[var(--bg-elevated)] transition-colors group">
                           <span className="w-2 h-2 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: isScheduled ? '#f59e0b' : won ? 'var(--accent)' : lost ? '#f87171' : '#94a3b8' }} />
+                            style={{ backgroundColor: isScheduled ? 'var(--c-warn)' : won ? 'var(--accent)' : lost ? 'var(--c-danger)' : 'var(--tx-3)' }} />
                           <div className="flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <p className="text-sm font-bold text-white">{m.home ? 'vs' : '@'} {m.opponent}</p>
+                              <p className="text-sm font-bold" style={{ color: 'var(--tx)' }}>{m.home ? 'vs' : '@'} {m.opponent}</p>
                               {isScheduled ? (
                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                                  style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#f59e0b' }}>
+                                  style={{ backgroundColor: 'var(--c-warn-bg)', color: 'var(--c-warn)' }}>
                                   Programado
                                 </span>
                               ) : (
                                 <span className="text-[10px] font-black px-2 py-0.5 rounded-full"
                                   style={{
-                                    backgroundColor: won ? 'rgba(34,197,94,0.15)' : lost ? 'rgba(248,113,113,0.15)' : 'rgba(148,163,184,0.15)',
-                                    color: won ? 'var(--accent)' : lost ? '#f87171' : '#94a3b8',
+                                    backgroundColor: won ? 'rgba(var(--accent-rgb),0.12)' : lost ? 'var(--c-danger-bg)' : 'var(--bg-elevated)',
+                                    color: won ? 'var(--accent)' : lost ? 'var(--c-danger)' : 'var(--tx-3)',
                                   }}>
                                   {m.goals_for}-{m.goals_against}
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs capitalize mt-0.5" style={{ color: '#637168' }}>{dayStr}</p>
+                            <p className="text-xs capitalize mt-0.5" style={{ color: 'var(--tx-3)' }}>{dayStr}</p>
                           </div>
-                          <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#637168', fontSize: 16 }}>chevron_right</span>
+                          <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--tx-3)', fontSize: 16 }}>chevron_right</span>
                         </Link>
                       </li>
                     )
@@ -296,35 +296,35 @@ export function TrainingCalendar({ seasonId, teamName, teamLogo, sessions, match
 
             {/* Entrenamientos */}
             {sortedS.length > 0 && (
-              <div className={sortedM.length > 0 ? 'border-t' : ''} style={{ borderColor: '#253028' }}>
-                <div className="flex items-center gap-2 px-5 py-2.5 border-b" style={{ borderColor: '#253028', backgroundColor: 'rgba(34,197,94,0.06)' }}>
+              <div className={sortedM.length > 0 ? 'border-t' : ''} style={{ borderColor: 'var(--bdr)' }}>
+                <div className="flex items-center gap-2 px-5 py-2.5 border-b" style={{ borderColor: 'var(--bdr)', backgroundColor: 'rgba(var(--accent-rgb),0.06)' }}>
                   <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
                   <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--accent)' }}>Entrenamientos</p>
                 </div>
-                <ul className="divide-y" style={{ borderColor: '#253028' }}>
+                <ul className="divide-y" style={{ borderColor: 'var(--bdr)' }}>
                   {sortedS.map(s => {
                     const d = isoDate(s.date)
                     const dayStr = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
                     return (
                       <li key={s.id}>
                         <Link href={`/dashboard/season/${seasonId}/trainings/${s.id}`}
-                          className="flex items-center gap-3 px-5 py-3.5 hover:bg-[#111713] transition-colors group">
+                          className="flex items-center gap-3 px-5 py-3.5 hover:bg-[var(--bg-elevated)] transition-colors group">
                           <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--accent)' }} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <p className="text-sm font-bold text-white capitalize">
+                              <p className="text-sm font-bold capitalize" style={{ color: 'var(--tx)' }}>
                                 {dayStr}{s.title ? ` — ${s.title}` : ''}
                               </p>
                               {s.duration_min && (
                                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded"
-                                  style={{ backgroundColor: 'rgba(75,226,119,0.1)', color: 'var(--accent)' }}>
+                                  style={{ backgroundColor: 'rgba(var(--accent-rgb),0.1)', color: 'var(--accent)' }}>
                                   {s.duration_min} min
                                 </span>
                               )}
                             </div>
-                            {s.notes && <p className="text-xs mt-0.5 truncate" style={{ color: '#334155' }}>{s.notes}</p>}
+                            {s.notes && <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--tx-2)' }}>{s.notes}</p>}
                           </div>
-                          <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: '#637168', fontSize: 16 }}>chevron_right</span>
+                          <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--tx-3)', fontSize: 16 }}>chevron_right</span>
                         </Link>
                       </li>
                     )

@@ -46,15 +46,15 @@ export default async function CalendarPage({
       <main className="max-w-3xl mx-auto px-4 py-6 pb-32 md:pb-10">
         <div className="mb-6">
           <Link href={`/dashboard/season/${seasonId}`}
-            className="flex items-center gap-1 text-xs mb-3 hover:text-green-400 transition-colors"
-            style={{ color: '#637168' }}>
+            className="flex items-center gap-1 text-xs mb-3 transition-colors"
+            style={{ color: 'var(--tx-3)' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
             {season.name}
           </Link>
-          <h1 className="text-2xl font-black text-white" style={{ fontFamily: 'Sora, sans-serif' }}>
+          <h1 className="text-2xl font-black" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
             Calendario
           </h1>
-          <p className="text-xs mt-0.5" style={{ color: '#637168' }}>{team.name} · {season.name}</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--tx-3)' }}>{team.name} · {season.name}</p>
         </div>
 
         <TrainingCalendar
