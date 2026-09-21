@@ -45,23 +45,23 @@
 
 /* ── Design tokens — light ────────────────────────────────────── */
 :root[data-theme="light"] {
-  --bg:         #8fa99a;
-  --bg-card:    #f0f6f2;
-  --bg-card-2:  #e8f1ea;
-  --bg-elevated:#dfeae1;
-  --bg-input:   #edf4ef;
-  --bdr-strong: #5e8271;
-  --bdr:        #78987f;
-  --bdr-subtle: #9ab5a2;
-  --tx:         #071810;
-  --tx-2:       #1c3826;
-  --tx-3:       #3a5a47;
-  --tx-4:       #5e7a68;
-  --accent:        #097a30;
+  --bg:         #eef2ef;
+  --bg-card:    #ffffff;
+  --bg-card-2:  #f5f8f6;
+  --bg-elevated:#eaf0ec;
+  --bg-input:   #f2f6f3;
+  --bdr-strong: #c4d0c9;
+  --bdr:        #d5dfd9;
+  --bdr-subtle: #e3eae6;
+  --tx:         #0d1f14;
+  --tx-2:       #364d3e;
+  --tx-3:       #5e7a6a;
+  --tx-4:       #8fa89d;
+  --accent:        #0a7a30;
   --accent-fg:     #ffffff;
-  --accent-subtle: rgba(9,122,48,0.1);
-  --accent-rgb:    9,122,48;
-  --shadow-card: 0 4px 16px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
+  --accent-subtle: rgba(10,122,48,0.09);
+  --accent-rgb:    10,122,48;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
   /* Semantic status colors — light-mode overrides */
   --c-warn:        #92400e;
   --c-warn-sub:    rgba(120,53,15,0.75);
@@ -105,8 +105,8 @@ body::before {
 }
 [data-theme="light"] body::before {
   background:
-    radial-gradient(ellipse 80% 50% at 70% -5%, rgba(13,140,62,0.06) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 30% at 10% 90%, rgba(13,140,62,0.03) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 50% at 70% -5%, rgba(10,122,48,0.04) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 30% at 10% 90%, rgba(10,122,48,0.02) 0%, transparent 60%);
 }
 
 /* ── Inputs / Selects / Textareas ─────────────────────────────────────────── */
