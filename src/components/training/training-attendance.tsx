@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -32,31 +32,31 @@ function PlayerRow({
   const selectValue = isOther ? 'Otra...' : (entry.reason ?? '')
 
   return (
-    <li className="px-4 py-3 border-b last:border-0" style={{ borderColor: '#253028' }}>
+    <li className="px-4 py-3 border-b last:border-0" style={{ borderColor: 'var(--bdr)' }}>
       {/* Fila principal */}
       <div className="flex items-center gap-3">
         {/* Avatar */}
-        <div className="w-9 h-9 rounded-lg overflow-hidden border flex-shrink-0" style={{ borderColor: '#2a342d', backgroundColor: '#1a231d' }}>
+        <div className="w-9 h-9 rounded-lg overflow-hidden border flex-shrink-0" style={{ borderColor: 'var(--bdr)', backgroundColor: 'var(--bg-elevated)' }}>
           <PlayerAvatar name={player.name} photoUrl={player.photo_url} position={player.position ?? undefined} size="sm" />
         </div>
 
         {/* Nombre + dorsal */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-white truncate">{player.name}</p>
+          <p className="text-sm font-semibold truncate" style={{ color: 'var(--tx)' }}>{player.name}</p>
           {player.number !== null && (
-            <p className="text-[10px]" style={{ color: '#637168' }}>#{player.number}</p>
+            <p className="text-[10px]" style={{ color: 'var(--tx-3)' }}>#{player.number}</p>
           )}
         </div>
 
         {/* Toggles Presente / Ausente */}
-        <div className="flex rounded-xl overflow-hidden border flex-shrink-0" style={{ borderColor: '#2a342d' }}>
+        <div className="flex rounded-xl overflow-hidden border flex-shrink-0" style={{ borderColor: 'var(--bdr)' }}>
           <button
             type="button"
             onClick={() => onChange({ attended: true, reason: null })}
             className="flex items-center gap-1 px-3 py-2.5 text-xs font-bold transition-all"
             style={{
-              backgroundColor: entry.attended ? 'var(--accent)' : '#111713',
-              color: entry.attended ? 'white' : '#637168',
+              backgroundColor: entry.attended ? 'var(--accent)' : 'transparent',
+              color: entry.attended ? 'var(--accent-fg)' : 'var(--tx-3)',
               minHeight: 44,
             }}
           >
@@ -70,9 +70,9 @@ function PlayerRow({
             onClick={() => onChange({ attended: false, reason: null })}
             className="flex items-center gap-1 px-3 py-2.5 text-xs font-bold transition-all border-l"
             style={{
-              backgroundColor: !entry.attended ? 'rgba(239,68,68,0.15)' : '#111713',
-              color: !entry.attended ? '#f87171' : '#637168',
-              borderColor: '#2a342d',
+              backgroundColor: !entry.attended ? 'var(--c-danger-bg)' : 'transparent',
+              color: !entry.attended ? 'var(--c-danger)' : 'var(--tx-3)',
+              borderColor: 'var(--bdr)',
               minHeight: 44,
             }}
           >
@@ -95,9 +95,9 @@ function PlayerRow({
               onClick={() => onChange({ attended: false, reason: r })}
               className="px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all"
               style={{
-                backgroundColor: selectValue === r ? 'rgba(239,68,68,0.15)' : '#111713',
-                borderColor: selectValue === r ? 'rgba(239,68,68,0.4)' : '#2a342d',
-                color: selectValue === r ? '#f87171' : '#637168',
+                backgroundColor: selectValue === r ? 'var(--c-danger-bg)' : 'transparent',
+                borderColor: selectValue === r ? 'var(--c-danger-bdr)' : 'var(--bdr)',
+                color: selectValue === r ? 'var(--c-danger)' : 'var(--tx-3)',
               }}
             >
               {r}
@@ -110,9 +110,9 @@ function PlayerRow({
             onClick={() => onChange({ attended: false, reason: isOther ? entry.reason : '' })}
             className="px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all"
             style={{
-              backgroundColor: isOther ? 'rgba(239,68,68,0.15)' : '#111713',
-              borderColor: isOther ? 'rgba(239,68,68,0.4)' : '#2a342d',
-              color: isOther ? '#f87171' : '#637168',
+              backgroundColor: isOther ? 'var(--c-danger-bg)' : 'transparent',
+              borderColor: isOther ? 'var(--c-danger-bdr)' : 'var(--bdr)',
+              color: isOther ? 'var(--c-danger)' : 'var(--tx-3)',
             }}
           >
             Otra...
@@ -128,7 +128,7 @@ function PlayerRow({
               onChange={e => onChange({ attended: false, reason: e.target.value })}
               className="mt-1 w-full rounded-xl border px-3 py-2 text-sm focus:outline-none transition-colors"
               style={{
-                backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee',
+                backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr)', color: 'var(--tx)',
                 minHeight: 'auto', fontSize: 14,
               }}
             />
@@ -166,12 +166,12 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
   }
 
   return (
-    <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: '#111713', borderColor: '#253028' }}>
+    <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3.5 border-b" style={{ borderColor: '#253028', backgroundColor: '#111713' }}>
+      <div className="flex items-center justify-between px-4 py-3.5 border-b" style={{ borderColor: 'var(--bdr)', backgroundColor: 'var(--bg-card-2)' }}>
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined" style={{ color: '#89968e', fontSize: 18 }}>groups</span>
-          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Asistencia</p>
+          <span className="material-symbols-outlined" style={{ color: 'var(--tx-2)', fontSize: 18 }}>groups</span>
+          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Asistencia</p>
         </div>
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: 'var(--accent)' }}>
@@ -179,8 +179,8 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
             {presentCount} presentes
           </span>
           {absentCount > 0 && (
-            <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#f87171' }}>
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#ef4444' }} />
+            <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: 'var(--c-danger)' }}>
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--c-danger)' }} />
               {absentCount} ausentes
             </span>
           )}
@@ -201,7 +201,7 @@ export function TrainingAttendance({ sessionId, seasonId, players, initial }: Pr
       </ul>
 
       {/* Footer guardar */}
-      <div className="px-4 py-3 border-t" style={{ borderColor: '#253028' }}>
+      <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--bdr)' }}>
         <button
           type="button"
           onClick={handleSave}
