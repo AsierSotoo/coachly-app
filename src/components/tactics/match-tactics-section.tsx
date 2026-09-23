@@ -161,7 +161,7 @@ export function MatchTacticsSection({
                           onChange={e => setExtra(section.id, row.id, e.target.value)}
                           placeholder="Jugada…"
                           className={inputCls}
-                          style={{ ...inputStyle, maxWidth: 160, fontStyle: 'italic' }}
+                          style={{ ...inputStyle, maxWidth: 160, fontStyle: 'italic', fontWeight: 700 }}
                         />
                       )}
                     </div>
