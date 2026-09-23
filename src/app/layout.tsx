@@ -12,7 +12,6 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-body', weight: ['400
 export const metadata: Metadata = {
   title: { default: 'Coachly', template: '%s · Coachly' },
   description: 'Planifica partidos, prepara convocatorias y sigue la evolución de tu equipo.',
-  manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Coachly' },
   icons: {
     icon: '/icons/icon-192.png',
