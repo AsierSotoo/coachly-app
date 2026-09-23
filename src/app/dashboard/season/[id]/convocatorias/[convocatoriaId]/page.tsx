@@ -126,7 +126,7 @@ export default async function ConvocatoriaDetailPage({
           </div>
 
           {/* Match metadata */}
-          <div className="flex flex-wrap gap-6 pr-10">
+          <div className="flex flex-wrap gap-6 pr-28">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined" style={{ color: 'var(--accent)', fontSize: 20 }}>calendar_month</span>
               <div>

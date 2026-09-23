@@ -247,8 +247,8 @@ export function ConvocatoriaEditor({
               type="time"
               value={localMeetingTime}
               onChange={e => setLocalMeetingTime(e.target.value)}
-              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[var(--accent)] transition-colors"
-              style={{ backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee' }}
+              className="w-full border rounded-xl py-2.5 text-sm outline-none focus:border-[var(--accent)] transition-colors"
+              style={{ backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee', paddingLeft: 36, paddingRight: 16 }}
             />
           </div>
         </div>
@@ -263,8 +263,8 @@ export function ConvocatoriaEditor({
               value={localLocation}
               onChange={e => setLocalLocation(e.target.value)}
               placeholder="Campo Municipal de Pamplona…"
-              className="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-[var(--accent)] transition-colors"
-              style={{ backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee' }}
+              className="w-full border rounded-xl py-2.5 text-sm outline-none focus:border-[var(--accent)] transition-colors"
+              style={{ backgroundColor: '#111713', borderColor: '#2a342d', color: '#edf2ee', paddingLeft: 36, paddingRight: 16 }}
             />
           </div>
         </div>
