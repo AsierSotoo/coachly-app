@@ -60,42 +60,41 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
   return (
     <aside
       className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 border-r py-7 z-30"
-      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}
+      style={{ backgroundColor: 'var(--bg-sidebar)', borderColor: 'rgba(255,255,255,0.07)' }}
     >
       {/* Logo */}
-      <div className="px-4 mb-8 flex items-center gap-3">
+      <div className="px-5 mb-8 flex items-center gap-3 border-b pb-5" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
         <div className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0">
           <Image src="/logo.png" alt="Coachly" width={36} height={36} className="w-full h-full object-cover" />
         </div>
-        <h1 className="text-[18px] font-extrabold tracking-[-.04em]"
-          style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
-          Coach<span style={{ color: 'var(--accent)' }}>ly</span>
+        <h1 className="text-[18px] font-extrabold tracking-[-.04em]">
+          <span style={{ color: 'rgba(255,255,255,0.92)' }}>Coach</span><span style={{ color: 'var(--accent)' }}>ly</span>
         </h1>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-0.5 px-3">
+      <nav className="flex-1 space-y-0.5 px-3 overflow-y-auto">
         {NAV.map(({ label, icon, key }) => {
           const active = isActive(key)
           return (
             <Link
               key={key}
               href={href(key)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 cursor-pointer"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-[10px] transition-all duration-150 cursor-pointer"
               style={{
-                color: active ? 'var(--accent)' : 'var(--tx-3)',
-                backgroundColor: active ? 'var(--accent-subtle)' : 'transparent',
+                color: active ? 'var(--accent)' : 'rgba(255,255,255,0.45)',
+                backgroundColor: active ? 'rgba(166,226,42,0.12)' : 'transparent',
               }}
               onMouseEnter={e => {
                 if (!active) {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)'
-                  ;(e.currentTarget as HTMLElement).style.color = 'var(--tx-2)'
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.05)'
+                  ;(e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.8)'
                 }
               }}
               onMouseLeave={e => {
                 if (!active) {
                   (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
-                  ;(e.currentTarget as HTMLElement).style.color = 'var(--tx-3)'
+                  ;(e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.45)'
                 }
               }}
             >
@@ -117,28 +116,28 @@ export function DesktopSidebar({ teams, displayName, avatarUrl }: Props) {
       </div>
 
       {/* Profile */}
-      <div className="px-4 pt-4 border-t" style={{ borderColor: 'var(--bdr-strong)' }}>
+      <div className="px-4 pt-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
         <Link
           href="/dashboard/profile"
-          className="flex items-center gap-3 p-2 rounded-xl transition-colors cursor-pointer active:scale-95"
-          style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--bdr-strong)' }}
+          className="flex items-center gap-3 p-2.5 rounded-xl transition-all cursor-pointer active:scale-95"
+          style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}
         >
           <div
-            className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border"
-            style={{ borderColor: 'var(--accent-subtle)' }}
+            className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border"
+            style={{ borderColor: 'rgba(166,226,42,0.35)' }}
           >
             {avatarUrl
               ? <Image src={avatarUrl} alt={displayName} fill className="object-cover" unoptimized />
-              : <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-green-500 to-green-700">
-                  <span className="text-sm font-black text-white">{initial}</span>
+              : <div className="h-full w-full flex items-center justify-center" style={{ background: 'rgba(166,226,42,0.15)' }}>
+                  <span className="text-sm font-black" style={{ color: '#a6e22a' }}>{initial}</span>
                 </div>
             }
           </div>
           <div className="flex-1 min-w-0 overflow-hidden">
-            <p className="text-[12px] font-semibold truncate" style={{ color: 'var(--tx)' }}>{displayName}</p>
+            <p className="text-[12px] font-semibold truncate" style={{ color: 'rgba(255,255,255,0.85)' }}>{displayName}</p>
             <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--accent)' }}>Entrenador</p>
           </div>
-          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--tx-3)' }}>settings</span>
+          <span className="material-symbols-outlined" style={{ fontSize: 17, color: 'rgba(255,255,255,0.35)' }}>settings</span>
         </Link>
       </div>
     </aside>

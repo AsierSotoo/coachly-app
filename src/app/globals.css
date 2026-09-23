@@ -18,6 +18,7 @@
   --accent-fg:     #0a0f0c;
   --accent-subtle: rgba(166,226,42,0.10);
   --accent-rgb:    166,226,42;
+  --bg-sidebar:    #0c1410;
   --shadow-card: 0 4px 20px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
   /* Semantic status colors */
   --c-warn:        #f2a541;
@@ -61,6 +62,7 @@
   --accent-fg:     #ffffff;
   --accent-subtle: rgba(90,158,26,0.10);
   --accent-rgb:    90,158,26;
+  --bg-sidebar:    #0f1e14;
   --shadow-card: 0 1px 3px rgba(0,0,0,0.07), 0 4px 14px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
   /* Semantic status colors — light-mode overrides */
   --c-warn:        #b36200;
