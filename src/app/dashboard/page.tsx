@@ -405,7 +405,7 @@ export default async function DashboardPage() {
                       <Link href={`/dashboard/season/${lastSeason.id}/match/${lastMatch.id}`}
                         className="flex items-center gap-2.5 rounded-[12px] border px-4 py-3 transition-all active:scale-[.99]"
                         style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Último</span>
+                        <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Último partido</span>
                         <span className="shrink-0 rounded-[5px] px-2 py-0.5 text-[11px] font-extrabold"
                           style={{ backgroundColor: `${lc === 'var(--accent)' ? 'rgba(var(--accent-rgb),0.12)' : lc === 'var(--c-danger)' ? 'rgba(220,38,38,0.1)' : 'rgba(245,158,11,0.1)'}`, color: lc, border: `1px solid ${lc === 'var(--accent)' ? 'rgba(var(--accent-rgb),0.25)' : lc === 'var(--c-danger)' ? 'rgba(220,38,38,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
                           {ll}
@@ -539,9 +539,8 @@ export default async function DashboardPage() {
 
                   {/* ── Sidebar: Esta semana ─────────────────── */}
                   <div className="hidden lg:flex lg:flex-col lg:gap-2">
-                    <p className="text-[9px] font-extrabold uppercase tracking-widest mb-0.5" style={{ color: 'var(--tx-4)' }}>Esta semana</p>
 
-                    {/* 0. Partidos sin resultado (urgente) */}
+                    {/* 0. Partidos sin resultado (urgente) — tarjetas individuales */}
                     {pendingMatches.length > 0 && lastSeason && pendingMatches.map(pm => {
                       const pmDateShort = new Date(pm.played_at + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
                       return (
@@ -558,49 +557,65 @@ export default async function DashboardPage() {
                       )
                     })}
 
-                    {/* 1. Entrenamiento (o aviso de que no hay) */}
-                    {nextSession ? (
-                      <Link href={`/dashboard/season/${lastSeason!.id}/trainings`}
-                        className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--accent)', fontSize: 18 }}>fitness_center</span>
-                        <div className="min-w-0">
-                          <p className="text-[12px] font-bold truncate" style={{ color: 'var(--tx)' }}>
-                            Entreno · {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase())}
-                            {nextSession.start_time ? ` ${nextSession.start_time.slice(0, 5)}h` : ''}
-                          </p>
-                          {nextSession.title && (
-                            <p className="text-[10px] mt-0.5 truncate" style={{ color: 'var(--tx-3)' }}>{nextSession.title}</p>
-                          )}
-                        </div>
-                      </Link>
-                    ) : lastSeason && (
-                      <Link href={`/dashboard/season/${lastSeason.id}/trainings/new`}
-                        className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--tx-3)', fontSize: 18 }}>fitness_center</span>
-                        <div>
-                          <p className="text-[12px] font-bold" style={{ color: 'var(--tx-2)' }}>Sin entrenos planificados</p>
-                          <p className="text-[10px] mt-0.5" style={{ color: 'var(--tx-4)' }}>Añadir entrenamiento</p>
-                        </div>
-                      </Link>
-                    )}
+                    {/* 1+2. Esta semana: Entreno + Disponibilidad en una sola card */}
+                    {lastSeason && (
+                      <div className="overflow-hidden rounded-[12px] border" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
+                        <p className="px-3.5 pt-2.5 pb-0 text-[9px] font-extrabold uppercase tracking-widest" style={{ color: 'var(--tx-4)' }}>Esta semana</p>
 
-                    {/* 2. Disponibilidad próximo partido */}
-                    {nextMatch && totalActive > 0 && (
-                      <Link href={`/dashboard/season/${lastSeason!.id}/match/${nextMatch.id}`}
-                        className="flex items-center gap-3 rounded-[12px] border px-3.5 py-3 transition-all hover:border-[var(--bdr-strong)]"
-                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
-                        <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--accent)', fontSize: 18 }}>groups</span>
-                        <div className="min-w-0">
-                          <p className="text-[12px] font-bold" style={{ color: 'var(--tx)' }}>
-                            Disponibilidad · {nextMatchDay}
-                          </p>
-                          <p className="text-[10px] mt-0.5" style={{ color: availCount > 0 ? 'var(--accent)' : 'var(--tx-3)' }}>
-                            {availCount > 0 ? `${availCount} de ${totalActive} disponibles` : 'Sin respuestas aún'}
-                          </p>
-                        </div>
-                      </Link>
+                        {/* Entreno */}
+                        {nextSession ? (
+                          <Link href={`/dashboard/season/${lastSeason.id}/trainings`}
+                            className="flex items-center gap-3 px-3.5 py-2.5 mt-1.5 border-t transition-all hover:bg-[var(--bg-elevated)]"
+                            style={{ borderColor: 'var(--bdr)' }}>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-[9px] flex-shrink-0"
+                              style={{ backgroundColor: 'rgba(251,146,60,0.12)', color: '#fb923c' }}>
+                              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>fitness_center</span>
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[12.5px] font-semibold truncate" style={{ color: 'var(--tx)' }}>
+                                Entreno
+                              </p>
+                              <p className="text-[11px]" style={{ color: 'var(--tx-2)' }}>
+                                {new Date(nextSession.date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^\w/, c => c.toUpperCase())}
+                                {nextSession.start_time ? ` · ${nextSession.start_time.slice(0, 5)}h` : ''}
+                              </p>
+                            </div>
+                          </Link>
+                        ) : (
+                          <Link href={`/dashboard/season/${lastSeason.id}/trainings/new`}
+                            className="flex items-center gap-3 px-3.5 py-2.5 mt-1.5 border-t transition-all hover:bg-[var(--bg-elevated)]"
+                            style={{ borderColor: 'var(--bdr)' }}>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-[9px] flex-shrink-0"
+                              style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--tx-3)' }}>
+                              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>fitness_center</span>
+                            </div>
+                            <div>
+                              <p className="text-[12.5px] font-semibold" style={{ color: 'var(--tx-2)' }}>Sin entrenos</p>
+                              <p className="text-[11px]" style={{ color: 'var(--tx-4)' }}>Añadir entrenamiento</p>
+                            </div>
+                          </Link>
+                        )}
+
+                        {/* Disponibilidad */}
+                        {nextMatch && totalActive > 0 && (
+                          <Link href={`/dashboard/season/${lastSeason.id}/match/${nextMatch.id}`}
+                            className="flex items-center gap-3 px-3.5 py-2.5 border-t transition-all hover:bg-[var(--bg-elevated)]"
+                            style={{ borderColor: 'var(--bdr)' }}>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-[9px] flex-shrink-0"
+                              style={{ backgroundColor: 'rgba(var(--accent-rgb),0.12)', color: 'var(--accent)' }}>
+                              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>groups</span>
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[12.5px] font-semibold" style={{ color: 'var(--tx)' }}>Disponibilidad</p>
+                              <p className="text-[11px]" style={{ color: availCount > 0 ? 'var(--accent)' : 'var(--tx-3)' }}>
+                                {nextMatchDay}{availCount > 0 ? ` · ${availCount} de ${totalActive}` : ''}
+                              </p>
+                            </div>
+                          </Link>
+                        )}
+
+                        <div className="pb-1" />
+                      </div>
                     )}
 
                     {/* 3. Alertas amarillas */}
