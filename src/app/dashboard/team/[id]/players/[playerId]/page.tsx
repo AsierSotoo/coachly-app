@@ -184,7 +184,9 @@ export default async function PlayerDetailPage({
       <main className="mx-auto max-w-2xl px-4 py-6 pb-32 md:pb-10">
 
         <div className="mb-5 flex items-center justify-between">
-          <Link href={`/dashboard/team/${teamId}/players`} className="flex items-center gap-1 text-xs hover:text-green-400 transition-colors" style={{ color: 'var(--tx-4)' }}>
+          <Link href={`/dashboard/team/${teamId}/players`}
+            className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest transition-colors hover:text-[var(--tx)]"
+            style={{ color: 'var(--tx-2)' }}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> Plantilla
           </Link>
           {allPlayers && allPlayers.length > 1 && (

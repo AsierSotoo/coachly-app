@@ -1,7 +1,7 @@
 ﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { createConvocatoria } from '../actions'
 
 export default async function NewConvocatoriaPage({
@@ -23,9 +23,7 @@ export default async function NewConvocatoriaPage({
     <PageTransition>
       <main className="mx-auto max-w-lg px-4 py-6 pb-32 md:pb-10">
 
-        <Link href={`/dashboard/season/${seasonId}/convocatorias`} className="mb-5 flex items-center gap-1 text-xs transition-colors hover:text-green-400" style={{ color: 'var(--tx-4)' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span> Convocatorias
-        </Link>
+        <Breadcrumb items={[{ label: 'Convocatorias', href: `/dashboard/season/${seasonId}/convocatorias` }, { label: 'Nueva convocatoria' }]} />
 
         <div className="mb-6">
           <h1 className="font-[family-name:var(--font-heading)] text-xl font-black text-white">Nueva convocatoria</h1>

@@ -210,10 +210,10 @@ export default async function MatchPage({
           {/* Barra superior: breadcrumb + nav entre partidos */}
           <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card-2)' }}>
             <Link href={`/dashboard/season/${seasonId}`}
-              className="flex items-center gap-1 text-[11px] font-semibold transition-colors"
-              style={{ color: 'var(--tx-3)' }}>
+              className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest transition-colors hover:text-[var(--tx)]"
+              style={{ color: 'var(--tx-2)' }}>
               <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
-              {season.name}
+              Temporada
             </Link>
             <div className="flex items-center gap-1.5">
               <RivalLogoUpload

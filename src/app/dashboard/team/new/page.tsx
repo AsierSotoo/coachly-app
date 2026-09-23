@@ -1,6 +1,6 @@
 import { createTeam } from '../actions'
-import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 
 export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   return (
@@ -9,12 +9,7 @@ export default function NewTeamPage({ searchParams }: { searchParams: Promise<{ 
 
         {/* Header */}
         <div className="mb-8">
-          <Link href="/dashboard"
-            className="flex items-center gap-1 text-xs hover:underline mb-4"
-            style={{ color: 'var(--tx-2)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
-            Volver al inicio
-          </Link>
+          <Breadcrumb items={[{ label: 'Inicio', href: '/dashboard' }, { label: 'Nuevo equipo' }]} />
           <h1 className="text-[28px] font-extrabold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
             Nuevo equipo
           </h1>

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { TrainingCalendar } from '@/components/training/training-calendar'
 import type { Metadata } from 'next'
 
@@ -45,12 +45,7 @@ export default async function CalendarPage({
     <PageTransition>
       <main className="max-w-3xl mx-auto px-4 py-6 pb-32 md:pb-10">
         <div className="mb-6">
-          <Link href={`/dashboard/season/${seasonId}`}
-            className="flex items-center gap-1 text-xs mb-3 transition-colors"
-            style={{ color: 'var(--tx-3)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
-            {season.name}
-          </Link>
+          <Breadcrumb items={[{ label: 'Temporada', href: `/dashboard/season/${seasonId}` }, { label: 'Calendario' }]} />
           <h1 className="text-2xl font-black" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
             Calendario
           </h1>

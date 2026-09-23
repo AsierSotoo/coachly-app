@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { updateTrainingSession } from '../actions'
 import { DeleteTrainingButton } from '@/components/training/delete-training-button'
 import { TrainingAttendance } from '@/components/training/training-attendance'
@@ -51,12 +51,7 @@ export default async function TrainingSessionPage({
   return (
     <PageTransition>
       <main className="max-w-xl mx-auto px-4 py-6 pb-32 md:pb-10">
-        <Link href={`/dashboard/season/${seasonId}/trainings`}
-          className="flex items-center gap-1 text-xs mb-5 hover:text-green-400 transition-colors"
-          style={{ color: 'var(--tx-3)' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
-          Entrenamientos
-        </Link>
+        <Breadcrumb items={[{ label: 'Entrenamientos', href: `/dashboard/season/${seasonId}/trainings` }, { label: session.title ?? 'Entrenamiento' }]} />
 
         <div className="flex items-start justify-between mb-6">
           <div>

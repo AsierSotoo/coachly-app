@@ -4,7 +4,7 @@ import { updateTeam, toggleAvailabilityEnabled } from '../../actions'
 import { LogoUpload } from '@/components/team/logo-upload'
 import { DeleteTeamButton } from '@/components/team/delete-team-button'
 import { PageTransition } from '@/components/ui/page-transition'
-import Link from 'next/link'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 
 export default async function TeamSettingsPage({
   params, searchParams,
@@ -43,12 +43,7 @@ export default async function TeamSettingsPage({
 
         {/* Header */}
         <div className="mb-8">
-          <Link href={`/dashboard/team/${teamId}/players`}
-            className="text-xs hover:underline flex items-center gap-1 mb-4"
-            style={{ color: 'var(--tx-2)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_back</span>
-            Volver a la plantilla
-          </Link>
+          <Breadcrumb items={[{ label: 'Plantilla', href: `/dashboard/team/${teamId}/players` }, { label: 'Ajustes del equipo' }]} />
           <h1 className="text-[28px] font-extrabold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
             Ajustes del equipo
           </h1>

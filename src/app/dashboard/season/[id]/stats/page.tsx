@@ -1,6 +1,7 @@
 ﻿import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { PageTransition } from '@/components/ui/page-transition'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { TeamLogo } from '@/components/team/team-logo'
 import { PlayerAvatar } from '@/components/team/player-avatar'
 import { getTeamTerms } from '@/lib/team-terms'
@@ -325,6 +326,8 @@ export default async function StatsPage({
   return (
     <PageTransition>
       <main className="max-w-7xl mx-auto px-4 md:px-10 py-8 pb-32 md:pb-10">
+
+        <Breadcrumb items={[{ label: 'Temporada', href: `/dashboard/season/${seasonId}` }, { label: 'Estadísticas' }]} />
 
         {/* Header */}
         <header className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">

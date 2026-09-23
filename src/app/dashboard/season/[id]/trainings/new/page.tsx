@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import Link from 'next/link'
 import { PageTransition } from '@/components/ui/page-transition'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { createTrainingSession } from '../actions'
 
 export default async function NewTrainingPage({
@@ -27,13 +27,7 @@ export default async function NewTrainingPage({
     <PageTransition>
       <main className="max-w-2xl mx-auto px-4 py-6 pb-32 md:pb-10">
 
-        {/* Breadcrumb */}
-        <Link href={`/dashboard/season/${seasonId}/trainings`}
-          className="inline-flex items-center gap-1 text-[11px] font-semibold mb-6 transition-colors hover:opacity-80"
-          style={{ color: 'var(--tx-3)' }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>chevron_left</span>
-          Entrenamientos
-        </Link>
+        <Breadcrumb items={[{ label: 'Entrenamientos', href: `/dashboard/season/${seasonId}/trainings` }, { label: 'Nueva sesión' }]} />
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
