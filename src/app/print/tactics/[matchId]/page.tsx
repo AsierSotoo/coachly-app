@@ -56,6 +56,9 @@ export default async function TacticsPrintPage({
           ← Volver
         </a>
         <PrintTrigger />
+        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#9ca3af' }}>
+          💡 En el diálogo de impresión, desactiva <strong>Encabezados y pies de página</strong> para ocultar la URL
+        </span>
       </div>
 
       {/* Hoja A4 */}
@@ -143,6 +146,13 @@ export default async function TacticsPrintPage({
             </div>
           </div>
         )}
+
+        {/* Branding disimulado */}
+        <div style={{ marginTop: 28, display: 'flex', justifyContent: 'flex-end' }}>
+          <span style={{ fontSize: 9, color: '#d1d5db', letterSpacing: '0.06em', fontWeight: 600, textTransform: 'uppercase' }}>
+            Coachly
+          </span>
+        </div>
       </div>
     </div>
   )

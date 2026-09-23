@@ -122,6 +122,13 @@ export default async function TacticsPrintPage({
             </div>
           </div>
         )}
+
+        {/* Branding disimulado */}
+        <div className="flex justify-end mt-6">
+          <span style={{ fontSize: 9, color: '#d1d5db', letterSpacing: '0.06em', fontWeight: 600, textTransform: 'uppercase' }}>
+            Coachly
+          </span>
+        </div>
       </div>
     </>
   )
