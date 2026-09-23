@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { PlayerAvatar } from '@/components/team/player-avatar'
 import {
   saveConvocatoriaPlayers,
   saveConvocatoriaMetadata,
@@ -337,9 +336,14 @@ export function ConvocatoriaEditor({
                       {/* Jugadora */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg overflow-hidden border flex-shrink-0"
-                            style={{ borderColor: inSquad ? 'rgba(34,197,94,0.3)' : '#2a342d', backgroundColor: '#1a231d' }}>
-                            <PlayerAvatar name={p.name} photoUrl={p.photo_url} position={p.position ?? undefined} size="sm" />
+                          <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border flex items-center justify-center"
+                            style={{ borderColor: '#253028', backgroundColor: '#1a231d' }}>
+                            {p.photo_url
+                              ? <img src={p.photo_url} alt={p.name} className="w-full h-full object-cover" />
+                              : <span className="text-xs font-black" style={{ color: 'var(--accent)' }}>
+                                  {p.name.charAt(0).toUpperCase()}
+                                </span>
+                            }
                           </div>
                           <div>
                             <div className="flex items-center gap-1.5">
