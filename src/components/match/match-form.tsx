@@ -125,22 +125,22 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
             <input name="opponent" type="text" required defaultValue={match.opponent} placeholder="Rival"
               className="w-full h-11 px-3" />
             <div className="flex gap-2">
-              <input name="played_at" type="date" required defaultValue={match.played_at} className="flex-1 h-11 px-3" />
+              <input name="played_at" type="date" required defaultValue={match.played_at} className="flex-1 min-w-0 h-11 px-3" />
               <input name="match_time" type="time" defaultValue={match.match_time?.slice(0, 5) ?? ''} placeholder="--:--"
-                className="w-28 h-11 px-3" title="Hora del partido (opcional)" />
-              <select name="home" defaultValue={match.home ? 'true' : 'false'} className="h-11 px-3">
+                className="w-24 shrink-0 h-11 px-3" title="Hora del partido (opcional)" />
+            </div>
+            <div className="flex gap-2">
+              <select name="home" defaultValue={match.home ? 'true' : 'false'} className="h-11 px-3 shrink-0">
                 <option value="true">🏠 Local</option>
                 <option value="false">✈️ Visitante</option>
               </select>
-            </div>
-            <div className="flex gap-2">
-              <select name="competition_type" defaultValue={(match.competition_type as string | null) ?? 'liga'} className="h-11 px-3 flex-shrink-0">
+              <select name="competition_type" defaultValue={(match.competition_type as string | null) ?? 'liga'} className="h-11 px-3 shrink-0">
                 <option value="liga">🏆 Liga</option>
                 <option value="copa">🥈 Copa</option>
                 <option value="amistoso">🤝 Amistoso</option>
               </select>
-              <input name="competition" type="text" defaultValue={match.competition ?? ''} placeholder="Nombre competición (opcional)"
-                className="flex-1 h-11 px-3" />
+              <input name="competition" type="text" defaultValue={match.competition ?? ''} placeholder="Nombre (opcional)"
+                className="flex-1 min-w-0 h-11 px-3" />
             </div>
           </div>
         </section>

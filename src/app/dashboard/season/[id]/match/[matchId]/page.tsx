@@ -10,6 +10,10 @@ import { PageTransition } from '@/components/ui/page-transition'
 import { getFormation } from '@/lib/formations'
 import { ShareWhatsAppButton } from '@/components/match/share-whatsapp-button'
 import { MatchPrintSheet } from '@/components/match/match-print-sheet'
+import { MatchTacticsSection } from '@/components/tactics/match-tactics-section'
+import { DEFAULT_TEMPLATE } from '@/lib/tactics'
+import type { TacticsTemplate, MatchTactics } from '@/lib/tactics'
+import { CollapsibleSection } from '@/components/ui/collapsible-section'
 import Link from 'next/link'
 
 export default async function MatchPage({
@@ -363,122 +367,147 @@ export default async function MatchPage({
               />
             )}
           </div>
+
+          {/* Resumen: goleadoras, tarjetas, MVP — dentro de la tarjeta */}
+          {!isScheduled && hasSummary && (
+            <div className="px-4 pb-3 pt-1 flex flex-wrap gap-x-5 gap-y-2 border-t"
+              style={{ borderColor: 'var(--bdr-subtle)' }}>
+              {scorerApps.length > 0 && (
+                <div className="flex items-center gap-1.5 text-sm">
+                  <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 13, color: 'var(--accent)' }}>sports_soccer</span>
+                  <span style={{ color: 'var(--tx)' }}>
+                    {scorerApps.map(a => {
+                      const first = playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?'
+                      return (a.goals ?? 0) > 1 ? `${first} ×${a.goals}` : first
+                    }).join(' · ')}
+                  </span>
+                </div>
+              )}
+              {yellowApps.length > 0 && (
+                <div className="flex items-center gap-1.5 text-sm">
+                  <span className="w-2.5 h-3.5 rounded-[2px] flex-shrink-0" style={{ backgroundColor: 'var(--c-warn)' }} />
+                  <span style={{ color: 'var(--tx)' }}>
+                    {yellowApps.map(a => {
+                      const first = playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?'
+                      return (a.yellow_cards ?? 0) > 1 ? `${first} ×${a.yellow_cards}` : first
+                    }).join(' · ')}
+                  </span>
+                </div>
+              )}
+              {redApps.length > 0 && (
+                <div className="flex items-center gap-1.5 text-sm">
+                  <span className="w-2.5 h-3.5 rounded-[2px] flex-shrink-0" style={{ backgroundColor: 'var(--c-danger)' }} />
+                  <span style={{ color: 'var(--tx)' }}>
+                    {redApps.map(a => playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?').join(' · ')}
+                  </span>
+                </div>
+              )}
+              {mvpPlayer && (
+                <div className="flex items-center gap-1 text-sm">
+                  <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 13, color: 'var(--c-goals)', fontVariationSettings: "'FILL' 1" }}>star</span>
+                  <span style={{ color: 'var(--c-goals)' }}>{mvpPlayer.name.split(' ')[0]}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Notas del partido — dentro de la tarjeta */}
+          {!isScheduled && matchNotes && (
+            <div className="px-4 pb-4 pt-3 border-t text-sm leading-relaxed"
+              style={{ borderColor: 'var(--bdr-subtle)', color: 'var(--tx-2)', whiteSpace: 'pre-line' }}>
+              <p className="text-[9px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'var(--tx-3)' }}>
+                Análisis
+              </p>
+              {matchNotes}
+            </div>
+          )}
         </div>
-
-        {/* Resumen del partido — solo si está finalizado */}
-        {!isScheduled && hasSummary && (
-          <div className="mb-6 flex flex-wrap gap-x-6 gap-y-2 rounded-xl border px-4 py-3"
-            style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
-            {scorerApps.length > 0 && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 15, color: 'var(--accent)' }}>sports_soccer</span>
-                <span style={{ color: 'var(--tx)' }}>
-                  {scorerApps.map(a => {
-                    const first = playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?'
-                    return (a.goals ?? 0) > 1 ? `${first} ×${a.goals}` : first
-                  }).join(' · ')}
-                </span>
-              </div>
-            )}
-            {yellowApps.length > 0 && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: 'var(--c-warn)' }} />
-                <span style={{ color: 'var(--tx)' }}>
-                  {yellowApps.map(a => {
-                    const first = playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?'
-                    return (a.yellow_cards ?? 0) > 1 ? `${first} ×${a.yellow_cards}` : first
-                  }).join(' · ')}
-                </span>
-              </div>
-            )}
-            {redApps.length > 0 && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className="w-3 h-4 rounded-[2px] flex-shrink-0" style={{ backgroundColor: 'var(--c-danger)' }} />
-                <span style={{ color: 'var(--tx)' }}>
-                  {redApps.map(a => playerMap.get(a.player_id)?.name?.split(' ')[0] ?? '?').join(' · ')}
-                </span>
-              </div>
-            )}
-            {mvpPlayer && (
-              <div className="flex items-center gap-1.5 text-sm">
-                <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 15, color: 'var(--c-goals)', fontVariationSettings: "'FILL' 1" }}>star</span>
-                <span style={{ color: 'var(--c-goals)' }}>{mvpPlayer.name.split(' ')[0]}</span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Notas del partido */}
-        {!isScheduled && matchNotes && (
-          <div className="mb-6 rounded-xl border px-4 py-3 text-sm leading-relaxed"
-            style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)', color: 'var(--tx-2)', whiteSpace: 'pre-line' }}>
-            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--tx-3)' }}>
-              Análisis post-partido
-            </p>
-            {matchNotes}
-          </div>
-        )}
 
         {/* Picker de disponibilidad — solo en partidos programados */}
         {isScheduled && players && players.length > 0 && (
-          <div className="mb-6">
+          <CollapsibleSection storageKey={`match-avail-${matchId}`} title="Disponibilidad" icon="how_to_reg" defaultOpen={true}>
             <AvailabilityPicker
               matchId={matchId}
               seasonId={seasonId}
               players={sortedPlayers}
               initialAvailability={initialAvailability}
             />
-          </div>
+          </CollapsibleSection>
         )}
 
-        {/* Hoja imprimible — siempre visible */}
-        <div className="mb-6 rounded-2xl border p-4" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--tx-3)' }}>
-            Hoja del partido
-          </p>
-          <MatchPrintSheet
-            teamName={team.name}
-            teamLogo={team.logo_url}
-            opponent={match.opponent}
-            rivalLogo={(match as { rival_logo_url?: string | null }).rival_logo_url}
-            dateStr={dateStr}
-            playedAt={match.played_at}
-            matchTime={matchTimeStr}
-            venue={(match as { venue?: string | null }).venue}
-            matchIndex={matchIndex}
-            seasonName={season.name}
-            formation={matchFormation}
-            pitchPositions={Object.fromEntries(
-              (appearances ?? []).flatMap(a => {
-                const slot = (a as unknown as { pitch_position?: string | null }).pitch_position
-                return slot ? [[a.player_id, slot]] : []
-              })
-            )}
-            players={(sortedPlayers ?? []).map(p => {
-              if (isScheduled) {
-                // Usar datos de disponibilidad: unavailable = excluida, el resto = en lista
-                const avail = initialAvailability[p.id]
-                return {
-                  id: p.id, name: p.name, number: p.number, position: p.position,
-                  status: avail === 'unavailable' ? 'no_convocada' as const : 'convocada' as const,
+        {/* Hoja imprimible */}
+        <CollapsibleSection storageKey={`match-print-${matchId}`} title="Hoja del partido" icon="description" defaultOpen={true}>
+          <div className="rounded-2xl border p-4" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
+            <MatchPrintSheet
+              teamName={team.name}
+              teamLogo={team.logo_url}
+              opponent={match.opponent}
+              rivalLogo={(match as { rival_logo_url?: string | null }).rival_logo_url}
+              dateStr={dateStr}
+              playedAt={match.played_at}
+              matchTime={matchTimeStr}
+              venue={(match as { venue?: string | null }).venue}
+              matchIndex={matchIndex}
+              seasonName={season.name}
+              formation={matchFormation}
+              pitchPositions={Object.fromEntries(
+                (appearances ?? []).flatMap(a => {
+                  const slot = (a as unknown as { pitch_position?: string | null }).pitch_position
+                  return slot ? [[a.player_id, slot]] : []
+                })
+              )}
+              players={(sortedPlayers ?? []).map(p => {
+                if (isScheduled) {
+                  if (hasAppearances) {
+                    return {
+                      id: p.id, name: p.name, number: p.number, position: p.position,
+                      status: convocatoriaStatuses[p.id] ?? ('no_convocada' as const),
+                    }
+                  }
+                  const avail = initialAvailability[p.id]
+                  return {
+                    id: p.id, name: p.name, number: p.number, position: p.position,
+                    status: avail === 'unavailable' ? 'no_convocada' as const : 'convocada' as const,
+                  }
                 }
-              }
-              // Partido finalizado: convocatoria si existe, si no, appearances
-              const convStatus = convocatoriaStatuses[p.id] ?? null
-              if (!convStatus) {
-                const app = appearances?.find(a => a.player_id === p.id)
-                if (app && (app.minutes ?? 0) > 0) {
-                  return { id: p.id, name: p.name, number: p.number, position: p.position, status: (app.starter ? 'titular' : 'convocada') as 'titular' | 'convocada' }
+                const convStatus = convocatoriaStatuses[p.id] ?? null
+                if (!convStatus) {
+                  const app = appearances?.find(a => a.player_id === p.id)
+                  if (app && (app.minutes ?? 0) > 0) {
+                    return { id: p.id, name: p.name, number: p.number, position: p.position, status: (app.starter ? 'titular' : 'convocada') as 'titular' | 'convocada' }
+                  }
                 }
-              }
-              return { id: p.id, name: p.name, number: p.number, position: p.position, status: convStatus }
-            })}
-          />
-        </div>
+                return { id: p.id, name: p.name, number: p.number, position: p.position, status: convStatus }
+              })}
+            />
+          </div>
+        </CollapsibleSection>
+
+        {/* Hoja táctica de jugadas ensayadas */}
+        {players && players.length > 0 && (() => {
+          const tacticsTemplate: TacticsTemplate = (season as { tactics_template?: TacticsTemplate | null }).tactics_template ?? DEFAULT_TEMPLATE
+          const savedTactics = (match as { tactics?: MatchTactics | null }).tactics ?? null
+          const printUrl = `/print/tactics/${matchId}?seasonId=${seasonId}`
+          return (
+            <CollapsibleSection storageKey={`match-tactics-${matchId}`} title="Hoja táctica" icon="strategy" defaultOpen={false}>
+              <MatchTacticsSection
+                matchId={matchId}
+                seasonId={seasonId}
+                opponent={match.opponent}
+                matchIndex={matchIndex}
+                teamName={team.name}
+                template={tacticsTemplate}
+                saved={savedTactics}
+                players={players.map(p => ({ id: p.id, name: p.name, number: p.number }))}
+                printUrl={printUrl}
+              />
+            </CollapsibleSection>
+          )
+        })()}
 
         {/* Respuestas del enlace público — solo si la feature está activa y hay datos */}
         {!isScheduled && team.availability_enabled && !!((availRows as { player_id: string; status: string }[] | null)?.length) && players && players.length > 0 && (
-          <div className="mb-6">
+          <CollapsibleSection storageKey={`match-responses-${matchId}`} title="Respuestas del enlace" icon="link" defaultOpen={false}>
             <AvailabilityCoachCard
               players={sortedPlayers}
               responses={(availRows as { player_id: string; status: string }[]).map(r => ({
@@ -486,18 +515,19 @@ export default async function MatchPage({
                 status: r.status as 'available' | 'unavailable' | 'doubt',
               }))}
             />
-          </div>
+          </CollapsibleSection>
         )}
 
         {/* ── Once inicial visual ────────────────────────────────── */}
         {showLineup && (
-          <div className="mb-6 overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--bdr-strong)' }}>
-            <div className="flex items-center gap-2 px-4 py-2.5 border-b" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--accent)' }}>sports_soccer</span>
-              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>
-                {matchFormation ? `${matchFormation} · ` : ''}Once inicial · {starterList.length} titulares{subList.length > 0 ? ` · ${subList.length} suplentes` : ''}
-              </p>
-            </div>
+          <CollapsibleSection
+            storageKey={`match-lineup-${matchId}`}
+            title={`Once inicial${matchFormation ? ` · ${matchFormation}` : ''}`}
+            icon="sports_soccer"
+            badge={`${starterList.length}${subList.length > 0 ? `+${subList.length}` : ''}`}
+            defaultOpen={true}
+          >
+          <div className="overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--bdr-strong)' }}>
             {/* Campo de fútbol */}
             <div className="relative select-none" style={{ backgroundColor: '#1a5232', minHeight: 260 }}>
               {/* Marcas del campo */}
@@ -588,8 +618,10 @@ export default async function MatchPage({
               </div>
             )}
           </div>
+          </CollapsibleSection>
         )}
 
+        <CollapsibleSection storageKey={`match-form-${matchId}`} title={isScheduled ? 'Registrar alineación' : 'Estadísticas del partido'} icon="bar_chart" defaultOpen={true}>
         <MatchForm
           match={{
             ...match,
@@ -605,38 +637,40 @@ export default async function MatchPage({
           convocatoriaStatuses={Object.keys(convocatoriaStatuses).length > 0 ? convocatoriaStatuses : undefined}
           isScheduled={isScheduled}
         />
+        </CollapsibleSection>
 
         {/* Tarjeta compartible — solo si está finalizado */}
-        {!isScheduled && <section className="mt-8 rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
-            <h3 className="text-[16px] font-semibold mb-4" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
-              Compartir resultado
-            </h3>
-            <MatchShareCard
-              teamName={team.name}
-              logoUrl={team.logo_url}
-              opponent={match.opponent}
-              rivalLogoUrl={(match as { rival_logo_url?: string | null }).rival_logo_url}
-              goalsFor={match.goals_for}
-              goalsAgainst={match.goals_against}
-              playedAt={match.played_at}
-              home={match.home}
-              competition={(match as { competition?: string | null }).competition}
-              scorers={scorerApps.map(a => ({
-                name: playerMap.get(a.player_id)?.name ?? '?',
-                goals: a.goals ?? 0,
-              }))}
-              mvpName={mvpPlayer?.name ?? null}
-              lineupData={formationLines && formationDef ? {
-                formation: matchFormation!,
-                lines: formationLines.map((line, i) =>
-                  line.map((p, j) => ({
-                    label: formationDef!.lines[i][j].label,
-                    player: p ? { name: p.name, number: p.number } : null,
-                  }))
-                ),
-              } : null}
-            />
-          </section>}
+        {!isScheduled && (
+          <CollapsibleSection storageKey={`match-share-${matchId}`} title="Compartir resultado" icon="share" defaultOpen={false}>
+            <div className="rounded-2xl border p-6" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+              <MatchShareCard
+                teamName={team.name}
+                logoUrl={team.logo_url}
+                opponent={match.opponent}
+                rivalLogoUrl={(match as { rival_logo_url?: string | null }).rival_logo_url}
+                goalsFor={match.goals_for}
+                goalsAgainst={match.goals_against}
+                playedAt={match.played_at}
+                home={match.home}
+                competition={(match as { competition?: string | null }).competition}
+                scorers={scorerApps.map(a => ({
+                  name: playerMap.get(a.player_id)?.name ?? '?',
+                  goals: a.goals ?? 0,
+                }))}
+                mvpName={mvpPlayer?.name ?? null}
+                lineupData={formationLines && formationDef ? {
+                  formation: matchFormation!,
+                  lines: formationLines.map((line, i) =>
+                    line.map((p, j) => ({
+                      label: formationDef!.lines[i][j].label,
+                      player: p ? { name: p.name, number: p.number } : null,
+                    }))
+                  ),
+                } : null}
+              />
+            </div>
+          </CollapsibleSection>
+        )}
       </main>
     </PageTransition>
   )

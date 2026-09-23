@@ -4,6 +4,8 @@ import { logout } from '@/app/auth/actions'
 import { PageTransition } from '@/components/ui/page-transition'
 import { AvatarUpload } from '@/components/profile/avatar-upload'
 import { PwaInstallButton } from '@/components/ui/pwa-install-button'
+import { LanguageToggle } from '@/components/ui/language-toggle'
+import { getLocale } from '@/lib/i18n'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
@@ -19,7 +21,7 @@ export default async function ProfilePage({
   const { data: profile } = await supabase
     .from('users').select('*').eq('id', user.id).single()
 
-  const sp = await searchParams
+  const [sp, locale] = await Promise.all([searchParams, getLocale()])
   const displayName = profile?.name || user.email?.split('@')[0] || 'Entrenador'
   const provider = user.app_metadata?.provider === 'google' ? 'Google' : 'Email'
 
@@ -271,6 +273,23 @@ export default async function ProfilePage({
               <p className="text-xs" style={{ color: 'var(--tx-3)' }}>
                 Toca el botón <strong style={{ color: 'var(--tx-2)' }}>Compartir</strong> de Safari → <strong style={{ color: 'var(--tx-2)' }}>Añadir a pantalla de inicio</strong>
               </p>
+            </div>
+          </div>
+
+          {/* Preferencias */}
+          <div className="rounded-2xl border p-8 space-y-5" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined" style={{ color: 'var(--accent)' }}>tune</span>
+              <h4 className="text-[20px] font-semibold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>Preferencias</h4>
+            </div>
+
+            {/* Idioma */}
+            <div className="flex items-center justify-between py-2">
+              <div>
+                <p className="font-semibold text-sm" style={{ color: 'var(--tx)' }}>Idioma</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--tx-2)' }}>Cambia el idioma de la interfaz</p>
+              </div>
+              <LanguageToggle current={locale} />
             </div>
           </div>
 

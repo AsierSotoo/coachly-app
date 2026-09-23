@@ -341,7 +341,7 @@ export default async function StatsPage({
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {stats.length > 0 && (
               <DownloadStatsCsv
                 stats={stats.map(s => ({
@@ -353,10 +353,6 @@ export default async function StatsPage({
               />
             )}
             {shareToken && <ShareButton token={shareToken} />}
-            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--tx-2)' }}>Temporada:</span>
-            <span className="px-4 py-2 rounded-lg border text-sm font-bold" style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}>
-              {season.name}
-            </span>
           </div>
         </header>
 

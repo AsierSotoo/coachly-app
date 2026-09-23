@@ -18,9 +18,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const toggle = () => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark'
+    document.documentElement.classList.add('theme-transitioning')
     setTheme(next)
     document.documentElement.setAttribute('data-theme', next)
     localStorage.setItem('coachly-theme', next)
+    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 350)
   }
 
   return <Ctx.Provider value={{ theme, toggle }}>{children}</Ctx.Provider>

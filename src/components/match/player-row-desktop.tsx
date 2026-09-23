@@ -39,7 +39,7 @@ export function PlayerRowDesktop({ player, appearance, convocatoriaStatus, isLas
     : convocatoriaStatus === 'titular'      ? 'titular'
     : convocatoriaStatus === 'no_convocada' ? 'no_convocada'
     : convocatoriaStatus === 'convocada'    ? 'suplente'
-    : 'suplente'
+    : 'no_convocada'
 
   const [status, setStatus] = useState<Status>(defaultStatus)
   const [minutes, setMinutes] = useState<number>(() => {

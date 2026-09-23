@@ -68,40 +68,37 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
         {/* Header móvil */}
         <header
-          className="md:hidden sticky top-0 z-20 flex items-center justify-between border-b px-4"
+          className="md:hidden sticky top-0 z-20 relative flex items-center justify-between border-b px-4"
           style={{ backgroundColor: 'var(--bg)', borderColor: 'var(--bdr-strong)', height: 'calc(56px + env(safe-area-inset-top, 0px))', paddingTop: 'env(safe-area-inset-top, 0px)' }}
         >
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+          {/* Izquierda: solo el icono */}
+          <Link href="/dashboard" className="flex items-center justify-center flex-shrink-0 active:opacity-70 transition-opacity">
+            <div className="w-8 h-8 rounded-lg overflow-hidden">
               <Image src="/logo.png" alt="Coachly" width={32} height={32} className="w-full h-full object-cover" />
             </div>
-            <span className="font-extrabold text-[17px] leading-none" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
-              Coach<span style={{ color: 'var(--accent)' }}>ly</span>
-            </span>
           </Link>
 
-          <div className="flex items-center gap-2">
-            <PwaInstallButton compact />
-            <ThemeToggle />
-            <LanguageToggle current={locale} />
+          {/* Centro: título absoluto */}
+          <span
+            className="absolute left-1/2 -translate-x-1/2 font-extrabold text-[17px] leading-none pointer-events-none select-none"
+            style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}
+          >
+            Coach<span style={{ color: 'var(--accent)' }}>ly</span>
+          </span>
+
+          {/* Derecha: toggle + avatar */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <ThemeToggle compact />
             <Link href="/dashboard/profile"
-              className="flex items-center justify-center rounded-full overflow-hidden border border-[#2a342d] active:opacity-70 transition-opacity"
-              style={{ width: 40, height: 40 }}>
+              className="flex items-center justify-center rounded-full overflow-hidden border active:opacity-70 transition-opacity"
+              style={{ width: 34, height: 34, borderColor: 'var(--bdr-strong)' }}>
               {avatarUrl
-                ? <Image src={avatarUrl} alt={displayName} width={40} height={40} className="object-cover" unoptimized />
+                ? <Image src={avatarUrl} alt={displayName} width={34} height={34} className="object-cover" unoptimized />
                 : <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-green-500 to-green-700">
                     <span className="font-black text-sm text-white">{initial}</span>
                   </div>
               }
             </Link>
-            <form action={logout}>
-              <button type="submit"
-                className="flex items-center justify-center rounded-xl border active:opacity-70 transition-opacity"
-                style={{ width: 40, height: 40, backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', color: 'var(--tx-2)' }}
-                aria-label="Cerrar sesión">
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>logout</span>
-              </button>
-            </form>
           </div>
         </header>
 

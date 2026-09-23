@@ -138,6 +138,26 @@ export default function RegisterPage({ searchParams }: { searchParams: Promise<{
 
             <Feedback searchParams={searchParams} />
 
+            {/* Aceptación legal */}
+            <label className="flex items-start gap-3 cursor-pointer mt-1">
+              <input
+                type="checkbox"
+                name="legal"
+                required
+                className="mt-0.5 flex-shrink-0 w-4 h-4 accent-green-500 cursor-pointer"
+              />
+              <span className="text-[12px] leading-relaxed" style={{ color: 'var(--tx-4)' }}>
+                He leído y acepto la{' '}
+                <Link href="/privacidad" target="_blank" className="text-green-400 hover:text-green-300 underline underline-offset-2 transition-colors">
+                  Política de Privacidad
+                </Link>
+                {' '}y los{' '}
+                <Link href="/terminos" target="_blank" className="text-green-400 hover:text-green-300 underline underline-offset-2 transition-colors">
+                  Términos de Uso
+                </Link>
+              </span>
+            </label>
+
             <button
               type="submit"
               className="mt-1 flex h-11 items-center justify-center rounded-xl bg-green-500 text-sm font-bold text-white transition-all hover:bg-green-400 active:scale-[0.98] cursor-pointer shadow-lg shadow-green-500/20"

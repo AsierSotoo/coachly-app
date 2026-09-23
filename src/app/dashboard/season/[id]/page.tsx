@@ -4,6 +4,7 @@ import { createMatch } from '../actions'
 import Link from 'next/link'
 import { DeleteMatchButton } from '@/components/match/delete-match-button'
 import { PageTransition } from '@/components/ui/page-transition'
+import { CollapsibleSection } from '@/components/ui/collapsible-section'
 import { TeamLogo } from '@/components/team/team-logo'
 import type { Metadata } from 'next'
 
@@ -198,8 +199,11 @@ export default async function SeasonPage({
           )}
         </div>
 
+        {/* ── Resumen de temporada (colapsable) ──────────────────────── */}
+        <CollapsibleSection storageKey={`season-resumen-${seasonId}`} title="Resumen de temporada" icon="analytics" defaultOpen={true}>
+
         {/* ── Balance competitivo ─────────────────────────────────────── */}
-        <section className="mb-6 overflow-hidden rounded-[14px] border md:mb-8"
+        <section className="mb-4 overflow-hidden rounded-[14px] border"
           style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
           <div className="flex flex-col gap-4 border-b px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
             style={{ borderColor: 'var(--bdr-strong)' }}>
@@ -280,6 +284,8 @@ export default async function SeasonPage({
           </div>
         )}
 
+        </CollapsibleSection>
+
         {/* ── Barra de acciones ────────────────────────────────────────── */}
         <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 md:mb-8">
           <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-3">
@@ -322,6 +328,14 @@ export default async function SeasonPage({
             >
               <span className="material-symbols-outlined text-lg">calendar_month</span>
               <span>Calendario</span>
+            </Link>
+            <Link
+              href={`/dashboard/season/${seasonId}/tactics`}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm border active:scale-95 transition-all"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--tx)' }}
+            >
+              <span className="material-symbols-outlined text-lg">strategy</span>
+              <span>Táctica</span>
             </Link>
           </div>
 
@@ -490,7 +504,8 @@ export default async function SeasonPage({
 
         {/* ── Próximos partidos (programados) ─────────────────────────── */}
         {scheduledMatches.length > 0 && (
-          <section className="mb-6 rounded-2xl border overflow-hidden"
+          <CollapsibleSection storageKey={`season-proximos-${seasonId}`} title="Próximos partidos" icon="calendar_month" badge={scheduledMatches.length} defaultOpen={true}>
+          <section className="rounded-2xl border overflow-hidden"
             style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)' }}>
             <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b"
               style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
@@ -575,7 +590,11 @@ export default async function SeasonPage({
               ))}
             </div>
           </section>
+          </CollapsibleSection>
         )}
+
+        {/* ── Historial de partidos (colapsable) ──────────────────────── */}
+        <CollapsibleSection storageKey={`season-partidos-${seasonId}`} title="Historial de partidos" icon="history" badge={total > 0 ? total : undefined} defaultOpen={true}>
 
         {/* ── Aviso partidos sin datos ─────────────────────────────────── */}
         {pendingData > 0 && (
@@ -742,6 +761,7 @@ export default async function SeasonPage({
             </>
           )}
         </section>
+        </CollapsibleSection>
 
         {/* ── Footer ───────────────────────────────────────────────────── */}
         <footer className="mt-8" style={{ color: 'var(--tx-3)' }}>

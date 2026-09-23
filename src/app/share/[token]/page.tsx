@@ -35,41 +35,45 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
   const team = season.teams as { id: string; name: string; logo_url?: string | null; gender?: string | null }
   const terms = getTeamTerms(team.gender)
 
-  const { data: matches } = await supabase
+  const { data: allMatches } = await supabase
     .from('matches').select('*').eq('season_id', season.id).order('played_at')
 
-  const matchIdsList = matches?.map(m => m.id) ?? []
+  const matches = (allMatches ?? []).filter(m => m.status === 'finished')
+
+  const matchIdsList = matches.map(m => m.id)
   const { data: appearances } = matchIdsList.length
     ? await supabase.from('appearances').select('*, players(name, number, position, photo_url)').in('match_id', matchIdsList)
     : { data: [] }
 
-  const wins   = matches?.filter(m => m.goals_for > m.goals_against).length ?? 0
-  const draws  = matches?.filter(m => m.goals_for === m.goals_against).length ?? 0
-  const losses = matches?.filter(m => m.goals_for < m.goals_against).length ?? 0
-  const gf     = matches?.reduce((s, m) => s + m.goals_for, 0) ?? 0
-  const ga     = matches?.reduce((s, m) => s + m.goals_against, 0) ?? 0
-  const total  = matches?.length ?? 0
+  const wins   = matches.filter(m => m.goals_for > m.goals_against).length
+  const draws  = matches.filter(m => m.goals_for === m.goals_against).length
+  const losses = matches.filter(m => m.goals_for < m.goals_against).length
+  const gf     = matches.reduce((s, m) => s + m.goals_for, 0)
+  const ga     = matches.reduce((s, m) => s + m.goals_against, 0)
+  const total  = matches.length
   const winRate = total > 0 ? Math.round((wins / total) * 100) : 0
 
-  // Racha reciente (últimos 5)
-  const recentForm = [...(matches ?? [])]
+  // Racha reciente (últimos 5 partidos jugados)
+  const recentForm = [...matches]
     .sort((a, b) => new Date(b.played_at).getTime() - new Date(a.played_at).getTime())
     .slice(0, 5)
     .reverse()
     .map(m => m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E')
 
   // Player stats
-  type PS = { name: string; number: number | null; position: string | null; photoUrl: string | null; goals: number; assists: number; minutes: number; gamesPlayed: number }
+  type PS = { name: string; number: number | null; position: string | null; photoUrl: string | null; goals: number; assists: number; minutes: number; gamesPlayed: number; yellowCards: number; redCards: number }
   const statsMap = new Map<string, PS>()
   for (const app of appearances ?? []) {
     const p = app.players as { name: string; number: number | null; position: string | null; photo_url: string | null }
     if (!statsMap.has(app.player_id)) {
-      statsMap.set(app.player_id, { name: p.name, number: p.number, position: p.position, photoUrl: p.photo_url, goals: 0, assists: 0, minutes: 0, gamesPlayed: 0 })
+      statsMap.set(app.player_id, { name: p.name, number: p.number, position: p.position, photoUrl: p.photo_url, goals: 0, assists: 0, minutes: 0, gamesPlayed: 0, yellowCards: 0, redCards: 0 })
     }
     const s = statsMap.get(app.player_id)!
     s.goals += app.goals ?? 0
     s.assists += app.assists ?? 0
     s.minutes += app.minutes ?? 0
+    s.yellowCards += app.yellow_cards ?? 0
+    s.redCards += app.red_cards ?? 0
     if ((app.minutes ?? 0) > 0) s.gamesPlayed++
   }
   const stats     = Array.from(statsMap.values())
@@ -113,7 +117,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
           </div>
         </div>
 
-        {total === 0 ? (
+        {(allMatches ?? []).length === 0 ? (
           <div className="rounded-2xl border-2 border-dashed border-[#2a342d]/50 py-16 text-center">
             <p className="text-sm" style={{ color: '#89968e' }}>Sin partidos registrados aún en esta temporada.</p>
           </div>
@@ -303,6 +307,8 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                           { h: 'A', align: 'center' },
                           { h: 'G+A', align: 'center' },
                           { h: "Min'", align: 'center' },
+                          { h: 'Am', align: 'center' },
+                          { h: 'Rj', align: 'center' },
                         ].map(({ h, align }) => (
                           <th key={h} className="px-3 py-3 text-[10px] font-bold uppercase tracking-widest"
                             style={{ color: '#89968e', textAlign: align as 'left' | 'center' }}>{h}</th>
@@ -324,6 +330,8 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                           <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.assists > 0 ? '#facc15' : '#637168' }}>{p.assists}</td>
                           <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.goals + p.assists > 0 ? '#edf2ee' : '#637168' }}>{p.goals + p.assists}</td>
                           <td className="px-3 py-2.5 text-center text-xs" style={{ color: '#89968e' }}>{p.minutes}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.yellowCards > 0 ? '#facc15' : '#637168' }}>{p.yellowCards || '–'}</td>
+                          <td className="px-3 py-2.5 text-center text-xs font-bold" style={{ color: p.redCards > 0 ? '#f87171' : '#637168' }}>{p.redCards || '–'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -332,32 +340,44 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
               </section>
             )}
 
-            {/* Últimos 5 partidos */}
-            <section className="rounded-2xl border border-[#253028] overflow-hidden" style={{ backgroundColor: '#111713' }}>
-              <div className="px-6 py-4 border-b border-[#253028]">
-                <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Últimos partidos</p>
-              </div>
-              <div className="divide-y divide-[#253028]">
-                {[...(matches ?? [])].sort((a, b) => b.played_at.localeCompare(a.played_at)).slice(0, 5).map(m => {
-                  const r = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                  const rColor = r === 'V' ? 'var(--accent)' : r === 'D' ? '#ffb4ab' : '#94a3b8'
-                  const rBg = r === 'V' ? 'rgba(34,197,94,0.15)' : r === 'D' ? 'rgba(255,180,171,0.1)' : 'rgba(148,163,184,0.1)'
-                  return (
-                    <div key={m.id} className="flex items-center gap-4 px-6 py-3">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-black flex-shrink-0"
-                        style={{ backgroundColor: rBg, color: rColor }}>{r}</div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-white truncate">vs {m.opponent}</p>
-                        <p className="text-[11px]" style={{ color: '#89968e' }}>{dateStr(m.played_at)} · {m.home ? 'Local' : 'Visitante'}</p>
+            {/* Todos los partidos */}
+            {(allMatches ?? []).length > 0 && (
+              <section className="rounded-2xl border border-[#253028] overflow-hidden" style={{ backgroundColor: '#111713' }}>
+                <div className="px-6 py-4 border-b border-[#253028]">
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>Partidos</p>
+                </div>
+                <div className="divide-y divide-[#253028]">
+                  {[...(allMatches ?? [])].sort((a, b) => b.played_at.localeCompare(a.played_at)).map(m => {
+                    const isScheduled = m.status === 'scheduled'
+                    const r = isScheduled ? null : m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+                    const rColor = r === 'V' ? 'var(--accent)' : r === 'D' ? '#ffb4ab' : r === 'E' ? '#94a3b8' : '#637168'
+                    const rBg = r === 'V' ? 'rgba(34,197,94,0.15)' : r === 'D' ? 'rgba(255,180,171,0.1)' : r === 'E' ? 'rgba(148,163,184,0.1)' : 'rgba(100,116,139,0.08)'
+                    const compLabel = m.competition_type === 'copa' ? 'Copa' : m.competition_type === 'amistoso' ? 'Amistoso' : 'Liga'
+                    const compColor = m.competition_type === 'copa' ? '#c084fc' : m.competition_type === 'amistoso' ? '#67e8f9' : '#89968e'
+                    return (
+                      <div key={m.id} className="flex items-center gap-4 px-6 py-3">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-black flex-shrink-0"
+                          style={{ backgroundColor: rBg, color: rColor }}>{r ?? '·'}</div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-white truncate">vs {m.opponent}</p>
+                          <p className="text-[11px]" style={{ color: '#89968e' }}>
+                            {dateStr(m.played_at)} · {m.home ? 'Local' : 'Visitante'}
+                            {' · '}<span style={{ color: compColor }}>{compLabel}</span>
+                          </p>
+                        </div>
+                        {isScheduled ? (
+                          <span className="text-[11px] font-medium" style={{ color: '#637168' }}>Programado</span>
+                        ) : (
+                          <span className="text-sm font-bold tabular-nums" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>
+                            {m.goals_for}–{m.goals_against}
+                          </span>
+                        )}
                       </div>
-                      <span className="text-sm font-bold tabular-nums" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>
-                        {m.goals_for}–{m.goals_against}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-            </section>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
 
           </div>
         )}

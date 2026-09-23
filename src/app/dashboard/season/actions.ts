@@ -61,7 +61,9 @@ export async function saveAppearances(formData: FormData) {
     }
     const appearances: Appearance[] = playerIds.flatMap(playerId => {
       const status = formData.get(`status_${playerId}`) as string
-      if (status === 'no_convocada') return []
+      const inFormation = formation ? !!pitchPositions[playerId] : false
+      // No_convocada solo excluye si además no está asignada a la formación
+      if (status === 'no_convocada' && !inFormation) return []
       const minutes       = Number(formData.get(`minutes_${playerId}`) ?? 0)
       const goals         = Number(formData.get(`goals_${playerId}`) ?? 0)
       const assists       = Number(formData.get(`assists_${playerId}`) ?? 0)
@@ -73,7 +75,8 @@ export async function saveAppearances(formData: FormData) {
       return [{
         match_id: matchId,
         player_id: playerId,
-        starter: status === 'titular',
+        // Titular si el toggle lo dice O si está en la formación
+        starter: status === 'titular' || inFormation,
         minutes,
         goals,
         assists,

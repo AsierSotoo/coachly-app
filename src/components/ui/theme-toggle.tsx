@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
-export function ThemeToggle({ className }: { className?: string }) {
+export function ThemeToggle({ className, compact }: { className?: string; compact?: boolean }) {
   const [isLight, setIsLight] = useState(false)
 
   useEffect(() => {
@@ -18,6 +18,10 @@ export function ThemeToggle({ className }: { className?: string }) {
     localStorage.setItem('coachly-theme', next)
   }
 
+  const w = compact ? 48 : 64
+  const h = compact ? 26 : 32
+  const knob = compact ? 18 : 24
+
   return (
     <button
       type="button"
@@ -25,8 +29,8 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label={isLight ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
       className={`relative cursor-pointer outline-none ${className ?? ''}`}
       style={{
-        width: 64,
-        height: 32,
+        width: w,
+        height: h,
         borderRadius: 100,
         backgroundColor: isLight ? '#d4e9d8' : '#1e3028',
         border: `1.5px solid ${isLight ? '#b8d4bc' : '#2d4535'}`,
@@ -39,16 +43,16 @@ export function ThemeToggle({ className }: { className?: string }) {
         aria-hidden
         style={{
           position: 'absolute',
-          top: 3,
-          left: 3,
-          width: 24,
-          height: 24,
+          top: (h - knob) / 2,
+          left: (h - knob) / 2,
+          width: knob,
+          height: knob,
           borderRadius: '50%',
           backgroundColor: 'var(--accent)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          transform: isLight ? 'translateX(32px)' : 'translateX(0)',
+          transform: isLight ? `translateX(${w - knob - (h - knob)}px)` : 'translateX(0)',
           transition: 'transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1)',
           boxShadow: '0 2px 6px rgba(0,0,0,0.22)',
           pointerEvents: 'none',

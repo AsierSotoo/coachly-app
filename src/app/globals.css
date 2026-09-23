@@ -45,29 +45,29 @@
 
 /* ── Design tokens — light ────────────────────────────────────── */
 :root[data-theme="light"] {
-  --bg:         #bdd6ca;
+  --bg:         #f4f9f6;
   --bg-card:    #ffffff;
-  --bg-card-2:  #f1f7f3;
-  --bg-elevated:#d8ece3;
-  --bg-input:   #f5f9f6;
-  --bdr-strong: #80a697;
-  --bdr:        #9bbdaf;
-  --bdr-subtle: #b8d2c8;
+  --bg-card-2:  #eff6f2;
+  --bg-elevated:#e5eeea;
+  --bg-input:   #f8fbfa;
+  --bdr-strong: #b2ccbf;
+  --bdr:        #c6ddd3;
+  --bdr-subtle: #daeee6;
   --tx:         #0d1f14;
-  --tx-2:       #334d3e;
-  --tx-3:       #587869;
-  --tx-4:       #89a89a;
-  --accent:        #0a7a30;
+  --tx-2:       #2b4639;
+  --tx-3:       #527a69;
+  --tx-4:       #87a99a;
+  --accent:        #1a8040;
   --accent-fg:     #ffffff;
-  --accent-subtle: rgba(10,122,48,0.09);
-  --accent-rgb:    10,122,48;
-  --shadow-card: 0 2px 8px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05);
+  --accent-subtle: rgba(26,128,64,0.09);
+  --accent-rgb:    26,128,64;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.07), 0 4px 14px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
   /* Semantic status colors — light-mode overrides */
-  --c-warn:        #92400e;
-  --c-warn-sub:    rgba(120,53,15,0.75);
-  --c-warn-bg:     rgba(180,100,0,0.08);
-  --c-warn-bdr:    rgba(146,64,14,0.3);
-  --c-goals:       #92400e;
+  --c-warn:        #854d0e;
+  --c-warn-sub:    rgba(133,77,14,0.75);
+  --c-warn-bg:     rgba(180,83,9,0.07);
+  --c-warn-bdr:    rgba(133,77,14,0.25);
+  --c-goals:       #854d0e;
   --c-danger:      #b91c1c;
   --c-danger-sub:  rgba(185,28,28,0.7);
   --c-danger-bg:   rgba(185,28,28,0.1);
@@ -90,6 +90,17 @@ body {
   /* Prevents double-tap zoom while allowing pinch zoom */
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Suavizar el cambio de tema — solo activo mientras dura el toggle */
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition:
+    background-color 0.28s ease,
+    border-color 0.28s ease,
+    color 0.18s ease,
+    box-shadow 0.28s ease !important;
 }
 
 /* Gradiente de atmósfera */
@@ -197,10 +208,10 @@ button, [role="button"], a[href] {
 }
 [data-theme="light"] .landing-shell {
   background:
-    linear-gradient(rgba(0,0,0,.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,.015) 1px, transparent 1px),
-    radial-gradient(circle at 74% 34%, rgba(13,140,62,.06), transparent 28%),
-    #f3f7f4;
+    linear-gradient(rgba(0,0,0,.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.012) 1px, transparent 1px),
+    radial-gradient(circle at 74% 34%, rgba(26,128,64,.05), transparent 28%),
+    #f4f9f6;
   background-size: 52px 52px, 52px 52px, auto, auto;
 }
 .landing-nav { border-bottom: 1px solid rgba(255,255,255,.055); }
@@ -280,7 +291,9 @@ input.score-input::-webkit-outer-spin-button {
 
   /* Restaurar solo la hoja de impresión y sus hijos */
   .print-convocatoria,
-  .print-convocatoria * {
+  .print-convocatoria *,
+  .print-sheet,
+  .print-sheet * {
     visibility: visible;
   }
 
@@ -294,6 +307,17 @@ input.score-input::-webkit-outer-spin-button {
     color: #111713;
     font-family: system-ui, sans-serif;
     font-size: 13px;
+  }
+
+  /* Hoja táctica standalone */
+  .print-sheet {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white !important;
+    color: #111 !important;
+    font-family: Arial, Helvetica, sans-serif;
   }
 
   /* Quitar el patrón de puntos */

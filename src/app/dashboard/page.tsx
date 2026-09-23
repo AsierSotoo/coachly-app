@@ -15,6 +15,7 @@ type Match = {
   status?: string
   competition_type?: string
   home?: boolean
+  rival_logo_url?: string | null
 }
 
 type Season = {
@@ -41,7 +42,7 @@ export default async function DashboardPage() {
 
   const { data: raw } = await supabase
     .from('teams')
-    .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home), training_sessions(id, date, title, start_time)), players(id, active)')
+    .select('*, seasons(id, name, created_at, matches(id, goals_for, goals_against, opponent, played_at, match_time, status, competition_type, home, rival_logo_url), training_sessions(id, date, title, start_time)), players(id, active)')
     .order('created_at', { ascending: true })
 
   const teams = (raw ?? []) as Team[]
@@ -330,7 +331,7 @@ export default async function DashboardPage() {
                           {/* Nuestro equipo */}
                           <div className="flex flex-col items-center gap-1.5" style={{ flex: '1', minWidth: 0 }}>
                             <div className="w-14 h-14 rounded-full border-2 overflow-hidden flex items-center justify-center flex-shrink-0"
-                              style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
+                              style={{ borderColor: 'var(--bdr-strong)', backgroundColor: team.logo_url ? 'white' : 'var(--bg-elevated)' }}>
                               {team.logo_url
                                 // eslint-disable-next-line @next/next/no-img-element
                                 ? <img src={team.logo_url} alt={team.name} className="w-full h-full object-contain p-1" />
@@ -353,11 +354,15 @@ export default async function DashboardPage() {
 
                           {/* Rival */}
                           <div className="flex flex-col items-center gap-1.5" style={{ flex: '1', minWidth: 0 }}>
-                            <div className="w-14 h-14 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-                              style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-elevated)' }}>
-                              <span className="text-[17px] font-black" style={{ color: 'var(--tx-2)' }}>
-                                {opponentInitials(nextMatch.opponent)}
-                              </span>
+                            <div className="w-14 h-14 rounded-full border-2 overflow-hidden flex items-center justify-center flex-shrink-0"
+                              style={{ borderColor: 'var(--bdr-strong)', backgroundColor: nextMatch.rival_logo_url ? 'white' : 'var(--bg-elevated)' }}>
+                              {nextMatch.rival_logo_url
+                                // eslint-disable-next-line @next/next/no-img-element
+                                ? <img src={nextMatch.rival_logo_url} alt={nextMatch.opponent} className="w-full h-full object-contain p-1" />
+                                : <span className="text-[17px] font-black" style={{ color: 'var(--tx-2)' }}>
+                                    {opponentInitials(nextMatch.opponent)}
+                                  </span>
+                              }
                             </div>
                             <p className="text-[10px] font-semibold text-center w-full truncate" style={{ color: 'var(--tx-2)' }}>{nextMatch.opponent}</p>
                           </div>
