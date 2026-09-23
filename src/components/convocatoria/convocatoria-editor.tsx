@@ -92,11 +92,6 @@ export function ConvocatoriaEditor({
     ...squad.filter(p => !p.position).sort((a, b) => (a.number ?? 99) - (b.number ?? 99)),
   ]
 
-  const gkCount = squad.filter(p => p.position === 'Portera' || p.position === 'Portero').length
-  const dfCount = squad.filter(p => p.position === 'Defensa').length
-  const mcCount = squad.filter(p => p.position === 'Centrocampista').length
-  const dlCount = squad.filter(p => p.position === 'Delantera' || p.position === 'Delantero').length
-
   // Numeración posicional para el PDF (esquema clásico de fútbol)
   const PRINT_NUMS: Record<string, number[]> = {
     gk:  [1, 13, 25],
@@ -172,6 +167,20 @@ export function ConvocatoriaEditor({
     })
   }
 
+  const handlePrint = () => {
+    const el = document.querySelector<HTMLElement>('.print-convocatoria')
+    if (!el) return
+    const win = window.open('', '_blank', 'width=820,height=1160')
+    if (!win) return
+    win.document.write(
+      `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Convocatoria · ${teamName} vs ${opponent}</title>` +
+      `<style>@page{size:A4 portrait;margin:1.5cm}body{margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#111713;background:white}</style>` +
+      `</head><body>${el.innerHTML}</body></html>`
+    )
+    win.document.close()
+    setTimeout(() => { win.focus(); win.print(); win.close() }, 300)
+  }
+
   const handleCopy = async () => {
     const date = new Date(playedAt).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
     const fmt = (p: Player) => `• ${p.number ? `#${p.number} ` : ''}${p.name}`
@@ -204,7 +213,7 @@ export function ConvocatoriaEditor({
           targetClass="print-convocatoria"
           filename={`convocatoria-${opponent.toLowerCase().replace(/\s+/g, '-')}`}
         />
-        <button type="button" onClick={() => window.print()}
+        <button type="button" onClick={handlePrint}
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold border active:scale-95 transition-all cursor-pointer"
           style={{ backgroundColor: '#1a231d', borderColor: '#2a342d', color: '#edf2ee' }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>print</span>
@@ -441,49 +450,6 @@ export function ConvocatoriaEditor({
             </ul>
           </div>
 
-          {/* Mini campo táctico */}
-          <div className="rounded-2xl border p-5 relative overflow-hidden"
-            style={{ backgroundColor: '#111713', borderColor: '#253028', height: 200 }}>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#89968e' }}>
-                Distribución Táctica
-              </p>
-              <span className="text-[10px] font-bold" style={{ color: 'var(--accent)' }}>
-                {gkCount}-{dfCount}-{mcCount}-{dlCount}
-              </span>
-            </div>
-
-            {/* Líneas del campo */}
-            <div className="absolute inset-x-6 bottom-4 top-14 pointer-events-none opacity-15">
-              <div className="absolute inset-0 border border-white rounded-lg" />
-              <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white -translate-x-1/2" style={{ display: 'none' }} />
-              <div className="absolute bottom-0 left-1/4 right-1/4 h-14 border border-white" />
-            </div>
-
-            {/* Puntos de jugadoras */}
-            <div className="absolute inset-x-6 bottom-4 top-14 pointer-events-none">
-              {/* GK */}
-              {Array.from({ length: Math.min(gkCount, 1) }).map((_, i) => (
-                <div key={`gk${i}`} className="absolute w-4 h-4 rounded-full"
-                  style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px rgba(34,197,94,0.6)', bottom: 8, left: '50%', transform: 'translateX(-50%)' }} />
-              ))}
-              {/* DF */}
-              {Array.from({ length: Math.min(dfCount, 5) }).map((_, i, arr) => (
-                <div key={`df${i}`} className="absolute w-3 h-3 rounded-full"
-                  style={{ backgroundColor: 'rgba(34,197,94,0.65)', bottom: 44, left: `${((i + 1) / (arr.length + 1)) * 100}%`, transform: 'translateX(-50%)' }} />
-              ))}
-              {/* MC */}
-              {Array.from({ length: Math.min(mcCount, 5) }).map((_, i, arr) => (
-                <div key={`mc${i}`} className="absolute w-3 h-3 rounded-full"
-                  style={{ backgroundColor: 'rgba(34,197,94,0.4)', bottom: 82, left: `${((i + 1) / (arr.length + 1)) * 100}%`, transform: 'translateX(-50%)' }} />
-              ))}
-              {/* DL */}
-              {Array.from({ length: Math.min(dlCount, 4) }).map((_, i, arr) => (
-                <div key={`dl${i}`} className="absolute w-3 h-3 rounded-full"
-                  style={{ backgroundColor: 'rgba(34,197,94,0.2)', bottom: 116, left: `${((i + 1) / (arr.length + 1)) * 100}%`, transform: 'translateX(-50%)' }} />
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
