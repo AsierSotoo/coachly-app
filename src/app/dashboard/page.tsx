@@ -368,21 +368,29 @@ export default async function DashboardPage() {
                           </div>
                         </div>
 
-                        {/* Disponibles — siempre visible */}
+                        {/* Disponibles — barra + botón CTA */}
                         {totalActive > 0 && (
-                          <div className="mt-4 flex items-center justify-between rounded-[10px] border px-3.5 py-2.5"
-                            style={availCount > 0
-                              ? { backgroundColor: 'rgba(var(--accent-rgb),0.08)', borderColor: 'rgba(var(--accent-rgb),0.25)' }
-                              : { backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr)' }}>
-                            <div className="flex items-center gap-2">
-                              <span className="material-symbols-outlined" style={{ fontSize: 15, color: availCount > 0 ? 'var(--accent)' : 'var(--tx-4)' }}>group</span>
-                              <span className="text-[12px] font-bold" style={{ color: availCount > 0 ? 'var(--accent)' : 'var(--tx-3)' }}>
-                                {availCount > 0 ? `${availCount} de ${totalActive} disponibles` : 'Sin respuestas de disponibilidad'}
-                              </span>
+                          <div className="mt-4 space-y-2.5">
+                            <div className="rounded-[10px] border px-3.5 pt-2.5 pb-3 space-y-2"
+                              style={{ backgroundColor: 'rgba(var(--accent-rgb),0.06)', borderColor: 'rgba(var(--accent-rgb),0.2)' }}>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--accent)' }}>group</span>
+                                  <span className="text-[11px] font-semibold" style={{ color: 'var(--tx-3)' }}>Disponibilidad</span>
+                                </div>
+                                <span className="text-[12px] font-bold" style={{ color: 'var(--tx)' }}>
+                                  {availCount} de {totalActive}
+                                </span>
+                              </div>
+                              <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bdr-strong)' }}>
+                                <div className="h-full rounded-full" style={{ width: `${Math.round((availCount / totalActive) * 100)}%`, backgroundColor: 'var(--accent)' }} />
+                              </div>
                             </div>
-                            <span className="text-[11px] font-semibold" style={{ color: availCount > 0 ? 'var(--accent)' : 'var(--tx-4)' }}>
-                              {availCount > 0 ? 'Preparar convocatoria →' : 'Convocar →'}
-                            </span>
+                            <div className="flex items-center justify-center gap-1.5 rounded-[10px] py-3"
+                              style={{ backgroundColor: 'var(--accent)', color: '#0a0f0c' }}>
+                              <span className="text-[13px] font-extrabold">Preparar convocatoria</span>
+                              <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#0a0f0c' }}>arrow_forward</span>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -395,16 +403,18 @@ export default async function DashboardPage() {
                     const ll = lastMatch.goals_for > lastMatch.goals_against ? 'Victoria' : lastMatch.goals_for < lastMatch.goals_against ? 'Derrota' : 'Empate'
                     return (
                       <Link href={`/dashboard/season/${lastSeason.id}/match/${lastMatch.id}`}
-                        className="flex items-center gap-3 rounded-[12px] border px-4 py-2.5 transition-all active:scale-[.99]"
+                        className="flex items-center gap-2.5 rounded-[12px] border px-4 py-3 transition-all active:scale-[.99]"
                         style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[9px] font-bold uppercase tracking-wider mb-0.5" style={{ color: 'var(--tx-4)' }}>Último partido</p>
-                          <p className="text-[13px] font-bold">
-                            <span style={{ color: lc }}>{ll} {lastMatch.goals_for}–{lastMatch.goals_against}</span>
-                            {' '}<span style={{ color: 'var(--tx-2)' }}>vs {lastMatch.opponent}</span>
-                          </p>
-                        </div>
-                        <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 16, color: 'var(--tx-4)' }}>chevron_right</span>
+                        <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Último</span>
+                        <span className="shrink-0 rounded-[5px] px-2 py-0.5 text-[11px] font-extrabold"
+                          style={{ backgroundColor: `${lc === 'var(--accent)' ? 'rgba(var(--accent-rgb),0.12)' : lc === 'var(--c-danger)' ? 'rgba(220,38,38,0.1)' : 'rgba(245,158,11,0.1)'}`, color: lc, border: `1px solid ${lc === 'var(--accent)' ? 'rgba(var(--accent-rgb),0.25)' : lc === 'var(--c-danger)' ? 'rgba(220,38,38,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
+                          {ll}
+                        </span>
+                        <span className="text-[14px] font-black tabular-nums shrink-0" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                          {lastMatch.goals_for}–{lastMatch.goals_against}
+                        </span>
+                        <span className="text-[12px] flex-1 min-w-0 truncate" style={{ color: 'var(--tx-3)' }}>vs {lastMatch.opponent}</span>
+                        <span className="material-symbols-outlined shrink-0" style={{ fontSize: 16, color: 'var(--tx-4)' }}>chevron_right</span>
                       </Link>
                     )
                   })()}
@@ -454,28 +464,35 @@ export default async function DashboardPage() {
                     </Link>
                   )}
 
-                  {/* ── Stats: 3 grandes columnas ─────────────── */}
+                  {/* ── Stats: 4 columnas ─────────────────────── */}
                   {competitive.length > 0 && (
                     <div className="overflow-hidden rounded-[14px] border" style={{ backgroundColor: 'var(--bg-card-2)', borderColor: 'var(--bdr)', boxShadow: 'var(--shadow-card)' }}>
-                      <div className="grid grid-cols-3">
-                        <div className="flex flex-col items-center py-5">
-                          <span className="text-[40px] font-black tabular-nums leading-none" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>{points}</span>
+                      <div className="grid grid-cols-4">
+                        <div className="flex flex-col items-center py-4 border-r" style={{ borderColor: 'var(--bdr)' }}>
+                          <span className="text-[34px] font-black tabular-nums leading-none" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>{points}</span>
                           <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>PUNTOS</span>
                         </div>
-                        <div className="flex flex-col items-center py-5 border-x" style={{ borderColor: 'var(--bdr)' }}>
-                          <span className="text-[40px] font-black tabular-nums leading-none" style={{ color: diff > 0 ? 'var(--accent)' : diff < 0 ? 'var(--c-danger)' : 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                        <div className="flex flex-col items-center py-4 border-r" style={{ borderColor: 'var(--bdr)' }}>
+                          <span className="text-[34px] font-black tabular-nums leading-none" style={{ color: diff > 0 ? 'var(--accent)' : diff < 0 ? 'var(--c-danger)' : 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                             {diff > 0 ? '+' : ''}{diff}
                           </span>
                           <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>DIFERENCIA</span>
                         </div>
-                        <div className="flex flex-col items-center py-5">
-                          <span className="text-[40px] font-black tabular-nums leading-none" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
+                        <div className="flex flex-col items-center py-4 border-r" style={{ borderColor: 'var(--bdr)' }}>
+                          <div className="flex items-center leading-none" style={{ fontFamily: 'Sora, sans-serif' }}>
+                            <span className="text-[28px] font-black tabular-nums" style={{ color: 'var(--accent)' }}>{goalsFor}</span>
+                            <span className="text-[18px] font-black mx-0.5" style={{ color: 'var(--bdr-strong)' }}>–</span>
+                            <span className="text-[28px] font-black tabular-nums" style={{ color: 'var(--c-danger)' }}>{goalsAgainst}</span>
+                          </div>
+                          <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>GOLES</span>
+                        </div>
+                        <div className="flex flex-col items-center py-4">
+                          <span className="text-[34px] font-black tabular-nums leading-none" style={{ color: 'var(--tx)', fontFamily: 'Sora, sans-serif' }}>
                             {wins + draws + losses > 0 ? `${Math.round((wins / (wins + draws + losses)) * 100)}%` : '—'}
                           </span>
                           <span className="text-[8px] font-bold uppercase tracking-widest mt-2" style={{ color: 'var(--tx-4)' }}>VICTORIAS</span>
                         </div>
                       </div>
-                      {/* Barra de forma */}
                       {(wins + draws + losses) > 0 && (
                         <div className="flex h-[3px]">
                           {wins   > 0 && <div style={{ flex: wins,   backgroundColor: 'var(--accent)' }} />}
