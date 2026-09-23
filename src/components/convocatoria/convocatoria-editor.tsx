@@ -291,7 +291,7 @@ export function ConvocatoriaEditor({
       })()}
 
       {/* ── Main: 2 columnas ────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
         {/* ── Left: Tabla de jugadoras ─────────────────────────────── */}
         <div className="lg:col-span-7 rounded-2xl border overflow-hidden flex flex-col"
