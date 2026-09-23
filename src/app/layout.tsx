@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Prevent flash of wrong theme */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('coachly-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()` }} />
       </head>
-      <body className="min-h-full flex flex-col font-[family-name:var(--font-body)] antialiased" style={{ color: 'var(--tx)' }}>
+      <body className="min-h-full flex flex-col font-[family-name:var(--font-heading)] antialiased" style={{ color: 'var(--tx)' }}>
         <ThemeProvider>
         {children}
         <InstallPrompt />
