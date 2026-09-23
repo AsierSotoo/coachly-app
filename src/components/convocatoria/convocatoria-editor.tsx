@@ -291,7 +291,7 @@ export function ConvocatoriaEditor({
       })()}
 
       {/* ── Main: 2 columnas ────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* ── Left: Tabla de jugadoras ─────────────────────────────── */}
         <div className="lg:col-span-7 rounded-2xl border overflow-hidden flex flex-col"
@@ -309,8 +309,8 @@ export function ConvocatoriaEditor({
               <input
                 type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="Buscar jugadora..."
-                className="border rounded-lg pl-9 pr-4 py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors w-52"
-                style={{ backgroundColor: '#171f1a', borderColor: '#2a342d', color: '#edf2ee' }}
+                className="border rounded-lg py-2 text-sm outline-none focus:border-[var(--accent)] transition-colors w-52"
+                style={{ backgroundColor: '#171f1a', borderColor: '#2a342d', color: '#edf2ee', paddingLeft: 36, paddingRight: 16 }}
               />
             </div>
           </div>
@@ -406,11 +406,11 @@ export function ConvocatoriaEditor({
           </div>
         </div>
 
-        {/* ── Right: Roster agrupado + Mini campo ──────────────────── */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        {/* ── Right: Roster agrupado ───────────────────────────────── */}
+        <div className="lg:col-span-5 flex flex-col">
 
-          {/* Roster agrupado */}
-          <div className="rounded-2xl border overflow-hidden flex flex-col"
+          {/* Roster agrupado — ocupa toda la altura de la columna */}
+          <div className="rounded-2xl border overflow-hidden flex flex-col flex-1"
             style={{ backgroundColor: '#171f1a', borderColor: '#2a342d' }}>
             <div className="flex items-center justify-between px-5 py-4 border-b"
               style={{ backgroundColor: '#1a231d', borderColor: '#2a342d' }}>
@@ -423,7 +423,7 @@ export function ConvocatoriaEditor({
               </div>
             </div>
 
-            <ul className="p-4 overflow-y-auto space-y-0.5" style={{ maxHeight: 280 }}>
+            <ul className="p-4 overflow-y-auto space-y-0.5 flex-1 min-h-0">
               {sortedSquad.map(p => (
                 <li key={p.id} className="group flex items-center justify-between px-2 py-1.5 rounded-lg transition-colors hover:bg-[#1a231d]">
                   <div className="flex items-center gap-2 min-w-0">
