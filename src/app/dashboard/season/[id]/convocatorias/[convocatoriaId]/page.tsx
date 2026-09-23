@@ -31,7 +31,7 @@ export default async function ConvocatoriaDetailPage({
       .order('number', { ascending: true, nullsFirst: false }),
     supabase.from('convocatoria_players').select('player_id, status').eq('convocatoria_id', convocatoriaId),
     supabase.from('matches')
-      .select('id, opponent, played_at, match_time, home, convocatorias(id)')
+      .select('id, opponent, rival_logo_url, played_at, match_time, home, convocatorias(id)')
       .eq('season_id', seasonId)
       .order('played_at', { ascending: false }),
   ])
@@ -56,8 +56,9 @@ export default async function ConvocatoriaDetailPage({
     return linked.length === 0 || linked.some(c => c.id === convocatoriaId)
   }).map(m => ({ id: m.id, opponent: m.opponent, played_at: m.played_at, match_time: (m as { match_time?: string | null }).match_time ?? null }))
 
-  const linkedMatch = (matches ?? []).find(m => m.id === conv.match_id) as { home?: boolean; match_time?: string | null } | undefined
+  const linkedMatch = (matches ?? []).find(m => m.id === conv.match_id) as { home?: boolean; match_time?: string | null; rival_logo_url?: string | null } | undefined
   const isHome = linkedMatch?.home ?? null
+  const rivalLogoUrl = linkedMatch?.rival_logo_url ?? null
 
   const isCompleted = (existing ?? []).some(r => r.status !== 'no_convocada')
 
@@ -112,9 +113,14 @@ export default async function ConvocatoriaDetailPage({
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center border text-xl font-black"
-                style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)', color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>
-                {conv.opponent.slice(0, 2).toUpperCase()}
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center border overflow-hidden"
+                style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--bdr-strong)' }}>
+                {rivalLogoUrl
+                  ? <img src={rivalLogoUrl} alt={conv.opponent} className="w-full h-full object-contain p-1" />
+                  : <span className="text-xl font-black" style={{ color: 'var(--accent)', fontFamily: 'Sora, sans-serif' }}>
+                      {conv.opponent.slice(0, 2).toUpperCase()}
+                    </span>
+                }
               </div>
               <div>
                 <h2 className="text-[24px] font-extrabold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>{conv.opponent}</h2>
