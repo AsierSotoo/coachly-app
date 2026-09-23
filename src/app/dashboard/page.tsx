@@ -534,30 +534,6 @@ export default async function DashboardPage() {
                     </div>
                   )}
 
-                  {/* ── Forma reciente (solo desktop) ─────────── */}
-                  {recentForm.length > 0 && (
-                    <div className="hidden lg:flex items-center justify-between px-1">
-                      <div>
-                        <p className="mb-2 text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>Forma reciente</p>
-                        <div className="flex gap-1.5">
-                          {recentForm.map((m, i) => {
-                            const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
-                            const s = { V: { bg: 'var(--accent)', text: 'var(--accent-fg)' }, E: { bg: 'var(--bg-elevated)', text: 'var(--tx-2)' }, D: { bg: 'var(--c-danger-bg)', text: 'var(--c-danger)' } }[res]
-                            return <span key={i} className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: s.bg, color: s.text, border: `1px solid ${s.bg}40` }}>{res}</span>
-                          })}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="mb-1 text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--tx-3)' }}>Goles</p>
-                        <p className="font-extrabold tabular-nums leading-none" style={{ fontFamily: 'Sora, sans-serif', fontSize: 18 }}>
-                          <span style={{ color: 'var(--accent)' }}>{goalsFor}</span>
-                          <span style={{ color: 'var(--bdr-strong)' }}> — </span>
-                          <span style={{ color: 'var(--c-danger)' }}>{goalsAgainst}</span>
-                        </p>
-                        <p className="text-[9px] mt-0.5" style={{ color: 'var(--tx-4)' }}>a favor — en contra</p>
-                      </div>
-                    </div>
-                  )}
 
                   </div>
 
@@ -641,7 +617,46 @@ export default async function DashboardPage() {
                       </Link>
                     ))}
 
-                    {/* 4. Máxima goleadora */}
+                    {/* 4. Forma reciente */}
+                    {recentForm.length > 0 && (() => {
+                      const fWins   = recentForm.filter(m => m.goals_for > m.goals_against).length
+                      const fLosses = recentForm.filter(m => m.goals_for < m.goals_against).length
+                      const fDraws  = recentForm.filter(m => m.goals_for === m.goals_against).length
+                      return (
+                        <div className="rounded-[12px] border px-3.5 py-3"
+                          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
+                          <div className="flex items-center justify-between mb-2.5">
+                            <p className="text-[9px] font-extrabold uppercase tracking-widest" style={{ color: 'var(--tx-4)' }}>Forma reciente</p>
+                            <p className="text-[11px] font-bold" style={{ color: 'var(--tx-2)' }}>
+                              {fWins}V{fDraws > 0 ? ` · ${fDraws}E` : ''}{fLosses > 0 ? ` · ${fLosses}D` : ''}
+                            </p>
+                          </div>
+                          <div className="flex gap-1.5 mb-2.5">
+                            {recentForm.map((m, i) => {
+                              const res: 'V' | 'E' | 'D' = m.goals_for > m.goals_against ? 'V' : m.goals_for < m.goals_against ? 'D' : 'E'
+                              const st = {
+                                V: { bg: 'rgba(var(--accent-rgb),0.15)', color: 'var(--accent)', bdr: 'rgba(var(--accent-rgb),0.3)' },
+                                E: { bg: 'var(--bg-elevated)', color: 'var(--tx-3)', bdr: 'var(--bdr-strong)' },
+                                D: { bg: 'var(--c-danger-bg)', color: 'var(--c-danger)', bdr: 'rgba(220,38,38,0.3)' },
+                              }[res]
+                              return (
+                                <span key={i} className="flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-black flex-shrink-0"
+                                  style={{ backgroundColor: st.bg, color: st.color, border: `1.5px solid ${st.bdr}` }}>
+                                  {res}
+                                </span>
+                              )
+                            })}
+                          </div>
+                          <div className="flex h-1.5 rounded-full overflow-hidden" style={{ gap: 2 }}>
+                            {fWins   > 0 && <div className="rounded-full" style={{ flex: fWins,   backgroundColor: 'var(--accent)' }} />}
+                            {fDraws  > 0 && <div className="rounded-full" style={{ flex: fDraws,  backgroundColor: 'var(--c-warn)', opacity: 0.7 }} />}
+                            {fLosses > 0 && <div className="rounded-full" style={{ flex: fLosses, backgroundColor: 'var(--c-danger)', opacity: 0.85 }} />}
+                          </div>
+                        </div>
+                      )
+                    })()}
+
+                    {/* 5. Máxima goleadora */}
                     {topScorer && (
                       <div className="rounded-[12px] border px-3.5 py-3"
                         style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bdr-strong)', boxShadow: 'var(--shadow-card)' }}>
