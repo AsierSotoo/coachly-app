@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
+import Link from 'next/link'
 import { updateTeam, toggleAvailabilityEnabled } from '../../actions'
 import { LogoUpload } from '@/components/team/logo-upload'
 import { DeleteTeamButton } from '@/components/team/delete-team-button'
