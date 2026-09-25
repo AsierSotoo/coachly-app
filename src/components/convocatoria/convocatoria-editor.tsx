@@ -83,54 +83,13 @@ export function ConvocatoriaEditor({
     if (g.length > 0) groupedSquad[pos] = g
   }
 
-  // Lista plana ordenada: GK→DEF→MID→FWD, sin cabeceras de sección
-  const sortedSquad = [
-    ...terms.posOrder.flatMap(pos =>
-      (groupedSquad[pos] ?? []).slice().sort((a, b) => (a.number ?? 99) - (b.number ?? 99))
-    ),
-    ...squad.filter(p => !p.position).sort((a, b) => (a.number ?? 99) - (b.number ?? 99)),
-  ]
-
-  // Numeración posicional para el PDF (esquema clásico de fútbol)
-  const PRINT_NUMS: Record<string, number[]> = {
-    gk:  [1, 13, 25],
-    def: [2, 3, 4, 5],    // LD, LI, central, central
-    mid: [6, 8, 10],      // pivote, interior, mediapunta
-    fwd: [7, 9, 11],      // ED, delantero, EI
-  }
-  const posBucket = (pos: string | null): 'gk' | 'def' | 'mid' | 'fwd' | null => {
-    if (!pos) return null
-    const n = pos.toLowerCase()
-    if (n.includes('porter')) return 'gk'
-    if (n.includes('defens')) return 'def'
-    if (n.includes('centrocampist') || n.includes('medio')) return 'mid'
-    if (n.includes('delanter')) return 'fwd'
-    return null
-  }
-  const printNumMap = new Map<string, number | null>()
-  const posBuckets: Record<string, Player[]> = { gk: [], def: [], mid: [], fwd: [] }
-  for (const p of sortedSquad) {
-    const b = posBucket(p.position)
-    if (b) posBuckets[b].push(p)
-    else printNumMap.set(p.id, p.number)
-  }
-  // Primera pasada: asignar números posicionales de PRINT_NUMS
-  const usedPrintNums = new Set<number>()
-  const printOverflow: Player[] = []
-  for (const [b, ps] of Object.entries(posBuckets)) {
-    const nums = PRINT_NUMS[b]
-    ps.forEach((p, i) => {
-      if (i < nums.length) {
-        usedPrintNums.add(nums[i])
-        printNumMap.set(p.id, nums[i])
-      } else {
-        printOverflow.push(p)
-      }
-    })
-  }
-  // Segunda pasada: overflow usa el primer número libre del pool 1-30
-  const printPool = Array.from({ length: 30 }, (_, i) => i + 1).filter(n => !usedPrintNums.has(n))
-  printOverflow.forEach((p, i) => { printNumMap.set(p.id, printPool[i] ?? null) })
+  // Lista plana ordenada por dorsal (null al final), sin cabeceras de sección
+  const sortedSquad = [...squad].sort((a, b) => {
+    if (a.number === null && b.number === null) return 0
+    if (a.number === null) return 1
+    if (b.number === null) return -1
+    return a.number - b.number
+  })
 
   const handleSave = () => {
     startSave(async () => {
@@ -571,12 +530,12 @@ export function ConvocatoriaEditor({
 
       {/* Sin leyenda — la imagen es solo para compartir con la plantilla */}
 
-      {/* Jugadoras — lista plana en 2 columnas, ordenadas GK→DEF→MID→FWD */}
+      {/* Jugadoras — lista plana en 2 columnas, ordenadas por dorsal */}
       <div style={{ columns: 2, gap: '2rem', marginTop: '0.5rem' }}>
         {sortedSquad.map(p => (
           <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.3rem 0.5rem', marginBottom: 2, breakInside: 'avoid' }}>
             <span style={{ width: 24, textAlign: 'right', fontWeight: 700, color: '#94a3b8', fontSize: '0.8rem', flexShrink: 0 }}>
-              {printNumMap.get(p.id) ?? '—'}
+              {p.number ?? '—'}
             </span>
             <span style={{ flex: 1, color: '#111713', fontSize: '0.875rem' }}>
               {p.name}
