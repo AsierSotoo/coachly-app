@@ -257,7 +257,7 @@ export function ConvocatoriaEditor({
 
           {/* Header con buscador */}
           <div className="flex items-center justify-between px-5 py-4 border-b"
-            style={{ backgroundColor: 'var(--bg-sidebar)', borderColor: 'var(--bdr-strong)' }}>
+            style={{ backgroundColor: 'var(--bg-card-2)', borderColor: 'var(--bdr-strong)' }}>
             <h3 className="text-[18px] font-semibold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>
               Plantilla Disponible
             </h3>
