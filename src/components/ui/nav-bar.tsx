@@ -2,28 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
-import dynamic from 'next/dynamic'
 import { resolveActiveIds } from './header-title'
-
-const Glass = dynamic(
-  () => import('@samasante/liquid-glass').then(m => m.Glass),
-  { ssr: false }
-)
 
 type Team = { id: string; name: string; availability_enabled?: boolean; seasons: { id: string; created_at: string }[] }
 
 export function NavBar({ teams }: { teams: Team[] }) {
   const pathname = usePathname()
   const { teamId, seasonId } = resolveActiveIds(teams, pathname)
-  const [navWidth, setNavWidth] = useState(0)
-
-  useEffect(() => {
-    const update = () => setNavWidth(window.innerWidth)
-    update()
-    window.addEventListener('resize', update)
-    return () => window.removeEventListener('resize', update)
-  }, [])
 
   const currentTeam = teams.find(t => t.id === teamId)
   const availEnabled = currentTeam?.availability_enabled ?? false
@@ -50,23 +35,14 @@ export function NavBar({ teams }: { teams: Team[] }) {
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-20"
       style={{
-        height: 72,
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         backgroundColor: 'var(--bg-card)',
         borderTop: '1px solid var(--bdr-strong)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
-      {navWidth > 0 && (
-        <div className="absolute inset-0 overflow-hidden" style={{ pointerEvents: 'none' }}>
-          <Glass
-            width={navWidth}
-            height={72}
-            live
-            optics={{ frost: 4, strength: 0.45, depth: 0.5, sheen: 0.35, brightness: 0.92 }}
-          />
-        </div>
-      )}
-      <div className="relative flex items-center h-full" style={{ zIndex: 1 }}>
+      <div className="flex items-center h-16">
         {items.map(item => {
           const active = isActive(item.key)
           return (
