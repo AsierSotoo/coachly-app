@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { resolveActiveIds } from './header-title'
 
@@ -15,6 +16,14 @@ type Team = { id: string; name: string; availability_enabled?: boolean; seasons:
 export function NavBar({ teams }: { teams: Team[] }) {
   const pathname = usePathname()
   const { teamId, seasonId } = resolveActiveIds(teams, pathname)
+  const [navWidth, setNavWidth] = useState(0)
+
+  useEffect(() => {
+    const update = () => setNavWidth(window.innerWidth)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   const currentTeam = teams.find(t => t.id === teamId)
   const availEnabled = currentTeam?.availability_enabled ?? false
@@ -63,9 +72,9 @@ export function NavBar({ teams }: { teams: Team[] }) {
       className="md:hidden fixed bottom-0 left-0 right-0 z-20"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      {Glass ? (
+      {navWidth > 0 ? (
         <Glass
-          style={{ width: '100%', borderRadius: 0 }}
+          width={navWidth}
           height={64}
           live
           optics={{
