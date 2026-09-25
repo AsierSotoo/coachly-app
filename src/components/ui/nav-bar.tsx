@@ -46,55 +46,44 @@ export function NavBar({ teams }: { teams: Team[] }) {
     return false
   }
 
-  const navItems = (
-    <div className="flex items-center h-16">
-      {items.map(item => {
-        const active = isActive(item.key)
-        return (
-          <Link key={item.key} href={item.href}
-            className="relative flex flex-1 flex-col items-center justify-center gap-0.5 h-full transition-all active:scale-90 active:opacity-70"
-            style={{ color: active ? 'var(--accent)' : 'var(--tx-3)' }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 22, fontVariationSettings: active ? "'FILL' 1, 'wght' 500" : "'FILL' 0, 'wght' 400" }}>
-              {item.icon}
-            </span>
-            <span className="text-[10px] font-semibold leading-none">{item.label}</span>
-            {active && (
-              <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
-            )}
-          </Link>
-        )
-      })}
-    </div>
-  )
-
   return (
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-20"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      style={{
+        height: 64,
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        backgroundColor: 'var(--bg-card)',
+        borderTop: '1px solid var(--bdr-strong)',
+      }}
     >
-      {navWidth > 0 ? (
-        <Glass
-          width={navWidth}
-          height={64}
-          live
-          optics={{
-            frost: 3,
-            strength: 0.55,
-            depth: 0.6,
-            bend: 0.35,
-            bendWidth: 0.12,
-            sheen: 0.4,
-            brightness: 0.95,
-            glow: 0.1,
-          }}
-        >
-          {navItems}
-        </Glass>
-      ) : (
-        <div style={{ height: 64, backgroundColor: 'var(--bg-card)', borderTop: '1px solid var(--bdr-strong)' }}>
-          {navItems}
+      {navWidth > 0 && (
+        <div className="absolute inset-0 overflow-hidden" style={{ pointerEvents: 'none' }}>
+          <Glass
+            width={navWidth}
+            height={64}
+            live
+            optics={{ frost: 4, strength: 0.45, depth: 0.5, sheen: 0.35, brightness: 0.92 }}
+          />
         </div>
       )}
+      <div className="relative flex items-center h-full" style={{ zIndex: 1 }}>
+        {items.map(item => {
+          const active = isActive(item.key)
+          return (
+            <Link key={item.key} href={item.href}
+              className="relative flex flex-1 flex-col items-center justify-center gap-0.5 h-full transition-all active:scale-90 active:opacity-70"
+              style={{ color: active ? 'var(--accent)' : 'var(--tx-3)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 22, fontVariationSettings: active ? "'FILL' 1, 'wght' 500" : "'FILL' 0, 'wght' 400" }}>
+                {item.icon}
+              </span>
+              <span className="text-[10px] font-semibold leading-none">{item.label}</span>
+              {active && (
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
+              )}
+            </Link>
+          )
+        })}
+      </div>
     </nav>
   )
 }
