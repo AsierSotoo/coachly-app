@@ -50,7 +50,7 @@ export function NavBar({ teams }: { teams: Team[] }) {
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-20"
       style={{
-        height: 64,
+        height: 72,
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         backgroundColor: 'var(--bg-card)',
         borderTop: '1px solid var(--bdr-strong)',
@@ -60,7 +60,7 @@ export function NavBar({ teams }: { teams: Team[] }) {
         <div className="absolute inset-0 overflow-hidden" style={{ pointerEvents: 'none' }}>
           <Glass
             width={navWidth}
-            height={64}
+            height={72}
             live
             optics={{ frost: 4, strength: 0.45, depth: 0.5, sheen: 0.35, brightness: 0.92 }}
           />
