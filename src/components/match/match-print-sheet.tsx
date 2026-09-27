@@ -337,7 +337,7 @@ export function MatchPrintSheet({
           </div>
 
           {/* LISTA */}
-          <div style={{ width: 255, flexShrink: 0, height: FH, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ width: 175, flexShrink: 0, height: FH, display: 'flex', flexDirection: 'column' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', flexShrink: 0 }}>
               <tbody>
                 {numbered.map((p, i) => {
@@ -378,9 +378,9 @@ export function MatchPrintSheet({
             <div style={{ flex: 1, marginTop: 6, display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
                 letterSpacing: 1, marginBottom: 4, color: '#666' }}>Notas</div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                {[1,2,3,4,5,6,7,8,9,10].map(i => (
-                  <div key={i} style={{ flex: 1, minHeight: 28, borderBottom: '1px solid #ccc' }} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                {[1,2,3,4,5,6,7,8,9,10,11,12].map(i => (
+                  <div key={i} style={{ height: 0, borderBottom: '1px solid #bbb' }} />
                 ))}
               </div>
             </div>
