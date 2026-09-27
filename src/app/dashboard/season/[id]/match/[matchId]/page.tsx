@@ -66,6 +66,13 @@ export default async function MatchPage({
   const convocatoriaId = (convocatoria as { id?: string } | null)?.id ?? null
   const hasAppearances = (appearances ?? []).length > 0
 
+  // Fetch appearances del partido anterior para el "copiar alineación" (solo si el actual está vacío)
+  const prevAppearances = (!hasAppearances && prevMatch)
+    ? (await supabase.from('appearances')
+        .select('player_id, starter, minutes, goals, assists, yellow_cards, red_cards, pitch_position, sub_minute')
+        .eq('match_id', prevMatch.id)).data ?? null
+    : null
+
   if (convocatoria && !hasAppearances) {
     // Primera carga con convocatoria previa: usar sus estados como valores iniciales
     const rows = convocatoria.convocatoria_players as { player_id: string; status: string }[]
@@ -636,6 +643,8 @@ export default async function MatchPage({
           saved={!!sp.saved}
           convocatoriaStatuses={Object.keys(convocatoriaStatuses).length > 0 ? convocatoriaStatuses : undefined}
           isScheduled={isScheduled}
+          previousAppearances={prevAppearances}
+          previousOpponent={prevMatch?.opponent ?? null}
         />
         </CollapsibleSection>
 

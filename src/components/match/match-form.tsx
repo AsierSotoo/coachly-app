@@ -57,16 +57,22 @@ interface MatchFormProps {
   saved?: boolean
   convocatoriaStatuses?: Record<string, 'titular' | 'convocada' | 'no_convocada'>
   isScheduled?: boolean
+  previousAppearances?: Appearance[] | null
+  previousOpponent?: string | null
 }
 
-export function MatchForm({ match, players, appearances, seasonId, teamName, teamGender, saved, convocatoriaStatuses, isScheduled }: MatchFormProps) {
-  const appearanceMap = new Map(appearances.map(a => [a.player_id, a]))
+export function MatchForm({ match, players, appearances, seasonId, teamName, teamGender, saved, convocatoriaStatuses, isScheduled, previousAppearances, previousOpponent }: MatchFormProps) {
   const terms = getTeamTerms(teamGender)
-  const isFirstEntry = !isScheduled && appearances.length === 0
 
   const formRef = useRef<HTMLFormElement>(null)
   const [liveGoals, setLiveGoals] = useState(() => appearances.reduce((s, a) => s + a.goals, 0))
   const [liveGoalsAgainst, setLiveGoalsAgainst] = useState(match.goals_against)
+  const [overrideApps, setOverrideApps] = useState<Appearance[] | null>(null)
+  const [listKey, setListKey] = useState(0)
+
+  const effectiveAppearances = overrideApps ?? appearances
+  const appearanceMap = new Map(effectiveAppearances.map(a => [a.player_id, a]))
+  const isFirstEntry = !isScheduled && appearances.length === 0 && !overrideApps
 
   // Determinar viewport para evitar inputs duplicados en el formulario
   // (desktop y móvil usan el mismo nombre de campo — solo uno debe estar en el DOM)
@@ -259,6 +265,23 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
         )
       })()}
 
+      {/* Banner copiar alineación del partido anterior */}
+      {appearances.length === 0 && !overrideApps && previousAppearances && previousAppearances.length > 0 && (
+        <div className="rounded-xl border px-4 py-3 flex items-center gap-3"
+          style={{ borderColor: 'rgba(var(--accent-rgb),0.35)', backgroundColor: 'var(--accent-subtle)' }}>
+          <span className="material-symbols-outlined flex-shrink-0" style={{ color: 'var(--accent)', fontSize: 18 }}>content_copy</span>
+          <p className="text-xs flex-1 leading-relaxed" style={{ color: 'var(--tx-2)' }}>
+            Alineación disponible del partido anterior{previousOpponent ? ` (vs ${previousOpponent})` : ''}.
+          </p>
+          <button type="button"
+            onClick={() => { setOverrideApps(previousAppearances); setListKey(k => k + 1) }}
+            className="shrink-0 px-3 h-8 rounded-lg text-xs font-bold cursor-pointer transition-all active:scale-95"
+            style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-fg)', fontFamily: 'Sora, sans-serif' }}>
+            Copiar
+          </button>
+        </div>
+      )}
+
       {/* Aviso primera vez sin convocatoria */}
       {isFirstEntry && (
         <div className="rounded-xl border px-4 py-3 flex items-start gap-3"
@@ -274,7 +297,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       {/* ── TABLA DESKTOP ─────────────────────────────────── */}
       {/* Solo se renderiza en desktop para evitar inputs duplicados con nombres iguales */}
       {(isMobile === null || !isMobile) && (
-        <section className="hidden lg:block">
+        <section key={`desktop-${listKey}`} className="hidden lg:block">
           <div className="overflow-hidden rounded-2xl border" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)' }}>
             {/* Cabecera tabla */}
             <div className="grid grid-cols-[2.5rem_1fr_5rem_5rem_3.5rem_3.5rem_3.5rem_3.5rem_5rem] items-center gap-2 border-b px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest" style={{ borderColor: 'var(--bdr)', backgroundColor: 'var(--bg-card-2)' }}>
@@ -306,7 +329,7 @@ export function MatchForm({ match, players, appearances, seasonId, teamName, tea
       {/* ── CARDS MÓVIL ───────────────────────────────────── */}
       {/* Solo se renderiza en móvil para evitar inputs duplicados con nombres iguales */}
       {(isMobile === null || isMobile) && (
-        <section className="lg:hidden">
+        <section key={`mobile-${listKey}`} className="lg:hidden">
           <div className="flex items-center gap-4 text-xs px-1 mb-3" style={{ color: 'var(--tx-3)' }}>
             {([
               { k: 'T', l: 'Titular',            bg: 'var(--accent)',    color: 'var(--accent-fg)' },

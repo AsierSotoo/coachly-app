@@ -6,6 +6,7 @@ import { DeleteMatchButton } from '@/components/match/delete-match-button'
 import { PageTransition } from '@/components/ui/page-transition'
 import { CollapsibleSection } from '@/components/ui/collapsible-section'
 import { TeamLogo } from '@/components/team/team-logo'
+import { AlertsModal } from '@/components/ui/alerts-modal'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -43,7 +44,7 @@ export default async function SeasonPage({
   const [{ data: season }, { data: matchesRaw }] = await Promise.all([
     supabase.from('seasons').select('*, teams(*)').eq('id', seasonId).single(),
     supabase.from('matches')
-      .select('*, convocatorias(id), appearances(id, goals, player_id, players(name))')
+      .select('*, convocatorias(id), appearances(id, goals, yellow_cards, player_id, players(name))')
       .eq('season_id', seasonId)
       .order('played_at', { ascending: false }),
   ])
@@ -120,7 +121,7 @@ export default async function SeasonPage({
   const showForm = sp.new === '1' || !!sp.error || (total === 0 && scheduledMatches.length === 0)
   const opponents = [...new Set(allMatches.map(m => m.opponent))].sort()
 
-  type AppRow = { id: string; goals: number | null; player_id: string; players: { name: string } | null }
+  type AppRow = { id: string; goals: number | null; yellow_cards: number | null; player_id: string; players: { name: string } | null }
   const pendingData = matches.filter(m => (m.appearances as AppRow[]).length === 0).length
 
   // Top goleadoras — todos los partidos (amistosos incluidos, los goles son los goles)
@@ -135,6 +136,21 @@ export default async function SeasonPage({
     }
   }
   const topScorers = [...scorerMap.values()].sort((a, b) => b.goals - a.goals).slice(0, 3)
+
+  // Alertas amarillas — jugadoras con 4+ tarjetas acumuladas
+  const yellowAlertMap = new Map<string, { name: string; count: number }>()
+  for (const m of matches) {
+    for (const app of (m.appearances as AppRow[])) {
+      if ((app.yellow_cards ?? 0) > 0 && app.players?.name) {
+        const cur = yellowAlertMap.get(app.player_id) ?? { name: app.players.name, count: 0 }
+        cur.count += app.yellow_cards ?? 0
+        yellowAlertMap.set(app.player_id, cur)
+      }
+    }
+  }
+  const yellowAlerts = [...yellowAlertMap.entries()]
+    .filter(([, v]) => v.count >= 4)
+    .map(([playerId, v]) => ({ playerId, name: v.name, count: v.count }))
 
   // Forma reciente: solo partidos competitivos (liga + copa), sin amistosos
   const sortedCompetitive = [...competitiveMatches].sort((a, b) => new Date(a.played_at).getTime() - new Date(b.played_at).getTime())
@@ -159,6 +175,7 @@ export default async function SeasonPage({
 
   return (
     <PageTransition>
+      {yellowAlerts.length > 0 && <AlertsModal alerts={yellowAlerts} />}
       <main className="max-w-7xl mx-auto px-4 md:px-10 py-6 md:py-8 pb-32 md:pb-10">
 
         {/* ── Page header ──────────────────────────────────────────────── */}
@@ -281,6 +298,21 @@ export default async function SeasonPage({
               style={{ color: 'var(--accent)' }}>
               Ver stats →
             </Link>
+          </div>
+        )}
+
+        {/* ── Alertas tarjetas amarillas ──────────────────────────────── */}
+        {yellowAlerts.length > 0 && (
+          <div className="flex items-center gap-2 mb-1 px-1 flex-wrap">
+            <span className="text-[10px] font-bold uppercase tracking-widest flex-shrink-0" style={{ color: '#fbbf24' }}>⚠ Sanciones</span>
+            {yellowAlerts.sort((a, b) => b.count - a.count).map(a => (
+              <div key={a.playerId} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px]"
+                style={{ backgroundColor: 'rgba(251,191,36,0.08)', borderColor: 'rgba(251,191,36,0.3)', color: '#fbbf24' }}>
+                <span className="font-semibold">{a.name.split(' ')[0]}</span>
+                <span className="font-black">{a.count}</span>
+                <span className="inline-block rounded-[2px]" style={{ width: 7, height: 10, backgroundColor: '#fbbf24', marginLeft: 1 }} />
+              </div>
+            ))}
           </div>
         )}
 
