@@ -97,23 +97,25 @@ export default async function TacticsPrintPage({
                   const entry = sectionData[row.id] ?? { players: [] }
                   const filled = entry.players.filter(Boolean)
                   return (
-                    <div key={row.id} style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 7, fontSize: 15 }}>
-                      <span style={{ fontWeight: 700, width: 110, flexShrink: 0, fontSize: 13, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                        – {row.role}:
-                      </span>
-                      <span style={{ fontWeight: 900, color: '#111', letterSpacing: '0.03em' }}>
-                        {filled.length > 0
-                          ? filled.map((name, i) => (
-                              <span key={i}>
-                                {i > 0 && <span style={{ fontWeight: 400, color: '#9ca3af', margin: '0 6px' }}>·</span>}
-                                {i + 1}. {name}
-                              </span>
-                            ))
-                          : <span style={{ fontWeight: 400, color: '#9ca3af' }}>—</span>
-                        }
-                      </span>
+                    <div key={row.id} style={{ marginBottom: 9 }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, fontSize: 15 }}>
+                        <span style={{ fontWeight: 700, width: 110, flexShrink: 0, fontSize: 13, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                          – {row.role}:
+                        </span>
+                        <span style={{ fontWeight: 900, color: '#111', letterSpacing: '0.03em' }}>
+                          {filled.length > 0
+                            ? filled.map((name, i) => (
+                                <span key={i}>
+                                  {i > 0 && <span style={{ fontWeight: 400, color: '#9ca3af', margin: '0 6px' }}>·</span>}
+                                  {i + 1}. {name}
+                                </span>
+                              ))
+                            : <span style={{ fontWeight: 400, color: '#9ca3af' }}>—</span>
+                          }
+                        </span>
+                      </div>
                       {row.hasExtra && entry.extra && (
-                        <div style={{ marginTop: 5, paddingLeft: 110, fontSize: 15, fontWeight: 900, color: '#111' }}>
+                        <div style={{ marginTop: 4, paddingLeft: 118, fontSize: 15, fontWeight: 900, color: '#111' }}>
                           Jugada: {entry.extra}
                         </div>
                       )}

@@ -547,11 +547,11 @@ export function ConvocatoriaEditor({
       {/* Jugadoras — lista plana en 2 columnas, ordenadas por dorsal */}
       <div style={{ columns: 2, gap: '2rem', marginTop: '0.5rem' }}>
         {sortedSquad.map(p => (
-          <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.3rem 0.5rem', marginBottom: 2, breakInside: 'avoid' }}>
-            <span style={{ width: 24, textAlign: 'right', fontWeight: 700, color: '#94a3b8', fontSize: '0.8rem', flexShrink: 0 }}>
+          <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0.5rem', borderBottom: '1px solid #e8ede9', breakInside: 'avoid' }}>
+            <span style={{ width: 28, textAlign: 'right', fontWeight: 900, color: '#374151', fontSize: '0.9rem', flexShrink: 0 }}>
               {p.number ?? '—'}
             </span>
-            <span style={{ flex: 1, color: '#111713', fontSize: '0.875rem' }}>
+            <span style={{ flex: 1, color: '#111713', fontSize: '1rem', fontWeight: 500 }}>
               {p.name}
             </span>
           </div>

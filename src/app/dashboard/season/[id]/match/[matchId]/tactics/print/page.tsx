@@ -84,18 +84,20 @@ export default async function TacticsPrintPage({
                   const entry = sectionData[row.id] ?? { players: [] }
                   const filled = entry.players.filter(Boolean)
                   return (
-                    <div key={row.id} className="flex items-baseline gap-3 text-sm">
-                      <span className="font-semibold w-24 shrink-0 text-xs uppercase tracking-wide" style={{ color: '#374151' }}>
-                        – {row.role}:
-                      </span>
-                      <span className="font-black" style={{ color: '#111', letterSpacing: '0.03em' }}>
-                        {filled.map((name, i) => (
-                          <span key={i}>{i > 0 ? <span className="font-normal text-gray-400 mx-1">·</span> : null}{i + 1}. {name}</span>
-                        ))}
-                        {filled.length === 0 && <span style={{ color: '#9ca3af', fontWeight: 400 }}>—</span>}
-                      </span>
+                    <div key={row.id} style={{ marginBottom: 9 }}>
+                      <div className="flex items-baseline gap-3 text-sm">
+                        <span className="font-semibold w-24 shrink-0 text-xs uppercase tracking-wide" style={{ color: '#374151' }}>
+                          – {row.role}:
+                        </span>
+                        <span className="font-black" style={{ color: '#111', letterSpacing: '0.03em' }}>
+                          {filled.map((name, i) => (
+                            <span key={i}>{i > 0 ? <span className="font-normal text-gray-400 mx-1">·</span> : null}{i + 1}. {name}</span>
+                          ))}
+                          {filled.length === 0 && <span style={{ color: '#9ca3af', fontWeight: 400 }}>—</span>}
+                        </span>
+                      </div>
                       {row.hasExtra && entry.extra && (
-                        <div style={{ marginTop: 5, paddingLeft: 110, fontSize: 15, fontWeight: 900, color: '#111' }}>
+                        <div style={{ marginTop: 4, paddingLeft: 102, fontSize: 15, fontWeight: 900, color: '#111' }}>
                           Jugada: {entry.extra}
                         </div>
                       )}
