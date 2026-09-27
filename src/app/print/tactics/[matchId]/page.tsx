@@ -44,7 +44,7 @@ export default async function TacticsPrintPage({
           .no-print { display: none !important; }
           .print-sheet { margin: 0 !important; box-shadow: none !important; border-radius: 0 !important; max-width: 100% !important; }
         }
-        @page { size: A4; margin: 18mm; }
+        @page { size: A4; margin: 10mm; }
       `}</style>
 
       {/* Botón volver / imprimir — oculto al imprimir */}
@@ -63,33 +63,33 @@ export default async function TacticsPrintPage({
 
       {/* Hoja A4 */}
       <div className="print-sheet" style={{
-        maxWidth: 640, margin: '32px auto', backgroundColor: '#fff',
+        maxWidth: 700, margin: '32px auto', backgroundColor: '#fff',
         borderRadius: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: '40px 44px',
       }}>
         {/* Cabecera */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
           <div>
-            <p style={{ margin: 0, fontWeight: 900, fontSize: 15, color: '#111', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+            <p style={{ margin: 0, fontWeight: 900, fontSize: 19, color: '#111', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
               Jornada: {matchIndex >= 0 ? matchIndex + 1 : '—'}&nbsp;&nbsp;&nbsp;Rival: {match.opponent}
             </p>
-            <p style={{ margin: '3px 0 0', fontSize: 11, color: '#6b7280' }}>
+            <p style={{ margin: '4px 0 0', fontSize: 14, color: '#6b7280' }}>
               {playedAt} · {(match as { home?: boolean }).home ? 'Local' : 'Visitante'} · {team.name}
             </p>
           </div>
           {team.logo_url && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={team.logo_url} alt={team.name} style={{ width: 52, height: 52, objectFit: 'contain' }} />
+            <img src={team.logo_url} alt={team.name} style={{ width: 60, height: 60, objectFit: 'contain' }} />
           )}
         </div>
 
-        <hr style={{ border: 'none', borderTop: '1.5px solid #d1d5db', margin: '14px 0 20px' }} />
+        <hr style={{ border: 'none', borderTop: '1.5px solid #d1d5db', margin: '16px 0 22px' }} />
 
         {/* Secciones */}
         {template.sections.map((section, sIdx) => {
           const sectionData = tactics.sections[section.id] ?? {}
           return (
-            <div key={section.id} style={{ marginTop: sIdx > 0 ? 20 : 0 }}>
-              <p style={{ margin: '0 0 8px', fontWeight: 900, fontSize: 13, color: '#111', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div key={section.id} style={{ marginTop: sIdx > 0 ? 24 : 0 }}>
+              <p style={{ margin: '0 0 10px', fontWeight: 900, fontSize: 16, color: '#111', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 {section.title}:
               </p>
               <div style={{ paddingLeft: 8 }}>
@@ -97,8 +97,8 @@ export default async function TacticsPrintPage({
                   const entry = sectionData[row.id] ?? { players: [] }
                   const filled = entry.players.filter(Boolean)
                   return (
-                    <div key={row.id} style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 5, fontSize: 13 }}>
-                      <span style={{ fontWeight: 600, width: 90, flexShrink: 0, fontSize: 11, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    <div key={row.id} style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 7, fontSize: 15 }}>
+                      <span style={{ fontWeight: 700, width: 110, flexShrink: 0, fontSize: 13, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                         – {row.role}:
                       </span>
                       <span style={{ fontWeight: 900, color: '#111', letterSpacing: '0.03em' }}>
@@ -113,7 +113,7 @@ export default async function TacticsPrintPage({
                         }
                       </span>
                       {row.hasExtra && entry.extra && (
-                        <span style={{ fontSize: 11, fontStyle: 'italic', color: '#4b5563', marginLeft: 8 }}>
+                        <span style={{ fontSize: 13, fontStyle: 'italic', color: '#4b5563', marginLeft: 8 }}>
                           Jugada: {entry.extra}
                         </span>
                       )}
@@ -122,7 +122,7 @@ export default async function TacticsPrintPage({
                 })}
               </div>
               {sIdx < template.sections.length - 1 && (
-                <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '16px 0 0' }} />
+                <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '18px 0 0' }} />
               )}
             </div>
           )
@@ -130,16 +130,16 @@ export default async function TacticsPrintPage({
 
         {/* Notas */}
         {template.notesCount > 0 && (
-          <div style={{ marginTop: 24 }}>
-            <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', marginBottom: 16 }} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ marginTop: 28 }}>
+            <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', marginBottom: 18 }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {Array.from({ length: template.notesCount }).map((_, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-                  <span style={{ fontWeight: 900, fontSize: 13, color: '#111', flexShrink: 0 }}>{i + 1}.</span>
+                  <span style={{ fontWeight: 900, fontSize: 15, color: '#111', flexShrink: 0 }}>{i + 1}.</span>
                   {tactics.notes[i] ? (
-                    <span style={{ fontSize: 13, color: '#111', flex: 1 }}>{tactics.notes[i]}</span>
+                    <span style={{ fontSize: 15, color: '#111', flex: 1 }}>{tactics.notes[i]}</span>
                   ) : (
-                    <span style={{ flex: 1, borderBottom: '1px solid #374151', display: 'block', minHeight: 18 }} />
+                    <span style={{ flex: 1, borderBottom: '1px solid #374151', display: 'block', minHeight: 20 }} />
                   )}
                 </div>
               ))}

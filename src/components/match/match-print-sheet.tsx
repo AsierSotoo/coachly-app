@@ -97,14 +97,14 @@ function assignSeq(starters: Player[]): PlayerWithSeq[] {
   return out.sort((a, b) => a.seqNum - b.seqNum)
 }
 
-function FieldRow({ players, topPct, circleSize = 28 }: {
+function FieldRow({ players, topPct, circleSize = 32 }: {
   players: PlayerWithSeq[]
   topPct: string
   circleSize?: number
 }) {
   if (players.length === 0) return null
-  const nameW = circleSize <= 24 ? 28 : 38
-  const numFs = circleSize <= 24 ? 9 : 11
+  const nameW = circleSize <= 26 ? 34 : 44
+  const numFs = circleSize <= 26 ? 10 : 13
   return (
     <div style={{
       position: 'absolute', top: topPct, left: 0, right: 0,
@@ -122,7 +122,7 @@ function FieldRow({ players, topPct, circleSize = 28 }: {
             {p.seqNum}
           </div>
           <span style={{
-            fontSize: 6, fontWeight: 700, textAlign: 'center',
+            fontSize: 8, fontWeight: 700, textAlign: 'center',
             maxWidth: nameW, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
             color: '#111', lineHeight: 1,
           }}>
@@ -136,7 +136,7 @@ function FieldRow({ players, topPct, circleSize = 28 }: {
 
 const C = '#111'
 const FW = 315
-const FH = 575
+const FH = 610
 
 export function MatchPrintSheet({
   teamName, teamLogo, opponent,
@@ -207,7 +207,7 @@ export function MatchPrintSheet({
   const d = new Date(playedAt + 'T12:00:00')
   const dateShort = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getFullYear()).slice(2)}`
 
-  const ROW_H = 15
+  const ROW_H = 18
 
   return (
     <>
@@ -233,7 +233,7 @@ export function MatchPrintSheet({
               position: absolute !important; top: 0 !important; left: 0 !important;
               width: 210mm !important; height: 297mm !important;
               overflow: hidden !important; background: white !important;
-              padding: 9mm 10mm !important;
+              padding: 7mm 8mm !important;
               font-family: Arial, Helvetica, sans-serif !important;
               box-sizing: border-box !important;
             }
@@ -244,7 +244,7 @@ export function MatchPrintSheet({
 
         {/* CABECERA */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-          <div style={{ fontSize: 13, fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', color: '#111' }}>
+          <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', color: '#111' }}>
             {teamName}
           </div>
           {teamLogo
@@ -331,7 +331,7 @@ export function MatchPrintSheet({
             {fieldRows.map((row, i) => {
               const n = fieldRows.length
               const topPct = n === 1 ? '50%' : `${8 + (i / (n - 1)) * 74}%`
-              const circleSize = row.length >= 5 ? 24 : 28
+              const circleSize = row.length >= 5 ? 26 : 32
               return <FieldRow key={i} players={row} topPct={topPct} circleSize={circleSize} />
             })}
           </div>
@@ -347,13 +347,13 @@ export function MatchPrintSheet({
                     <tr key={p.id}>
                       <td style={{ border: '1px solid #bbb',
                         borderBottom: isLastStarter ? '2.5px solid #111' : '1px solid #bbb',
-                        padding: '0 4px', width: 20, textAlign: 'center', height: ROW_H,
-                        fontSize: 8, fontWeight: 900, color: '#111' }}>
+                        padding: '0 4px', width: 22, textAlign: 'center', height: ROW_H,
+                        fontSize: 10, fontWeight: 900, color: '#111' }}>
                         {p.seqNum}
                       </td>
                       <td style={{ borderBottom: sepBorder,
                         padding: '0 6px', height: ROW_H,
-                        fontSize: 9.5, fontWeight: 600, color: '#111' }}>
+                        fontSize: 11.5, fontWeight: 600, color: '#111' }}>
                         {p.name}
                       </td>
                     </tr>
@@ -361,12 +361,12 @@ export function MatchPrintSheet({
                 })}
                 {subsNum.map(p => (
                   <tr key={p.id}>
-                    <td style={{ border: '1px solid #bbb', padding: '0 4px', width: 20,
-                      textAlign: 'center', height: ROW_H, fontSize: 8, fontWeight: 900, color: '#111' }}>
+                    <td style={{ border: '1px solid #bbb', padding: '0 4px', width: 22,
+                      textAlign: 'center', height: ROW_H, fontSize: 10, fontWeight: 900, color: '#111' }}>
                       {p.seqNum}
                     </td>
                     <td style={{ borderBottom: '1px solid #ddd', padding: '0 6px', height: ROW_H,
-                      fontSize: 9.5, fontWeight: 600, color: '#111' }}>
+                      fontSize: 11.5, fontWeight: 600, color: '#111' }}>
                       {p.name}
                     </td>
                   </tr>
