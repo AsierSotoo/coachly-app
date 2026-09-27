@@ -136,7 +136,7 @@ function FieldRow({ players, topPct, circleSize = 32 }: {
 
 const C = '#111'
 const FW = 315
-const FH = 610
+const FH = 650
 
 export function MatchPrintSheet({
   teamName, teamLogo, opponent,
@@ -207,7 +207,7 @@ export function MatchPrintSheet({
   const d = new Date(playedAt + 'T12:00:00')
   const dateShort = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getFullYear()).slice(2)}`
 
-  const ROW_H = 18
+  const ROW_H = 21
 
   return (
     <>
@@ -244,26 +244,26 @@ export function MatchPrintSheet({
 
         {/* CABECERA */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-          <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', color: '#111' }}>
+          <div style={{ fontSize: 19, fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', color: '#111' }}>
             {teamName}
           </div>
           {teamLogo
             // eslint-disable-next-line @next/next/no-img-element
-            ? <img src={teamLogo} alt={teamName} style={{ width: 42, height: 42, objectFit: 'contain', filter: 'grayscale(100%)' }} />
-            : <div style={{ width: 42, height: 42, border: '2px solid #111', borderRadius: 4,
+            ? <img src={teamLogo} alt={teamName} style={{ width: 52, height: 52, objectFit: 'contain', filter: 'grayscale(100%)' }} />
+            : <div style={{ width: 52, height: 52, border: '2px solid #111', borderRadius: 4,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 11, fontWeight: 900, color: '#111' }}>
+                fontSize: 13, fontWeight: 900, color: '#111' }}>
                 {teamName.trim().split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase()}
               </div>
           }
         </div>
 
         {/* INFO */}
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 9, tableLayout: 'fixed' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 10, tableLayout: 'fixed' }}>
           <thead>
             <tr>
               {[{ l: 'JORNADA', w: '24%' }, { l: 'FECHA', w: '27%' }, { l: 'CONTRARIO', w: '49%' }].map(col => (
-                <th key={col.l} style={{ border: '1px solid #999', padding: '2px 6px', fontSize: 7,
+                <th key={col.l} style={{ border: '1px solid #999', padding: '3px 8px', fontSize: 9,
                   fontWeight: 800, textAlign: 'left', width: col.w, backgroundColor: '#ddd', color: '#111' }}>
                   {col.l}
                 </th>
@@ -272,13 +272,13 @@ export function MatchPrintSheet({
           </thead>
           <tbody>
             <tr>
-              <td style={{ border: '1px solid #999', padding: '3px 6px', fontSize: 10, fontWeight: 700, color: '#111' }}>
+              <td style={{ border: '1px solid #999', padding: '5px 8px', fontSize: 13, fontWeight: 700, color: '#111' }}>
                 {seasonName} J{matchIndex + 1}
               </td>
-              <td style={{ border: '1px solid #999', padding: '3px 6px', fontSize: 10, fontWeight: 700, color: '#111' }}>
+              <td style={{ border: '1px solid #999', padding: '5px 8px', fontSize: 13, fontWeight: 700, color: '#111' }}>
                 {dateShort}{matchTime ? ` · ${matchTime}h` : ''}
               </td>
-              <td style={{ border: '1px solid #999', padding: '3px 6px', fontSize: 10, fontWeight: 800, color: '#111' }}>
+              <td style={{ border: '1px solid #999', padding: '5px 8px', fontSize: 13, fontWeight: 800, color: '#111' }}>
                 {opponent}
               </td>
             </tr>
@@ -331,13 +331,13 @@ export function MatchPrintSheet({
             {fieldRows.map((row, i) => {
               const n = fieldRows.length
               const topPct = n === 1 ? '50%' : `${8 + (i / (n - 1)) * 74}%`
-              const circleSize = row.length >= 5 ? 26 : 32
+              const circleSize = row.length >= 5 ? 28 : 36
               return <FieldRow key={i} players={row} topPct={topPct} circleSize={circleSize} />
             })}
           </div>
 
           {/* LISTA */}
-          <div style={{ width: 230, flexShrink: 0 }}>
+          <div style={{ width: 255, flexShrink: 0 }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <tbody>
                 {numbered.map((p, i) => {
@@ -347,13 +347,13 @@ export function MatchPrintSheet({
                     <tr key={p.id}>
                       <td style={{ border: '1px solid #bbb',
                         borderBottom: isLastStarter ? '2.5px solid #111' : '1px solid #bbb',
-                        padding: '0 4px', width: 22, textAlign: 'center', height: ROW_H,
-                        fontSize: 10, fontWeight: 900, color: '#111' }}>
+                        padding: '0 5px', width: 26, textAlign: 'center', height: ROW_H,
+                        fontSize: 12, fontWeight: 900, color: '#111' }}>
                         {p.seqNum}
                       </td>
                       <td style={{ borderBottom: sepBorder,
-                        padding: '0 6px', height: ROW_H,
-                        fontSize: 11.5, fontWeight: 600, color: '#111' }}>
+                        padding: '0 7px', height: ROW_H,
+                        fontSize: 13, fontWeight: 600, color: '#111' }}>
                         {p.name}
                       </td>
                     </tr>
@@ -361,12 +361,12 @@ export function MatchPrintSheet({
                 })}
                 {subsNum.map(p => (
                   <tr key={p.id}>
-                    <td style={{ border: '1px solid #bbb', padding: '0 4px', width: 22,
-                      textAlign: 'center', height: ROW_H, fontSize: 10, fontWeight: 900, color: '#111' }}>
+                    <td style={{ border: '1px solid #bbb', padding: '0 5px', width: 26,
+                      textAlign: 'center', height: ROW_H, fontSize: 12, fontWeight: 900, color: '#111' }}>
                       {p.seqNum}
                     </td>
-                    <td style={{ borderBottom: '1px solid #ddd', padding: '0 6px', height: ROW_H,
-                      fontSize: 11.5, fontWeight: 600, color: '#111' }}>
+                    <td style={{ borderBottom: '1px solid #ddd', padding: '0 7px', height: ROW_H,
+                      fontSize: 13, fontWeight: 600, color: '#111' }}>
                       {p.name}
                     </td>
                   </tr>
@@ -375,10 +375,10 @@ export function MatchPrintSheet({
             </table>
 
             <div style={{ marginTop: 6 }}>
-              <div style={{ fontSize: 6.5, fontWeight: 800, textTransform: 'uppercase',
-                letterSpacing: 1, marginBottom: 3, color: '#666' }}>Notas</div>
+              <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
+                letterSpacing: 1, marginBottom: 4, color: '#666' }}>Notas</div>
               {[1,2,3].map(i => (
-                <div key={i} style={{ height: 14, borderBottom: '1px solid #ccc', marginBottom: 2 }} />
+                <div key={i} style={{ height: 18, borderBottom: '1px solid #ccc', marginBottom: 3 }} />
               ))}
             </div>
           </div>
