@@ -9,6 +9,7 @@ import { HeaderTitle } from '@/components/ui/header-title'
 import { WhatsNewModal } from '@/components/ui/whats-new-modal'
 import { PwaInstallButton } from '@/components/ui/pwa-install-button'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
+import { IosInstallBanner } from '@/components/ui/ios-install-banner'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { LanguageToggle } from '@/components/ui/language-toggle'
 import { getLocale } from '@/lib/i18n'
@@ -105,6 +106,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="flex-1 pb-24 md:pb-0">{children}</div>
         <WhatsNewModal />
         <ScrollToTop />
+        <IosInstallBanner />
 
         {/* Nav inferior móvil */}
         <NavBar teams={teams} />
