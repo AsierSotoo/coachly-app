@@ -264,7 +264,7 @@ export function MatchPrintSheet({
             <tr>
               {[{ l: 'JORNADA', w: '24%' }, { l: 'FECHA', w: '27%' }, { l: 'CONTRARIO', w: '49%' }].map(col => (
                 <th key={col.l} style={{ border: '1px solid #999', padding: '3px 8px', fontSize: 9,
-                  fontWeight: 800, textAlign: 'left', width: col.w, backgroundColor: '#ddd', color: '#111' }}>
+                  fontWeight: 800, textAlign: 'center', width: col.w, backgroundColor: '#ddd', color: '#111' }}>
                   {col.l}
                 </th>
               ))}
@@ -272,13 +272,13 @@ export function MatchPrintSheet({
           </thead>
           <tbody>
             <tr>
-              <td style={{ border: '1px solid #999', padding: '5px 8px', fontSize: 13, fontWeight: 700, color: '#111' }}>
+              <td style={{ border: '1px solid #999', padding: '5px 8px', fontSize: 13, fontWeight: 700, color: '#111', textAlign: 'center' }}>
                 {seasonName} J{matchIndex + 1}
               </td>
-              <td style={{ border: '1px solid #999', padding: '5px 8px', fontSize: 13, fontWeight: 700, color: '#111' }}>
+              <td style={{ border: '1px solid #999', padding: '5px 8px', fontSize: 13, fontWeight: 700, color: '#111', textAlign: 'center' }}>
                 {dateShort}{matchTime ? ` · ${matchTime}h` : ''}
               </td>
-              <td style={{ border: '1px solid #999', padding: '5px 8px', fontSize: 13, fontWeight: 800, color: '#111' }}>
+              <td style={{ border: '1px solid #999', padding: '5px 8px', fontSize: 13, fontWeight: 800, color: '#111', textAlign: 'center' }}>
                 {opponent}
               </td>
             </tr>
