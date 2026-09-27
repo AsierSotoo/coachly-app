@@ -16,7 +16,7 @@ interface Player {
   id: string; name: string; number: number | null
   position: string | null; photo_url?: string | null
 }
-interface AvailableMatch { id: string; opponent: string; played_at: string; match_time?: string | null }
+interface AvailableMatch { id: string; opponent: string; played_at: string; match_time?: string | null; rival_logo_url?: string | null }
 const YELLOW_WARNING = 4
 
 interface Props {
@@ -30,6 +30,7 @@ interface Props {
   yellowCards?: Record<string, number>
   linkedMatchId: string | null
   availableMatches: AvailableMatch[]
+  rivalLogoUrl?: string | null
   meetingTime?: string | null
   location?: string | null
 }
@@ -38,6 +39,7 @@ export function ConvocatoriaEditor({
   convocatoriaId, seasonId, opponent, playedAt, teamName, teamGender,
   logoUrl, seasonName,
   players, initial, yellowCards = {}, linkedMatchId, availableMatches,
+  rivalLogoUrl: initialRivalLogoUrl,
   meetingTime: initialMeetingTime, location: initialLocation,
 }: Props) {
   const terms = getTeamTerms(teamGender)
@@ -50,6 +52,11 @@ export function ConvocatoriaEditor({
   })
   const [search, setSearch] = useState('')
   const [selectedMatch, setSelectedMatch] = useState(linkedMatchId ?? '')
+
+  const currentRivalLogo =
+    availableMatches.find(m => m.id === selectedMatch)?.rival_logo_url ??
+    initialRivalLogoUrl ??
+    null
   const [savePending, startSave] = useTransition()
   const [linkPending, startLink] = useTransition()
   const [copied, setCopied] = useState(false)
@@ -507,8 +514,15 @@ export function ConvocatoriaEditor({
         </div>
 
         {/* Info partido */}
-        <div style={{ textAlign: 'right' }}>
-          <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#111713' }}>vs {opponent}</p>
+        <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end' }}>
+            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#111713' }}>vs {opponent}</p>
+            {currentRivalLogo && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={currentRivalLogo} alt={opponent}
+                style={{ width: 40, height: 40, objectFit: 'contain', borderRadius: 6, border: '1px solid #e2e8f0', background: 'white', padding: 3 }} />
+            )}
+          </div>
           <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#637168' }}>
             {new Date(playedAt).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>

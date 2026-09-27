@@ -6,6 +6,7 @@ import { ConvocatoriaEditor } from '@/components/convocatoria/convocatoria-edito
 import { updateConvocatoriaDetails } from '../actions'
 import type { ConvocatoriaStatus } from '../actions'
 import { TeamLogo } from '@/components/team/team-logo'
+import { EditConvocatoriaName } from '@/components/convocatoria/edit-convocatoria-name'
 
 export default async function ConvocatoriaDetailPage({
   params,
@@ -54,7 +55,13 @@ export default async function ConvocatoriaDetailPage({
   const availableMatches = (matches ?? []).filter(m => {
     const linked = m.convocatorias as { id: string }[]
     return linked.length === 0 || linked.some(c => c.id === convocatoriaId)
-  }).map(m => ({ id: m.id, opponent: m.opponent, played_at: m.played_at, match_time: (m as { match_time?: string | null }).match_time ?? null }))
+  }).map(m => ({
+    id: m.id,
+    opponent: m.opponent,
+    played_at: m.played_at,
+    match_time: (m as { match_time?: string | null }).match_time ?? null,
+    rival_logo_url: (m as { rival_logo_url?: string | null }).rival_logo_url ?? null,
+  }))
 
   const linkedMatch = (matches ?? []).find(m => m.id === conv.match_id) as { home?: boolean; match_time?: string | null; rival_logo_url?: string | null } | undefined
   const isHome = linkedMatch?.home ?? null
@@ -123,7 +130,12 @@ export default async function ConvocatoriaDetailPage({
                 }
               </div>
               <div>
-                <h2 className="text-[24px] font-extrabold" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--tx)' }}>{conv.opponent}</h2>
+                <EditConvocatoriaName
+                  convocatoriaId={convocatoriaId}
+                  seasonId={seasonId}
+                  opponent={conv.opponent}
+                  playedAt={conv.played_at}
+                />
                 <p className="text-[11px] font-bold uppercase tracking-wider mt-0.5" style={{ color: 'var(--tx-2)' }}>
                   {isHome === false ? 'Local' : isHome === true ? 'Visitante' : 'Visitante'}
                 </p>
@@ -202,6 +214,7 @@ export default async function ConvocatoriaDetailPage({
           yellowCards={yellowCards}
           linkedMatchId={conv.match_id ?? null}
           availableMatches={availableMatches}
+          rivalLogoUrl={rivalLogoUrl}
           meetingTime={(conv as any).meeting_time ?? null}
           location={(conv as any).location ?? null}
         />
