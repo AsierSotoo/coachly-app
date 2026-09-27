@@ -378,9 +378,9 @@ export function MatchPrintSheet({
             <div style={{ flex: 1, marginTop: 6, display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
                 letterSpacing: 1, marginBottom: 4, color: '#666' }}>Notas</div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-                {[1,2,3,4,5,6,7,8].map(i => (
-                  <div key={i} style={{ borderBottom: '1px solid #ccc' }} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                {[1,2,3,4,5,6,7,8,9,10].map(i => (
+                  <div key={i} style={{ flex: 1, minHeight: 28, borderBottom: '1px solid #ccc' }} />
                 ))}
               </div>
             </div>
