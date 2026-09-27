@@ -136,7 +136,7 @@ function FieldRow({ players, topPct, circleSize = 32 }: {
 
 const C = '#111'
 const FW = 315
-const FH = 650
+const FH = 880
 
 export function MatchPrintSheet({
   teamName, teamLogo, opponent,
@@ -233,7 +233,7 @@ export function MatchPrintSheet({
               position: absolute !important; top: 0 !important; left: 0 !important;
               width: 210mm !important; height: 297mm !important;
               overflow: hidden !important; background: white !important;
-              padding: 7mm 8mm !important;
+              padding: 7mm 11mm !important;
               font-family: Arial, Helvetica, sans-serif !important;
               box-sizing: border-box !important;
             }
@@ -337,8 +337,8 @@ export function MatchPrintSheet({
           </div>
 
           {/* LISTA */}
-          <div style={{ width: 255, flexShrink: 0 }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div style={{ width: 255, flexShrink: 0, height: FH, display: 'flex', flexDirection: 'column' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', flexShrink: 0 }}>
               <tbody>
                 {numbered.map((p, i) => {
                   const isLastStarter = i === numbered.length - 1 && subsNum.length > 0
@@ -374,12 +374,15 @@ export function MatchPrintSheet({
               </tbody>
             </table>
 
-            <div style={{ marginTop: 6 }}>
+            {/* Notas — ocupa el espacio restante hasta el final del campo */}
+            <div style={{ flex: 1, marginTop: 6, display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
                 letterSpacing: 1, marginBottom: 4, color: '#666' }}>Notas</div>
-              {[1,2,3].map(i => (
-                <div key={i} style={{ height: 18, borderBottom: '1px solid #ccc', marginBottom: 3 }} />
-              ))}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+                {[1,2,3,4,5,6,7,8].map(i => (
+                  <div key={i} style={{ borderBottom: '1px solid #ccc' }} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
