@@ -95,9 +95,9 @@ export default async function TacticsPrintPage({
                         {filled.length === 0 && <span style={{ color: '#9ca3af', fontWeight: 400 }}>—</span>}
                       </span>
                       {row.hasExtra && entry.extra && (
-                        <span className="text-xs italic ml-2" style={{ color: '#4b5563' }}>
+                        <div style={{ marginTop: 5, paddingLeft: 110, fontSize: 15, fontWeight: 900, color: '#111' }}>
                           Jugada: {entry.extra}
-                        </span>
+                        </div>
                       )}
                     </div>
                   )

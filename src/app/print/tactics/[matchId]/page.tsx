@@ -113,9 +113,9 @@ export default async function TacticsPrintPage({
                         }
                       </span>
                       {row.hasExtra && entry.extra && (
-                        <span style={{ fontSize: 13, fontStyle: 'italic', color: '#4b5563', marginLeft: 8 }}>
+                        <div style={{ marginTop: 5, paddingLeft: 110, fontSize: 15, fontWeight: 900, color: '#111' }}>
                           Jugada: {entry.extra}
-                        </span>
+                        </div>
                       )}
                     </div>
                   )
