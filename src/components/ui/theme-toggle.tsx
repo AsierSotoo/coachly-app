@@ -22,6 +22,13 @@ export function ThemeToggle({ className, compact }: { className?: string; compac
   const h = compact ? 26 : 32
   const knob = compact ? 18 : 24
 
+  // Dark mode → knob blanco con luna oscura
+  // Light mode → knob amarillo con sol oscuro
+  const trackBg    = isLight ? '#fde68a' : '#1e2a22'
+  const trackBdr   = isLight ? '#f59e0b' : '#2d3d32'
+  const knobBg     = isLight ? '#f59e0b' : '#e2e8f0'
+  const iconColor  = isLight ? '#78350f' : '#1e293b'
+
   return (
     <button
       type="button"
@@ -32,8 +39,8 @@ export function ThemeToggle({ className, compact }: { className?: string; compac
         width: w,
         height: h,
         borderRadius: 100,
-        backgroundColor: isLight ? '#d4e9d8' : '#1e3028',
-        border: `1.5px solid ${isLight ? '#b8d4bc' : '#2d4535'}`,
+        backgroundColor: trackBg,
+        border: `1.5px solid ${trackBdr}`,
         flexShrink: 0,
         transition: 'background-color 0.25s ease, border-color 0.25s ease',
       }}
@@ -48,33 +55,43 @@ export function ThemeToggle({ className, compact }: { className?: string; compac
           width: knob,
           height: knob,
           borderRadius: '50%',
-          backgroundColor: 'var(--accent)',
+          backgroundColor: knobBg,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           transform: isLight ? `translateX(${w - knob - (h - knob)}px)` : 'translateX(0)',
-          transition: 'transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.22)',
+          transition: 'transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.25s ease',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
           pointerEvents: 'none',
         }}
       >
-        <svg width={11} height={11} viewBox="0 0 24 24" fill="var(--accent-fg)"
+        {/* Luna */}
+        <svg width={10} height={10} viewBox="0 0 24 24" fill={iconColor}
           style={{
             position: 'absolute',
             opacity: isLight ? 0 : 1,
-            transform: isLight ? 'rotate(20deg) scale(0.6)' : 'rotate(0) scale(1)',
+            transform: isLight ? 'rotate(20deg) scale(0.5)' : 'rotate(0) scale(1)',
             transition: 'opacity 0.18s ease, transform 0.2s ease',
           }}>
           <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
         </svg>
-        <svg width={11} height={11} viewBox="0 0 24 24" fill="var(--accent-fg)"
+        {/* Sol */}
+        <svg width={10} height={10} viewBox="0 0 24 24" fill={iconColor}
           style={{
             position: 'absolute',
             opacity: isLight ? 1 : 0,
-            transform: isLight ? 'rotate(0) scale(1)' : 'rotate(-20deg) scale(0.6)',
+            transform: isLight ? 'rotate(0) scale(1)' : 'rotate(-20deg) scale(0.5)',
             transition: 'opacity 0.18s ease, transform 0.2s ease',
           }}>
-          <path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-14a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V4a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm9-9h1a1 1 0 0 1 0 2h-1a1 1 0 0 1 0-2zM3 11H2a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2zm15.66-6.07.7-.7a1 1 0 1 1 1.42 1.41l-.7.7a1 1 0 0 1-1.42-1.41zM4.64 19.07l-.7.7a1 1 0 1 1-1.42-1.41l.7-.7a1 1 0 0 1 1.42 1.41zm14.14 1.42-.7-.7a1 1 0 0 1 1.42-1.41l.7.7a1 1 0 0 1-1.42 1.41zM4.64 4.93l-.7-.7A1 1 0 0 0 2.53 5.64l.7.7a1 1 0 0 0 1.41-1.41z"/>
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="2" x2="12" y2="4" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
+          <line x1="12" y1="20" x2="12" y2="22" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
+          <line x1="2" y1="12" x2="4" y2="12" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
+          <line x1="20" y1="12" x2="22" y2="12" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
         </svg>
       </span>
     </button>
