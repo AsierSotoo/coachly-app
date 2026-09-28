@@ -17,15 +17,14 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ er
           priority
         />
 
-        {/* Overlay cinematográfico: transparente arriba, oscuro abajo */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-black/90" />
-        {/* Velo lateral derecho para que el formulario no choque */}
-        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black/40 to-transparent" />
+        {/* Overlay cinematográfico */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/92" />
+        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black/50 to-transparent" />
 
         {/* Logo arriba */}
         <div className="relative z-10 p-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 shadow-lg shadow-black/30">
               <Image src="/logo.png" alt="Coachly" width={40} height={40} className="w-full h-full object-cover" />
             </div>
             <span className="font-[family-name:var(--font-heading)] text-xl font-bold text-white tracking-tight">
@@ -36,28 +35,37 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ er
 
         {/* Texto inferior */}
         <div className="relative z-10 px-10 pb-12">
-          <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-green-400">
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.28em]" style={{ color: '#4ade80' }}>
             Para entrenadores de fútbol
           </p>
-          <h2 className="text-4xl font-black text-white leading-[1.1] tracking-tight">
+          <h2 className="text-[42px] font-black text-white leading-[1.05] tracking-tight">
             Cada minuto.<br />Cada gol.<br />Cada tarjeta.
           </h2>
-          <p className="mt-4 text-sm text-white/50 leading-relaxed max-w-xs">
+          <p className="mt-4 text-sm leading-relaxed max-w-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
             Registra tus partidos en minutos y deja que los números hablen solos.
           </p>
 
           {/* Separador */}
-          <div className="mt-8 h-px w-12 bg-green-500/60" />
+          <div className="mt-8 h-px w-10 bg-green-500/50" />
 
-          {/* Stats breves */}
-          <div className="mt-6 flex items-center gap-8">
+          {/* Feature pills con iconos */}
+          <div className="mt-6 grid grid-cols-3 gap-3">
             {[
-              { num: 'Plantilla', desc: 'con fotos y posiciones' },
-              { num: 'Temporadas', desc: 'y rachas en tiempo real' },
-            ].map(({ num, desc }) => (
-              <div key={num}>
-                <p className="text-sm font-bold text-white">{num}</p>
-                <p className="text-[11px] text-white/40 mt-0.5">{desc}</p>
+              { icon: 'bar_chart', label: 'Estadísticas', desc: 'goles, asist. y tarjetas' },
+              { icon: 'groups', label: 'Plantilla', desc: 'fotos y posiciones' },
+              { icon: 'local_fire_department', label: 'Rachas', desc: 'últimos 5 partidos' },
+            ].map(f => (
+              <div key={f.label}
+                className="flex flex-col gap-2 rounded-xl p-3"
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.2)' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#4ade80' }}>{f.icon}</span>
+                </div>
+                <div>
+                  <p className="text-[12px] font-bold text-white">{f.label}</p>
+                  <p className="text-[10px] mt-0.5 leading-tight" style={{ color: 'rgba(255,255,255,0.35)' }}>{f.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -65,39 +73,41 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ er
       </div>
 
       {/* Panel derecho — formulario */}
-      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-14">
-        <div className="w-full max-w-[340px]">
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-14 relative overflow-hidden"
+        style={{ background: 'radial-gradient(ellipse 90% 60% at 50% -5%, rgba(34,197,94,0.07) 0%, transparent 65%), #020617' }}>
+
+        {/* Dot grid sutil */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+        <div className="relative z-10 w-full max-w-[340px]">
 
           {/* Hero móvil */}
           <div className="mb-10 lg:hidden">
-            <div className="relative overflow-hidden rounded-2xl border p-6 text-center" style={{ borderColor: 'var(--bdr-strong)', background: 'linear-gradient(135deg, var(--bg-card) 0%, #0a1f0a 100%)' }}>
-              <div className="absolute inset-0 opacity-10 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-28 w-28 rounded-full border border-white/50" />
-                <div className="absolute top-1/2 left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60" />
-                <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/30" />
-              </div>
+            <div className="relative overflow-hidden rounded-2xl border p-6 text-center" style={{ borderColor: 'rgba(255,255,255,0.08)', background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(34,197,94,0.06) 100%)' }}>
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-green-500/60 to-transparent" />
               <div className="relative flex flex-col items-center gap-2">
                 <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-lg shadow-green-500/20">
                   <Image src="/logo.png" alt="Coachly" width={56} height={56} className="w-full h-full object-cover" />
                 </div>
                 <span className="font-[family-name:var(--font-heading)] text-2xl font-bold text-green-400 tracking-tight">Coachly</span>
-                <p className="text-sm" style={{ color: 'var(--tx-3)' }}>Estadísticas para entrenadores</p>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Estadísticas para entrenadores</p>
               </div>
             </div>
           </div>
 
           {/* Cabecera */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-white">Accede a tu cuenta</h1>
-            <p className="mt-1 text-sm" style={{ color: 'var(--tx-4)' }}>Tu equipo te está esperando</p>
+          <div className="mb-7">
+            <h1 className="text-[26px] font-black text-white tracking-tight">Accede a tu cuenta</h1>
+            <p className="mt-1.5 text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>Tu equipo te está esperando</p>
           </div>
 
-          {/* Google */}
+          {/* Google — CTA principal */}
           <form action={signInWithGoogle}>
             <button
               type="submit"
-              className="flex w-full items-center justify-center gap-3 rounded-xl border h-11 text-sm font-medium transition-all active:scale-[0.98] cursor-pointer hover:bg-[var(--bg-elevated)]" style={{ borderColor: 'var(--bdr-strong)', backgroundColor: 'var(--bg-card)', color: 'var(--tx)' }}
+              className="flex w-full items-center justify-center gap-3 rounded-xl h-12 text-sm font-semibold transition-all active:scale-[0.98] cursor-pointer"
+              style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', color: '#fff' }}
             >
               <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -110,15 +120,15 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ er
           </form>
 
           <div className="my-5 flex items-center gap-3">
-            <div className="h-px flex-1" style={{ backgroundColor: 'var(--bdr-strong)' }} />
-            <span className="text-[11px] uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>o</span>
-            <div className="h-px flex-1" style={{ backgroundColor: 'var(--bdr-strong)' }} />
+            <div className="h-px flex-1" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
+            <span className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.25)' }}>o</span>
+            <div className="h-px flex-1" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
           </div>
 
           {/* Email/pass */}
           <form action={login} className="flex flex-col gap-3.5">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="email" className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Email</label>
+              <label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>Email</label>
               <input
                 id="email" name="email" type="email" required
                 autoComplete="email" placeholder="tu@email.com"
@@ -127,8 +137,8 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ er
             </div>
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--tx-4)' }}>Contraseña</label>
-                <Link href="/forgot-password" className="text-[11px] hover:text-green-400 transition-colors" style={{ color: 'var(--tx-4)' }}>¿Olvidaste la contraseña?</Link>
+                <label htmlFor="password" className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>Contraseña</label>
+                <Link href="/forgot-password" className="text-[11px] hover:text-green-400 transition-colors" style={{ color: 'rgba(255,255,255,0.3)' }}>¿Olvidaste la contraseña?</Link>
               </div>
               <input
                 id="password" name="password" type="password" required
@@ -141,17 +151,22 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ er
 
             <button
               type="submit"
-              className="mt-1 flex h-11 items-center justify-center rounded-xl bg-green-500 text-sm font-bold text-white transition-all hover:bg-green-400 active:scale-[0.98] cursor-pointer shadow-lg shadow-green-500/20"
+              className="mt-1 flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-bold text-white transition-all active:scale-[0.98] cursor-pointer"
+              style={{ backgroundColor: '#16a34a', boxShadow: '0 0 0 1px rgba(74,222,128,0.2), 0 4px 20px rgba(22,163,74,0.35)' }}
             >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
               Entrar
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm" style={{ color: 'var(--tx-4)' }}>
+          <p className="mt-6 text-center text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
             ¿Sin cuenta?{' '}
-            <Link href="/register" className="font-semibold text-green-400 hover:text-green-300 transition-colors">
+            <Link href="/register" className="font-bold text-green-400 hover:text-green-300 transition-colors">
               Regístrate gratis
             </Link>
+          </p>
+          <p className="mt-2 text-center text-[11px]" style={{ color: 'rgba(255,255,255,0.18)' }}>
+            Sin tarjeta de crédito · Gratis para empezar
           </p>
         </div>
       </div>
