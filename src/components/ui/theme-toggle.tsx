@@ -66,33 +66,29 @@ export function ThemeToggle({ className, compact }: { className?: string; compac
         }}
       >
         {/* Luna */}
-        <svg width={10} height={10} viewBox="0 0 24 24" fill={iconColor}
+        <span className="material-symbols-outlined"
           style={{
             position: 'absolute',
+            fontSize: compact ? 12 : 14,
+            color: iconColor,
             opacity: isLight ? 0 : 1,
             transform: isLight ? 'rotate(20deg) scale(0.5)' : 'rotate(0) scale(1)',
             transition: 'opacity 0.18s ease, transform 0.2s ease',
-          }}>
-          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
-        </svg>
+            lineHeight: 1,
+            userSelect: 'none',
+          }}>dark_mode</span>
         {/* Sol */}
-        <svg width={10} height={10} viewBox="0 0 24 24" fill={iconColor}
+        <span className="material-symbols-outlined"
           style={{
             position: 'absolute',
+            fontSize: compact ? 12 : 14,
+            color: iconColor,
             opacity: isLight ? 1 : 0,
             transform: isLight ? 'rotate(0) scale(1)' : 'rotate(-20deg) scale(0.5)',
             transition: 'opacity 0.18s ease, transform 0.2s ease',
-          }}>
-          <circle cx="12" cy="12" r="5"/>
-          <line x1="12" y1="2" x2="12" y2="4" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
-          <line x1="12" y1="20" x2="12" y2="22" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
-          <line x1="2" y1="12" x2="4" y2="12" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
-          <line x1="20" y1="12" x2="22" y2="12" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke={iconColor} strokeWidth="2" strokeLinecap="round"/>
-        </svg>
+            lineHeight: 1,
+            userSelect: 'none',
+          }}>light_mode</span>
       </span>
     </button>
   )
